@@ -1,0 +1,1550 @@
+[
+ {
+  "id": "w0",
+  "text": "Un",
+  "start": 0.0,
+  "end": 0.116
+ },
+ {
+  "id": "w1",
+  "text": "copista",
+  "start": 0.163,
+  "end": 0.569
+ },
+ {
+  "id": "w2",
+  "text": "tardaba",
+  "start": 0.639,
+  "end": 0.964
+ },
+ {
+  "id": "w3",
+  "text": "más",
+  "start": 1.01,
+  "end": 1.161
+ },
+ {
+  "id": "w4",
+  "text": "de",
+  "start": 1.196,
+  "end": 1.254
+ },
+ {
+  "id": "w5",
+  "text": "un",
+  "start": 1.3,
+  "end": 1.37
+ },
+ {
+  "id": "w6",
+  "text": "año",
+  "start": 1.405,
+  "end": 1.567
+ },
+ {
+  "id": "w7",
+  "text": "en",
+  "start": 1.591,
+  "end": 1.649
+ },
+ {
+  "id": "w8",
+  "text": "copiar",
+  "start": 1.683,
+  "end": 1.95
+ },
+ {
+  "id": "w9",
+  "text": "una",
+  "start": 1.985,
+  "end": 2.09
+ },
+ {
+  "id": "w10",
+  "text": "sola",
+  "start": 2.148,
+  "end": 2.368
+ },
+ {
+  "id": "w11",
+  "text": "Biblia.",
+  "start": 2.426,
+  "end": 2.949
+ },
+ {
+  "id": "w12",
+  "text": "Gutenberg",
+  "start": 3.39,
+  "end": 3.889
+ },
+ {
+  "id": "w13",
+  "text": "imprimió",
+  "start": 3.936,
+  "end": 4.307
+ },
+ {
+  "id": "w14",
+  "text": "unas",
+  "start": 4.354,
+  "end": 4.54
+ },
+ {
+  "id": "w15",
+  "text": "ciento",
+  "start": 4.563,
+  "end": 4.888
+ },
+ {
+  "id": "w16",
+  "text": "ochenta.",
+  "start": 4.923,
+  "end": 5.492
+ },
+ {
+  "id": "w17",
+  "text": "Maguncia,",
+  "start": 5.875,
+  "end": 6.478
+ },
+ {
+  "id": "w18",
+  "text": "Alemania,",
+  "start": 6.525,
+  "end": 7.094
+ },
+ {
+  "id": "w19",
+  "text": "hacia",
+  "start": 7.117,
+  "end": 7.349
+ },
+ {
+  "id": "w20",
+  "text": "mil",
+  "start": 7.396,
+  "end": 7.535
+ },
+ {
+  "id": "w21",
+  "text": "cuatrocientos",
+  "start": 7.57,
+  "end": 8.139
+ },
+ {
+  "id": "w22",
+  "text": "cincuenta.",
+  "start": 8.162,
+  "end": 8.754
+ },
+ {
+  "id": "w23",
+  "text": "En",
+  "start": 8.905,
+  "end": 9.033
+ },
+ {
+  "id": "w24",
+  "text": "Europa,",
+  "start": 9.067,
+  "end": 9.462
+ },
+ {
+  "id": "w25",
+  "text": "los",
+  "start": 9.509,
+  "end": 9.648
+ },
+ {
+  "id": "w26",
+  "text": "libros",
+  "start": 9.694,
+  "end": 9.903
+ },
+ {
+  "id": "w27",
+  "text": "se",
+  "start": 9.927,
+  "end": 9.985
+ },
+ {
+  "id": "w28",
+  "text": "copian",
+  "start": 10.031,
+  "end": 10.286
+ },
+ {
+  "id": "w29",
+  "text": "a",
+  "start": 10.333,
+  "end": 10.356
+ },
+ {
+  "id": "w30",
+  "text": "mano,",
+  "start": 10.391,
+  "end": 10.704
+ },
+ {
+  "id": "w31",
+  "text": "letra",
+  "start": 10.809,
+  "end": 11.146
+ },
+ {
+  "id": "w32",
+  "text": "por",
+  "start": 11.192,
+  "end": 11.331
+ },
+ {
+  "id": "w33",
+  "text": "letra.",
+  "start": 11.378,
+  "end": 11.784
+ },
+ {
+  "id": "w34",
+  "text": "¿Sin",
+  "start": 11.831,
+  "end": 12.167
+ },
+ {
+  "id": "w35",
+  "text": "motores?",
+  "start": 12.202,
+  "end": 12.701
+ },
+ {
+  "id": "w36",
+  "text": "¡Con",
+  "start": 12.736,
+  "end": 12.921
+ },
+ {
+  "id": "w37",
+  "text": "ingenio!",
+  "start": 12.979,
+  "end": 13.548
+ },
+ {
+  "id": "w38",
+  "text": "Separar",
+  "start": 13.885,
+  "end": 14.257
+ },
+ {
+  "id": "w39",
+  "text": "las",
+  "start": 14.303,
+  "end": 14.431
+ },
+ {
+  "id": "w40",
+  "text": "letras:",
+  "start": 14.477,
+  "end": 14.86
+ },
+ {
+  "id": "w41",
+  "text": "piezas",
+  "start": 14.895,
+  "end": 15.151
+ },
+ {
+  "id": "w42",
+  "text": "de",
+  "start": 15.174,
+  "end": 15.22
+ },
+ {
+  "id": "w43",
+  "text": "metal",
+  "start": 15.255,
+  "end": 15.51
+ },
+ {
+  "id": "w44",
+  "text": "sueltas",
+  "start": 15.557,
+  "end": 15.905
+ },
+ {
+  "id": "w45",
+  "text": "que",
+  "start": 15.94,
+  "end": 16.021
+ },
+ {
+  "id": "w46",
+  "text": "se",
+  "start": 16.068,
+  "end": 16.137
+ },
+ {
+  "id": "w47",
+  "text": "ordenan,",
+  "start": 16.172,
+  "end": 16.66
+ },
+ {
+  "id": "w48",
+  "text": "se",
+  "start": 16.869,
+  "end": 16.95
+ },
+ {
+  "id": "w49",
+  "text": "imprimen",
+  "start": 16.985,
+  "end": 17.345
+ },
+ {
+  "id": "w50",
+  "text": "y",
+  "start": 17.391,
+  "end": 17.426
+ },
+ {
+  "id": "w51",
+  "text": "se",
+  "start": 17.496,
+  "end": 17.577
+ },
+ {
+  "id": "w52",
+  "text": "vuelven",
+  "start": 17.623,
+  "end": 17.89
+ },
+ {
+  "id": "w53",
+  "text": "a",
+  "start": 17.925,
+  "end": 17.949
+ },
+ {
+  "id": "w54",
+  "text": "usar.",
+  "start": 17.983,
+  "end": 18.413
+ },
+ {
+  "id": "w55",
+  "text": "Estos",
+  "start": 18.657,
+  "end": 19.051
+ },
+ {
+  "id": "w56",
+  "text": "son",
+  "start": 19.11,
+  "end": 19.249
+ },
+ {
+  "id": "w57",
+  "text": "los",
+  "start": 19.272,
+  "end": 19.365
+ },
+ {
+  "id": "w58",
+  "text": "tipos",
+  "start": 19.4,
+  "end": 19.644
+ },
+ {
+  "id": "w59",
+  "text": "móviles.",
+  "start": 19.702,
+  "end": 20.212
+ },
+ {
+  "id": "w60",
+  "text": "Pero",
+  "start": 20.549,
+  "end": 20.723
+ },
+ {
+  "id": "w61",
+  "text": "una",
+  "start": 20.758,
+  "end": 20.874
+ },
+ {
+  "id": "w62",
+  "text": "Biblia",
+  "start": 20.909,
+  "end": 21.13
+ },
+ {
+  "id": "w63",
+  "text": "necesita",
+  "start": 21.165,
+  "end": 21.513
+ },
+ {
+  "id": "w64",
+  "text": "miles",
+  "start": 21.548,
+  "end": 21.791
+ },
+ {
+  "id": "w65",
+  "text": "de",
+  "start": 21.826,
+  "end": 21.873
+ },
+ {
+  "id": "w66",
+  "text": "letras,",
+  "start": 21.908,
+  "end": 22.302
+ },
+ {
+  "id": "w67",
+  "text": "y",
+  "start": 22.337,
+  "end": 22.418
+ },
+ {
+  "id": "w68",
+  "text": "todas",
+  "start": 22.5,
+  "end": 22.778
+ },
+ {
+  "id": "w69",
+  "text": "iguales.",
+  "start": 22.848,
+  "end": 23.37
+ },
+ {
+  "id": "w70",
+  "text": "¿Sin",
+  "start": 23.521,
+  "end": 23.823
+ },
+ {
+  "id": "w71",
+  "text": "motores?",
+  "start": 23.858,
+  "end": 24.427
+ },
+ {
+  "id": "w72",
+  "text": "¡Con",
+  "start": 24.636,
+  "end": 24.891
+ },
+ {
+  "id": "w73",
+  "text": "ingenio!",
+  "start": 24.949,
+  "end": 25.541
+ },
+ {
+  "id": "w74",
+  "text": "Un",
+  "start": 25.82,
+  "end": 25.936
+ },
+ {
+  "id": "w75",
+  "text": "molde",
+  "start": 25.971,
+  "end": 26.168
+ },
+ {
+  "id": "w76",
+  "text": "de",
+  "start": 26.203,
+  "end": 26.273
+ },
+ {
+  "id": "w77",
+  "text": "mano:",
+  "start": 26.307,
+  "end": 26.667
+ },
+ {
+  "id": "w78",
+  "text": "viertes",
+  "start": 26.772,
+  "end": 27.155
+ },
+ {
+  "id": "w79",
+  "text": "plomo,",
+  "start": 27.19,
+  "end": 27.515
+ },
+ {
+  "id": "w80",
+  "text": "estaño",
+  "start": 27.55,
+  "end": 27.944
+ },
+ {
+  "id": "w81",
+  "text": "y",
+  "start": 27.979,
+  "end": 28.002
+ },
+ {
+  "id": "w82",
+  "text": "antimonio",
+  "start": 28.037,
+  "end": 28.467
+ },
+ {
+  "id": "w83",
+  "text": "fundidos,",
+  "start": 28.502,
+  "end": 29.012
+ },
+ {
+  "id": "w84",
+  "text": "se",
+  "start": 29.129,
+  "end": 29.233
+ },
+ {
+  "id": "w85",
+  "text": "enfría",
+  "start": 29.268,
+  "end": 29.535
+ },
+ {
+  "id": "w86",
+  "text": "en",
+  "start": 29.581,
+  "end": 29.639
+ },
+ {
+  "id": "w87",
+  "text": "segundos",
+  "start": 29.686,
+  "end": 30.092
+ },
+ {
+  "id": "w88",
+  "text": "y",
+  "start": 30.162,
+  "end": 30.197
+ },
+ {
+  "id": "w89",
+  "text": "sale",
+  "start": 30.266,
+  "end": 30.429
+ },
+ {
+  "id": "w90",
+  "text": "una",
+  "start": 30.464,
+  "end": 30.568
+ },
+ {
+  "id": "w91",
+  "text": "letra",
+  "start": 30.603,
+  "end": 30.824
+ },
+ {
+  "id": "w92",
+  "text": "idéntica",
+  "start": 30.858,
+  "end": 31.3
+ },
+ {
+  "id": "w93",
+  "text": "a",
+  "start": 31.334,
+  "end": 31.358
+ },
+ {
+  "id": "w94",
+  "text": "la",
+  "start": 31.393,
+  "end": 31.451
+ },
+ {
+  "id": "w95",
+  "text": "anterior.",
+  "start": 31.474,
+  "end": 31.903
+ },
+ {
+  "id": "w96",
+  "text": "Este",
+  "start": 32.089,
+  "end": 32.379
+ },
+ {
+  "id": "w97",
+  "text": "es",
+  "start": 32.484,
+  "end": 32.623
+ },
+ {
+  "id": "w98",
+  "text": "el",
+  "start": 32.681,
+  "end": 32.739
+ },
+ {
+  "id": "w99",
+  "text": "molde.",
+  "start": 32.797,
+  "end": 33.157
+ },
+ {
+  "id": "w100",
+  "text": "Pero",
+  "start": 33.192,
+  "end": 33.343
+ },
+ {
+  "id": "w101",
+  "text": "la",
+  "start": 33.378,
+  "end": 33.436
+ },
+ {
+  "id": "w102",
+  "text": "tinta",
+  "start": 33.482,
+  "end": 33.703
+ },
+ {
+  "id": "w103",
+  "text": "de",
+  "start": 33.738,
+  "end": 33.784
+ },
+ {
+  "id": "w104",
+  "text": "los",
+  "start": 33.819,
+  "end": 33.923
+ },
+ {
+  "id": "w105",
+  "text": "copistas,",
+  "start": 33.958,
+  "end": 34.423
+ },
+ {
+  "id": "w106",
+  "text": "hecha",
+  "start": 34.458,
+  "end": 34.643
+ },
+ {
+  "id": "w107",
+  "text": "con",
+  "start": 34.678,
+  "end": 34.794
+ },
+ {
+  "id": "w108",
+  "text": "agua,",
+  "start": 34.852,
+  "end": 35.084
+ },
+ {
+  "id": "w109",
+  "text": "resbala",
+  "start": 35.189,
+  "end": 35.502
+ },
+ {
+  "id": "w110",
+  "text": "sobre",
+  "start": 35.549,
+  "end": 35.735
+ },
+ {
+  "id": "w111",
+  "text": "el",
+  "start": 35.758,
+  "end": 35.816
+ },
+ {
+  "id": "w112",
+  "text": "metal.",
+  "start": 35.851,
+  "end": 36.222
+ },
+ {
+  "id": "w113",
+  "text": "¿Sin",
+  "start": 36.269,
+  "end": 36.547
+ },
+ {
+  "id": "w114",
+  "text": "motores?",
+  "start": 36.582,
+  "end": 37.07
+ },
+ {
+  "id": "w115",
+  "text": "¡Con",
+  "start": 37.105,
+  "end": 37.279
+ },
+ {
+  "id": "w116",
+  "text": "ingenio!",
+  "start": 37.337,
+  "end": 37.894
+ },
+ {
+  "id": "w117",
+  "text": "Tinta",
+  "start": 38.01,
+  "end": 38.266
+ },
+ {
+  "id": "w118",
+  "text": "con",
+  "start": 38.3,
+  "end": 38.393
+ },
+ {
+  "id": "w119",
+  "text": "aceite",
+  "start": 38.44,
+  "end": 38.707
+ },
+ {
+  "id": "w120",
+  "text": "de",
+  "start": 38.742,
+  "end": 38.8
+ },
+ {
+  "id": "w121",
+  "text": "linaza",
+  "start": 38.835,
+  "end": 39.113
+ },
+ {
+  "id": "w122",
+  "text": "y",
+  "start": 39.171,
+  "end": 39.194
+ },
+ {
+  "id": "w123",
+  "text": "hollín,",
+  "start": 39.218,
+  "end": 39.531
+ },
+ {
+  "id": "w124",
+  "text": "espesa",
+  "start": 39.578,
+  "end": 39.926
+ },
+ {
+  "id": "w125",
+  "text": "como",
+  "start": 39.961,
+  "end": 40.088
+ },
+ {
+  "id": "w126",
+  "text": "el",
+  "start": 40.112,
+  "end": 40.158
+ },
+ {
+  "id": "w127",
+  "text": "barniz",
+  "start": 40.205,
+  "end": 40.506
+ },
+ {
+  "id": "w128",
+  "text": "de",
+  "start": 40.541,
+  "end": 40.599
+ },
+ {
+  "id": "w129",
+  "text": "un",
+  "start": 40.657,
+  "end": 40.715
+ },
+ {
+  "id": "w130",
+  "text": "pintor.",
+  "start": 40.75,
+  "end": 41.273
+ },
+ {
+  "id": "w131",
+  "text": "Esta",
+  "start": 41.551,
+  "end": 41.818
+ },
+ {
+  "id": "w132",
+  "text": "es",
+  "start": 41.876,
+  "end": 41.946
+ },
+ {
+  "id": "w133",
+  "text": "la",
+  "start": 41.992,
+  "end": 42.062
+ },
+ {
+  "id": "w134",
+  "text": "tinta.",
+  "start": 42.097,
+  "end": 42.538
+ },
+ {
+  "id": "w135",
+  "text": "Pero",
+  "start": 42.817,
+  "end": 42.991
+ },
+ {
+  "id": "w136",
+  "text": "hay",
+  "start": 43.014,
+  "end": 43.107
+ },
+ {
+  "id": "w137",
+  "text": "que",
+  "start": 43.153,
+  "end": 43.235
+ },
+ {
+  "id": "w138",
+  "text": "apretar",
+  "start": 43.27,
+  "end": 43.548
+ },
+ {
+  "id": "w139",
+  "text": "el",
+  "start": 43.583,
+  "end": 43.629
+ },
+ {
+  "id": "w140",
+  "text": "papel",
+  "start": 43.664,
+  "end": 43.908
+ },
+ {
+  "id": "w141",
+  "text": "contra",
+  "start": 43.955,
+  "end": 44.175
+ },
+ {
+  "id": "w142",
+  "text": "las",
+  "start": 44.21,
+  "end": 44.314
+ },
+ {
+  "id": "w143",
+  "text": "letras,",
+  "start": 44.361,
+  "end": 44.756
+ },
+ {
+  "id": "w144",
+  "text": "fuerte",
+  "start": 44.872,
+  "end": 45.243
+ },
+ {
+  "id": "w145",
+  "text": "y",
+  "start": 45.301,
+  "end": 45.371
+ },
+ {
+  "id": "w146",
+  "text": "parejo,",
+  "start": 45.475,
+  "end": 45.882
+ },
+ {
+  "id": "w147",
+  "text": "página",
+  "start": 45.917,
+  "end": 46.277
+ },
+ {
+  "id": "w148",
+  "text": "tras",
+  "start": 46.335,
+  "end": 46.544
+ },
+ {
+  "id": "w149",
+  "text": "página.",
+  "start": 46.613,
+  "end": 47.054
+ },
+ {
+  "id": "w150",
+  "text": "¿Sin",
+  "start": 47.078,
+  "end": 47.275
+ },
+ {
+  "id": "w151",
+  "text": "motores?",
+  "start": 47.31,
+  "end": 47.786
+ },
+ {
+  "id": "w152",
+  "text": "¡Con",
+  "start": 47.809,
+  "end": 47.983
+ },
+ {
+  "id": "w153",
+  "text": "ingenio!",
+  "start": 48.041,
+  "end": 48.517
+ },
+ {
+  "id": "w154",
+  "text": "Una",
+  "start": 48.575,
+  "end": 48.75
+ },
+ {
+  "id": "w155",
+  "text": "prensa",
+  "start": 48.785,
+  "end": 49.017
+ },
+ {
+  "id": "w156",
+  "text": "de",
+  "start": 49.052,
+  "end": 49.11
+ },
+ {
+  "id": "w157",
+  "text": "tornillo,",
+  "start": 49.145,
+  "end": 49.644
+ },
+ {
+  "id": "w158",
+  "text": "como",
+  "start": 49.748,
+  "end": 49.911
+ },
+ {
+  "id": "w159",
+  "text": "las",
+  "start": 49.946,
+  "end": 50.05
+ },
+ {
+  "id": "w160",
+  "text": "que",
+  "start": 50.085,
+  "end": 50.155
+ },
+ {
+  "id": "w161",
+  "text": "exprimían",
+  "start": 50.178,
+  "end": 50.526
+ },
+ {
+  "id": "w162",
+  "text": "uvas",
+  "start": 50.573,
+  "end": 50.735
+ },
+ {
+  "id": "w163",
+  "text": "en",
+  "start": 50.782,
+  "end": 50.828
+ },
+ {
+  "id": "w164",
+  "text": "las",
+  "start": 50.851,
+  "end": 50.956
+ },
+ {
+  "id": "w165",
+  "text": "viñas",
+  "start": 51.002,
+  "end": 51.258
+ },
+ {
+  "id": "w166",
+  "text": "del",
+  "start": 51.292,
+  "end": 51.374
+ },
+ {
+  "id": "w167",
+  "text": "Rin.",
+  "start": 51.42,
+  "end": 51.734
+ },
+ {
+  "id": "w168",
+  "text": "Esta",
+  "start": 51.803,
+  "end": 52.163
+ },
+ {
+  "id": "w169",
+  "text": "es",
+  "start": 52.244,
+  "end": 52.361
+ },
+ {
+  "id": "w170",
+  "text": "la",
+  "start": 52.407,
+  "end": 52.477
+ },
+ {
+  "id": "w171",
+  "text": "prensa.",
+  "start": 52.511,
+  "end": 52.895
+ },
+ {
+  "id": "w172",
+  "text": "Pero",
+  "start": 52.929,
+  "end": 53.104
+ },
+ {
+  "id": "w173",
+  "text": "el",
+  "start": 53.138,
+  "end": 53.185
+ },
+ {
+  "id": "w174",
+  "text": "libro",
+  "start": 53.208,
+  "end": 53.429
+ },
+ {
+  "id": "w175",
+  "text": "tiene",
+  "start": 53.475,
+  "end": 53.661
+ },
+ {
+  "id": "w176",
+  "text": "que",
+  "start": 53.696,
+  "end": 53.765
+ },
+ {
+  "id": "w177",
+  "text": "parecer",
+  "start": 53.812,
+  "end": 54.125
+ },
+ {
+  "id": "w178",
+  "text": "escrito",
+  "start": 54.16,
+  "end": 54.45
+ },
+ {
+  "id": "w179",
+  "text": "a",
+  "start": 54.485,
+  "end": 54.508
+ },
+ {
+  "id": "w180",
+  "text": "mano.",
+  "start": 54.543,
+  "end": 54.903
+ },
+ {
+  "id": "w181",
+  "text": "¿Sin",
+  "start": 54.95,
+  "end": 55.217
+ },
+ {
+  "id": "w182",
+  "text": "motores?",
+  "start": 55.24,
+  "end": 55.762
+ },
+ {
+  "id": "w183",
+  "text": "¡Con",
+  "start": 55.797,
+  "end": 55.971
+ },
+ {
+  "id": "w184",
+  "text": "ingenio!",
+  "start": 56.029,
+  "end": 56.668
+ },
+ {
+  "id": "w185",
+  "text": "Casi",
+  "start": 56.877,
+  "end": 57.074
+ },
+ {
+  "id": "w186",
+  "text": "trescientos",
+  "start": 57.121,
+  "end": 57.608
+ },
+ {
+  "id": "w187",
+  "text": "tipos",
+  "start": 57.655,
+  "end": 57.945
+ },
+ {
+  "id": "w188",
+  "text": "distintos:",
+  "start": 57.98,
+  "end": 58.607
+ },
+ {
+  "id": "w189",
+  "text": "letras",
+  "start": 58.851,
+  "end": 59.118
+ },
+ {
+  "id": "w190",
+  "text": "unidas,",
+  "start": 59.176,
+  "end": 59.698
+ },
+ {
+  "id": "w191",
+  "text": "abreviaturas,",
+  "start": 59.803,
+  "end": 60.604
+ },
+ {
+  "id": "w192",
+  "text": "variantes,",
+  "start": 60.674,
+  "end": 61.324
+ },
+ {
+  "id": "w193",
+  "text": "para",
+  "start": 61.37,
+  "end": 61.521
+ },
+ {
+  "id": "w194",
+  "text": "imitar",
+  "start": 61.544,
+  "end": 61.811
+ },
+ {
+  "id": "w195",
+  "text": "al",
+  "start": 61.846,
+  "end": 61.893
+ },
+ {
+  "id": "w196",
+  "text": "mejor",
+  "start": 61.928,
+  "end": 62.16
+ },
+ {
+  "id": "w197",
+  "text": "copista.",
+  "start": 62.206,
+  "end": 62.659
+ },
+ {
+  "id": "w198",
+  "text": "Y",
+  "start": 62.763,
+  "end": 62.81
+ },
+ {
+  "id": "w199",
+  "text": "aquí",
+  "start": 62.856,
+  "end": 63.007
+ },
+ {
+  "id": "w200",
+  "text": "viene",
+  "start": 63.042,
+  "end": 63.228
+ },
+ {
+  "id": "w201",
+  "text": "el",
+  "start": 63.251,
+  "end": 63.321
+ },
+ {
+  "id": "w202",
+  "text": "giro:",
+  "start": 63.367,
+  "end": 63.739
+ },
+ {
+  "id": "w203",
+  "text": "imprimir",
+  "start": 63.983,
+  "end": 64.366
+ },
+ {
+  "id": "w204",
+  "text": "costaba",
+  "start": 64.412,
+  "end": 64.726
+ },
+ {
+  "id": "w205",
+  "text": "una",
+  "start": 64.76,
+  "end": 64.876
+ },
+ {
+  "id": "w206",
+  "text": "fortuna,",
+  "start": 64.923,
+  "end": 65.457
+ },
+ {
+  "id": "w207",
+  "text": "y",
+  "start": 65.794,
+  "end": 65.84
+ },
+ {
+  "id": "w208",
+  "text": "Gutenberg",
+  "start": 65.945,
+  "end": 66.409
+ },
+ {
+  "id": "w209",
+  "text": "pidió",
+  "start": 66.467,
+  "end": 66.757
+ },
+ {
+  "id": "w210",
+  "text": "prestado.",
+  "start": 66.804,
+  "end": 67.349
+ },
+ {
+  "id": "w211",
+  "text": "En",
+  "start": 67.593,
+  "end": 67.721
+ },
+ {
+  "id": "w212",
+  "text": "mil",
+  "start": 67.756,
+  "end": 67.883
+ },
+ {
+  "id": "w213",
+  "text": "cuatrocientos",
+  "start": 67.93,
+  "end": 68.487
+ },
+ {
+  "id": "w214",
+  "text": "cincuenta",
+  "start": 68.51,
+  "end": 68.87
+ },
+ {
+  "id": "w215",
+  "text": "y",
+  "start": 68.905,
+  "end": 68.928
+ },
+ {
+  "id": "w216",
+  "text": "cinco,",
+  "start": 68.963,
+  "end": 69.404
+ },
+ {
+  "id": "w217",
+  "text": "su",
+  "start": 69.52,
+  "end": 69.613
+ },
+ {
+  "id": "w218",
+  "text": "socio",
+  "start": 69.66,
+  "end": 69.927
+ },
+ {
+  "id": "w219",
+  "text": "Johann",
+  "start": 69.973,
+  "end": 70.24
+ },
+ {
+  "id": "w220",
+  "text": "Fust",
+  "start": 70.287,
+  "end": 70.519
+ },
+ {
+  "id": "w221",
+  "text": "le",
+  "start": 70.589,
+  "end": 70.681
+ },
+ {
+  "id": "w222",
+  "text": "ganó",
+  "start": 70.716,
+  "end": 70.902
+ },
+ {
+  "id": "w223",
+  "text": "un",
+  "start": 70.937,
+  "end": 70.995
+ },
+ {
+  "id": "w224",
+  "text": "juicio",
+  "start": 71.03,
+  "end": 71.366
+ },
+ {
+  "id": "w225",
+  "text": "y",
+  "start": 71.413,
+  "end": 71.448
+ },
+ {
+  "id": "w226",
+  "text": "se",
+  "start": 71.517,
+  "end": 71.587
+ },
+ {
+  "id": "w227",
+  "text": "quedó",
+  "start": 71.633,
+  "end": 71.831
+ },
+ {
+  "id": "w228",
+  "text": "con",
+  "start": 71.889,
+  "end": 71.993
+ },
+ {
+  "id": "w229",
+  "text": "parte",
+  "start": 72.063,
+  "end": 72.284
+ },
+ {
+  "id": "w230",
+  "text": "del",
+  "start": 72.318,
+  "end": 72.411
+ },
+ {
+  "id": "w231",
+  "text": "taller.",
+  "start": 72.446,
+  "end": 72.852
+ },
+ {
+  "id": "w232",
+  "text": "Gutenberg",
+  "start": 73.003,
+  "end": 73.456
+ },
+ {
+  "id": "w233",
+  "text": "cambió",
+  "start": 73.503,
+  "end": 73.735
+ },
+ {
+  "id": "w234",
+  "text": "el",
+  "start": 73.77,
+  "end": 73.828
+ },
+ {
+  "id": "w235",
+  "text": "mundo,",
+  "start": 73.862,
+  "end": 74.141
+ },
+ {
+  "id": "w236",
+  "text": "y",
+  "start": 74.176,
+  "end": 74.222
+ },
+ {
+  "id": "w237",
+  "text": "casi",
+  "start": 74.304,
+  "end": 74.513
+ },
+ {
+  "id": "w238",
+  "text": "no",
+  "start": 74.559,
+  "end": 74.629
+ },
+ {
+  "id": "w239",
+  "text": "ganó",
+  "start": 74.675,
+  "end": 74.838
+ },
+ {
+  "id": "w240",
+  "text": "nada.",
+  "start": 74.884,
+  "end": 75.232
+ },
+ {
+  "id": "w241",
+  "text": "Hoy",
+  "start": 75.383,
+  "end": 75.581
+ },
+ {
+  "id": "w242",
+  "text": "sobreviven",
+  "start": 75.616,
+  "end": 76.01
+ },
+ {
+  "id": "w243",
+  "text": "cuarenta",
+  "start": 76.045,
+  "end": 76.324
+ },
+ {
+  "id": "w244",
+  "text": "y",
+  "start": 76.359,
+  "end": 76.382
+ },
+ {
+  "id": "w245",
+  "text": "nueve",
+  "start": 76.417,
+  "end": 76.637
+ },
+ {
+  "id": "w246",
+  "text": "de",
+  "start": 76.672,
+  "end": 76.742
+ },
+ {
+  "id": "w247",
+  "text": "esas",
+  "start": 76.765,
+  "end": 76.939
+ },
+ {
+  "id": "w248",
+  "text": "Biblias.",
+  "start": 76.986,
+  "end": 77.345
+ },
+ {
+  "id": "w249",
+  "text": "Mándaselo",
+  "start": 77.45,
+  "end": 77.833
+ },
+ {
+  "id": "w250",
+  "text": "a",
+  "start": 77.868,
+  "end": 77.891
+ },
+ {
+  "id": "w251",
+  "text": "quien",
+  "start": 77.926,
+  "end": 78.077
+ },
+ {
+  "id": "w252",
+  "text": "todavía",
+  "start": 78.112,
+  "end": 78.437
+ },
+ {
+  "id": "w253",
+  "text": "imprime",
+  "start": 78.472,
+  "end": 78.762
+ },
+ {
+  "id": "w254",
+  "text": "todo",
+  "start": 78.832,
+  "end": 79.052
+ },
+ {
+  "id": "w255",
+  "text": "en",
+  "start": 79.087,
+  "end": 79.133
+ },
+ {
+  "id": "w256",
+  "text": "la",
+  "start": 79.168,
+  "end": 79.215
+ },
+ {
+  "id": "w257",
+  "text": "oficina.",
+  "start": 79.249,
+  "end": 79.876
+ }
+]
