@@ -294,18 +294,19 @@ export const Column: React.FC<{ t: number }> = ({ t }) => {
       {/* saída de vinhaça: cano escuro, fio escorrendo e lagoa */}
       <Pipe a={[x, 0.7, z + 2.0]} b={[x - 2.6, 0.5, z + 3.2]} rad={0.28} c="#333a40" />
       <Box s={[0.9, 0.12, 12 * outflow + 0.01]} p={[x - 2.6, 0.08, z + 3.2 + 6 * outflow]} c="#1b1208" o={{ rough: 0.2 }} vis={outflow > 0.02} cast={false} />
-      <Cyl rt={1} h={0.14} p={[x - 2.6, 0.08, 12.4]} sc={[Math.max(0.01, lag * 7.2), 1, Math.max(0.01, lag * 5.4)]} c="#1b1208" o={{ rough: 0.12, metal: 0.15 }} seg={28} vis={lag > 0.02} cast={false} />
+      <Cyl rt={1} h={0.14} p={[x - 2.6, 0.08, 12.4]} sc={[Math.max(0.01, lag * 6.2), 1, Math.max(0.01, lag * 4.6)]} c="#34241a" o={{ rough: 0.2, metal: 0.1 }} seg={28} vis={lag > 0.02} cast={false} />
       <Puffs t={t} p={[x - 2.6, 0.6, 12.4]} n={7} period={3.2} rise={5} size={0.5} op={0.5} c="#9cf06a" drift={[0, 0, -0.5]} on={lag > 0.3 && t < T.d4 + 1.5 ? 1 : lag > 0.3 ? 0.35 : 0} />
     </G>
   );
 };
 
 // -------------------------------------------------- canais de volta à lavoura
-export const flowFront = (t: number) => lerp(52, -18, ease(t, T.canais - 0.1, T.canais + 4.6));
+export const CANAL_END = T.canais + 5.6; // a frente do líquido chega ao canavial
+export const flowFront = (t: number) => lerp(52, -18, ease(t, T.canais - 0.1, CANAL_END));
 export const Canal: React.FC<{ t: number }> = ({ t }) => {
   const xf = flowFront(t), len = 52 - xf, vis = t > T.canais - 0.2;
   const teeth = [-22, -28, -34, -40, -46];
-  const tooth = (k: number) => ease(t, T.canais + 4.2 + k * 0.5, T.canais + 6.2 + k * 0.5);
+  const tooth = (k: number) => ease(t, CANAL_END - 0.4 + k * 0.35, CANAL_END + 1.6 + k * 0.35);
   return (
     <G>
       <Box s={[72, 0.16, 1.9]} p={[17, 0.08, 9.9]} c="#a2abb0" cast={false} />

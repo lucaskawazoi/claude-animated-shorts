@@ -6,6 +6,7 @@ import { AbsoluteFill, continueRender, delayRender, getInputProps, useCurrentFra
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import { FPS, T } from "./toy/cues";
+import { CANAL_END } from "./toy/stations";
 import { G, V3, clamp, ease, lerp, prog, rnd } from "./toy/kit";
 import { Clouds, CaneField, Ground, HOUSES, Hills, PoleLine, Sky, Town, Trees } from "./toy/scenery";
 import { Boiler, CarGag, Canal, Column, Dorna, Mill, Pile, Truck, Turbine, pileGrow, truckX } from "./toy/stations";
@@ -18,7 +19,7 @@ type Props = { cam?: { pos: V3; look: V3; fov?: number; roll?: number }; t?: num
 const TREES: V3[] = [
   ...Array.from({ length: 26 }, (_, i): V3 => [-54 + i * 6.4 + rnd(i) * 3, 0, -13 - rnd(i + 30) * 10]),
   ...Array.from({ length: 10 }, (_, i): V3 => [-40 + i * 16 + rnd(i + 5) * 6, 0, 22 + rnd(i + 60) * 5]),
-  [-12.5, 0, -9.5], [29.5, 0, 3.4], [47.5, 0, -8.2], [-17, 0, 14],
+  [-12.5, 0, -9.5], [29.5, 0, 3.4], [47.5, 0, -8.2],
 ];
 
 const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
@@ -41,7 +42,7 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
   const pose = blendPose(poseOf(w.prev ?? w.pose, t), poseOf(w.pose, t), w.u ?? 1);
   if (w.mv) { pose.hop += 0.11 * Math.abs(Math.sin(t * 13)); pose.lean = 0.05; }
   const tilt = ease(t, T.moenda - 0.2, T.moenda + 1.2) * 0.62, load = 1 - ease(t, T.moenda + 0.6, T.moenda + 6.5);
-  const grow = 1 + 0.4 * ease(t, T.canais + 5, T.essaFert + 1.5), wet = ease(t, T.canais + 4.2, T.canais + 7.5);
+  const grow = 1 + 0.4 * ease(t, CANAL_END + 0.2, CANAL_END + 2.2), wet = ease(t, CANAL_END - 0.4, CANAL_END + 2.0);
   const lit = HOUSES.map((_, i) => ease(t, T.casas + 0.1 + i * 0.28, T.casas + 0.3 + i * 0.28));
   const flow = ease(t, T.vende, T.vende + 0.8);
   const x2 = lerp(-36, -27, ease(t, T.end - 2.4, T.end + 0.2));

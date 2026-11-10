@@ -8,6 +8,6 @@ SFXG="${SFXG:-0.38}"; MUSG="${MUSG:-0.125}"
 ffmpeg -y -loglevel error -i "$VOZ" -i "$OUT/sfx.wav" -i "$OUT/music.wav" -filter_complex \
 "[0:a]aresample=48000,aformat=channel_layouts=stereo,highpass=f=80,acompressor=threshold=0.1:ratio=3:attack=5:release=100,apad=whole_dur=$DUR[v];
  [1:a]volume=$SFXG[s]; [2:a]volume=$MUSG[m];
- [v][s][m]amix=inputs=3:normalize=0:duration=longest,loudnorm=I=-14:TP=-1.5:LRA=7,atrim=0:$DUR[out]" -map "[out]" -ar 48000 "$OUT/mix.wav"
+ [v][s][m]amix=inputs=3:normalize=0:duration=longest,loudnorm=I=-14:TP=-3:LRA=5,atrim=0:$DUR[out]" -map "[out]" -ar 48000 "$OUT/mix.wav"
 ffmpeg -y -loglevel error -i "$VID" -i "$OUT/mix.wav" -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k -shortest "$SAI"
 echo "ok $SAI"
