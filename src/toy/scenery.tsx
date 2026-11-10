@@ -1,77 +1,95 @@
-// Cenário fixo do mundo de brinquedo: céu, chão, morros, árvores, nuvens, grama, canavial, cidade e postes.
+// Cenário genérico do mundo de brinquedo: céu, chão com manchas e tufos, morros/dunas, árvores, palmeiras, nuvens, fumaça.
+// Cores por episódio (deserto, campo, montanha…): cada componente recebe a paleta.
 import React, { useMemo } from "react";
 import * as THREE from "three";
-import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, fract, lerp, mat, rnd } from "./kit";
+import { Box, Cone, Cyl, G, Sph, V3, fract, lerp, mat, rnd } from "./kit";
 
-export const PAL = {
-  grass: "#6fd13f", grassDark: "#52b82c", dirt: "#b4603a", dirtDark: "#8e4a2c", concrete: "#c9d0d4", concreteDark: "#9aa4aa", road: "#7d7f80",
-  cane: "#a9cf3a", caneLeaf: "#4aa82a", brick: "#c0503a", steel: "#8fa4b6", steelDark: "#5b6f80", amber: "#e8a41c", yellow: "#ffd400", water: "#4aa8ff",
-};
-
-export const Sky: React.FC = () => {
+export const Sky: React.FC<{ top?: string; mid?: string; low?: string }> = ({ top = "#2f8cf0", mid = "#6fb9ff", low = "#e8f5ff" }) => {
   const tex = useMemo(() => {
     const cv = document.createElement("canvas"); cv.width = 4; cv.height = 256;
     const g = cv.getContext("2d")!; const gr = g.createLinearGradient(0, 0, 0, 256);
-    gr.addColorStop(0, "#2f8cf0"); gr.addColorStop(0.45, "#6fb9ff"); gr.addColorStop(0.62, "#bfe3ff"); gr.addColorStop(0.7, "#e8f5ff"); gr.addColorStop(1, "#e8f5ff");
+    gr.addColorStop(0, top); gr.addColorStop(0.45, mid); gr.addColorStop(0.66, low); gr.addColorStop(1, low);
     g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
-  }, []);
+  }, [top, mid, low]);
   return <mesh><sphereGeometry args={[600, 24, 16]} /><meshBasicMaterial map={tex} side={THREE.BackSide} fog={false} depthWrite={false} /></mesh>;
 };
 
-export const Ground: React.FC = () => {
-  const patches = useMemo(() => Array.from({ length: 44 }, (_, i) => ({ p: [lerp(-70, 90, rnd(i * 3 + 1)), 0.01 + (i % 5) * 0.002, lerp(-30, 30, rnd(i * 3 + 2))] as V3, s: lerp(5, 16, rnd(i * 3 + 3)), c: i % 3 === 0 ? PAL.grassDark : "#7bdb4a" })), []);
+export type GroundPal = { base: string; patch: string[]; blade: string; flowers?: string[]; x: [number, number]; z: [number, number]; nBlades?: number };
+export const Ground: React.FC<{ g: GroundPal }> = ({ g }) => {
+  const patches = useMemo(() => Array.from({ length: 50 }, (_, i) => ({ p: [lerp(g.x[0], g.x[1], rnd(i * 3 + 1)), 0.01 + (i % 5) * 0.002, lerp(g.z[0], g.z[1], rnd(i * 3 + 2))] as V3, s: lerp(4, 14, rnd(i * 3 + 3)), c: g.patch[i % g.patch.length] })), [g]);
   const blades = useMemo(() => {
-    const geo = new THREE.ConeGeometry(0.16, 0.5, 3), m = new THREE.InstancedMesh(geo, mat("#4aae26", { flat: true }), 700), d = new THREE.Object3D();
-    for (let i = 0; i < 700; i++) { d.position.set(lerp(-70, 90, rnd(i * 5 + 1)), 0.22, lerp(-24, 22, rnd(i * 5 + 2))); d.scale.setScalar(lerp(0.7, 1.6, rnd(i * 5 + 3))); d.rotation.y = rnd(i * 5 + 4) * 6; d.updateMatrix(); m.setMatrixAt(i, d.matrix); }
+    const n = g.nBlades ?? 600, geo = new THREE.ConeGeometry(0.16, 0.5, 3), m = new THREE.InstancedMesh(geo, mat(g.blade, { flat: true }), n), d = new THREE.Object3D();
+    for (let i = 0; i < n; i++) { d.position.set(lerp(g.x[0], g.x[1], rnd(i * 5 + 1)), 0.2, lerp(g.z[0], g.z[1], rnd(i * 5 + 2))); d.scale.setScalar(lerp(0.6, 1.5, rnd(i * 5 + 3))); d.rotation.y = rnd(i * 5 + 4) * 6; d.updateMatrix(); m.setMatrixAt(i, d.matrix); }
     m.castShadow = false; m.receiveShadow = true; return m;
-  }, []);
+  }, [g]);
   const flowers = useMemo(() => {
-    const cols = ["#ffe14a", "#ff7ab8", "#ffffff"], m = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 6, 4), new THREE.MeshStandardMaterial({ color: "#ffffff" }), 90), d = new THREE.Object3D();
-    for (let i = 0; i < 90; i++) { d.position.set(lerp(-70, 90, rnd(i * 7 + 1)), 0.14, lerp(-20, 22, rnd(i * 7 + 2))); d.updateMatrix(); m.setMatrixAt(i, d.matrix); m.setColorAt(i, new THREE.Color(cols[i % 3])); }
-    return m;
-  }, []);
+    const cols = g.flowers ?? [], n = cols.length ? 80 : 0;
+    const m = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 6, 4), new THREE.MeshStandardMaterial({ color: "#ffffff" }), Math.max(1, n)), d = new THREE.Object3D();
+    for (let i = 0; i < n; i++) { d.position.set(lerp(g.x[0], g.x[1], rnd(i * 7 + 1)), 0.14, lerp(g.z[0], g.z[1], rnd(i * 7 + 2))); d.updateMatrix(); m.setMatrixAt(i, d.matrix); m.setColorAt(i, new THREE.Color(cols[i % cols.length])); }
+    m.count = n; return m;
+  }, [g]);
   return (
     <G>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={mat(PAL.grass)}><planeGeometry args={[900, 500]} /></mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={mat(g.base)}><planeGeometry args={[900, 600]} /></mesh>
       {patches.map((q, i) => <mesh key={i} position={q.p} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={mat(q.c)}><circleGeometry args={[q.s, 18]} /></mesh>)}
       <primitive object={blades} /><primitive object={flowers} />
-      {/* estrada de terra vermelha na frente das estações */}
-      <mesh position={[10, 0.03, 5.6]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={mat(PAL.dirt)}><planeGeometry args={[180, 5.2]} /></mesh>
     </G>
   );
 };
 
-export const Hills: React.FC = () => (
+/** morros ou dunas ao fundo (meias-esferas achatadas) */
+export const Hills: React.FC<{ c: [string, string]; z?: number; n?: number; x0?: number; flat?: number }> = ({ c, z = -75, n = 14, x0 = -90, flat = 1 }) => (
   <G>
-    {Array.from({ length: 14 }, (_, i) => {
-      const x = -90 + i * 16 + rnd(i) * 8, r = lerp(16, 30, rnd(i + 20)), z = -75 - rnd(i + 5) * 22;
-      return <Sph key={i} rad={r} p={[x, -r * 0.55, z]} sc={[1.4, 1, 1]} c={i % 2 ? "#5cc23a" : "#4eb232"} ws={18} hs={10} cast={false} />;
+    {Array.from({ length: n }, (_, i) => {
+      const x = x0 + i * 16 + rnd(i) * 8, r = lerp(16, 30, rnd(i + 20)), zz = z - rnd(i + 5) * 22;
+      return <Sph key={i} rad={r} p={[x, -r * 0.55, zz]} sc={[1.4, flat, 1]} c={c[i % 2]} ws={18} hs={10} cast={false} />;
     })}
   </G>
 );
 
-export const Trees: React.FC<{ spots: V3[] }> = ({ spots }) => (
+export const Trees: React.FC<{ spots: V3[]; c?: [string, string] }> = ({ spots, c = ["#3fae2c", "#58c63a"] }) => (
   <G>
     {spots.map((q, i) => {
       const s = lerp(0.9, 1.6, rnd(i + 3));
       return (
         <G key={i} p={q} sc={s}>
           <Cyl rt={0.18} rb={0.26} h={1.3} p={[0, 0.65, 0]} c="#7a4a2a" seg={6} />
-          <Cone rad={1.25} h={1.9} p={[0, 2.0, 0]} c="#3fae2c" seg={6} o={{ flat: true }} />
-          <Cone rad={0.95} h={1.6} p={[0, 3.0, 0]} c="#58c63a" seg={6} o={{ flat: true }} />
+          <Cone rad={1.25} h={1.9} p={[0, 2.0, 0]} c={c[0]} seg={6} o={{ flat: true }} />
+          <Cone rad={0.95} h={1.6} p={[0, 3.0, 0]} c={c[1]} seg={6} o={{ flat: true }} />
         </G>
       );
     })}
   </G>
 );
 
-export const Clouds: React.FC<{ t: number }> = ({ t }) => (
+/** palmeira de brinquedo: tronco em gomos curvado + 7 folhas que balançam ao vento */
+export const Palms: React.FC<{ spots: V3[]; t: number }> = ({ spots, t }) => (
   <G>
-    {Array.from({ length: 9 }, (_, i) => {
-      const x = lerp(-110, 130, fract(i * 0.117 + 0.03 + t * 0.0016)), y = 38 + rnd(i) * 22, z = -120 - rnd(i + 9) * 80;
+    {spots.map((q, i) => {
+      const s = lerp(0.9, 1.4, rnd(i + 11)), lean = (rnd(i + 2) - 0.5) * 0.35, yaw = rnd(i + 7) * 6;
       return (
-        <G key={i} p={[x, y + 12, z]} sc={lerp(0.7, 1.3, rnd(i + 4))}>
+        <G key={i} p={q} sc={s} r={[0, yaw, 0]}>
+          {Array.from({ length: 4 }, (_, k) => <Cyl key={k} rt={0.2 - k * 0.018} rb={0.24 - k * 0.018} h={1.1} p={[lean * k * 1.1, 0.55 + k * 1.08, 0]} r={[0, 0, -lean]} c={k % 2 ? "#9a6a3a" : "#87582e"} seg={7} />)}
+          <G p={[lean * 4.5, 4.4, 0]}>
+            {Array.from({ length: 5 }, (_, k) => {
+              const a = (k / 5) * Math.PI * 2, sw = 0.08 * Math.sin(t * 2.2 + k + i);
+              return <G key={k} r={[0, a, 0]}><Box s={[2.6, 0.06, 0.6]} p={[1.2, -0.25, 0]} r={[0, 0, -0.38 + sw]} c={k % 2 ? "#3c9a2c" : "#4fb236"} o={{ flat: true }} /></G>;
+            })}
+            <Sph rad={0.28} c="#6b4a22" p={[0, -0.15, 0]} ws={8} hs={6} />
+          </G>
+        </G>
+      );
+    })}
+  </G>
+);
+
+export const Clouds: React.FC<{ t: number; y?: number; n?: number }> = ({ t, y = 38, n = 9 }) => (
+  <G>
+    {Array.from({ length: n }, (_, i) => {
+      const x = lerp(-130, 150, fract(i * 0.117 + 0.03 + t * 0.0016)), yy = y + rnd(i) * 22, z = -120 - rnd(i + 9) * 80;
+      return (
+        <G key={i} p={[x, yy + 12, z]} sc={lerp(0.7, 1.3, rnd(i + 4))}>
           <Sph rad={6} c="#ffffff" cast={false} o={{ rough: 1, emissive: "#ffffff", ei: 0.55 }} /><Sph rad={5} p={[7, -1, 0]} c="#ffffff" cast={false} o={{ emissive: "#ffffff", ei: 0.55 }} /><Sph rad={4.5} p={[-7, -1.2, 1]} c="#ffffff" cast={false} o={{ emissive: "#ffffff", ei: 0.55 }} /><Sph rad={3.5} p={[12, -2, 0]} c="#f4faff" cast={false} o={{ emissive: "#ffffff", ei: 0.55 }} />
         </G>
       );
@@ -79,90 +97,12 @@ export const Clouds: React.FC<{ t: number }> = ({ t }) => (
   </G>
 );
 
-/** canavial: 20 fileiras × 18 canas, instanciado, balançando ao vento (onda ao longo de x); `grow` escala a altura (a cana nova cresce mais forte) */
-export const CaneField: React.FC<{ grow: number; wet: number; t: number }> = ({ grow, wet, t }) => {
-  const { stalks, leaves, base } = useMemo(() => {
-    const N = 20 * 18, sg = new THREE.CylinderGeometry(0.075, 0.095, 3.4, 6), lg = new THREE.ConeGeometry(0.16, 2.0, 4);
-    lg.translate(0, 1.0, 0); // pivô na base da folha
-    const s = new THREE.InstancedMesh(sg, mat(PAL.cane, { flat: true }), N), l = new THREE.InstancedMesh(lg, mat(PAL.caneLeaf, { flat: true }), N * 3);
-    const base: { x: number; z: number; h: number; ax: number; az: number; yaw: number; tilt: number[] }[] = [];
-    let k = 0;
-    for (let row = 0; row < 20; row++) for (let j = 0; j < 18; j++) {
-      base.push({ x: -50 + row * 1.7 + rnd(k) * 0.4, z: -16 + j * 1.05 + rnd(k + 99) * 0.4, h: lerp(0.85, 1.15, rnd(k + 7)), ax: (rnd(k + 3) - 0.5) * 0.1, az: (rnd(k + 4) - 0.5) * 0.1, yaw: rnd(k) * 2, tilt: [0.75 + rnd(k) * 0.35, 0.75 + rnd(k + 1) * 0.35, 0.75 + rnd(k + 2) * 0.35] });
-      k++;
-    }
-    s.castShadow = true; l.castShadow = true; s.frustumCulled = false; l.frustumCulled = false;
-    return { stalks: s, leaves: l, base };
-  }, []);
-  // vento: cada cana pivota na base; a fase anda com x e z (onda atravessando o campo)
-  const m4 = useMemo(() => new THREE.Matrix4(), []), qa = useMemo(() => new THREE.Quaternion(), []), qb = useMemo(() => new THREE.Quaternion(), []), qc = useMemo(() => new THREE.Quaternion(), []);
-  const pv = useMemo(() => new THREE.Vector3(), []), sv = useMemo(() => new THREE.Vector3(), []), ev = useMemo(() => new THREE.Euler(), []), up = useMemo(() => new THREE.Vector3(), []);
-  base.forEach((c, i) => {
-    const ph = 0.22 * c.x + 0.5 * c.z, ax = c.ax + 0.09 * Math.sin(t * 2.9 + ph), az = c.az + 0.11 * Math.sin(t * 2.3 + ph * 1.3 + 1);
-    qa.setFromEuler(ev.set(ax, 0, az));
-    up.set(0, 1.7 * c.h, 0).applyQuaternion(qa); pv.set(c.x + up.x, up.y, c.z + up.z); sv.set(1, c.h, 1);
-    stalks.setMatrixAt(i, m4.compose(pv, qa, sv));
-    up.set(0, 3.3 * c.h, 0).applyQuaternion(qa);
-    for (let q = 0; q < 3; q++) {
-      qb.setFromEuler(ev.set(0, (q / 3) * Math.PI * 2 + c.yaw, 0)); qc.setFromEuler(ev.set(c.tilt[q], 0, 0));
-      const ql = qa.clone().multiply(qb).multiply(qc);
-      pv.set(c.x + up.x, up.y, c.z + up.z);
-      leaves.setMatrixAt(i * 3 + q, m4.compose(pv, ql, sv));
-    }
-  });
-  stalks.instanceMatrix.needsUpdate = true; leaves.instanceMatrix.needsUpdate = true;
-  return (
-    <G>
-      <G sc={[1, grow, 1]}><primitive object={stalks} /><primitive object={leaves} /></G>
-      {/* faixa de solo encharcado onde a vinhaça chega */}
-      <mesh position={[-33, 0.045, -7]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow visible={wet > 0.01} scale={[wet, 1, 1]} material={mat("#3b2a1c", { rough: 0.35 })}><planeGeometry args={[36, 22]} /></mesh>
-    </G>
-  );
-};
-
-export type House = { p: V3; w: number; h: number; d: number; wall: string; roof: string };
-export const HOUSES: House[] = [
-  { p: [70, 0, -6], w: 4, h: 3, d: 3.6, wall: "#ffd9a8", roof: "#d4553a" }, { p: [76, 0, -5], w: 3.6, h: 2.6, d: 3.4, wall: "#bfe3ff", roof: "#7a4aa8" },
-  { p: [82, 0, -7], w: 4.2, h: 3.4, d: 3.8, wall: "#ffc0c8", roof: "#2f7fc0" }, { p: [73, 0, -11], w: 3.8, h: 2.8, d: 3.6, wall: "#d9f2a8", roof: "#c0503a" },
-  { p: [79, 0, -12], w: 4, h: 3.2, d: 3.6, wall: "#ffe8a0", roof: "#5a4aa8" }, { p: [86, 0, -12], w: 3.6, h: 2.8, d: 3.4, wall: "#ffd0b0", roof: "#2f9a6a" },
-  { p: [67, 0, -12], w: 3.6, h: 2.6, d: 3.4, wall: "#e8d0ff", roof: "#d4553a" }, { p: [88, 0, -5], w: 4, h: 3, d: 3.6, wall: "#c8f0d8", roof: "#b8483a" },
-];
-export const Town: React.FC<{ lit: number[] }> = ({ lit }) => (
-  <G>
-    {HOUSES.map((h, i) => {
-      const on = lit[i] ?? 0, wm = on > 0.5 ? { emissive: "#ffd45a", ei: 1.6 * on } : {};
-      return (
-        <G key={i} p={h.p}>
-          <Box s={[h.w, h.h, h.d]} p={[0, h.h / 2, 0]} c={h.wall} />
-          <Cone rad={Math.max(h.w, h.d) * 0.78} h={1.7} seg={4} p={[0, h.h + 0.85, 0]} r={[0, Math.PI / 4, 0]} sc={[1, 1, h.d / h.w]} c={h.roof} />
-          <Box s={[0.9, 1.0, 0.1]} p={[-h.w * 0.22, h.h * 0.55, h.d / 2 + 0.02]} c={on > 0.5 ? "#ffe27a" : "#6c8fb0"} o={{ ...wm, rough: 0.3 }} cast={false} />
-          <Box s={[0.9, 1.0, 0.1]} p={[h.w * 0.22, h.h * 0.55, h.d / 2 + 0.02]} c={on > 0.5 ? "#ffe27a" : "#6c8fb0"} o={{ ...wm, rough: 0.3 }} cast={false} />
-          <Box s={[0.7, 1.4, 0.1]} p={[0, 0.7, h.d / 2 + 0.02]} c="#7a4a2a" cast={false} />
-        </G>
-      );
+/** fumaça/vapor/poeira: n bolhas subindo e crescendo em ciclo */
+export const Puffs: React.FC<{ t: number; p: V3; n?: number; period?: number; rise?: number; size?: number; c?: string; on?: number; drift?: V3; o?: number }> = ({ t, p, n = 8, period = 3, rise = 6, size = 1, c = "#ffffff", on = 1, drift = [0.8, 0, 0], o = 0 }) => (
+  <G p={p} vis={on > 0.01}>
+    {Array.from({ length: n }, (_, i) => {
+      const u = fract((t + i * (period / n)) / period + o), s = Math.sin(Math.min(1, u * 1.15) * Math.PI) * size * (0.5 + u * 1.2) * on;
+      return <Sph key={i} rad={1} p={[drift[0] * u + (rnd(i) - 0.5) * 0.6, u * rise, drift[2] * u + (rnd(i + 3) - 0.5) * 0.5]} sc={Math.max(0.001, s)} c={c} cast={false} ws={8} hs={6} o={{ rough: 1 }} />;
     })}
   </G>
 );
-
-/** linha de postes da turbina até a cidade; `packets` = bolinhas de energia correndo pelo fio */
-export const PoleLine: React.FC<{ t: number; flow: number }> = ({ t, flow }) => {
-  const xs = [31, 39, 47, 55, 63];
-  return (
-    <G>
-      {xs.map((x, i) => (
-        <G key={i} p={[x, 0, -9]}>
-          <Cyl rt={0.16} rb={0.24} h={12.5} p={[0, 6.25, 0]} c="#7a4a2a" seg={6} />
-          <Box s={[0.2, 0.2, 3.4]} p={[0, 11.9, 0]} c="#5b3c24" />
-        </G>
-      ))}
-      {[-1.3, 0, 1.3].map((dz, k) => <Pipe key={k} a={[31, 11.9, -9 + dz]} b={[63, 11.85, -9 + dz]} rad={0.045} c="#222a30" seg={5} cast={false} />)}
-      {[0, 1, 2, 3, 4, 5].map((i) => {
-        const u = fract(t * 0.55 + i / 6);
-        return <Sph key={i} rad={0.28} p={[lerp(31, 68, u), 12.0, -9]} c="#ffe45a" o={{ emissive: "#ffd000", ei: 2.2 }} vis={flow > 0.01} sc={flow} cast={false} ws={8} hs={6} />;
-      })}
-      <Pipe a={[63, 11.85, -9]} b={[69, 5.6, -8]} rad={0.045} c="#222a30" seg={5} cast={false} />
-    </G>
-  );
-};
-
-export const clampT = clamp;

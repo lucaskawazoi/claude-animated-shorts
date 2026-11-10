@@ -1,11 +1,12 @@
-// O operário recorrente (nosso, não o da referência): macacão laranja com faixas, capacete amarelo, bigode, cabeça grande de brinquedo.
-// Braços com cotovelo; as poses são só números, o quadro escolhe e mistura.
+// O obreiro de época (assinatura do canal ecos-del-tiempo): a mesma cabeça grande de brinquedo, bigode e LENÇO VERMELHO
+// no pescoço em todo episódio; a roupa muda com a época (Costume). Braços com cotovelo; poses são só números.
 import React from "react";
-import { Box, Cyl, G, Sph, V3, lerp } from "./kit";
+import { Box, Cone, Cyl, G, Sph, V3, lerp } from "./kit";
 
-export type PoseName = "idle" | "point" | "alarm" | "think" | "cheer" | "nose" | "wave" | "present";
+export type PoseName = "idle" | "point" | "alarm" | "think" | "cheer" | "present" | "pull" | "pour" | "read" | "belly" | "walk" | "chisel";
+export type Prop = "jar" | "scroll" | "hammer" | "none";
 type Arm = { rx: number; rz: number; el: number };
-type Pose = { l: Arm; r: Arm; hx: number; hy: number; hz: number; lean: number; hop: number };
+export type Pose = { l: Arm; r: Arm; hx: number; hy: number; hz: number; lean: number; hop: number };
 const A = (rx: number, rz: number, el = 0): Arm => ({ rx, rz, el });
 
 export const poseOf = (n: PoseName, t: number): Pose => {
@@ -16,8 +17,12 @@ export const poseOf = (n: PoseName, t: number): Pose => {
     case "alarm": return { l: A(0, -2.55 + s2 * 0.07, -0.2), r: A(0, 2.55 - s2 * 0.07, -0.2), hx: -0.18, hy: 0, hz: s2 * 0.05, lean: -0.05, hop: 0.07 * Math.abs(s2) };
     case "think": return { l: A(0.05, -0.1), r: A(-2.2, 0.35, -1.9), hx: 0.1, hy: 0.25, hz: -0.1, lean: 0, hop: 0 };
     case "cheer": return { l: A(0, -2.8 + s * 0.15, 0), r: A(0, 2.8 - s * 0.15, 0), hx: -0.2, hy: 0, hz: 0, lean: 0, hop: 0.18 * Math.abs(Math.sin(t * 6.5)) };
-    case "nose": return { l: A(0.05, -0.1), r: A(-2.0, 0.1, -2.0), hx: -0.12, hy: 0.0, hz: 0.12, lean: -0.08, hop: 0.015 * s2 };
-    case "wave": return { l: A(0.05, -0.1), r: A(0, 2.4, -0.5 + Math.sin(t * 9) * 0.5), hx: 0, hy: 0.1, hz: 0, lean: 0, hop: 0.02 * Math.abs(s) };
+    case "pull": return { l: A(-1.25 + s * 0.12, -0.15, -0.35), r: A(-1.25 - s * 0.12, 0.15, -0.35), hx: -0.25, hy: 0, hz: 0, lean: 0.32, hop: 0.03 * Math.abs(s2) };
+    case "pour": return { l: A(-1.1, -0.25, -0.6), r: A(-1.0, 0.25, -0.7), hx: 0.25, hy: 0, hz: 0, lean: 0, hop: 0 };
+    case "read": return { l: A(-1.0, -0.35, -1.0), r: A(-1.0, 0.35, -1.0), hx: 0.3, hy: 0.05 * s3, hz: 0, lean: 0, hop: 0 };
+    case "belly": return { l: A(-0.55, -0.1, -1.6), r: A(-0.55, 0.1, -1.6), hx: 0.15, hy: 0.15 * s3, hz: 0.06 * s, lean: 0, hop: 0.01 * Math.abs(s) };
+    case "walk": return { l: A(0.5 * Math.sin(t * 8), -0.1), r: A(-0.5 * Math.sin(t * 8), 0.1), hx: 0, hy: 0, hz: 0, lean: 0.04, hop: 0.08 * Math.abs(Math.sin(t * 8)) };
+    case "chisel": return { l: A(-0.9, -0.2, -0.6), r: A(-1.9 + 0.7 * Math.abs(Math.sin(t * 6)), 0.2, -0.5), hx: 0.35, hy: 0, hz: 0, lean: 0.15, hop: 0 };
     default: return { l: A(0.12 + s * 0.04, -0.12), r: A(0.12 - s * 0.04, 0.12), hx: 0, hy: 0.05 * s3, hz: 0, lean: 0, hop: 0.012 * Math.abs(s) };
   }
 };
@@ -27,39 +32,73 @@ export const blendPose = (a: Pose, b: Pose, u: number): Pose => ({
   hx: lerp(a.hx, b.hx, u), hy: lerp(a.hy, b.hy, u), hz: lerp(a.hz, b.hz, u), lean: lerp(a.lean, b.lean, u), hop: lerp(a.hop, b.hop, u),
 });
 
-const SUIT = "#ff7a1a", STRIPE = "#fff3c4", SKIN = "#c98a5b", HAT = "#ffd400", BOOT = "#3a2b24", PANT = "#e86a10";
+/** roupa da época. top = cor do tronco (= skin se nu), bottom = pernas, kilt = saiote/túnica curta, hat = chapéu */
+export type Costume = { skin: string; top: string; bottom: string; kilt?: string; kiltLen?: number; hat: "helmet" | "cloth" | "cap" | "none" | "straw"; hatC: string; boot: string; belt?: string; sleeves?: boolean };
+export const COSTUMES: Record<string, Costume> = {
+  egypt: { skin: "#b9784b", top: "#b9784b", bottom: "#b9784b", kilt: "#f5f0dc", kiltLen: 0.42, hat: "cloth", hatC: "#f5f0dc", boot: "#8a5a32", belt: "#d4a64a" },
+  rome: { skin: "#d39a6c", top: "#c8553d", bottom: "#d39a6c", kilt: "#c8553d", kiltLen: 0.4, hat: "none", hatC: "#000", boot: "#7a4a2a", belt: "#6b4423", sleeves: false },
+  inca: { skin: "#a8673f", top: "#d23c3c", bottom: "#a8673f", kilt: "#d23c3c", kiltLen: 0.45, hat: "cap", hatC: "#f2c14e", boot: "#7a4a2a", belt: "#2f7fc0" },
+  printer: { skin: "#e0aa82", top: "#f2ede0", bottom: "#3b4a6b", kilt: "#7a5c3e", kiltLen: 0.55, hat: "cap", hatC: "#3b3b3b", boot: "#3a2b24", sleeves: true },
+  worker: { skin: "#c98a5b", top: "#ff7a1a", bottom: "#e86a10", hat: "helmet", hatC: "#ffd400", boot: "#3a2b24", sleeves: true },
+};
 
-const ArmPart: React.FC<{ side: 1 | -1; a: Arm }> = ({ side, a }) => (
+const ArmPart: React.FC<{ side: 1 | -1; a: Arm; c: Costume; prop?: Prop; t: number }> = ({ side, a, c, prop, t }) => (
   <G p={[side * 0.37, 1.32, 0]} r={[a.rx, 0, a.rz]}>
-    <Cyl rt={0.085} h={0.34} p={[0, -0.17, 0]} c={SUIT} seg={8} />
+    <Cyl rt={0.085} h={0.34} p={[0, -0.17, 0]} c={c.sleeves ? c.top : c.skin} seg={8} />
     <G p={[0, -0.34, 0]} r={[a.el * -1, 0, 0]}>
-      <Cyl rt={0.075} h={0.3} p={[0, -0.15, 0]} c={SUIT} seg={8} />
-      <Sph rad={0.095} p={[0, -0.32, 0]} c={SKIN} ws={10} hs={8} />
+      <Cyl rt={0.075} h={0.3} p={[0, -0.15, 0]} c={c.skin} seg={8} />
+      <Sph rad={0.095} p={[0, -0.32, 0]} c={c.skin} ws={10} hs={8} />
+      {side === 1 && prop === "jar" ? (
+        <G p={[-0.18, -0.42, 0.05]} r={[0, 0, 1.1 + 0.15 * Math.sin(t * 4)]}>
+          <Sph rad={0.2} c="#c0703a" ws={10} hs={8} sc={[1, 1.2, 1]} /><Cyl rt={0.08} rb={0.11} h={0.16} p={[0, 0.26, 0]} c="#a85e2e" seg={8} />
+        </G>) : null}
+      {side === 1 && prop === "scroll" ? (
+        <G p={[-0.37, -0.36, 0.12]} r={[0, 0, Math.PI / 2]}>
+          <Cyl rt={0.07} h={0.78} c="#f1e3b5" seg={10} /><Box s={[0.6, 0.02, 0.42]} p={[0, 0.0, 0.2]} c="#f6ebc8" cast={false} />
+        </G>) : null}
+      {side === 1 && prop === "hammer" ? (
+        <G p={[0, -0.38, 0.1]} r={[1.4, 0, 0]}><Cyl rt={0.03} h={0.5} p={[0, 0.2, 0]} c="#7a4a2a" seg={6} /><Box s={[0.22, 0.12, 0.12]} p={[0, 0.45, 0]} c="#8a8f94" /></G>) : null}
     </G>
   </G>
 );
 
-export const Worker: React.FC<{ p: V3; yaw?: number; pose: Pose; scale?: number; t: number }> = ({ p, yaw = 0, pose, scale = 1, t }) => (
-  <G p={[p[0], p[1] + pose.hop * scale, p[2]]} r={[0, yaw, pose.lean]} sc={Math.max(scale, 0.001)} vis={scale > 0}>
-    {/* pernas e botas */}
-    <Cyl rt={0.11} h={0.62} p={[-0.14, 0.45, 0]} c={PANT} seg={8} /><Cyl rt={0.11} h={0.62} p={[0.14, 0.45, 0]} c={PANT} seg={8} />
-    <Box s={[0.2, 0.14, 0.32]} p={[-0.14, 0.07, 0.05]} c={BOOT} /><Box s={[0.2, 0.14, 0.32]} p={[0.14, 0.07, 0.05]} c={BOOT} />
-    {/* tronco com faixas refletivas */}
-    <Cyl rt={0.3} rb={0.27} h={0.72} p={[0, 1.02, 0]} c={SUIT} seg={12} />
-    <Cyl rt={0.305} rb={0.305} h={0.07} p={[0, 1.0, 0]} c={STRIPE} seg={12} o={{ rough: 0.4 }} />
-    <Cyl rt={0.292} rb={0.292} h={0.07} p={[0, 1.18, 0]} c={STRIPE} seg={12} o={{ rough: 0.4 }} />
-    <ArmPart side={-1} a={pose.l} /><ArmPart side={1} a={pose.r} />
-    {/* cabeça */}
-    <G p={[0, 1.55, 0]} r={[pose.hx, pose.hy, pose.hz]}>
-      <Sph rad={0.31} c={SKIN} ws={16} hs={12} p={[0, 0.2, 0]} />
-      <Sph rad={0.045} c="#1c1410" p={[-0.12, 0.22, 0.27]} ws={8} hs={6} /><Sph rad={0.045} c="#1c1410" p={[0.12, 0.22, 0.27]} ws={8} hs={6} />
-      <Sph rad={0.018} c="#ffffff" p={[-0.105, 0.24, 0.305]} ws={6} hs={4} cast={false} /><Sph rad={0.018} c="#ffffff" p={[0.135, 0.24, 0.305]} ws={6} hs={4} cast={false} />
-      <Box s={[0.26, 0.07, 0.07]} p={[0, 0.1, 0.29]} c="#2a1a12" cast={false} />
-      <Sph rad={0.055} c="#a85d45" p={[0, 0.17, 0.3]} ws={8} hs={6} cast={false} />
-      {/* capacete */}
-      <Sph rad={0.365} c={HAT} ps={0} pl={Math.PI * 0.52} p={[0, 0.27, 0]} ws={16} hs={10} o={{ rough: 0.35 }} />
-      <Cyl rt={0.4} h={0.035} p={[0, 0.275, 0]} c={HAT} seg={18} o={{ rough: 0.35 }} />
-      <Box s={[0.12, 0.035, 0.46]} p={[0, 0.62, 0]} c="#e8b800" />
+export const Worker: React.FC<{ p: V3; yaw?: number; pose: Pose; scale?: number; t: number; c?: Costume; prop?: Prop; mustache?: boolean }> = ({ p, yaw = 0, pose, scale = 1, t, c = COSTUMES.worker, prop = "none", mustache = true }) => (
+  <G p={[p[0], p[1] + pose.hop * scale, p[2]]} r={[0, yaw, 0]} sc={Math.max(scale, 0.001)} vis={scale > 0}>
+    <G r={[pose.lean, 0, 0]}>
+      {/* pernas e pés */}
+      <Cyl rt={0.11} h={0.62} p={[-0.14, 0.45, 0]} c={c.bottom} seg={8} /><Cyl rt={0.11} h={0.62} p={[0.14, 0.45, 0]} c={c.bottom} seg={8} />
+      <Box s={[0.2, 0.12, 0.32]} p={[-0.14, 0.06, 0.05]} c={c.boot} /><Box s={[0.2, 0.12, 0.32]} p={[0.14, 0.06, 0.05]} c={c.boot} />
+      {/* tronco */}
+      <Cyl rt={0.3} rb={0.27} h={0.72} p={[0, 1.02, 0]} c={c.top} seg={12} />
+      {c.kilt ? <Cyl rt={0.31} rb={0.42} h={c.kiltLen ?? 0.4} p={[0, 0.86 - (c.kiltLen ?? 0.4) / 2 + 0.06, 0]} c={c.kilt} seg={12} /> : null}
+      {c.belt ? <Cyl rt={0.315} h={0.08} p={[0, 0.9, 0]} c={c.belt} seg={12} /> : null}
+      {c.hat === "helmet" ? <><Cyl rt={0.305} h={0.07} p={[0, 1.0, 0]} c="#fff3c4" seg={12} /><Cyl rt={0.292} h={0.07} p={[0, 1.18, 0]} c="#fff3c4" seg={12} /></> : null}
+      {/* LENÇO VERMELHO: a marca do personagem em todas as épocas */}
+      <Cyl rt={0.2} rb={0.27} h={0.12} p={[0, 1.4, 0]} c="#e0262b" seg={12} cast={false} />
+      <Cone rad={0.16} h={0.26} seg={3} p={[0, 1.26, 0.2]} r={[Math.PI + 0.25, 0, 0]} c="#e0262b" cast={false} />
+      <ArmPart side={-1} a={pose.l} c={c} t={t} /><ArmPart side={1} a={pose.r} c={c} prop={prop} t={t} />
+      {/* cabeça */}
+      <G p={[0, 1.55, 0]} r={[pose.hx, pose.hy, pose.hz]}>
+        <Sph rad={0.31} c={c.skin} ws={16} hs={12} p={[0, 0.2, 0]} />
+        <Sph rad={0.045} c="#1c1410" p={[-0.12, 0.22, 0.27]} ws={8} hs={6} /><Sph rad={0.045} c="#1c1410" p={[0.12, 0.22, 0.27]} ws={8} hs={6} />
+        <Sph rad={0.018} c="#ffffff" p={[-0.105, 0.24, 0.305]} ws={6} hs={4} cast={false} /><Sph rad={0.018} c="#ffffff" p={[0.135, 0.24, 0.305]} ws={6} hs={4} cast={false} />
+        {mustache ? <Box s={[0.26, 0.07, 0.07]} p={[0, 0.1, 0.29]} c="#2a1a12" cast={false} /> : null}
+        <Sph rad={0.055} c="#8a4a35" p={[0, 0.17, 0.3]} ws={8} hs={6} cast={false} />
+        {c.hat === "helmet" ? <>
+          <Sph rad={0.365} c={c.hatC} ps={0} pl={Math.PI * 0.52} p={[0, 0.27, 0]} ws={16} hs={10} o={{ rough: 0.35 }} />
+          <Cyl rt={0.4} h={0.035} p={[0, 0.275, 0]} c={c.hatC} seg={18} o={{ rough: 0.35 }} /></> : null}
+        {c.hat === "cloth" ? <>
+          <Sph rad={0.33} c={c.hatC} ps={0} pl={Math.PI * 0.5} p={[0, 0.25, -0.01]} ws={16} hs={8} />
+          <Box s={[0.66, 0.42, 0.22]} p={[0, 0.06, -0.2]} c={c.hatC} r={[0.15, 0, 0]} />
+          <Cyl rt={0.335} h={0.05} p={[0, 0.27, 0]} c="#2f6fb0" seg={16} cast={false} /></> : null}
+        {c.hat === "cap" ? <Sph rad={0.33} c={c.hatC} ps={0} pl={Math.PI * 0.42} p={[0, 0.27, 0]} ws={16} hs={8} /> : null}
+        {c.hat === "straw" ? <><Cyl rt={0.55} h={0.04} p={[0, 0.36, 0]} c={c.hatC} seg={18} /><Cyl rt={0.26} rb={0.3} h={0.22} p={[0, 0.47, 0]} c={c.hatC} seg={14} /></> : null}
+        {c.hat === "none" ? <Sph rad={0.32} c="#2a1a12" ps={0} pl={Math.PI * 0.38} p={[0, 0.22, -0.03]} ws={14} hs={8} /> : null}
+      </G>
     </G>
   </G>
 );
+
+/** multidão barata: o mesmo boneco sem bigode, fase própria, para equipes de puxar/caminhar */
+export const Crowd: React.FC<{ list: { p: V3; yaw: number; pose: PoseName; ph: number }[]; t: number; c: Costume; scale?: number; vis?: boolean }> = ({ list, t, c, scale = 1, vis = true }) =>
+  !vis ? null : <G>{list.map((m, i) => <Worker key={i} p={m.p} yaw={m.yaw} pose={poseOf(m.pose, t + m.ph)} t={t + m.ph} c={c} scale={scale} mustache={i % 3 === 0} />)}</G>;
