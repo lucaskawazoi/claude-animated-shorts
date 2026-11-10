@@ -12,15 +12,16 @@ const [mode, out, a3, a4, a5] = process.argv.slice(2);
 const browserExecutable = process.env.CHROME || "/usr/bin/google-chrome";
 const chromiumOptions = { gl: process.env.GL || "swangle", disableWebSecurity: false };
 const concurrency = Number(process.env.CONC || 8);
+const inputProps = JSON.parse(process.env.PROPS || "{}");
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts"), publicDir: path.resolve("public") });
-const composition = await selectComposition({ serveUrl, id: "ToyShort", browserExecutable, chromiumOptions });
+const composition = await selectComposition({ serveUrl, id: "ToyShort", browserExecutable, chromiumOptions, inputProps });
 const onBrowserLog = (l) => { if (l.type === "error" || l.type === "warning") console.log(`[${l.type}]`, l.text.slice(0, 300)); };
 
 if (mode === "still") {
   const scale = Number(a4 || 0.5);
   for (const f of a3.split(",").map(Number)) {
     const t0 = Date.now();
-    await renderStill({ composition, serveUrl, frame: f, output: `${out}${f}.jpg`, imageFormat: "jpeg", jpegQuality: 90, scale,
+    await renderStill({ composition, serveUrl, inputProps, frame: f, output: `${out}${f}.jpg`, imageFormat: "jpeg", jpegQuality: 90, scale,
       browserExecutable, chromiumOptions, timeoutInMilliseconds: 240000, onBrowserLog });
     console.log("still", f, ((Date.now() - t0) / 1000).toFixed(1) + "s");
   }
@@ -28,7 +29,7 @@ if (mode === "still") {
   const scale = Number(a3 || 1), crf = Number(a4 || 18);
   const frameRange = a5 ? a5.split("-").map(Number) : null;
   const t0 = Date.now();
-  await renderMedia({ composition, serveUrl, codec: "h264", outputLocation: out, crf, scale, concurrency, frameRange,
+  await renderMedia({ composition, serveUrl, inputProps, codec: "h264", outputLocation: out, crf, scale, concurrency, frameRange,
     browserExecutable, chromiumOptions, timeoutInMilliseconds: 240000, onBrowserLog, muted: true,
     onProgress: ({ renderedFrames }) => { if (renderedFrames % 60 === 0) console.log("frames", renderedFrames, ((Date.now() - t0) / 1000).toFixed(0) + "s"); } });
   console.log("done", out, ((Date.now() - t0) / 1000).toFixed(0) + "s");

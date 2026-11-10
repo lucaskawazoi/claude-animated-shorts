@@ -13,8 +13,9 @@ import { Boiler, CarGag, Canal, Column, Dorna, Mill, Pile, Truck, Turbine, pileG
 import { Worker, blendPose, poseOf } from "./toy/worker";
 import { camAt, workerAt } from "./toy/story";
 import { Hud } from "./toy/hud";
+import { EXPOSURE, EXP_STEP } from "./toy/exposure";
 
-type Props = { cam?: { pos: V3; look: V3; fov?: number; roll?: number }; t?: number; hud?: boolean; captions?: boolean };
+type Props = { exposure?: boolean; cam?: { pos: V3; look: V3; fov?: number; roll?: number }; t?: number; hud?: boolean; captions?: boolean };
 
 const TREES: V3[] = [
   ...Array.from({ length: 26 }, (_, i): V3 => [-54 + i * 6.4 + rnd(i) * 3, 0, -13 - rnd(i + 30) * 10]),
@@ -64,15 +65,19 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
   );
 };
 
+const exposureAt = (t: number) => { const x = t / EXP_STEP, i = Math.min(EXPOSURE.length - 1, Math.max(0, Math.floor(x))), j = Math.min(EXPOSURE.length - 1, i + 1); return lerp(EXPOSURE[i], EXPOSURE[j], x - Math.floor(x)); };
+
 export const Toy: React.FC = () => {
   const frame = useCurrentFrame();
   const ip = getInputProps() as Props;
   const t = ip.t ?? frame / FPS;
   return (
     <AbsoluteFill style={{ background: "#9fd0ff" }}>
+      <div style={{ position: "absolute", inset: 0, filter: ip.exposure === false ? undefined : `brightness(${exposureAt(t)})` }}>
       <ThreeCanvas width={1080} height={1920} shadows={{ type: THREE.PCFSoftShadowMap }} gl={{ antialias: true, toneMapping: THREE.NoToneMapping }} camera={{ fov: 55, near: 0.3, far: 900, position: [0, 3, 10] }}>
         <Scene t={t} ov={ip.cam} />
       </ThreeCanvas>
+      </div>
       {ip.hud === false ? null : <Hud t={t} captions={ip.captions !== false} />}
     </AbsoluteFill>
   );

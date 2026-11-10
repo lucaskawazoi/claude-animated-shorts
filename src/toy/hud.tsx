@@ -70,10 +70,10 @@ const Alert: React.FC<{ t: number; a: number }> = ({ t, a }) => {
 };
 const Rewind: React.FC<{ t: number; a: number }> = ({ t, a }) => {
   const k = win(t, a, a + 1.3, 0.1); if (k <= 0) return null;
-  const flash = 1 - prog(t, a, a + 0.18), s = pop(t, a, 0.25);
+  const s = pop(t, a, 0.25);
   return (
     <>
-      <div style={{ position: "absolute", inset: 0, background: "#ffffff", opacity: 0.55 * flash }} />
+      
       <div style={{ position: "absolute", left: 64, top: 130, width: 200, height: 120, opacity: k, transform: `scale(${s})` }}>
         <svg viewBox="0 0 100 60" width="200" height="120"><path d="M50 4 L50 56 L8 30 Z M92 4 L92 56 L50 30 Z" fill="#fff" stroke="#14202b" strokeWidth="5" strokeLinejoin="round" /></svg>
       </div>
