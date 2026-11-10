@@ -1,0 +1,28 @@
+{
+  "name": "toy-game-short",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Explicador vertical 3D de brinquedo com painel de jogo (fork de claude-animated-shorts, branch pt-toy-game)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-three/fiber": "8",
+    "@remotion/bundler": "4",
+    "@remotion/cli": "4",
+    "@remotion/renderer": "4",
+    "@remotion/three": "4",
+    "react": "18",
+    "react-dom": "18",
+    "remotion": "4",
+    "three": "0.171"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "18",
+    "@types/react-dom": "18",
+    "@types/three": "0.171",
+    "typescript": "^7.0.2"
+  }
+}
