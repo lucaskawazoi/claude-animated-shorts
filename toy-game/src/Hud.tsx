@@ -1,6 +1,6 @@
 // Painel de jogo por cima do 3D: contador, título amarelo, alerta, ⏪, carimbo do bordão, legenda de uma palavra, confete.
 import { AbsoluteFill } from 'remotion';
-import { WORDS, W, WE, clamp, lin, pop, smooth, seeded, shotStart, shotEnd, DURATION, FPS } from './lib';
+import { WORDS, W, WE, clamp, lin, pop, smooth, seeded, shotStart, shotEnd, nextCut, DURATION, FPS } from './lib';
 import { shipU } from './MapSet';
 import * as St from './story';
 
@@ -26,8 +26,7 @@ const BORDAO = (): [number, number][] => [[W(39), W(41)], [W(102), W(104)], [W(1
 const stroke = (px: number, c = '#1b1206') => ({ WebkitTextStroke: `${px}px ${c}`, paintOrder: 'stroke fill' as const });
 
 export const Hud = ({ t }: { t: number }) => {
-  const shotEndAfter = (a: number) => { const names = ['map', 'dig', 'slide', 'build', 'elevator', 'scrape', 'mules', 'dump', 'lake', 'drought', 'newlocks', 'reward', 'cta'];
-    for (const n of names) if (S(n) > a) return S(n); return END + 1; };
+  const shotEndAfter = (a: number) => Math.min(nextCut(a), END + 1);
   const counter = COUNTERS().find(c => t >= c.a && t < c.b);
   const title = TITLES().filter(([a]) => t >= a && t < Math.min(a + 2.8, shotEndAfter(a) - 0.05)).pop();
   const alert = ALERTS().find(a => t >= a && t < a + 1.6);
@@ -37,6 +36,8 @@ export const Hud = ({ t }: { t: number }) => {
   const won = t >= W(229);
   return (
     <AbsoluteFill style={{ fontFamily: F, pointerEvents: 'none' }}>
+      {t > W(56) && t < W(62) + 0.6 && <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 60% 40%, rgba(120,84,48,0.55), rgba(70,48,28,0.75))',
+        opacity: smooth(t, W(56), W(57) + 0.3) * (1 - smooth(t, W(61), W(62) + 0.5)) * 0.85 }} />}
       {rew && <AbsoluteFill style={{ background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 3px, rgba(0,0,0,0) 3px 9px)', backgroundColor: 'rgba(60,90,160,0.18)' }} />}
       {rew && (
         <div style={{ position: 'absolute', left: 70, top: 150, transform: `scale(${pop(t, W(62))})`, transformOrigin: 'left top' }}>

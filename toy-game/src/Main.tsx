@@ -13,7 +13,7 @@ import { camAt } from './cams';
 const Rig = ({ t }: { t: number }) => {
   const { camera, scene } = useThree();
   const light = useMemo(() => {
-    const l = new THREE.DirectionalLight('#fff6e8', 2.4);
+    const l = new THREE.DirectionalLight('#fff6e8', 2.2);
     l.castShadow = true; l.shadow.mapSize.set(2048, 2048); l.shadow.bias = -0.0004; l.shadow.normalBias = 0.03;
     const c = l.shadow.camera as THREE.OrthographicCamera; c.left = -22; c.right = 22; c.top = 22; c.bottom = -22; c.near = 1; c.far = 160;
     return l;
@@ -52,7 +52,7 @@ export const Main = () => {
         <Rig t={t} />
         <Sky />
         <fog attach="fog" args={['#dceeff', 60, 220]} />
-        <hemisphereLight args={['#e6f4ff', '#5d9e3f', 1.15]} />
+        <hemisphereLight args={['#e6f4ff', '#5d9e3f', 1.0]} />
         <ambientLight intensity={0.25} />
         {map ? <MapSet t={t} /> : <Level t={t} />}
       </ThreeCanvas>

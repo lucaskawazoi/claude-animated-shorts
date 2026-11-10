@@ -284,7 +284,7 @@ export const Level = ({ t }: { t: number }) => {
       {St.mulesOn(t) && (() => {
         const sb = shipsNow.find(s => s.id === 'B')!; const sy = St.levelAtX(t, sb.x);
         return [-1, 1].map(side => [-1, 1].map(e => {
-          const mx = sb.x + e * 1.15, mz = side * (OLD_W / 2 + 0.25), top = TOP[0];
+          const mx = Math.min(sb.x, -12.6) + e * 1.15, mz = side * (OLD_W / 2 + 0.25), top = TOP[0];
           const yd = drop(t, W(119) + (side + 1) * 0.08 + (e + 1) * 0.05, 5, 0.4);
           const a = new THREE.Vector3(mx, top + 0.42, mz), b = new THREE.Vector3(sb.x + e * 1.3, sy + 0.5, sb.z + side * 0.72);
           const k = St.cablesOn(t), mid = a.clone().lerp(b, 0.5), len = a.distanceTo(b) * k;

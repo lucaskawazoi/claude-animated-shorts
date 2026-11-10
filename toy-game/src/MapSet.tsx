@@ -39,7 +39,7 @@ export const MapSet = ({ t }: { t: number }) => {
   const yaw = Math.atan2(-tan.z, tan.x);
   const dots = useMemo(() => Array.from({ length: 150 }, (_, i) => i / 150), []);
   const ny = ll(-74, 40.7), sf = ll(-122.4, 37.8), pa = ll(-79.7, 9.0);
-  const blink = t > WE(25) ? (Math.sin((t - WE(25)) * 14) > 0 ? 1 : 0.25) : 0;
+  const cut = smooth(t, W(28), W(33) + 0.2);   // "abre um atalho: cava um canal": a linha corta o Panamá
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} material={mat(C.water, { rough: 0.3 })} receiveShadow><planeGeometry args={[400, 400]} /></mesh>
@@ -54,9 +54,11 @@ export const MapSet = ({ t }: { t: number }) => {
           <mesh position={[0.32, 0.82, 0]} material={mat(i ? '#ffcc1f' : '#ff4d4d', { rough: 0.4 })} castShadow><boxGeometry args={[0.6, 0.36, 0.05]} /></mesh>
         </group>
       ))}
-      {/* o atalho piscando no Panamá */}
-      {blink > 0 && <mesh position={[pa[0], 0.62, pa[1]]} rotation={[-Math.PI / 2, 0, 0.5]} material={mat('#ff3b30', { opacity: blink })}>
-        <planeGeometry args={[0.35, 1.6]} /></mesh>}
+      {/* o atalho: um canal azul cortando o istmo */}
+      {cut > 0 && <group position={[pa[0], 0.56, pa[1]]} rotation={[0, 0.5, 0]}>
+        <mesh position={[0, 0, (cut - 1) * 0.55]} scale={[1, 1, cut]} material={mat('#1f7fe0')}><boxGeometry args={[0.16, 0.06, 1.1]} /></mesh>
+        <mesh position={[0, 0.2, cut * 0.55 - 0.55]} scale={clamp(cut * 3) * 0.12} material={mat('#ffcc1f', { rough: 0.4 })} castShadow><icosahedronGeometry args={[1, 0]} /></mesh>
+      </group>}
       <group position={[p.x, 0.02, p.z]} rotation={[0, yaw, 0]}><Ship seed={2} scale={0.38} /></group>
       <Cloud pos={[-8, 6, -6]} s={1.2} /><Cloud pos={[6, 7, 6]} s={1.4} /><Cloud pos={[-4, 6.5, 12]} s={1} />
       {void W}

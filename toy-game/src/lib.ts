@@ -28,8 +28,13 @@ export const seeded = (s: number) => () => { s = (s * 16807) % 2147483647; retur
 
 // Tomadas: [início em s, nome]. Cada corte cai 0,1 s antes da primeira palavra da tomada.
 import shotDefs from './shots.json';
-// Tomadas: [palavra, deslocamento, nome] em shots.json (a mixagem lê o mesmo arquivo). Cada corte cai pouco antes da palavra.
-export const SHOTS: [number, string][] = (shotDefs as [number | null, number, string][]).map(([i, d, n]) => [(i === null ? 0 : W(i)) + d, n]);
+// shots.json (a mixagem lê o mesmo arquivo):
+// - beats: os trechos da história [palavra, deslocamento s, nome] — quem está em cena, o que acontece;
+// - cuts: os cortes secos de câmera (s). Entre cortes a câmera desliza de um beat a outro sem cortar, como a referência
+//   (tomadas de ~10 s). Os cortes caem nos mesmos pontos relativos dos cortes da referência (dissect check).
+export const SHOTS: [number, string][] = (shotDefs.beats as [number | null, number, string][]).map(([i, d, n]) => [(i === null ? 0 : W(i)) + d, n]);
+export const CUTS: number[] = shotDefs.cuts;
+export const nextCut = (t: number) => CUTS.find(c => c > t + 1e-3) ?? Infinity;
 export const shotAt = (t: number) => { let k = 0; for (let i = 0; i < SHOTS.length; i++) if (t >= SHOTS[i][0]) k = i; return k; };
 export const shotName = (t: number) => SHOTS[shotAt(t)][1];
 export const shotStart = (name: string) => SHOTS.find(s => s[1] === name)![0];
