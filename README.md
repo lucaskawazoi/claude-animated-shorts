@@ -15,8 +15,7 @@ Proven on **The Bridge That Fell for a Song**, a 67 s short about the 1831 Broug
 | `templates/scripts/` | Stills, side-by-side sheets, shot merge and frame-by-frame QA helpers |
 | `references/STYLE_BIBLE.md` | The script and visual formula measured from 20 reference shorts |
 | `references/reports/` | Seven measured reports: motion, depth, textures, characters, lighting, outlines, grade |
-| `references/frames/` | 38 full-size reference frames (540x960) to compare your frames against |
-| `references/sheets/` | 20 contact sheets, one per reference short, 60 frames each (1,200 frames) |
+| `toy-game/` | **(fork)** pt-BR "3D de brinquedo com cara de jogo" explainer: toy world from primitives, game HUD, one-word captions. See `toy-game/README.md` |
 
 ## Install
 1. Copy this folder to `~/.claude/skills/cartoon-3d-short/` (clone it there, or download the ZIP).
@@ -30,4 +29,4 @@ Claude then follows `SKILL.md`: topic and facts, then script, then voice, then t
 - Story, characters and voice should always be your own. Use the references for the look, not the content.
 
 ## License
-The code and docs are MIT (see `LICENSE`). The reference frames are included for style study only.
+The code and docs are MIT (see `LICENSE`). This fork removed `references/frames` and `references/sheets` (frames of another channel).
