@@ -60,7 +60,7 @@ const TitleEl: React.FC<{ ti: Title; t: number }> = ({ ti, t }) => {
 
 // ---------- ícones ----------
 const Alert: React.FC<{ t: number; a: number }> = ({ t, a }) => {
-  const k = win(t, a, a + 1.9, 0.12); if (k <= 0) return null;
+  const k = win(t, a, a + 1.5, 0.12); if (k <= 0) return null;
   const s = pop(t, a, 0.3) * (1 + 0.06 * Math.sin((t - a) * 18)), rot = Math.sin((t - a) * 22) * 4 * (1 - prog(t, a, a + 0.9));
   return (
     <div style={{ position: "absolute", left: W / 2 - 120, top: 100, width: 240, height: 240, opacity: k, transform: `scale(${s}) rotate(${rot}deg)` }}>

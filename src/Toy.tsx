@@ -44,7 +44,7 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
   const grow = 1 + 0.4 * ease(t, T.canais + 5, T.essaFert + 1.5), wet = ease(t, T.canais + 4.2, T.canais + 7.5);
   const lit = HOUSES.map((_, i) => ease(t, T.casas + 0.1 + i * 0.28, T.casas + 0.3 + i * 0.28));
   const flow = ease(t, T.vende, T.vende + 0.8);
-  const x2 = lerp(-37, -31, ease(t, T.end - 2.4, T.end + 0.2));
+  const x2 = lerp(-36, -27, ease(t, T.end - 2.4, T.end + 0.2));
 
   return (
     <>
@@ -55,7 +55,6 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
       <Sky /><Ground /><Hills /><Trees spots={TREES} /><Clouds t={t} />
       <CaneField grow={grow} wet={wet} />
       <Truck x={truckX(t)} tilt={tilt} load={load} t={t} />
-      <Truck x={x2} t={t} />
       <Mill t={t} /><Pile g={pileGrow(t)} /><Boiler t={t} /><Turbine t={t} /><CarGag t={t} />
       <Dorna t={t} /><Column t={t} /><Canal t={t} />
       <PoleLine t={t} flow={flow} /><Town lit={lit} />

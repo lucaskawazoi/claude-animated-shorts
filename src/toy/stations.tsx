@@ -36,7 +36,7 @@ const Puffs: React.FC<{ t: number; p: V3; n?: number; period?: number; rise?: nu
 );
 
 // -------------------------------------------------- caminhão de cana
-export const truckX = (t: number) => lerp(-34, -15.4, ease(t, 0.0, 10.4));
+export const truckX = (t: number) => lerp(-27, -15.4, ease(t, 0.0, 10.4));
 export const Truck: React.FC<{ x: number; z?: number; tilt?: number; load?: number; dir?: 1 | -1; t: number }> = ({ x, z = 3.4, tilt = 0, load = 1, t }) => {
   const moving = 1;
   const bundle = [[0, 0], [0.55, 0], [-0.55, 0], [0.28, 0.46], [-0.28, 0.46], [0, 0.92]];
@@ -188,8 +188,9 @@ export const CarGag: React.FC<{ t: number }> = ({ t }) => {
   const cx = lerp(9.5, 19.0, arrive);
   const cough = fail > 0 && fail < 1 ? Math.abs(Math.sin(t * 17)) * 0.1 * (1 - fail * 0.4) : 0;
   const sh = fail > 0 && fail < 1 ? Math.sin(t * 40) * 0.045 : 0;
+  const show = t > T.maisCaldo - 0.9 && t < T.d2 + 0.5;
   return (
-    <G>
+    <G vis={show}>
       <G p={[cx + sh, cough, 6.4]}>
         <Box s={[2.9, 0.8, 1.5]} p={[0, 0.85, 0]} c="#2f86ff" o={{ rough: 0.35 }} /><Box s={[1.5, 0.75, 1.3]} p={[-0.1, 1.55, 0]} c="#2f86ff" o={{ rough: 0.35 }} />
         <Box s={[1.1, 0.5, 1.32]} p={[0.35, 1.58, 0]} c="#cfeaff" o={{ rough: 0.1, emissive: "#6fb8ff", ei: 0.2 }} cast={false} />

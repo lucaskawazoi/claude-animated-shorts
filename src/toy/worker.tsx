@@ -40,7 +40,7 @@ const ArmPart: React.FC<{ side: 1 | -1; a: Arm }> = ({ side, a }) => (
 );
 
 export const Worker: React.FC<{ p: V3; yaw?: number; pose: Pose; scale?: number; t: number }> = ({ p, yaw = 0, pose, scale = 1, t }) => (
-  <G p={[p[0], p[1] + pose.hop * scale, p[2]]} r={[0, yaw, pose.lean]} sc={scale}>
+  <G p={[p[0], p[1] + pose.hop * scale, p[2]]} r={[0, yaw, pose.lean]} sc={Math.max(scale, 0.001)} vis={scale > 0}>
     {/* pernas e botas */}
     <Cyl rt={0.11} h={0.62} p={[-0.14, 0.45, 0]} c={PANT} seg={8} /><Cyl rt={0.11} h={0.62} p={[0.14, 0.45, 0]} c={PANT} seg={8} />
     <Box s={[0.2, 0.14, 0.32]} p={[-0.14, 0.07, 0.05]} c={BOOT} /><Box s={[0.2, 0.14, 0.32]} p={[0.14, 0.07, 0.05]} c={BOOT} />
