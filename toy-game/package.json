@@ -1,0 +1,23 @@
+{
+  "name": "toy-game-short",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.3.0",
+    "@remotion/cli": "4.0.540",
+    "@remotion/three": "4.0.540",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.540",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "@types/three": "0.180.0",
+    "typescript": "5.9.2"
+  }
+}
