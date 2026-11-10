@@ -84,10 +84,10 @@ const Vineyard: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- estações
 const Copyist: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => (
   <G p={[-14, 0.3, -2.5]}>
-    <Box s={[1.8, 1.1, 1.2]} p={[0, 0.55, 0]} c={WOOD} /><Box s={[1.9, 0.12, 1.3]} p={[0, 1.18, 0]} r={[0.35, 0, 0]} c={WOOD2} />
-    <Page p={[-0.42, 1.3, 0.02]} r={[-PI / 2 + 0.35, 0, 0]} tex={tex} /><Page p={[0.42, 1.3, 0.02]} r={[-PI / 2 + 0.35, 0, 0]} tex={tex} />
+    <Box s={[1.8, 1.1, 1.2]} p={[0, 0.55, 0]} c={WOOD} /><Box s={[1.9, 0.12, 1.3]} p={[0, 1.18, 0]} r={[-0.35, 0, 0]} c={WOOD2} />
+    <Page p={[-0.42, 1.3, 0.02]} r={[-PI / 2 - 0.35, 0, 0]} tex={tex} /><Page p={[0.42, 1.3, 0.02]} r={[-PI / 2 - 0.35, 0, 0]} tex={tex} />
     <Cyl rt={0.08} h={0.5} p={[0.95, 1.5, -0.3]} c="#f2efe6" seg={6} /><Sph rad={0.07} p={[0.95, 1.8, -0.3]} c="#ffcc33" o={{ emissive: "#ffaa00", ei: 2 }} cast={false} />
-    <Worker p={[0, -0.3, 1.25]} yaw={PI} pose={poseOf("read", t)} t={t} c={{ ...COSTUMES.rome, top: "#6b4a2a", kilt: "#6b4a2a", kiltLen: 0.62, hat: "none", hatC: "#000" }} mustache={false} scale={1.1} />
+    <Worker p={[0, -0.3, -1.25]} yaw={0} pose={poseOf("read", t)} t={t} c={{ ...COSTUMES.rome, top: "#6b4a2a", kilt: "#6b4a2a", kiltLen: 0.62, hat: "none", hatC: "#000" }} mustache={false} scale={1.1} />
   </G>
 );
 const typesIn = (t: number) => ease(t, T.ordenan - 0.2, T.imprimen);
@@ -98,7 +98,7 @@ const Case: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G p={[-8.5, 0.3, -4.6]}>
       <Box s={[3.6, 1.6, 0.9]} p={[0, 0.8, 0]} c={WOOD2} />
-      <G p={[0, 2.0, 0.1]} r={[-0.55, 0, 0]}>
+      <G p={[0, 2.0, 0.1]} r={[0.55, 0, 0]}>
         <Box s={[3.6, 0.15, 1.8]} c={WOOD} />
         {Array.from({ length: 12 }, (_, i) => Array.from({ length: 5 }, (_, j) => <Box key={`${i}${j}`} s={[0.22, 0.08, 0.22]} p={[-1.5 + i * 0.27, 0.1, -0.7 + j * 0.34]} c={cols[(i + j) % 2]} cast={false} />))}
         {/* «casi trescientos tipos»: a caixa enche de tipos diferentes */}
@@ -113,12 +113,14 @@ const Forme: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
   const printed = ease(t, T.imprimen, T.imprimen + 0.5);
   return (
     <G p={[-5.5, 0.3, -1.6]}>
-      <Box s={[2.2, 1.0, 1.6]} p={[0, 0.5, 0]} c="#9a9488" />
+      <Box s={[2.2, 1.0, 1.6]} p={[0, 0.5, 0]} c={WOOD} /><Box s={[1.8, 0.06, 1.3]} p={[0, 1.03, 0]} c="#6f6a62" />
+      {[[-0.9, 0], [0.9, 0]].map(([x], i) => <Box key={i} s={[0.08, 0.12, 1.3]} p={[x, 1.08, 0]} c="#3a3632" cast={false} />)}
+      {[[-0.65], [0.65]].map(([z], i) => <Box key={i} s={[1.8, 0.12, 0.08]} p={[0, 1.08, z]} c="#3a3632" cast={false} />)}
       {Array.from({ length: 24 }, (_, k) => {
         const i = k % 6, j = Math.floor(k / 6), dest: V3 = [-0.6 + i * 0.24, 1.08, -0.4 + j * 0.24], src: V3 = [-3 + (k % 12) * 0.27, 2.3, -2.9];
         const u = clamp(inn * 1.4 - (k / 24) * 0.4), r = back;
         const p: V3 = [lerp(lerp(src[0], dest[0], u), src[0], r), lerp(lerp(src[1], dest[1], u), src[1], r) + Math.sin(u * PI) * 0.8, lerp(lerp(src[2], dest[2], u), src[2], r)];
-        return <Box key={k} s={[0.2, 0.16, 0.2]} p={p} c={inked > 0.5 ? "#2a2622" : "#b8bec6"} vis={u > 0.01 && r < 0.99} cast={false} />;
+        return <Box key={k} s={[0.22, 0.2, 0.22]} p={p} c={inked > 0.5 ? "#2a2622" : k % 5 === 0 ? "#d9b45a" : "#c8ced6"} vis={u > 0.01 && r < 0.99} cast={false} />;
       })}
       <Page p={[0, 1.2 + 0.5 * (1 - printed), 0]} tex={tex} vis={printed > 0.01 && back < 0.99} s={0.8} />
       {/* tinta de água: gotas azuis que escorrem; tinta de óleo: camada preta brilhante */}
@@ -157,7 +159,7 @@ export const pressCycle = (t: number) => (t > T.prensa && t < T.giro ? 0.5 + 0.5
 const Press: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
   const taken = ease(t, T.quedo - 0.1, T.quedo + 1.2), d = pressCycle(t);
   return (
-    <G p={[11.5 + 9 * taken, 0.3, -3.0]}>
+    <G p={[11.5 + 2 * taken, 0.3, -3.0 + 11 * taken]}>
       <Box s={[0.5, 4.4, 0.5]} p={[-1.3, 2.2, 0]} c={WOOD2} /><Box s={[0.5, 4.4, 0.5]} p={[1.3, 2.2, 0]} c={WOOD2} />
       <Box s={[3.2, 0.5, 0.7]} p={[0, 4.2, 0]} c={WOOD2} /><Box s={[3.2, 0.4, 0.7]} p={[0, 3.2, 0]} c={WOOD2} />
       <Cyl rt={0.18} h={1.4} p={[0, 2.6 - 0.25 * d, 0]} c="#c9a36a" seg={10} />
@@ -176,7 +178,7 @@ const Bibles: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
   const sheets = Math.floor(14 * ease(t, T.prensa, T.trescientos));
   return (
     <G>
-      <G p={[15.8 + 10 * taken, 0.3, -2.0]}>
+      <G p={[15.8, 0.3, -2.0 + 11 * taken]}>
         <Box s={[2.4, 1.0, 1.6]} p={[0, 0.5, 0]} c={WOOD} />
         {Array.from({ length: n }, (_, k) => <Box key={k} s={[0.62, 0.22, 0.85]} p={[-0.7 + (k % 3) * 0.7, 1.12 + Math.floor(k / 3) * 0.23, 0]} c={k % 2 ? "#7a2a22" : "#8a3a2a"} />)}
       </G>
@@ -188,12 +190,12 @@ const Bibles: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
 /** Johann Fust: casaco vermelho, chapéu preto, corrente de ouro; sacos de moedas */
 const Fust: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.fortuna - 0.5 || t > T.cambio + 0.5) return null;
-  const x = lerp(26, 19.5, ease(t, T.fortuna, T.prestado)) + 6 * ease(t, T.quedo, T.quedo + 1.4);
+  const z = lerp(12, 2.6, ease(t, T.fortuna, T.prestado)) + 9 * ease(t, T.quedo, T.quedo + 1.4), x = 14.4;
   const pose: PoseName = t > T.gano ? "cheer" : t > T.prestado ? "present" : "walk";
   return (
     <G>
-      <Worker p={[x, 0.3, 0.2]} yaw={-PI / 2 + 0.4} pose={poseOf(pose, t)} t={t} c={{ skin: "#e8b48c", top: "#b8202a", bottom: "#2a2a3a", kilt: "#b8202a", kiltLen: 0.7, hat: "cap", hatC: "#151515", boot: "#151515", belt: "#e8c24a", sleeves: true }} scale={1.3} />
-      {[0, 1].map((k) => <Sph key={k} rad={0.32} p={[x - 1.0 - k * 0.7, 0.62, 0.9]} c="#c9a24a" ws={8} hs={6} vis={t > T.prestado - 0.2 && t < T.gano} />)}
+      <Worker p={[x, 0.3, z]} yaw={PI + 0.3} pose={poseOf(pose, t)} t={t} c={{ skin: "#e8b48c", top: "#b8202a", bottom: "#2a2a3a", kilt: "#b8202a", kiltLen: 0.7, hat: "cap", hatC: "#151515", boot: "#151515", belt: "#e8c24a", sleeves: true }} scale={1.3} />
+      {[0, 1].map((k) => <Sph key={k} rad={0.32} p={[x - 1.0 - k * 0.7, 0.62, z - 0.6]} c="#c9a24a" ws={8} hs={6} vis={t > T.prestado - 0.2 && t < T.gano} />)}
     </G>
   );
 };

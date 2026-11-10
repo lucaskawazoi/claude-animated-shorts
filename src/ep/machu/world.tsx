@@ -39,7 +39,7 @@ const Jungle: React.FC = () => {
     const n = 220, g = new THREE.IcosahedronGeometry(1, 0), im = new THREE.InstancedMesh(g, mat("#3a8a30", { flat: true }), n), o = new THREE.Object3D();
     for (let i = 0; i < n; i++) {
       const side = i % 2 ? 1 : -1, u = rnd(i * 3 + 1), x = side * lerp(9.5, 25, u), y = H * (1 - (Math.abs(x) - 8) / 18) + 0.3, z = lerp(-15, 11, rnd(i * 3 + 2));
-      if (side > 0 && Math.abs(x) < 21 && z < 8.5) continue; // onde vão os andenes
+      if (side > 0 && Math.abs(x) < 24 && z < 15) continue; // onde vão os andenes e o corte do dreno
       o.position.set(x, Math.max(0.3, y), z); o.scale.setScalar(lerp(0.6, 1.3, rnd(i * 3 + 3))); o.updateMatrix(); im.setMatrixAt(i, o.matrix);
     }
     im.castShadow = true; return im;
@@ -83,12 +83,13 @@ const Mud: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- corte do dreno: terra, areia, cascalho, pedras; a água escorre
 const Drain: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.p2 || t > T.p3 + 1) return null;
-  const x = 11.5, top = H - 0.94 * 2 + 0.2, z = 9.6;
+  const x = 11.5, top = H - 0.94 * 2 + 0.2, z = 13.6; // na frente da encosta (a face do relevo fica em z=12)
   const L = [["tierra", "#5a3a22", 0.5, T.tierra], ["arena", "#e7cf8e", 0.5, T.arena], ["grava", "#9a958c", 0.6, T.grava], ["piedras", "#7d7a73", 1.0, T.piedras]] as const;
   let y = top; const water = ease(t, T.escurre - 0.2, T.sesenta);
   return (
     <G>
       <Box s={[3.4, 0.2, 3.0]} p={[x, top + 0.1, z]} c={GRASS} />
+      <Box s={[3.4, top - 2.6, 3.0]} p={[x, (top - 2.6) / 2, z]} c={JUNGLE} />
       {L.map(([n, c, h, a], i) => {
         y -= h; const u = ease(t, a - 0.15, a + 0.3);
         return (
@@ -105,7 +106,7 @@ const Drain: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- casas incas, muro de silharia com porta trapezoidal, fontes, pedreira, lhamas
-const HOUSES: [number, number, number][] = [[-5, -10, 0], [-1, -11, 1], [3, -9.5, 0], [6, -11, 1], [-6, -4, 1], [5.5, -4.5, 0], [-6, 2, 0], [5, 1, 1], [-2, 6, 0], [3.5, 6.5, 1]];
+const HOUSES: [number, number, number][] = [[-5.5, -11, 0], [-1.5, -11.5, 1], [-6, -5.5, 1], [-6.5, 0.5, 0], [5.5, -3.5, 0], [5.5, 1.5, 1], [-1.5, -6, 0], [2, -2, 1]];
 const growAt = (t: number) => (t > T.siglo ? ease(t, T.siglo, T.vacia + 0.6) : 0);
 const Houses: React.FC<{ t: number }> = ({ t }) => {
   const k = built(t) ? 1 : ease(t, T.talladas - 0.4, T.silleria), grow = growAt(t), roofs = 1 - ease(t, T.vacia, T.espanoles);
@@ -125,7 +126,7 @@ const Houses: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 /** muro de silharia: pedras poligonais encaixadas, inclinado para dentro, com porta em trapézio */
-export const WALL = { x: 1.5, z: 3.5 };
+export const WALL = { x: 1.0, z: 8.6 };
 const Ashlar: React.FC<{ t: number }> = ({ t }) => {
   const k = built(t) ? 1 : ease(t, T.talladas - 0.2, T.muros + 0.4), lean = ease(t, T.muros, T.muros + 0.5) * 0.1 + (built(t) ? 0.1 : 0);
   const door = built(t) ? 1 : ease(t, T.trapecio - 0.6, T.trapecio + 0.2);
@@ -155,8 +156,11 @@ const Fountains: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G>
       {/* canal da encosta da montanha (sul) até a primeira fonte */}
-      <Box s={[0.6, 0.3, 14 * k]} p={[-3.8, H + 0.15, 9.5 + 7 * k]} c={STONE2} />
-      <Box s={[0.35, 0.05, 14 * flow]} p={[-3.8, H + 0.32, 9.5 + 7 * flow]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
+      {/* manancial: rocha com água borbulhando na borda sul do selado, e o canal até a primeira fonte */}
+      <Sph rad={1.0} p={[-3.8, H + 0.3, 11.2]} sc={[1.2, 0.8, 1]} c={STONE2} ws={8} hs={6} />
+      <Puffs t={t} p={[-3.8, H + 0.8, 11.2]} n={6} period={1.2} rise={0.6} size={0.18} c="#7cc8ff" on={k} />
+      <Box s={[0.6, 0.3, 2.2 * k]} p={[-3.8, H + 0.15, 10.1]} c={STONE2} />
+      <Box s={[0.35, 0.05, 2.2 * flow]} p={[-3.8, H + 0.32, 10.1]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
       {Array.from({ length: 16 }, (_, i) => {
         const u = clamp(k * 1.5 - (i / 16) * 0.5); if (u <= 0.01) return null;
         const z = 9 - i * 1.15, y = H + 0.05 - i * 0.03;
@@ -173,12 +177,12 @@ const Fountains: React.FC<{ t: number }> = ({ t }) => {
 /** pedreira: a rocha já rachada pelas falhas se parte em blocos; obreiros labram com martelos de pedra */
 const Quarry: React.FC<{ t: number }> = ({ t }) => {
   const crack = ease(t, T.partida - 0.2, T.partida + 0.4), split = ease(t, T.partida + 0.4, T.labra + 0.4);
-  const cutters = [[1.8, H, -14.2], [5.0, H, -13.6]].map(([x, y, z], i) => ({ p: [x, y, z] as V3, yaw: 0.3 - i * 0.6, pose: "chisel" as PoseName, ph: i * 0.4 }));
+  const cutters = [[1.4, H, -15.4], [5.6, H, -15.2]].map(([x, y, z], i) => ({ p: [x, y, z] as V3, yaw: 0.3 - i * 0.6, pose: "chisel" as PoseName, ph: i * 0.4 }));
   return (
     <G>
-      {[[-1, 0], [1, 0], [0, 1]].map(([dx, dy], i) => <Box key={i} s={[1.8, 1.4, 1.6]} p={[3.4 + dx * (1.0 + split * 0.5), H + 0.7 + dy * 1.4, -12.2 + split * 0.4 * i]} r={[0, rnd(i) * 0.4, (rnd(i + 3) - 0.5) * 0.2 * split]} c="#9d998f" />)}
-      {[0, 1, 2].map((i) => <Box key={i} s={[0.06, 2.6, 0.06]} p={[2.9 + i * 0.6, H + 1.4, -11.38]} r={[0, 0, 0.3 - i * 0.3]} c="#ff3b30" o={{ emissive: "#ff2a1a", ei: 1.4 }} vis={crack > 0.05 && split < 0.9} cast={false} />)}
-      {[[0, -16.5], [6.5, -15.5], [-3, -15]].map(([x, z], i) => <Box key={i} s={[2.2, 1.6, 1.8]} p={[x, H + 0.8, z]} r={[0, rnd(i) * 0.6, 0]} c="#a3a095" />)}
+      {[[-1, 0], [1, 0], [0, 1]].map(([dx, dy], i) => <Box key={i} s={[1.8, 1.4, 1.6]} p={[3.4 + dx * (1.0 + split * 0.5), H + 0.7 + dy * 1.4, -14.2 + split * 0.4 * i]} r={[0, rnd(i) * 0.4, (rnd(i + 3) - 0.5) * 0.2 * split]} c="#9d998f" />)}
+      {[0, 1, 2].map((i) => <Box key={i} s={[0.06, 2.6, 0.06]} p={[2.9 + i * 0.6, H + 1.4, -13.38]} r={[0, 0, 0.3 - i * 0.3]} c="#ff3b30" o={{ emissive: "#ff2a1a", ei: 1.4 }} vis={crack > 0.05 && split < 0.9} cast={false} />)}
+      {[[0, -15.3], [6.6, -14.8], [-3, -14.2]].map(([x, z], i) => <Box key={i} s={[2.2, 1.6, 1.8]} p={[x, H + 0.8, z]} r={[0, rnd(i) * 0.6, 0]} c="#a3a095" />)}
       <Crowd list={cutters} t={t} c={COSTUMES.inca} vis={t > T.p5 && t < T.siglo} />
     </G>
   );
@@ -216,7 +220,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
         <Terraces t={t} /><Slider t={t} /><Mud t={t} /><Drain t={t} />
         <Houses t={t} /><Ashlar t={t} /><Fountains t={t} /><Quarry t={t} /><Llamas t={t} />
       </G>
-      <Rain t={t} /><Faults t={t} /><Mist t={t} />
+      <Rain t={t} /><Faults t={t} />
       <Puffs t={t} p={[4, H + 2, -10]} n={3} period={4} rise={3} size={0.4} c="#eeeeee" on={built(t) || t < T.siglo ? 1 : 0} />
     </>
   );

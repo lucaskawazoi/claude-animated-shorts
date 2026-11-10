@@ -3,7 +3,7 @@
 import React from "react";
 import { staticFile } from "remotion";
 import { EP } from "../ep/current";
-import { words } from "./cues";
+import { CUTS, words } from "./cues";
 import { clamp, ease, lerp, outBack, prog } from "./kit";
 
 export const FONT = "'Baloo 2', 'Arial Rounded MT Bold', sans-serif";
@@ -121,11 +121,19 @@ const Caption: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+/** em cada corte duro o painel dá um pulo (encolhe e volta): é estilo de jogo e faz o corte ser visto pela régua
+ *  (a dissect só aceita o corte se pouca coisa da imagem persiste; um painel parado dos dois lados segurava 3 cortes do E2) */
+const cutKick = (t: number) => {
+  for (const c of CUTS) if (t >= c && t < c + 0.22) return 0.72 + 0.28 * outBack(prog(t, c, c + 0.22));
+  return 1;
+};
+
 export const Hud: React.FC<{ t: number; captions?: boolean }> = ({ t, captions = true }) => {
-  const d = EP.HUD, X = d.Extra;
+  const d = EP.HUD, X = d.Extra, kick = cutKick(t);
   return (
     <div style={{ position: "absolute", inset: 0, width: W, height: H, overflow: "hidden" }}>
       <style>{`@font-face{font-family:'Baloo 2';font-weight:800;src:url(${staticFile("fonts/Baloo2-800.woff2")}) format('woff2');}`}</style>
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${kick})`, transformOrigin: "50% 30%" }}>
       {X ? <X t={t} /> : null}
       {d.pills.map((p, i) => <PillEl key={i} p={p} t={t} />)}
       {d.titles.map((ti, i) => <TitleEl key={i} ti={ti} t={t} next={Math.min(99999, ...d.alerts.filter((x) => x > ti.a + 0.3), ...d.stamps.map((x) => x[0]).filter((x) => x > ti.a + 0.3))} />)}
@@ -134,6 +142,7 @@ export const Hud: React.FC<{ t: number; captions?: boolean }> = ({ t, captions =
       {d.crosses.map(([a, b]) => <Cross key={a} t={t} a={a} b={b} />)}
       {d.stamps.map(([a, b]) => <Stamp key={a} t={t} a={a} b={b} />)}
       <RewardEl t={t} r={d.reward} />
+      </div>
       {captions ? <Caption t={t} /> : null}
     </div>
   );
