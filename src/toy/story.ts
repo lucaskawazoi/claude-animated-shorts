@@ -18,7 +18,7 @@ export const SHOTS: Shot[] = [
       return { pos: [lerp(-31.5, tx - 2.0, u), lerp(3.4, 4.0, u), 13.2], look: [lerp(-26.0, tx + 4.5, u), lerp(1.9, 2.2, u), 2.6], fov: 62, roll: lerp(3, -1.5, u) };
     } },
   { name: "moenda>caldeira", t0: T.moenda - 0.76, keys: [
-    K(T.moenda - 0.76, [-9.5, 4.6, 14.0], [-6.5, 2.8, -3.0], 62, 2), K(T.montanha - 0.2, [-4.0, 5.0, 14.5], [-0.5, 3.0, -3.0], 62, -1.5),
+    K(T.moenda - 0.76, [-6.6, 2.1, 7.6], [-6.4, 2.4, -3.0], 50, 3), K(T.moenda + 1.5, [-8.5, 4.2, 12.5], [-6.5, 2.8, -3.0], 60, 2), K(T.montanha - 0.2, [-4.0, 5.0, 14.5], [-0.5, 3.0, -3.0], 62, -1.5),
     K(T.p1 - 0.3, [3.0, 5.0, 15.0], [4.0, 3.6, -3.2], 64, 3), K(T.d1 - 0.05, [3.6, 4.6, 14.5], [4.0, 3.8, -3.2], 66, 5),
     K(T.joga + 1.0, [10.5, 4.4, 14.0], [12.5, 2.8, -2.0], 62, -2), K(T.fogo + 0.73, [11.5, 4.6, 14.2], [13.5, 3.0, -2.5], 62, -2)] },
   { name: "fogo>energia>carro", t0: T.fogo + 0.78, keys: [
@@ -39,16 +39,16 @@ export const SHOTS: Shot[] = [
     K(T.enche - 0.2, [58.5, 4.2, 18.0], [60.5, 2.6, 4.0], 62, -2), K(T.preto, [57.5, 3.6, 17.5], [59.5, 2.4, 3.0], 60, 2),
     K(T.vinhaca - 0.1, [55.0, 4.6, 22.0], [54.0, 1.0, 8.0], 62, 2), K(T.p4 + 0.4, [54.0, 4.4, 22.0], [54.0, 1.0, 9.0], 60, -1), K(T.d4, [54.0, 4.4, 22.0], [54.0, 1.0, 9.0], 60, -1),
     K(T.potassio, [53.0, 4.5, 20.0], [48.0, 0.8, 9.9], 60, -3), K(T.canais - 0.1, [52.0, 3.6, 18.0], [50.0, 0.8, 9.9], 60, -4)] },
-  { name: "canal>lavoura", t0: T.canais - 0.08, keys: [
+  { name: "canal>lavoura", t0: T.canais + 0.05, keys: [
     K(CANAL_END, [-28.0, 2.6, 13.5], [-18.0, 0.6, 9.9], 60, 2), K(CANAL_END + 0.9, [-21.0, 5.0, 17.0], [-31.0, 2.0, -2.0], 62, -3),
-    K(T.gera + 1.1, [-25.0, 6.0, 17.5], [-35.0, 2.8, -3.0], 64, 2)],
+    K(T.gera + 1.2, [-25.0, 6.0, 17.5], [-35.0, 2.8, -3.0], 64, 2)],
     fn: (t) => {
       if (t >= CANAL_END) return keyed(SHOTS[6].keys, t);
-      const xf = flowFront(t), u = sstep(prog(t, T.canais - 0.08, T.canais + 0.4));
+      const xf = flowFront(t), u = sstep(prog(t, T.canais + 0.05, T.canais + 0.5));
       return { pos: [xf - 10, 2.6, 13.5], look: [xf, 0.6, 9.9], fov: 60, roll: lerp(-3, 2, u) };
     } },
-  { name: "energia>cidade", t0: T.gera + 1.15, keys: [
-    K(T.gera + 1.15, [20.0, 6.0, 14.0], [25.0, 5.0, -3.5], 60, 2), K(T.vende, [36.0, 6.0, 14.0], [46.0, 12.5, -9.0], 64, -2),
+  { name: "energia>cidade", t0: T.gera + 1.22, keys: [
+    K(T.gera + 1.22, [20.0, 6.0, 14.0], [25.0, 5.0, -3.5], 60, 2), K(T.vende, [36.0, 6.0, 14.0], [46.0, 12.5, -9.0], 64, -2),
     K(T.cidade - 0.4, [64.0, 6.0, 13.0], [74.0, 5.0, -9.0], 62, 1), K(T.parabens - 0.1, [70.0, 5.0, 11.0], [78.0, 3.5, -8.0], 60, -1),
     K(88.5, [69.0, 7.0, 16.0], [78.5, 3.2, -8.0], 59, 0), K(T.end, [68.6, 7.4, 16.6], [78.6, 3.2, -8.0], 59, 0)] },
 ];
@@ -65,7 +65,7 @@ export const shotAt = (t: number): Shot => { let s = SHOTS[0]; for (const x of S
 
 /** dinamismo da câmera por janela: a régua (dissect) mede o movimento por plano e o que importa é a ORDEM entre planos:
  *  whips curtos (janelas 3 e 7) são os mais agitados, o final (11) o mais calmo. Janelas = tempos do original x (duração/96,76). */
-const DYN: [number, number][] = [[0, 3.4], [9.85, 0.7], [20.9, 2.2], [22.35, 2.4], [30.4, 0.15], [42.9, 0.3], [50.8, 2.6], [51.7, 2.4], [68.5, 0.3], [77.7, 2.8], [88.7, 0.08]];
+const DYN: [number, number][] = [[0, 4.2], [9.85, 0.7], [20.9, 2.2], [22.35, 2.4], [30.4, 0.15], [42.9, 0.3], [50.8, 2.6], [51.7, 2.4], [68.5, 0.3], [77.7, 2.8], [88.7, 0.08]];
 const dynAt = (t: number) => { let d = DYN[0][1]; for (const [t0, v] of DYN) if (t >= t0) d = v; return d; };
 
 /** câmera do quadro: plano atual + câmera na mão (tremor, deriva e rolagem) proporcionais ao dinamismo da janela */
@@ -113,7 +113,7 @@ export const workerAt = (t: number): WorkerState => seg(t, [
   [T.canais - 0.2, { p: [49.0, 0, 14.0], yaw: 0.2, pose: "point", scale: 0 }],
   [CANAL_END, { p: [-25.0, 0, 9.5], yaw: 0.35, pose: "present" }],
   [CANAL_END + 0.9, { p: [-28.0, 0, 9.0], yaw: 0.1, pose: "cheer" }],
-  [T.gera + 1.15, { p: [22.4, 0, 8.4], yaw: 0.3, pose: "point" }],
+  [T.gera + 1.22, { p: [22.4, 0, 8.4], yaw: 0.3, pose: "point" }],
   [T.vende - 0.3, { p: [22.4, -60, 8.4], yaw: 0.3, pose: "point", scale: 0 }],
   [T.cidade - 1.2, { p: [64.0, 0, 7.6], yaw: 0.4, pose: "present" }],
   [T.parabens - 0.1, { p: [71.5, 0, 6.0], yaw: 0.1, pose: "cheer" }],

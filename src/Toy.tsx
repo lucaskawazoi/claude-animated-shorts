@@ -55,7 +55,7 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
       <ambientLight intensity={0.25} />
       <directionalLight ref={sun} intensity={2.7} color="#fff3dc" castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} shadow-normalBias={0.04} />
       <Sky /><Ground /><Hills /><Trees spots={TREES} /><Clouds t={t} />
-      <CaneField grow={grow} wet={wet} />
+      <CaneField grow={grow} wet={wet} t={t} />
       <Truck x={truckX(t)} tilt={tilt} load={load} t={t} />
       <Mill t={t} /><Pile g={pileGrow(t)} /><Boiler t={t} /><Turbine t={t} /><CarGag t={t} />
       <Dorna t={t} /><Column t={t} /><Canal t={t} />

@@ -79,23 +79,38 @@ export const Clouds: React.FC<{ t: number }> = ({ t }) => (
   </G>
 );
 
-/** canavial: 20 fileiras × 18 canas, instanciado; `grow` escala a altura (a cana nova cresce mais forte) */
-export const CaneField: React.FC<{ grow: number; wet: number }> = ({ grow, wet }) => {
-  const { stalks, leaves } = useMemo(() => {
+/** canavial: 20 fileiras × 18 canas, instanciado, balançando ao vento (onda ao longo de x); `grow` escala a altura (a cana nova cresce mais forte) */
+export const CaneField: React.FC<{ grow: number; wet: number; t: number }> = ({ grow, wet, t }) => {
+  const { stalks, leaves, base } = useMemo(() => {
     const N = 20 * 18, sg = new THREE.CylinderGeometry(0.075, 0.095, 3.4, 6), lg = new THREE.ConeGeometry(0.16, 2.0, 4);
     lg.translate(0, 1.0, 0); // pivô na base da folha
-    const s = new THREE.InstancedMesh(sg, mat(PAL.cane, { flat: true }), N), l = new THREE.InstancedMesh(lg, mat(PAL.caneLeaf, { flat: true }), N * 3), d = new THREE.Object3D();
+    const s = new THREE.InstancedMesh(sg, mat(PAL.cane, { flat: true }), N), l = new THREE.InstancedMesh(lg, mat(PAL.caneLeaf, { flat: true }), N * 3);
+    const base: { x: number; z: number; h: number; ax: number; az: number; yaw: number; tilt: number[] }[] = [];
     let k = 0;
     for (let row = 0; row < 20; row++) for (let j = 0; j < 18; j++) {
-      const x = -50 + row * 1.7 + rnd(k) * 0.4, z = -16 + j * 1.05 + rnd(k + 99) * 0.4, h = lerp(0.85, 1.15, rnd(k + 7));
-      d.position.set(x, 1.7 * h, z); d.scale.set(1, h, 1); d.rotation.set((rnd(k + 3) - 0.5) * 0.1, 0, (rnd(k + 4) - 0.5) * 0.1); d.updateMatrix(); s.setMatrixAt(k, d.matrix);
-      for (let q = 0; q < 3; q++) { // três folhas longas, abertas em leque, caindo para fora
-        d.position.set(x, 3.3 * h, z); d.scale.set(1, h, 1); d.rotation.set(0, (q / 3) * Math.PI * 2 + rnd(k) * 2, 0); d.rotateX(0.75 + rnd(k + q) * 0.35); d.updateMatrix(); l.setMatrixAt(k * 3 + q, d.matrix);
-      }
+      base.push({ x: -50 + row * 1.7 + rnd(k) * 0.4, z: -16 + j * 1.05 + rnd(k + 99) * 0.4, h: lerp(0.85, 1.15, rnd(k + 7)), ax: (rnd(k + 3) - 0.5) * 0.1, az: (rnd(k + 4) - 0.5) * 0.1, yaw: rnd(k) * 2, tilt: [0.75 + rnd(k) * 0.35, 0.75 + rnd(k + 1) * 0.35, 0.75 + rnd(k + 2) * 0.35] });
       k++;
     }
-    s.castShadow = true; l.castShadow = true; return { stalks: s, leaves: l };
+    s.castShadow = true; l.castShadow = true; s.frustumCulled = false; l.frustumCulled = false;
+    return { stalks: s, leaves: l, base };
   }, []);
+  // vento: cada cana pivota na base; a fase anda com x e z (onda atravessando o campo)
+  const m4 = useMemo(() => new THREE.Matrix4(), []), qa = useMemo(() => new THREE.Quaternion(), []), qb = useMemo(() => new THREE.Quaternion(), []), qc = useMemo(() => new THREE.Quaternion(), []);
+  const pv = useMemo(() => new THREE.Vector3(), []), sv = useMemo(() => new THREE.Vector3(), []), ev = useMemo(() => new THREE.Euler(), []), up = useMemo(() => new THREE.Vector3(), []);
+  base.forEach((c, i) => {
+    const ph = 0.22 * c.x + 0.5 * c.z, ax = c.ax + 0.09 * Math.sin(t * 2.9 + ph), az = c.az + 0.11 * Math.sin(t * 2.3 + ph * 1.3 + 1);
+    qa.setFromEuler(ev.set(ax, 0, az));
+    up.set(0, 1.7 * c.h, 0).applyQuaternion(qa); pv.set(c.x + up.x, up.y, c.z + up.z); sv.set(1, c.h, 1);
+    stalks.setMatrixAt(i, m4.compose(pv, qa, sv));
+    up.set(0, 3.3 * c.h, 0).applyQuaternion(qa);
+    for (let q = 0; q < 3; q++) {
+      qb.setFromEuler(ev.set(0, (q / 3) * Math.PI * 2 + c.yaw, 0)); qc.setFromEuler(ev.set(c.tilt[q], 0, 0));
+      const ql = qa.clone().multiply(qb).multiply(qc);
+      pv.set(c.x + up.x, up.y, c.z + up.z);
+      leaves.setMatrixAt(i * 3 + q, m4.compose(pv, ql, sv));
+    }
+  });
+  stalks.instanceMatrix.needsUpdate = true; leaves.instanceMatrix.needsUpdate = true;
   return (
     <G>
       <G sc={[1, grow, 1]}><primitive object={stalks} /><primitive object={leaves} /></G>
