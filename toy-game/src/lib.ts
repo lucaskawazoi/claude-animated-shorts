@@ -40,9 +40,10 @@ export const shotName = (t: number) => SHOTS[shotAt(t)][1];
 export const shotStart = (name: string) => SHOTS.find(s => s[1] === name)![0];
 export const shotEnd = (name: string) => { const i = SHOTS.findIndex(s => s[1] === name); return i + 1 < SHOTS.length ? SHOTS[i + 1][0] : DURATION / FPS; };
 
+// concreto no cinza medido da referência (#ABB3B1); água funda nas câmaras e no lago
 export const C = {
   grass: '#6fcf4a', grassTop: '#7ddb55', grassDark: '#57b33a', dirt: '#8a5a32', dirtDark: '#5e3b22', dirtLight: '#b07a46',
-  concrete: '#cfd3d4', concreteDark: '#a3a9ac', water: '#3ea7e6', waterDeep: '#2b89cc', foam: '#eaf7ff', sand: '#ecd79c',
+  concrete: '#b3babb', concreteDark: '#8e9699', water: '#3ea7e6', waterDeep: '#2f8fd2', foam: '#eaf7ff', sand: '#ecd79c',
   hullRed: '#d9483b', hullNavy: '#27406e', deck: '#f3f3f0', gate: '#f08a24', rail: '#6b6f73', mule: '#2fae66',
   helmet: '#ffcc1f', vest: '#ff7a1a', shirt: '#2f6fd6', pants: '#24345c', skin: '#f2c29b', hair: '#5a3a22', boot: '#3a2a1f',
   sky: '#8fd0ff', skyLow: '#e6f4ff', trunk: '#8b5a2b', leaf: '#3fae49', leafLight: '#5ccf55', rock: '#9aa0a6',

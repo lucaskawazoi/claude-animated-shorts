@@ -99,7 +99,7 @@ export const Hud = ({ t }: { t: number }) => {
 const Confetti = ({ t }: { t: number }) => {
   if (t > 4.5) return null;
   const r = seeded(77); const cols = ['#ff3b30', '#ffcc1f', '#2fa4e7', '#3ec27e', '#ff8fb8', '#ffffff'];
-  return (<>{Array.from({ length: 110 }, (_, i) => {
+  return (<>{Array.from({ length: 75 }, (_, i) => {
     const x0 = r() * 1080, d = r() * 0.6, vy = 500 + r() * 700, vx = (r() - 0.5) * 300, rot = r() * 720, c = cols[i % cols.length], tt = t - d;
     if (tt < 0) return null;
     return <div key={i} style={{ position: 'absolute', left: x0 + vx * tt, top: -40 + vy * tt + 260 * tt * tt, width: 22, height: 34, background: c,

@@ -2,8 +2,9 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { C, W, LAND, VALLEY, STEP_X, OLD_W, NEW_Z, NEW_W, clamp, lin, smooth, mix, pop, drop, seeded, shotStart, shotName } from './lib';
-import { Box, RBox, Ship, Worker, Mule, Tree, Cloud, Tufts, mat, Pose } from './models';
+import { Box, RBox, Ship, Worker, Mule, Tree, Cloud, Tufts, Waves, mat, Pose } from './models';
 import * as St from './story';
+import { camAt } from './cams';
 
 type P = [number, number][];
 const TOP = [1.6, 2.8, 4.0];
@@ -37,7 +38,7 @@ const Slab = ({ poly, top, depth, cap = C.grass, side = C.dirt }: { poly: P; top
 };
 const Water = ({ poly, y, opacity = 0.9 }: { poly: P; y: number; opacity?: number }) => {
   const g = useMemo(() => new THREE.ShapeGeometry(shape(poly)), [poly]);
-  return <mesh geometry={g} rotation={[Math.PI / 2, 0, 0]} position={[0, y, 0]} material={mat(C.water, { rough: 0.2, opacity, double: true })} receiveShadow />;
+  return <mesh geometry={g} rotation={[Math.PI / 2, 0, 0]} position={[0, y, 0]} material={mat(C.waterDeep, { rough: 0.2, opacity, double: true })} receiveShadow />;
 };
 // bloco de terraço (grama em cima, terra nos lados)
 const Block = ({ x0, x1, z0, z1, top, bottom = -0.6, sink = 0 }: { x0: number; x1: number; z0: number; z1: number; top: number; bottom?: number; sink?: number }) => {
@@ -114,7 +115,7 @@ const Chamber = ({ x0, x1, zc, w, i, level, s = 1 }: { x0: number; x1: number; z
       {[-w / 2 - 0.25, w / 2 + 0.25].map(z => [-0.12, 0.12].map(dz => (
         <Box key={`${z}${dz}`} size={[L, 0.04, 0.05]} pos={[0, top + 0.02, z + dz]} color={C.rail} shadow={false} />)))}
       {level - fy > 0.03 && (
-        <mesh position={[0, (fy + level) / 2, 0]} material={mat(C.water, { rough: 0.2, opacity: 0.86 })}>
+        <mesh position={[0, (fy + level) / 2, 0]} material={mat(C.waterDeep, { rough: 0.2, opacity: 0.88 })}>
           <boxGeometry args={[L - 0.02, level - fy, w - 0.02]} />
         </mesh>
       )}
@@ -146,8 +147,8 @@ const Lock = ({ t, zc, w, lv, gates, build, glassSide = 1 }: { t: number; zc: nu
 );
 
 // partículas determinísticas: n partículas nascendo de t0 a t1, cada uma vive `life` s
-const Particles = ({ t, t0, t1, n, life, seed, at, color, size = 0.06 }:
-  { t: number; t0: number; t1: number; n: number; life: number; seed: number; at: (r: () => number, age: number) => [number, number, number] | null; color: string; size?: number }) => {
+const Particles = ({ t, t0, t1, n, life, seed, at, color, size = 0.06, water = false }:
+  { t: number; t0: number; t1: number; n: number; life: number; seed: number; at: (r: () => number, age: number) => [number, number, number] | null; color: string; size?: number; water?: boolean }) => {
   if (t < t0 || t > t1 + life) return null;
   const out = [];
   for (let k = 0; k < n; k++) {
@@ -155,7 +156,8 @@ const Particles = ({ t, t0, t1, n, life, seed, at, color, size = 0.06 }:
     const tb = t0 + (k / n) * (t1 - t0), age = t - tb;
     if (age < 0 || age > life) continue;
     const p = at(r, age); if (!p) continue;
-    out.push(<mesh key={k} position={p} material={mat(color, { flat: true })} scale={size * (1 - 0.5 * age / life)}><icosahedronGeometry args={[1, 0]} /></mesh>);
+    out.push(<mesh key={k} position={p} material={water ? mat('#dff4ff', { rough: 0.3, emissive: '#5aa9e6' }) : mat(color, { flat: true })}
+      scale={size * (1 - 0.5 * age / life)}><icosahedronGeometry args={[1, water ? 1 : 0]} /></mesh>);
   }
   return <>{out}</>;
 };
@@ -207,6 +209,9 @@ export const Level = ({ t }: { t: number }) => {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} material={mat(C.water, { rough: 0.25 })} receiveShadow>
         <planeGeometry args={[600, 600]} />
       </mesh>
+      {(() => { const cp = camAt(t).p; return <Waves t={t} x0={-60} x1={-15.5} z0={-30} z1={22} n={320} avoid={[cp.x, cp.z, 2 + cp.y * 1.2]} />; })()}
+      <Waves t={t} x0={46.5} x1={80} z0={-30} z1={22} n={120} seed={22} />
+      {St.lake(t) > 2.9 && <Waves t={t} x0={9} x1={30} z0={-12} z1={8} n={90} y={St.lake(t) + 0.03} len={0.7} seed={23} />}
       {/* terraços: faixa de trás, pátio baixo, faixa das piscinas, enchimentos das faixas das eclusas */}
       {[0, 1, 2].map(i => (
         <group key={i}>
@@ -258,9 +263,9 @@ export const Level = ({ t }: { t: number }) => {
         );
       }))}
       {/* água indo e voltando das piscinas */}
-      <Particles t={t} t0={W(207)} t1={W(217)} n={60} life={0.7} seed={5} color={C.foam} size={0.07}
+      <Particles t={t} t0={W(207)} t1={W(217)} n={80} life={0.7} seed={5} color={C.foam} size={0.08} water
         at={(r, a) => [-9.7 + r() * 4.4, 2.6 + 0.2 * Math.sin(a * 9), mix(9.3, 11.2, a / 0.7)]} />
-      <Particles t={t} t0={76.8} t1={78.1} n={40} life={0.7} seed={6} color={C.foam} size={0.07}
+      <Particles t={t} t0={76.8} t1={78.1} n={60} life={0.7} seed={6} color={C.foam} size={0.08} water
         at={(r, a) => [-9.7 + r() * 4.4, 2.6 + 0.2 * Math.sin(a * 9), mix(11.2, 9.3, a / 0.7)]} />
       {/* mesa de controle com o botão grande */}
       {t >= ob && (
@@ -303,7 +308,7 @@ export const Level = ({ t }: { t: number }) => {
       <Particles t={t} t0={W(114)} t1={W(114) + 1.0} n={40} life={0.35} seed={8} color="#ffd23f" size={0.05}
         at={(r, a) => { const sb = shipsNow.find(s => s.id === 'B')!; return [sb.x + 0.8 + r() * 1.4 + (r() - 0.5) * a * 6, St.lvl(t, 0) + 0.3 + a * (2 + r() * 3) - 9 * a * a, -1.05 + r() * 0.1 + a * 2]; }} />
       {/* jorro de água doce saindo para o mar */}
-      <Particles t={t} t0={50.2} t1={52.6} n={140} life={0.9} seed={12} color={C.foam} size={0.09}
+      <Particles t={t} t0={50.0} t1={52.6} n={220} life={0.9} seed={12} color={C.foam} size={0.12} water
         at={(r, a) => { const z = (r() - 0.5) * 2; const y0 = Math.max(0.15, St.lvl(t, 0) * 0.8) + r() * 0.3; const v = 3 + r() * 3;
           const y = y0 + (1 + r() * 2) * a - 4.9 * a * a; return y < -0.05 ? null : [-15.2 - v * a, y, z * (1 + a)]; }} />
       {t > 50.3 && t < 53.6 && (

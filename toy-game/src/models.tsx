@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { C, CONTAINERS, seeded } from './lib';
+import { C, CONTAINERS, seeded, clamp } from './lib';
 
 type V3 = [number, number, number];
 const mats = new Map<string, THREE.MeshStandardMaterial>();
@@ -191,4 +191,25 @@ export const Tufts = ({ regions, n, seed = 3, skip }: { regions: [number, number
     return { tuft, flower };
   }, [n, seed]);
   return <><primitive object={tuft} /><primitive object={flower} /></>;
+};
+
+// Marolas de brinquedo: traços brancos que nascem, deslizam e somem na água (dão vida ao mar e ao mapa).
+export const Waves = ({ t, x0, x1, z0, z1, n = 260, y = 0.03, len = 0.9, seed = 21, avoid }:
+  { t: number; x0: number; x1: number; z0: number; z1: number; n?: number; y?: number; len?: number; seed?: number; avoid?: [number, number, number] }) => {
+  const mesh = useMemo(() => {
+    const g = new THREE.BoxGeometry(len, 0.02, len * 0.12);
+    return new THREE.InstancedMesh(g, mat('#ffffff', { opacity: 0.7 }), n);
+  }, [n, len]);
+  const r = seeded(seed); const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), sc = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    const px = r(), pz = r(), ph = r(), sp = 0.4 + r() * 0.5, per = 2.5 + r() * 2;
+    const k = ((t / per + ph) % 1), life = Math.sin(k * Math.PI);
+    const x = x0 + ((px * (x1 - x0) + t * sp) % (x1 - x0)), z = z0 + pz * (z1 - z0);
+    // perto da lente um traço vira uma barra branca enorme: some dentro do raio `avoid`
+    const near = avoid ? clamp((Math.hypot(x - avoid[0], z - avoid[1]) - avoid[2]) / 3) : 1;
+    m.compose(v.set(x, y, z), q.setFromEuler(e.set(0, 0.15, 0)), sc.set(0.3 + life, 1, Math.max(0.001, life * near)));
+    mesh.setMatrixAt(i, m);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  return <primitive object={mesh} />;
 };

@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { C, W, WE, clamp, smooth, pop } from './lib';
-import { Ship, mat, Cloud } from './models';
+import { Ship, mat, Cloud, Waves } from './models';
 
 const K = 0.25; // graus -> unidades
 export const ll = (lon: number, lat: number): [number, number] => [(lon + 80) * K, -lat * K];
@@ -43,6 +43,7 @@ export const MapSet = ({ t }: { t: number }) => {
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} material={mat(C.water, { rough: 0.3 })} receiveShadow><planeGeometry args={[400, 400]} /></mesh>
+      <Waves t={t} x0={-22} x1={22} z0={-20} z1={22} n={420} len={0.55} />
       <Land pts={NA} /><Land pts={SA} />
       {dots.filter(d => d <= u).map((d, i) => {
         const q = routeCurve.getPointAt(d);
