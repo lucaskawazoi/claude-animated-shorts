@@ -221,7 +221,6 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
         <Houses t={t} /><Ashlar t={t} /><Fountains t={t} /><Quarry t={t} /><Llamas t={t} />
       </G>
       <Rain t={t} /><Faults t={t} />
-      <Puffs t={t} p={[4, H + 2, -10]} n={3} period={4} rise={3} size={0.4} c="#eeeeee" on={built(t) || t < T.siglo ? 1 : 0} />
     </>
   );
 };
