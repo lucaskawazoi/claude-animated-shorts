@@ -48,7 +48,7 @@ const River: React.FC<{ t: number; s: S }> = ({ t, s }) => (
     {Array.from({ length: 30 }, (_, i) => { const z = -60 + fract(rnd(i) + t * 0.03) * 120; return <Sph key={i} rad={0.5} p={[-51 + (rnd(i + 4) - 0.5) * 11, 0.3 + 0.12 * Math.sin(t * 3 + i), z]} sc={[1.4, 0.25, 0.8]} c="#b8996a" cast={false} ws={6} hs={4} />; })}
     {/* galhos, folhas e garrafas descendo o rio; com a grade, ficam presos nela */}
     {s.debris > 0.01 ? Array.from({ length: 12 }, (_, i) => {
-      const free = fract(rnd(i) + t * 0.05), z = lerp(-40, 40, free), held = s.grate > 0.5 && z > -2 && z < 6;
+      const free = fract(rnd(i) + t * 0.09), z = lerp(-40, 40, free), held = s.grate > 0.5 && z > -2 && z < 6;
       const p: V3 = held ? [-44.3, 0.6, -3 + (i % 6) * 1.6] : [-51 + (rnd(i + 3) - 0.5) * 9, 0.5, z];
       const kind = i % 3;
       return <G key={i} p={p} r={[0, rnd(i) * 6 + t * 0.3, 0]} sc={s.debris}>
