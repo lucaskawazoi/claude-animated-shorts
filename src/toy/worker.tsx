@@ -1,4 +1,5 @@
-// O obreiro de época (assinatura do canal ecos-del-tiempo): a mesma cabeça grande de brinquedo, bigode e LENÇO VERMELHO
+// Branch pt-mep-shorts (Mundo em Peças): o operário de capacete do Panamá, sem lenço nem bigode (costume mep).
+// Origem: o obreiro de época do ecos-del-tiempo: a mesma cabeça grande de brinquedo, bigode e LENÇO VERMELHO
 // no pescoço em todo episódio; a roupa muda com a época (Costume). Braços com cotovelo; poses são só números.
 import React from "react";
 import { Box, Cone, Cyl, G, Sph, V3, lerp } from "./kit";
@@ -33,12 +34,13 @@ export const blendPose = (a: Pose, b: Pose, u: number): Pose => ({
 });
 
 /** roupa da época. top = cor do tronco (= skin se nu), bottom = pernas, kilt = saiote/túnica curta, hat = chapéu */
-export type Costume = { skin: string; top: string; bottom: string; kilt?: string; kiltLen?: number; hat: "helmet" | "cloth" | "cap" | "none" | "straw"; hatC: string; boot: string; belt?: string; sleeves?: boolean };
+export type Costume = { skin: string; top: string; bottom: string; kilt?: string; kiltLen?: number; hat: "helmet" | "cloth" | "cap" | "none" | "straw"; hatC: string; boot: string; belt?: string; sleeves?: boolean; scarf?: boolean; mustache?: boolean };
 export const COSTUMES: Record<string, Costume> = {
   egypt: { skin: "#b9784b", top: "#b9784b", bottom: "#b9784b", kilt: "#f5f0dc", kiltLen: 0.42, hat: "cloth", hatC: "#f5f0dc", boot: "#8a5a32", belt: "#d4a64a" },
   rome: { skin: "#d39a6c", top: "#c8553d", bottom: "#d39a6c", kilt: "#c8553d", kiltLen: 0.4, hat: "none", hatC: "#000", boot: "#7a4a2a", belt: "#6b4423", sleeves: false },
   inca: { skin: "#a8673f", top: "#d23c3c", bottom: "#a8673f", kilt: "#d23c3c", kiltLen: 0.45, hat: "cap", hatC: "#f2c14e", boot: "#7a4a2a", belt: "#2f7fc0" },
   printer: { skin: "#e0aa82", top: "#f2ede0", bottom: "#3b4a6b", kilt: "#7a5c3e", kiltLen: 0.55, hat: "cap", hatC: "#3b3b3b", boot: "#3a2b24", sleeves: true },
+  mep: { skin: "#c98a5b", top: "#ff7a1a", bottom: "#2f5f9e", hat: "helmet", hatC: "#ffd400", boot: "#3a2b24", sleeves: true, scarf: false, mustache: false },
   worker: { skin: "#c98a5b", top: "#ff7a1a", bottom: "#e86a10", hat: "helmet", hatC: "#ffd400", boot: "#3a2b24", sleeves: true },
 };
 
@@ -74,15 +76,15 @@ export const Worker: React.FC<{ p: V3; yaw?: number; pose: Pose; scale?: number;
       {c.belt ? <Cyl rt={0.315} h={0.08} p={[0, 0.9, 0]} c={c.belt} seg={12} /> : null}
       {c.hat === "helmet" ? <><Cyl rt={0.305} h={0.07} p={[0, 1.0, 0]} c="#fff3c4" seg={12} /><Cyl rt={0.292} h={0.07} p={[0, 1.18, 0]} c="#fff3c4" seg={12} /></> : null}
       {/* LENÇO VERMELHO: a marca do personagem em todas as épocas */}
-      <Cyl rt={0.2} rb={0.27} h={0.12} p={[0, 1.4, 0]} c="#e0262b" seg={12} cast={false} />
-      <Cone rad={0.16} h={0.26} seg={3} p={[0, 1.26, 0.2]} r={[Math.PI + 0.25, 0, 0]} c="#e0262b" cast={false} />
+      {c.scarf === false ? null : <><Cyl rt={0.2} rb={0.27} h={0.12} p={[0, 1.4, 0]} c="#e0262b" seg={12} cast={false} />
+      <Cone rad={0.16} h={0.26} seg={3} p={[0, 1.26, 0.2]} r={[Math.PI + 0.25, 0, 0]} c="#e0262b" cast={false} /></>}
       <ArmPart side={-1} a={pose.l} c={c} t={t} /><ArmPart side={1} a={pose.r} c={c} prop={prop} t={t} />
       {/* cabeça */}
       <G p={[0, 1.55, 0]} r={[pose.hx, pose.hy, pose.hz]}>
         <Sph rad={0.31} c={c.skin} ws={16} hs={12} p={[0, 0.2, 0]} />
         <Sph rad={0.045} c="#1c1410" p={[-0.12, 0.22, 0.27]} ws={8} hs={6} /><Sph rad={0.045} c="#1c1410" p={[0.12, 0.22, 0.27]} ws={8} hs={6} />
         <Sph rad={0.018} c="#ffffff" p={[-0.105, 0.24, 0.305]} ws={6} hs={4} cast={false} /><Sph rad={0.018} c="#ffffff" p={[0.135, 0.24, 0.305]} ws={6} hs={4} cast={false} />
-        {mustache ? <Box s={[0.26, 0.07, 0.07]} p={[0, 0.1, 0.29]} c="#2a1a12" cast={false} /> : null}
+        {(c.mustache ?? mustache) ? <Box s={[0.26, 0.07, 0.07]} p={[0, 0.1, 0.29]} c="#2a1a12" cast={false} /> : null}
         <Sph rad={0.055} c="#8a4a35" p={[0, 0.17, 0.3]} ws={8} hs={6} cast={false} />
         {c.hat === "helmet" ? <>
           <Sph rad={0.365} c={c.hatC} ps={0} pl={Math.PI * 0.52} p={[0, 0.27, 0]} ws={16} hs={10} o={{ rough: 0.35 }} />

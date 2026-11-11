@@ -1,0 +1,1544 @@
+[
+ {
+  "id": "w0",
+  "text": "Trinta",
+  "start": 0.0,
+  "end": 0.395
+ },
+ {
+  "id": "w1",
+  "text": "e",
+  "start": 0.43,
+  "end": 0.453
+ },
+ {
+  "id": "w2",
+  "text": "três",
+  "start": 0.499,
+  "end": 0.731
+ },
+ {
+  "id": "w3",
+  "text": "mil",
+  "start": 0.778,
+  "end": 0.917
+ },
+ {
+  "id": "w4",
+  "text": "litros",
+  "start": 0.964,
+  "end": 1.231
+ },
+ {
+  "id": "w5",
+  "text": "por",
+  "start": 1.289,
+  "end": 1.416
+ },
+ {
+  "id": "w6",
+  "text": "segundo.",
+  "start": 1.451,
+  "end": 2.078
+ },
+ {
+  "id": "w7",
+  "text": "É",
+  "start": 2.438,
+  "end": 2.508
+ },
+ {
+  "id": "w8",
+  "text": "o",
+  "start": 2.577,
+  "end": 2.601
+ },
+ {
+  "id": "w9",
+  "text": "que",
+  "start": 2.659,
+  "end": 2.763
+ },
+ {
+  "id": "w10",
+  "text": "uma",
+  "start": 2.798,
+  "end": 2.926
+ },
+ {
+  "id": "w11",
+  "text": "só",
+  "start": 2.995,
+  "end": 3.216
+ },
+ {
+  "id": "w12",
+  "text": "estação",
+  "start": 3.274,
+  "end": 3.75
+ },
+ {
+  "id": "w13",
+  "text": "de",
+  "start": 3.773,
+  "end": 3.843
+ },
+ {
+  "id": "w14",
+  "text": "São",
+  "start": 3.901,
+  "end": 4.075
+ },
+ {
+  "id": "w15",
+  "text": "Paulo",
+  "start": 4.122,
+  "end": 4.331
+ },
+ {
+  "id": "w16",
+  "text": "consegue",
+  "start": 4.365,
+  "end": 4.76
+ },
+ {
+  "id": "w17",
+  "text": "tratar.",
+  "start": 4.807,
+  "end": 5.329
+ },
+ {
+  "id": "w18",
+  "text": "E",
+  "start": 5.584,
+  "end": 5.689
+ },
+ {
+  "id": "w19",
+  "text": "tudo",
+  "start": 5.77,
+  "end": 5.968
+ },
+ {
+  "id": "w20",
+  "text": "começa",
+  "start": 6.014,
+  "end": 6.374
+ },
+ {
+  "id": "w21",
+  "text": "num",
+  "start": 6.42,
+  "end": 6.513
+ },
+ {
+  "id": "w22",
+  "text": "rio",
+  "start": 6.56,
+  "end": 6.687
+ },
+ {
+  "id": "w23",
+  "text": "barrento.",
+  "start": 6.734,
+  "end": 7.291
+ },
+ {
+  "id": "w24",
+  "text": "Você",
+  "start": 7.488,
+  "end": 7.721
+ },
+ {
+  "id": "w25",
+  "text": "quer",
+  "start": 7.79,
+  "end": 7.918
+ },
+ {
+  "id": "w26",
+  "text": "levar",
+  "start": 7.941,
+  "end": 8.185
+ },
+ {
+  "id": "w27",
+  "text": "essa",
+  "start": 8.243,
+  "end": 8.394
+ },
+ {
+  "id": "w28",
+  "text": "água",
+  "start": 8.417,
+  "end": 8.626
+ },
+ {
+  "id": "w29",
+  "text": "do",
+  "start": 8.673,
+  "end": 8.766
+ },
+ {
+  "id": "w30",
+  "text": "rio",
+  "start": 8.824,
+  "end": 8.963
+ },
+ {
+  "id": "w31",
+  "text": "até",
+  "start": 8.998,
+  "end": 9.149
+ },
+ {
+  "id": "w32",
+  "text": "o",
+  "start": 9.207,
+  "end": 9.23
+ },
+ {
+  "id": "w33",
+  "text": "seu",
+  "start": 9.276,
+  "end": 9.381
+ },
+ {
+  "id": "w34",
+  "text": "copo.",
+  "start": 9.451,
+  "end": 9.903
+ },
+ {
+  "id": "w35",
+  "text": "Só",
+  "start": 10.124,
+  "end": 10.333
+ },
+ {
+  "id": "w36",
+  "text": "que",
+  "start": 10.391,
+  "end": 10.472
+ },
+ {
+  "id": "w37",
+  "text": "o",
+  "start": 10.519,
+  "end": 10.553
+ },
+ {
+  "id": "w38",
+  "text": "rio",
+  "start": 10.6,
+  "end": 10.739
+ },
+ {
+  "id": "w39",
+  "text": "traz",
+  "start": 10.786,
+  "end": 11.006
+ },
+ {
+  "id": "w40",
+  "text": "galho,",
+  "start": 11.076,
+  "end": 11.494
+ },
+ {
+  "id": "w41",
+  "text": "folha",
+  "start": 11.656,
+  "end": 11.97
+ },
+ {
+  "id": "w42",
+  "text": "e",
+  "start": 12.016,
+  "end": 12.063
+ },
+ {
+  "id": "w43",
+  "text": "garrafa.",
+  "start": 12.121,
+  "end": 12.713
+ },
+ {
+  "id": "w44",
+  "text": "Aí",
+  "start": 13.015,
+  "end": 13.224
+ },
+ {
+  "id": "w45",
+  "text": "você",
+  "start": 13.259,
+  "end": 13.468
+ },
+ {
+  "id": "w46",
+  "text": "põe",
+  "start": 13.537,
+  "end": 13.735
+ },
+ {
+  "id": "w47",
+  "text": "uma",
+  "start": 13.758,
+  "end": 13.862
+ },
+ {
+  "id": "w48",
+  "text": "grade",
+  "start": 13.909,
+  "end": 14.176
+ },
+ {
+  "id": "w49",
+  "text": "na",
+  "start": 14.222,
+  "end": 14.269
+ },
+ {
+  "id": "w50",
+  "text": "entrada,",
+  "start": 14.292,
+  "end": 14.838
+ },
+ {
+  "id": "w51",
+  "text": "que",
+  "start": 14.977,
+  "end": 15.081
+ },
+ {
+  "id": "w52",
+  "text": "segura",
+  "start": 15.139,
+  "end": 15.453
+ },
+ {
+  "id": "w53",
+  "text": "o",
+  "start": 15.476,
+  "end": 15.499
+ },
+ {
+  "id": "w54",
+  "text": "lixo.",
+  "start": 15.546,
+  "end": 15.975
+ },
+ {
+  "id": "w55",
+  "text": "Essa",
+  "start": 16.335,
+  "end": 16.614
+ },
+ {
+  "id": "w56",
+  "text": "é",
+  "start": 16.66,
+  "end": 16.684
+ },
+ {
+  "id": "w57",
+  "text": "a",
+  "start": 16.718,
+  "end": 16.742
+ },
+ {
+  "id": "w58",
+  "text": "captação.",
+  "start": 16.776,
+  "end": 17.461
+ },
+ {
+  "id": "w59",
+  "text": "Zerou?",
+  "start": 17.659,
+  "end": 18.263
+ },
+ {
+  "id": "w60",
+  "text": "Ainda",
+  "start": 18.82,
+  "end": 19.168
+ },
+ {
+  "id": "w61",
+  "text": "não.",
+  "start": 19.226,
+  "end": 19.586
+ },
+ {
+  "id": "w62",
+  "text": "A",
+  "start": 19.749,
+  "end": 19.807
+ },
+ {
+  "id": "w63",
+  "text": "água",
+  "start": 19.876,
+  "end": 20.074
+ },
+ {
+  "id": "w64",
+  "text": "continua",
+  "start": 20.12,
+  "end": 20.515
+ },
+ {
+  "id": "w65",
+  "text": "marrom:",
+  "start": 20.561,
+  "end": 21.119
+ },
+ {
+  "id": "w66",
+  "text": "é",
+  "start": 21.374,
+  "end": 21.432
+ },
+ {
+  "id": "w67",
+  "text": "barro",
+  "start": 21.513,
+  "end": 21.722
+ },
+ {
+  "id": "w68",
+  "text": "fininho,",
+  "start": 21.792,
+  "end": 22.384
+ },
+ {
+  "id": "w69",
+  "text": "que",
+  "start": 22.523,
+  "end": 22.628
+ },
+ {
+  "id": "w70",
+  "text": "não",
+  "start": 22.686,
+  "end": 22.779
+ },
+ {
+  "id": "w71",
+  "text": "afunda",
+  "start": 22.802,
+  "end": 23.127
+ },
+ {
+  "id": "w72",
+  "text": "nunca.",
+  "start": 23.174,
+  "end": 23.615
+ },
+ {
+  "id": "w73",
+  "text": "Aí",
+  "start": 23.917,
+  "end": 24.114
+ },
+ {
+  "id": "w74",
+  "text": "você",
+  "start": 24.16,
+  "end": 24.369
+ },
+ {
+  "id": "w75",
+  "text": "joga",
+  "start": 24.439,
+  "end": 24.648
+ },
+ {
+  "id": "w76",
+  "text": "um",
+  "start": 24.671,
+  "end": 24.718
+ },
+ {
+  "id": "w77",
+  "text": "produto",
+  "start": 24.764,
+  "end": 25.17
+ },
+ {
+  "id": "w78",
+  "text": "que",
+  "start": 25.205,
+  "end": 25.287
+ },
+ {
+  "id": "w79",
+  "text": "gruda",
+  "start": 25.345,
+  "end": 25.588
+ },
+ {
+  "id": "w80",
+  "text": "o",
+  "start": 25.612,
+  "end": 25.635
+ },
+ {
+  "id": "w81",
+  "text": "barro",
+  "start": 25.693,
+  "end": 25.925
+ },
+ {
+  "id": "w82",
+  "text": "em",
+  "start": 25.96,
+  "end": 26.006
+ },
+ {
+  "id": "w83",
+  "text": "flocos,",
+  "start": 26.076,
+  "end": 26.703
+ },
+ {
+  "id": "w84",
+  "text": "e",
+  "start": 26.842,
+  "end": 26.982
+ },
+ {
+  "id": "w85",
+  "text": "deixa",
+  "start": 27.051,
+  "end": 27.33
+ },
+ {
+  "id": "w86",
+  "text": "a",
+  "start": 27.353,
+  "end": 27.423
+ },
+ {
+  "id": "w87",
+  "text": "água",
+  "start": 27.492,
+  "end": 27.725
+ },
+ {
+  "id": "w88",
+  "text": "quieta",
+  "start": 27.771,
+  "end": 28.027
+ },
+ {
+  "id": "w89",
+  "text": "num",
+  "start": 28.073,
+  "end": 28.177
+ },
+ {
+  "id": "w90",
+  "text": "tanque",
+  "start": 28.236,
+  "end": 28.514
+ },
+ {
+  "id": "w91",
+  "text": "enorme.",
+  "start": 28.537,
+  "end": 29.094
+ },
+ {
+  "id": "w92",
+  "text": "Os",
+  "start": 29.292,
+  "end": 29.454
+ },
+ {
+  "id": "w93",
+  "text": "flocos",
+  "start": 29.512,
+  "end": 29.838
+ },
+ {
+  "id": "w94",
+  "text": "pesam",
+  "start": 29.907,
+  "end": 30.244
+ },
+ {
+  "id": "w95",
+  "text": "e",
+  "start": 30.314,
+  "end": 30.348
+ },
+ {
+  "id": "w96",
+  "text": "afundam.",
+  "start": 30.395,
+  "end": 31.01
+ },
+ {
+  "id": "w97",
+  "text": "Esse",
+  "start": 31.266,
+  "end": 31.567
+ },
+ {
+  "id": "w98",
+  "text": "é",
+  "start": 31.591,
+  "end": 31.614
+ },
+ {
+  "id": "w99",
+  "text": "o",
+  "start": 31.672,
+  "end": 31.695
+ },
+ {
+  "id": "w100",
+  "text": "decantador.",
+  "start": 31.742,
+  "end": 32.427
+ },
+ {
+  "id": "w101",
+  "text": "Zerou?",
+  "start": 32.728,
+  "end": 33.204
+ },
+ {
+  "id": "w102",
+  "text": "Ainda",
+  "start": 33.344,
+  "end": 33.611
+ },
+ {
+  "id": "w103",
+  "text": "não.",
+  "start": 33.669,
+  "end": 33.959
+ },
+ {
+  "id": "w104",
+  "text": "Ainda",
+  "start": 34.261,
+  "end": 34.574
+ },
+ {
+  "id": "w105",
+  "text": "sobra",
+  "start": 34.632,
+  "end": 34.911
+ },
+ {
+  "id": "w106",
+  "text": "sujeira",
+  "start": 34.958,
+  "end": 35.294
+ },
+ {
+  "id": "w107",
+  "text": "miúda.",
+  "start": 35.341,
+  "end": 35.782
+ },
+ {
+  "id": "w108",
+  "text": "Aí",
+  "start": 36.084,
+  "end": 36.246
+ },
+ {
+  "id": "w109",
+  "text": "você",
+  "start": 36.281,
+  "end": 36.502
+ },
+ {
+  "id": "w110",
+  "text": "passa",
+  "start": 36.571,
+  "end": 36.885
+ },
+ {
+  "id": "w111",
+  "text": "a",
+  "start": 36.908,
+  "end": 36.966
+ },
+ {
+  "id": "w112",
+  "text": "água",
+  "start": 37.036,
+  "end": 37.28
+ },
+ {
+  "id": "w113",
+  "text": "por",
+  "start": 37.338,
+  "end": 37.454
+ },
+ {
+  "id": "w114",
+  "text": "camadas",
+  "start": 37.489,
+  "end": 37.86
+ },
+ {
+  "id": "w115",
+  "text": "de",
+  "start": 37.883,
+  "end": 37.941
+ },
+ {
+  "id": "w116",
+  "text": "pedra,",
+  "start": 38.011,
+  "end": 38.487
+ },
+ {
+  "id": "w117",
+  "text": "areia",
+  "start": 38.568,
+  "end": 38.94
+ },
+ {
+  "id": "w118",
+  "text": "e",
+  "start": 38.986,
+  "end": 39.056
+ },
+ {
+  "id": "w119",
+  "text": "carvão,",
+  "start": 39.114,
+  "end": 39.66
+ },
+ {
+  "id": "w120",
+  "text": "que",
+  "start": 39.857,
+  "end": 39.973
+ },
+ {
+  "id": "w121",
+  "text": "nem",
+  "start": 40.043,
+  "end": 40.217
+ },
+ {
+  "id": "w122",
+  "text": "uma",
+  "start": 40.263,
+  "end": 40.368
+ },
+ {
+  "id": "w123",
+  "text": "peneira",
+  "start": 40.414,
+  "end": 40.751
+ },
+ {
+  "id": "w124",
+  "text": "gigante.",
+  "start": 40.797,
+  "end": 41.355
+ },
+ {
+  "id": "w125",
+  "text": "Esse",
+  "start": 41.575,
+  "end": 41.854
+ },
+ {
+  "id": "w126",
+  "text": "é",
+  "start": 41.877,
+  "end": 41.912
+ },
+ {
+  "id": "w127",
+  "text": "o",
+  "start": 41.982,
+  "end": 42.016
+ },
+ {
+  "id": "w128",
+  "text": "filtro.",
+  "start": 42.086,
+  "end": 42.516
+ },
+ {
+  "id": "w129",
+  "text": "Zerou?",
+  "start": 42.678,
+  "end": 43.143
+ },
+ {
+  "id": "w130",
+  "text": "Ainda",
+  "start": 43.282,
+  "end": 43.584
+ },
+ {
+  "id": "w131",
+  "text": "não.",
+  "start": 43.642,
+  "end": 43.967
+ },
+ {
+  "id": "w132",
+  "text": "O",
+  "start": 44.129,
+  "end": 44.233
+ },
+ {
+  "id": "w133",
+  "text": "filtro",
+  "start": 44.315,
+  "end": 44.605
+ },
+ {
+  "id": "w134",
+  "text": "entope",
+  "start": 44.628,
+  "end": 44.953
+ },
+ {
+  "id": "w135",
+  "text": "de",
+  "start": 44.988,
+  "end": 45.058
+ },
+ {
+  "id": "w136",
+  "text": "tanta",
+  "start": 45.116,
+  "end": 45.336
+ },
+ {
+  "id": "w137",
+  "text": "sujeira.",
+  "start": 45.383,
+  "end": 45.929
+ },
+ {
+  "id": "w138",
+  "text": "Então",
+  "start": 46.23,
+  "end": 46.428
+ },
+ {
+  "id": "w139",
+  "text": "volta",
+  "start": 46.451,
+  "end": 46.718
+ },
+ {
+  "id": "w140",
+  "text": "tudo:",
+  "start": 46.788,
+  "end": 47.229
+ },
+ {
+  "id": "w141",
+  "text": "você",
+  "start": 47.345,
+  "end": 47.554
+ },
+ {
+  "id": "w142",
+  "text": "manda",
+  "start": 47.624,
+  "end": 47.844
+ },
+ {
+  "id": "w143",
+  "text": "água",
+  "start": 47.891,
+  "end": 48.065
+ },
+ {
+  "id": "w144",
+  "text": "de",
+  "start": 48.1,
+  "end": 48.158
+ },
+ {
+  "id": "w145",
+  "text": "baixo",
+  "start": 48.204,
+  "end": 48.401
+ },
+ {
+  "id": "w146",
+  "text": "pra",
+  "start": 48.425,
+  "end": 48.564
+ },
+ {
+  "id": "w147",
+  "text": "cima,",
+  "start": 48.622,
+  "end": 49.133
+ },
+ {
+  "id": "w148",
+  "text": "e",
+  "start": 49.33,
+  "end": 49.47
+ },
+ {
+  "id": "w149",
+  "text": "ela",
+  "start": 49.504,
+  "end": 49.69
+ },
+ {
+  "id": "w150",
+  "text": "lava",
+  "start": 49.748,
+  "end": 49.969
+ },
+ {
+  "id": "w151",
+  "text": "a",
+  "start": 49.992,
+  "end": 50.015
+ },
+ {
+  "id": "w152",
+  "text": "areia.",
+  "start": 50.085,
+  "end": 50.596
+ },
+ {
+  "id": "w153",
+  "text": "A",
+  "start": 50.956,
+  "end": 51.025
+ },
+ {
+  "id": "w154",
+  "text": "água",
+  "start": 51.13,
+  "end": 51.327
+ },
+ {
+  "id": "w155",
+  "text": "parece",
+  "start": 51.374,
+  "end": 51.71
+ },
+ {
+  "id": "w156",
+  "text": "limpa,",
+  "start": 51.768,
+  "end": 52.21
+ },
+ {
+  "id": "w157",
+  "text": "mas",
+  "start": 52.314,
+  "end": 52.465
+ },
+ {
+  "id": "w158",
+  "text": "tem",
+  "start": 52.523,
+  "end": 52.639
+ },
+ {
+  "id": "w159",
+  "text": "micróbio",
+  "start": 52.674,
+  "end": 53.08
+ },
+ {
+  "id": "w160",
+  "text": "que",
+  "start": 53.104,
+  "end": 53.173
+ },
+ {
+  "id": "w161",
+  "text": "ninguém",
+  "start": 53.22,
+  "end": 53.487
+ },
+ {
+  "id": "w162",
+  "text": "vê.",
+  "start": 53.556,
+  "end": 53.858
+ },
+ {
+  "id": "w163",
+  "text": "Aí",
+  "start": 54.16,
+  "end": 54.323
+ },
+ {
+  "id": "w164",
+  "text": "você",
+  "start": 54.369,
+  "end": 54.578
+ },
+ {
+  "id": "w165",
+  "text": "põe",
+  "start": 54.648,
+  "end": 54.857
+ },
+ {
+  "id": "w166",
+  "text": "cloro,",
+  "start": 54.88,
+  "end": 55.333
+ },
+ {
+  "id": "w167",
+  "text": "que",
+  "start": 55.495,
+  "end": 55.623
+ },
+ {
+  "id": "w168",
+  "text": "mata",
+  "start": 55.681,
+  "end": 55.89
+ },
+ {
+  "id": "w169",
+  "text": "os",
+  "start": 55.913,
+  "end": 55.971
+ },
+ {
+  "id": "w170",
+  "text": "micróbios,",
+  "start": 56.029,
+  "end": 56.737
+ },
+ {
+  "id": "w171",
+  "text": "e",
+  "start": 56.935,
+  "end": 57.039
+ },
+ {
+  "id": "w172",
+  "text": "flúor,",
+  "start": 57.097,
+  "end": 57.376
+ },
+ {
+  "id": "w173",
+  "text": "que",
+  "start": 57.399,
+  "end": 57.48
+ },
+ {
+  "id": "w174",
+  "text": "protege",
+  "start": 57.527,
+  "end": 57.875
+ },
+ {
+  "id": "w175",
+  "text": "os",
+  "start": 57.898,
+  "end": 57.968
+ },
+ {
+  "id": "w176",
+  "text": "dentes.",
+  "start": 58.038,
+  "end": 58.572
+ },
+ {
+  "id": "w177",
+  "text": "Zerou?",
+  "start": 58.978,
+  "end": 59.478
+ },
+ {
+  "id": "w178",
+  "text": "Ainda",
+  "start": 59.733,
+  "end": 60.046
+ },
+ {
+  "id": "w179",
+  "text": "não.",
+  "start": 60.104,
+  "end": 60.441
+ },
+ {
+  "id": "w180",
+  "text": "A",
+  "start": 60.662,
+  "end": 60.731
+ },
+ {
+  "id": "w181",
+  "text": "sua",
+  "start": 60.836,
+  "end": 61.056
+ },
+ {
+  "id": "w182",
+  "text": "casa",
+  "start": 61.115,
+  "end": 61.358
+ },
+ {
+  "id": "w183",
+  "text": "fica",
+  "start": 61.405,
+  "end": 61.625
+ },
+ {
+  "id": "w184",
+  "text": "longe,",
+  "start": 61.672,
+  "end": 62.136
+ },
+ {
+  "id": "w185",
+  "text": "e",
+  "start": 62.612,
+  "end": 62.752
+ },
+ {
+  "id": "w186",
+  "text": "a",
+  "start": 62.81,
+  "end": 62.856
+ },
+ {
+  "id": "w187",
+  "text": "água",
+  "start": 62.914,
+  "end": 63.158
+ },
+ {
+  "id": "w188",
+  "text": "precisa",
+  "start": 63.204,
+  "end": 63.553
+ },
+ {
+  "id": "w189",
+  "text": "de",
+  "start": 63.599,
+  "end": 63.669
+ },
+ {
+  "id": "w190",
+  "text": "força",
+  "start": 63.738,
+  "end": 64.029
+ },
+ {
+  "id": "w191",
+  "text": "pra",
+  "start": 64.075,
+  "end": 64.18
+ },
+ {
+  "id": "w192",
+  "text": "chegar.",
+  "start": 64.214,
+  "end": 64.667
+ },
+ {
+  "id": "w193",
+  "text": "Aí",
+  "start": 65.143,
+  "end": 65.341
+ },
+ {
+  "id": "w194",
+  "text": "você",
+  "start": 65.387,
+  "end": 65.608
+ },
+ {
+  "id": "w195",
+  "text": "bombeia",
+  "start": 65.677,
+  "end": 66.084
+ },
+ {
+  "id": "w196",
+  "text": "a",
+  "start": 66.188,
+  "end": 66.269
+ },
+ {
+  "id": "w197",
+  "text": "água",
+  "start": 66.374,
+  "end": 66.722
+ },
+ {
+  "id": "w198",
+  "text": "pra",
+  "start": 66.827,
+  "end": 67.012
+ },
+ {
+  "id": "w199",
+  "text": "uma",
+  "start": 67.047,
+  "end": 67.175
+ },
+ {
+  "id": "w200",
+  "text": "caixa",
+  "start": 67.21,
+  "end": 67.477
+ },
+ {
+  "id": "w201",
+  "text": "bem",
+  "start": 67.535,
+  "end": 67.721
+ },
+ {
+  "id": "w202",
+  "text": "alta,",
+  "start": 67.79,
+  "end": 68.127
+ },
+ {
+  "id": "w203",
+  "text": "e",
+  "start": 68.348,
+  "end": 68.487
+ },
+ {
+  "id": "w204",
+  "text": "ela",
+  "start": 68.51,
+  "end": 68.696
+ },
+ {
+  "id": "w205",
+  "text": "desce",
+  "start": 68.777,
+  "end": 69.079
+ },
+ {
+  "id": "w206",
+  "text": "empurrada",
+  "start": 69.102,
+  "end": 69.543
+ },
+ {
+  "id": "w207",
+  "text": "pelo",
+  "start": 69.578,
+  "end": 69.741
+ },
+ {
+  "id": "w208",
+  "text": "próprio",
+  "start": 69.776,
+  "end": 70.089
+ },
+ {
+  "id": "w209",
+  "text": "peso.",
+  "start": 70.124,
+  "end": 70.588
+ },
+ {
+  "id": "w210",
+  "text": "Esse",
+  "start": 70.89,
+  "end": 71.169
+ },
+ {
+  "id": "w211",
+  "text": "é",
+  "start": 71.192,
+  "end": 71.227
+ },
+ {
+  "id": "w212",
+  "text": "o",
+  "start": 71.285,
+  "end": 71.308
+ },
+ {
+  "id": "w213",
+  "text": "reservatório.",
+  "start": 71.355,
+  "end": 72.132
+ },
+ {
+  "id": "w214",
+  "text": "Zerou?",
+  "start": 72.434,
+  "end": 72.957
+ },
+ {
+  "id": "w215",
+  "text": "Ainda",
+  "start": 73.433,
+  "end": 73.769
+ },
+ {
+  "id": "w216",
+  "text": "não.",
+  "start": 73.827,
+  "end": 74.153
+ },
+ {
+  "id": "w217",
+  "text": "No",
+  "start": 74.35,
+  "end": 74.489
+ },
+ {
+  "id": "w218",
+  "text": "caminho,",
+  "start": 74.536,
+  "end": 74.93
+ },
+ {
+  "id": "w219",
+  "text": "o",
+  "start": 74.988,
+  "end": 75.058
+ },
+ {
+  "id": "w220",
+  "text": "cano",
+  "start": 75.128,
+  "end": 75.325
+ },
+ {
+  "id": "w221",
+  "text": "pode",
+  "start": 75.371,
+  "end": 75.557
+ },
+ {
+  "id": "w222",
+  "text": "trazer",
+  "start": 75.604,
+  "end": 75.882
+ },
+ {
+  "id": "w223",
+  "text": "micróbio",
+  "start": 75.917,
+  "end": 76.312
+ },
+ {
+  "id": "w224",
+  "text": "de",
+  "start": 76.347,
+  "end": 76.416
+ },
+ {
+  "id": "w225",
+  "text": "volta.",
+  "start": 76.474,
+  "end": 76.846
+ },
+ {
+  "id": "w226",
+  "text": "Aí",
+  "start": 77.148,
+  "end": 77.322
+ },
+ {
+  "id": "w227",
+  "text": "você",
+  "start": 77.357,
+  "end": 77.566
+ },
+ {
+  "id": "w228",
+  "text": "deixa",
+  "start": 77.635,
+  "end": 77.856
+ },
+ {
+  "id": "w229",
+  "text": "um",
+  "start": 77.879,
+  "end": 77.926
+ },
+ {
+  "id": "w230",
+  "text": "tiquinho",
+  "start": 77.984,
+  "end": 78.378
+ },
+ {
+  "id": "w231",
+  "text": "de",
+  "start": 78.425,
+  "end": 78.494
+ },
+ {
+  "id": "w232",
+  "text": "cloro",
+  "start": 78.541,
+  "end": 78.785
+ },
+ {
+  "id": "w233",
+  "text": "sobrando,",
+  "start": 78.831,
+  "end": 79.435
+ },
+ {
+  "id": "w234",
+  "text": "até",
+  "start": 79.574,
+  "end": 79.841
+ },
+ {
+  "id": "w235",
+  "text": "a",
+  "start": 79.888,
+  "end": 79.911
+ },
+ {
+  "id": "w236",
+  "text": "última",
+  "start": 79.981,
+  "end": 80.259
+ },
+ {
+  "id": "w237",
+  "text": "torneira.",
+  "start": 80.294,
+  "end": 80.805
+ },
+ {
+  "id": "w238",
+  "text": "Agora",
+  "start": 81.107,
+  "end": 81.49
+ },
+ {
+  "id": "w239",
+  "text": "sim:",
+  "start": 81.56,
+  "end": 81.861
+ },
+ {
+  "id": "w240",
+  "text": "zerou.",
+  "start": 82.001,
+  "end": 82.488
+ },
+ {
+  "id": "w241",
+  "text": "Do",
+  "start": 82.79,
+  "end": 82.929
+ },
+ {
+  "id": "w242",
+  "text": "rio",
+  "start": 82.976,
+  "end": 83.104
+ },
+ {
+  "id": "w243",
+  "text": "barrento",
+  "start": 83.162,
+  "end": 83.614
+ },
+ {
+  "id": "w244",
+  "text": "até",
+  "start": 83.696,
+  "end": 83.916
+ },
+ {
+  "id": "w245",
+  "text": "o",
+  "start": 83.974,
+  "end": 83.998
+ },
+ {
+  "id": "w246",
+  "text": "seu",
+  "start": 84.032,
+  "end": 84.137
+ },
+ {
+  "id": "w247",
+  "text": "copo.",
+  "start": 84.207,
+  "end": 84.601
+ },
+ {
+  "id": "w248",
+  "text": "Manda",
+  "start": 84.857,
+  "end": 85.147
+ },
+ {
+  "id": "w249",
+  "text": "pra",
+  "start": 85.193,
+  "end": 85.321
+ },
+ {
+  "id": "w250",
+  "text": "quem",
+  "start": 85.379,
+  "end": 85.519
+ },
+ {
+  "id": "w251",
+  "text": "acha",
+  "start": 85.588,
+  "end": 85.797
+ },
+ {
+  "id": "w252",
+  "text": "que",
+  "start": 85.855,
+  "end": 85.948
+ },
+ {
+  "id": "w253",
+  "text": "água",
+  "start": 85.995,
+  "end": 86.204
+ },
+ {
+  "id": "w254",
+  "text": "nasce",
+  "start": 86.262,
+  "end": 86.517
+ },
+ {
+  "id": "w255",
+  "text": "na",
+  "start": 86.563,
+  "end": 86.633
+ },
+ {
+  "id": "w256",
+  "text": "torneira.",
+  "start": 86.691,
+  "end": 87.399
+ }
+]

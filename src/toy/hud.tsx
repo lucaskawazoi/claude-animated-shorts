@@ -1,5 +1,5 @@
 // Painel de jogo (DOM sobre o 3D): contadores em pílula, títulos amarelos, ⚠, ⏪, ✖, carimbo do bordão
-// «¿SIN MOTORES? ¡CON INGENIO!», recompensa e legenda palavra a palavra. Os dados vêm do episódio (EP.HUD).
+// «ZEROU? AINDA NÃO», recompensa e legenda palavra a palavra. Os dados vêm do episódio (EP.HUD).
 import React from "react";
 import { staticFile } from "remotion";
 import { EP } from "../ep/current";
@@ -17,10 +17,10 @@ export type Title = { a: number; text: string; len?: number };
 export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string };
 export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }> };
 
-/** contador que sobe de a até b entre t0 e t1, com separador de milhar em espanhol */
+/** contador que sobe de a até b entre t0 e t1, com separador de milhar em português */
 export const count = (t: number, t0: number, t1: number, a: number, b: number, dec = 0) => {
   const v = lerp(a, b, ease(t, t0, t1));
-  return dec ? v.toFixed(dec).replace(".", ",") : Math.round(v).toLocaleString("es-ES").replace(/ /g, ".").replace(/,/g, ".");
+  return dec ? v.toFixed(dec).replace(".", ",") : Math.round(v).toLocaleString("pt-BR").replace(/ /g, ".").replace(/,/g, ".");
 };
 
 const TONE = { dark: "#15202bd9", red: "#7a1414e6", green: "#0f4a2ae6", gold: "#6a4a00e6" } as const;
@@ -73,21 +73,20 @@ const Cross: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
   );
 };
 
-/** o bordão do canal: carimbo cinza «SIN MOTORES» que leva um risco vermelho, e o amarelo «¡CON INGENIO!» por cima */
+/** o bordão do canal (Mundo em Peças): «ZEROU?» branco e, por cima, o carimbo vermelho «AINDA NÃO» (Panamá, 10/11) */
 const Stamp: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
-  const end = b + 1.5, k = win(t, a, end, 0.15); if (k <= 0) return null;
-  const s1 = pop(t, a, 0.25), strike = ease(t, a + 0.3, a + 0.55), s2 = pop(t, b, 0.3), shake = t > b ? Math.sin((t - b) * 30) * 6 * (1 - prog(t, b, b + 0.5)) : 0;
+  const end = b + 1.4, k = win(t, a, end, 0.15); if (k <= 0) return null;
+  const s1 = pop(t, a, 0.25), s2 = pop(t, b, 0.22), shake = t > b ? Math.sin((t - b) * 34) * 7 * (1 - prog(t, b, b + 0.45)) : 0;
   return (
-    <div style={{ position: "absolute", left: 0, width: W, top: 560, height: 300, opacity: k }}>
-      <div style={{ position: "absolute", left: 0, width: W, top: 0, display: "flex", justifyContent: "center", transform: `rotate(-4deg) scale(${s1 * (t > b ? 0.86 : 1)})`, opacity: t > b ? 0.75 : 1 }}>
-        <div style={{ position: "relative", padding: "6px 30px 10px", border: "8px solid #5b6670", borderRadius: 18, background: "#d9dee2e6" }}>
-          <span style={{ fontFamily: FONT, fontSize: 70, color: "#5b6670", letterSpacing: 3 }}>SIN MOTORES</span>
-          <div style={{ position: "absolute", left: -12, top: "48%", height: 16, width: `${104 * strike}%`, background: "#e0262b", borderRadius: 8, transform: "rotate(-8deg)", transformOrigin: "left center" }} />
-        </div>
+    <div style={{ position: "absolute", left: 0, width: W, top: 600, height: 320, opacity: k }}>
+      <div style={{ position: "absolute", left: 0, width: W, top: 0, display: "flex", justifyContent: "center", transform: `scale(${s1})` }}>
+        <span style={{ fontFamily: FONT, fontSize: 128, color: "#ffffff", lineHeight: 1, ...stroke(15, "#14202b") }}>ZEROU?</span>
       </div>
       {t >= b ? (
-        <div style={{ position: "absolute", left: 0, width: W, top: 96, display: "flex", justifyContent: "center", transform: `rotate(${3 + shake * 0.2}deg) scale(${s2})` }}>
-          <span style={{ fontFamily: FONT, fontSize: 132, color: "#ffd400", lineHeight: 1, ...stroke(16, "#3a2300") }}>¡CON INGENIO!</span>
+        <div style={{ position: "absolute", left: 0, width: W, top: 150, display: "flex", justifyContent: "center", transform: `rotate(${-6 + shake * 0.3}deg) scale(${s2 * 1.04})` }}>
+          <div style={{ padding: "4px 34px 10px", border: "10px solid #e0262b", borderRadius: 20, background: "#fffffff2", boxShadow: "0 8px 0 #00000044" }}>
+            <span style={{ fontFamily: FONT, fontSize: 104, color: "#e0262b", lineHeight: 1, letterSpacing: 2 }}>AINDA NÃO</span>
+          </div>
         </div>) : null}
     </div>
   );

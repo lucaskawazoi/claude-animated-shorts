@@ -1,0 +1,1610 @@
+[
+ {
+  "id": "w0",
+  "text": "Catorze",
+  "start": 0.0,
+  "end": 0.58
+ },
+ {
+  "id": "w1",
+  "text": "mil",
+  "start": 0.627,
+  "end": 0.743
+ },
+ {
+  "id": "w2",
+  "text": "megawatts.",
+  "start": 0.778,
+  "end": 1.602
+ },
+ {
+  "id": "w3",
+  "text": "Vinte",
+  "start": 1.8,
+  "end": 2.148
+ },
+ {
+  "id": "w4",
+  "text": "turbinas",
+  "start": 2.206,
+  "end": 2.647
+ },
+ {
+  "id": "w5",
+  "text": "gigantes.",
+  "start": 2.67,
+  "end": 3.367
+ },
+ {
+  "id": "w6",
+  "text": "E",
+  "start": 3.669,
+  "end": 3.773
+ },
+ {
+  "id": "w7",
+  "text": "um",
+  "start": 3.936,
+  "end": 4.005
+ },
+ {
+  "id": "w8",
+  "text": "rio",
+  "start": 4.063,
+  "end": 4.226
+ },
+ {
+  "id": "w9",
+  "text": "que",
+  "start": 4.284,
+  "end": 4.354
+ },
+ {
+  "id": "w10",
+  "text": "não",
+  "start": 4.4,
+  "end": 4.505
+ },
+ {
+  "id": "w11",
+  "text": "para",
+  "start": 4.551,
+  "end": 4.76
+ },
+ {
+  "id": "w12",
+  "text": "nunca.",
+  "start": 4.818,
+  "end": 5.329
+ },
+ {
+  "id": "w13",
+  "text": "Você",
+  "start": 5.886,
+  "end": 6.177
+ },
+ {
+  "id": "w14",
+  "text": "quer",
+  "start": 6.258,
+  "end": 6.374
+ },
+ {
+  "id": "w15",
+  "text": "tirar",
+  "start": 6.409,
+  "end": 6.664
+ },
+ {
+  "id": "w16",
+  "text": "energia",
+  "start": 6.687,
+  "end": 7.094
+ },
+ {
+  "id": "w17",
+  "text": "do",
+  "start": 7.14,
+  "end": 7.221
+ },
+ {
+  "id": "w18",
+  "text": "Rio",
+  "start": 7.268,
+  "end": 7.384
+ },
+ {
+  "id": "w19",
+  "text": "Paraná,",
+  "start": 7.442,
+  "end": 7.999
+ },
+ {
+  "id": "w20",
+  "text": "na",
+  "start": 8.104,
+  "end": 8.208
+ },
+ {
+  "id": "w21",
+  "text": "fronteira",
+  "start": 8.266,
+  "end": 8.649
+ },
+ {
+  "id": "w22",
+  "text": "do",
+  "start": 8.696,
+  "end": 8.766
+ },
+ {
+  "id": "w23",
+  "text": "Brasil",
+  "start": 8.812,
+  "end": 9.114
+ },
+ {
+  "id": "w24",
+  "text": "com",
+  "start": 9.149,
+  "end": 9.276
+ },
+ {
+  "id": "w25",
+  "text": "o",
+  "start": 9.3,
+  "end": 9.323
+ },
+ {
+  "id": "w26",
+  "text": "Paraguai.",
+  "start": 9.358,
+  "end": 10.089
+ },
+ {
+  "id": "w27",
+  "text": "Mas",
+  "start": 10.495,
+  "end": 10.693
+ },
+ {
+  "id": "w28",
+  "text": "não",
+  "start": 10.751,
+  "end": 10.867
+ },
+ {
+  "id": "w29",
+  "text": "dá",
+  "start": 10.913,
+  "end": 11.018
+ },
+ {
+  "id": "w30",
+  "text": "pra",
+  "start": 11.064,
+  "end": 11.169
+ },
+ {
+  "id": "w31",
+  "text": "construir",
+  "start": 11.215,
+  "end": 11.61
+ },
+ {
+  "id": "w32",
+  "text": "com",
+  "start": 11.645,
+  "end": 11.796
+ },
+ {
+  "id": "w33",
+  "text": "o",
+  "start": 11.819,
+  "end": 11.842
+ },
+ {
+  "id": "w34",
+  "text": "rio",
+  "start": 11.877,
+  "end": 12.016
+ },
+ {
+  "id": "w35",
+  "text": "passando",
+  "start": 12.063,
+  "end": 12.376
+ },
+ {
+  "id": "w36",
+  "text": "por",
+  "start": 12.423,
+  "end": 12.574
+ },
+ {
+  "id": "w37",
+  "text": "cima.",
+  "start": 12.608,
+  "end": 13.131
+ },
+ {
+  "id": "w38",
+  "text": "Então",
+  "start": 13.328,
+  "end": 13.758
+ },
+ {
+  "id": "w39",
+  "text": "você",
+  "start": 13.793,
+  "end": 14.013
+ },
+ {
+  "id": "w40",
+  "text": "cava",
+  "start": 14.083,
+  "end": 14.315
+ },
+ {
+  "id": "w41",
+  "text": "um",
+  "start": 14.338,
+  "end": 14.384
+ },
+ {
+  "id": "w42",
+  "text": "canal",
+  "start": 14.442,
+  "end": 14.744
+ },
+ {
+  "id": "w43",
+  "text": "de",
+  "start": 14.791,
+  "end": 14.86
+ },
+ {
+  "id": "w44",
+  "text": "dois",
+  "start": 14.918,
+  "end": 15.093
+ },
+ {
+  "id": "w45",
+  "text": "quilômetros",
+  "start": 15.139,
+  "end": 15.615
+ },
+ {
+  "id": "w46",
+  "text": "na",
+  "start": 15.673,
+  "end": 15.766
+ },
+ {
+  "id": "w47",
+  "text": "rocha",
+  "start": 15.812,
+  "end": 16.126
+ },
+ {
+  "id": "w48",
+  "text": "e",
+  "start": 16.184,
+  "end": 16.265
+ },
+ {
+  "id": "w49",
+  "text": "desvia",
+  "start": 16.335,
+  "end": 16.672
+ },
+ {
+  "id": "w50",
+  "text": "o",
+  "start": 16.695,
+  "end": 16.73
+ },
+ {
+  "id": "w51",
+  "text": "rio",
+  "start": 16.788,
+  "end": 16.915
+ },
+ {
+  "id": "w52",
+  "text": "inteiro.",
+  "start": 16.95,
+  "end": 17.461
+ },
+ {
+  "id": "w53",
+  "text": "Esse",
+  "start": 17.821,
+  "end": 18.134
+ },
+ {
+  "id": "w54",
+  "text": "é",
+  "start": 18.158,
+  "end": 18.181
+ },
+ {
+  "id": "w55",
+  "text": "o",
+  "start": 18.227,
+  "end": 18.251
+ },
+ {
+  "id": "w56",
+  "text": "canal",
+  "start": 18.297,
+  "end": 18.576
+ },
+ {
+  "id": "w57",
+  "text": "de",
+  "start": 18.634,
+  "end": 18.715
+ },
+ {
+  "id": "w58",
+  "text": "desvio.",
+  "start": 18.773,
+  "end": 19.365
+ },
+ {
+  "id": "w59",
+  "text": "Zerou?",
+  "start": 19.528,
+  "end": 20.108
+ },
+ {
+  "id": "w60",
+  "text": "Ainda",
+  "start": 20.41,
+  "end": 20.77
+ },
+ {
+  "id": "w61",
+  "text": "não.",
+  "start": 20.84,
+  "end": 21.188
+ },
+ {
+  "id": "w62",
+  "text": "No",
+  "start": 21.443,
+  "end": 21.571
+ },
+ {
+  "id": "w63",
+  "text": "leito",
+  "start": 21.617,
+  "end": 21.861
+ },
+ {
+  "id": "w64",
+  "text": "seco,",
+  "start": 21.919,
+  "end": 22.233
+ },
+ {
+  "id": "w65",
+  "text": "você",
+  "start": 22.256,
+  "end": 22.465
+ },
+ {
+  "id": "w66",
+  "text": "levanta",
+  "start": 22.535,
+  "end": 22.848
+ },
+ {
+  "id": "w67",
+  "text": "um",
+  "start": 22.871,
+  "end": 22.918
+ },
+ {
+  "id": "w68",
+  "text": "paredão",
+  "start": 22.964,
+  "end": 23.336
+ },
+ {
+  "id": "w69",
+  "text": "de",
+  "start": 23.371,
+  "end": 23.429
+ },
+ {
+  "id": "w70",
+  "text": "concreto",
+  "start": 23.475,
+  "end": 23.951
+ },
+ {
+  "id": "w71",
+  "text": "de",
+  "start": 24.009,
+  "end": 24.09
+ },
+ {
+  "id": "w72",
+  "text": "cento",
+  "start": 24.148,
+  "end": 24.462
+ },
+ {
+  "id": "w73",
+  "text": "e",
+  "start": 24.485,
+  "end": 24.508
+ },
+ {
+  "id": "w74",
+  "text": "noventa",
+  "start": 24.543,
+  "end": 24.857
+ },
+ {
+  "id": "w75",
+  "text": "e",
+  "start": 24.88,
+  "end": 24.903
+ },
+ {
+  "id": "w76",
+  "text": "seis",
+  "start": 24.961,
+  "end": 25.158
+ },
+ {
+  "id": "w77",
+  "text": "metros:",
+  "start": 25.228,
+  "end": 25.739
+ },
+ {
+  "id": "w78",
+  "text": "um",
+  "start": 26.099,
+  "end": 26.203
+ },
+ {
+  "id": "w79",
+  "text": "prédio",
+  "start": 26.261,
+  "end": 26.621
+ },
+ {
+  "id": "w80",
+  "text": "de",
+  "start": 26.679,
+  "end": 26.749
+ },
+ {
+  "id": "w81",
+  "text": "sessenta",
+  "start": 26.807,
+  "end": 27.202
+ },
+ {
+  "id": "w82",
+  "text": "e",
+  "start": 27.225,
+  "end": 27.248
+ },
+ {
+  "id": "w83",
+  "text": "cinco",
+  "start": 27.283,
+  "end": 27.527
+ },
+ {
+  "id": "w84",
+  "text": "andares.",
+  "start": 27.562,
+  "end": 28.142
+ },
+ {
+  "id": "w85",
+  "text": "Essa",
+  "start": 28.397,
+  "end": 28.711
+ },
+ {
+  "id": "w86",
+  "text": "é",
+  "start": 28.746,
+  "end": 28.769
+ },
+ {
+  "id": "w87",
+  "text": "a",
+  "start": 28.839,
+  "end": 28.862
+ },
+ {
+  "id": "w88",
+  "text": "barragem.",
+  "start": 28.931,
+  "end": 29.593
+ },
+ {
+  "id": "w89",
+  "text": "Zerou?",
+  "start": 29.895,
+  "end": 30.476
+ },
+ {
+  "id": "w90",
+  "text": "Ainda",
+  "start": 30.952,
+  "end": 31.323
+ },
+ {
+  "id": "w91",
+  "text": "não.",
+  "start": 31.381,
+  "end": 31.729
+ },
+ {
+  "id": "w92",
+  "text": "Concreto",
+  "start": 31.95,
+  "end": 32.438
+ },
+ {
+  "id": "w93",
+  "text": "esquenta",
+  "start": 32.461,
+  "end": 32.867
+ },
+ {
+  "id": "w94",
+  "text": "quando",
+  "start": 32.925,
+  "end": 33.146
+ },
+ {
+  "id": "w95",
+  "text": "endurece,",
+  "start": 33.169,
+  "end": 33.784
+ },
+ {
+  "id": "w96",
+  "text": "e",
+  "start": 34.005,
+  "end": 34.11
+ },
+ {
+  "id": "w97",
+  "text": "um",
+  "start": 34.179,
+  "end": 34.249
+ },
+ {
+  "id": "w98",
+  "text": "bloco",
+  "start": 34.284,
+  "end": 34.516
+ },
+ {
+  "id": "w99",
+  "text": "tão",
+  "start": 34.562,
+  "end": 34.713
+ },
+ {
+  "id": "w100",
+  "text": "grosso",
+  "start": 34.748,
+  "end": 35.236
+ },
+ {
+  "id": "w101",
+  "text": "racha",
+  "start": 35.305,
+  "end": 35.561
+ },
+ {
+  "id": "w102",
+  "text": "por",
+  "start": 35.619,
+  "end": 35.758
+ },
+ {
+  "id": "w103",
+  "text": "dentro.",
+  "start": 35.793,
+  "end": 36.176
+ },
+ {
+  "id": "w104",
+  "text": "Então",
+  "start": 36.536,
+  "end": 36.849
+ },
+ {
+  "id": "w105",
+  "text": "volta",
+  "start": 36.884,
+  "end": 37.151
+ },
+ {
+  "id": "w106",
+  "text": "tudo.",
+  "start": 37.209,
+  "end": 37.581
+ },
+ {
+  "id": "w107",
+  "text": "Aí",
+  "start": 37.836,
+  "end": 38.08
+ },
+ {
+  "id": "w108",
+  "text": "você",
+  "start": 38.127,
+  "end": 38.359
+ },
+ {
+  "id": "w109",
+  "text": "gela",
+  "start": 38.428,
+  "end": 38.637
+ },
+ {
+  "id": "w110",
+  "text": "o",
+  "start": 38.661,
+  "end": 38.684
+ },
+ {
+  "id": "w111",
+  "text": "concreto",
+  "start": 38.73,
+  "end": 39.264
+ },
+ {
+  "id": "w112",
+  "text": "antes",
+  "start": 39.334,
+  "end": 39.659
+ },
+ {
+  "id": "w113",
+  "text": "de",
+  "start": 39.706,
+  "end": 39.775
+ },
+ {
+  "id": "w114",
+  "text": "despejar,",
+  "start": 39.845,
+  "end": 40.658
+ },
+ {
+  "id": "w115",
+  "text": "numa",
+  "start": 40.959,
+  "end": 41.192
+ },
+ {
+  "id": "w116",
+  "text": "fábrica",
+  "start": 41.25,
+  "end": 41.586
+ },
+ {
+  "id": "w117",
+  "text": "de",
+  "start": 41.633,
+  "end": 41.702
+ },
+ {
+  "id": "w118",
+  "text": "frio",
+  "start": 41.772,
+  "end": 41.935
+ },
+ {
+  "id": "w119",
+  "text": "do",
+  "start": 41.981,
+  "end": 42.051
+ },
+ {
+  "id": "w120",
+  "text": "lado",
+  "start": 42.109,
+  "end": 42.295
+ },
+ {
+  "id": "w121",
+  "text": "da",
+  "start": 42.353,
+  "end": 42.469
+ },
+ {
+  "id": "w122",
+  "text": "obra.",
+  "start": 42.538,
+  "end": 42.898
+ },
+ {
+  "id": "w123",
+  "text": "Ele",
+  "start": 43.154,
+  "end": 43.351
+ },
+ {
+  "id": "w124",
+  "text": "endurece",
+  "start": 43.374,
+  "end": 43.932
+ },
+ {
+  "id": "w125",
+  "text": "sem",
+  "start": 43.99,
+  "end": 44.152
+ },
+ {
+  "id": "w126",
+  "text": "trincar.",
+  "start": 44.211,
+  "end": 44.791
+ },
+ {
+  "id": "w127",
+  "text": "Zerou?",
+  "start": 45.093,
+  "end": 45.685
+ },
+ {
+  "id": "w128",
+  "text": "Ainda",
+  "start": 45.987,
+  "end": 46.37
+ },
+ {
+  "id": "w129",
+  "text": "não.",
+  "start": 46.428,
+  "end": 46.811
+ },
+ {
+  "id": "w130",
+  "text": "O",
+  "start": 47.113,
+  "end": 47.183
+ },
+ {
+  "id": "w131",
+  "text": "lago",
+  "start": 47.287,
+  "end": 47.519
+ },
+ {
+  "id": "w132",
+  "text": "enche,",
+  "start": 47.566,
+  "end": 47.891
+ },
+ {
+  "id": "w133",
+  "text": "mas",
+  "start": 48.03,
+  "end": 48.239
+ },
+ {
+  "id": "w134",
+  "text": "água",
+  "start": 48.309,
+  "end": 48.518
+ },
+ {
+  "id": "w135",
+  "text": "parada",
+  "start": 48.576,
+  "end": 49.064
+ },
+ {
+  "id": "w136",
+  "text": "não",
+  "start": 49.133,
+  "end": 49.284
+ },
+ {
+  "id": "w137",
+  "text": "acende",
+  "start": 49.331,
+  "end": 49.679
+ },
+ {
+  "id": "w138",
+  "text": "lâmpada",
+  "start": 49.737,
+  "end": 50.062
+ },
+ {
+  "id": "w139",
+  "text": "nenhuma.",
+  "start": 50.108,
+  "end": 50.596
+ },
+ {
+  "id": "w140",
+  "text": "Aí",
+  "start": 50.956,
+  "end": 51.2
+ },
+ {
+  "id": "w141",
+  "text": "você",
+  "start": 51.246,
+  "end": 51.536
+ },
+ {
+  "id": "w142",
+  "text": "abre",
+  "start": 51.618,
+  "end": 51.815
+ },
+ {
+  "id": "w143",
+  "text": "tubos",
+  "start": 51.862,
+  "end": 52.152
+ },
+ {
+  "id": "w144",
+  "text": "gigantes",
+  "start": 52.175,
+  "end": 52.674
+ },
+ {
+  "id": "w145",
+  "text": "no",
+  "start": 52.744,
+  "end": 52.825
+ },
+ {
+  "id": "w146",
+  "text": "paredão.",
+  "start": 52.883,
+  "end": 53.533
+ },
+ {
+  "id": "w147",
+  "text": "A",
+  "start": 53.754,
+  "end": 53.812
+ },
+ {
+  "id": "w148",
+  "text": "água",
+  "start": 53.951,
+  "end": 54.172
+ },
+ {
+  "id": "w149",
+  "text": "despenca",
+  "start": 54.218,
+  "end": 54.636
+ },
+ {
+  "id": "w150",
+  "text": "lá",
+  "start": 54.683,
+  "end": 54.764
+ },
+ {
+  "id": "w151",
+  "text": "dentro,",
+  "start": 54.822,
+  "end": 55.321
+ },
+ {
+  "id": "w152",
+  "text": "gira",
+  "start": 55.484,
+  "end": 55.751
+ },
+ {
+  "id": "w153",
+  "text": "a",
+  "start": 55.774,
+  "end": 55.809
+ },
+ {
+  "id": "w154",
+  "text": "turbina,",
+  "start": 55.867,
+  "end": 56.506
+ },
+ {
+  "id": "w155",
+  "text": "e",
+  "start": 56.645,
+  "end": 56.749
+ },
+ {
+  "id": "w156",
+  "text": "o",
+  "start": 56.796,
+  "end": 56.819
+ },
+ {
+  "id": "w157",
+  "text": "gerador",
+  "start": 56.865,
+  "end": 57.26
+ },
+ {
+  "id": "w158",
+  "text": "faz",
+  "start": 57.307,
+  "end": 57.492
+ },
+ {
+  "id": "w159",
+  "text": "a",
+  "start": 57.55,
+  "end": 57.574
+ },
+ {
+  "id": "w160",
+  "text": "energia.",
+  "start": 57.608,
+  "end": 58.224
+ },
+ {
+  "id": "w161",
+  "text": "Essa",
+  "start": 58.444,
+  "end": 58.746
+ },
+ {
+  "id": "w162",
+  "text": "é",
+  "start": 58.769,
+  "end": 58.793
+ },
+ {
+  "id": "w163",
+  "text": "a",
+  "start": 58.851,
+  "end": 58.874
+ },
+ {
+  "id": "w164",
+  "text": "casa",
+  "start": 58.92,
+  "end": 59.153
+ },
+ {
+  "id": "w165",
+  "text": "de",
+  "start": 59.187,
+  "end": 59.245
+ },
+ {
+  "id": "w166",
+  "text": "força.",
+  "start": 59.304,
+  "end": 59.838
+ },
+ {
+  "id": "w167",
+  "text": "Zerou?",
+  "start": 60.093,
+  "end": 60.708
+ },
+ {
+  "id": "w168",
+  "text": "Ainda",
+  "start": 61.184,
+  "end": 61.544
+ },
+ {
+  "id": "w169",
+  "text": "não.",
+  "start": 61.602,
+  "end": 61.974
+ },
+ {
+  "id": "w170",
+  "text": "Vem",
+  "start": 62.136,
+  "end": 62.31
+ },
+ {
+  "id": "w171",
+  "text": "uma",
+  "start": 62.345,
+  "end": 62.461
+ },
+ {
+  "id": "w172",
+  "text": "chuvarada,",
+  "start": 62.508,
+  "end": 63.181
+ },
+ {
+  "id": "w173",
+  "text": "e",
+  "start": 63.286,
+  "end": 63.367
+ },
+ {
+  "id": "w174",
+  "text": "o",
+  "start": 63.425,
+  "end": 63.471
+ },
+ {
+  "id": "w175",
+  "text": "lago",
+  "start": 63.541,
+  "end": 63.808
+ },
+ {
+  "id": "w176",
+  "text": "ameaça",
+  "start": 63.831,
+  "end": 64.179
+ },
+ {
+  "id": "w177",
+  "text": "passar",
+  "start": 64.226,
+  "end": 64.563
+ },
+ {
+  "id": "w178",
+  "text": "por",
+  "start": 64.609,
+  "end": 64.783
+ },
+ {
+  "id": "w179",
+  "text": "cima",
+  "start": 64.818,
+  "end": 65.108
+ },
+ {
+  "id": "w180",
+  "text": "da",
+  "start": 65.143,
+  "end": 65.213
+ },
+ {
+  "id": "w181",
+  "text": "barragem.",
+  "start": 65.259,
+  "end": 65.875
+ },
+ {
+  "id": "w182",
+  "text": "Aí",
+  "start": 66.432,
+  "end": 66.676
+ },
+ {
+  "id": "w183",
+  "text": "você",
+  "start": 66.734,
+  "end": 66.966
+ },
+ {
+  "id": "w184",
+  "text": "faz",
+  "start": 67.07,
+  "end": 67.303
+ },
+ {
+  "id": "w185",
+  "text": "um",
+  "start": 67.372,
+  "end": 67.419
+ },
+ {
+  "id": "w186",
+  "text": "escorregador",
+  "start": 67.465,
+  "end": 68.127
+ },
+ {
+  "id": "w187",
+  "text": "de",
+  "start": 68.15,
+  "end": 68.208
+ },
+ {
+  "id": "w188",
+  "text": "concreto",
+  "start": 68.255,
+  "end": 68.707
+ },
+ {
+  "id": "w189",
+  "text": "do",
+  "start": 68.765,
+  "end": 68.835
+ },
+ {
+  "id": "w190",
+  "text": "lado.",
+  "start": 68.893,
+  "end": 69.323
+ },
+ {
+  "id": "w191",
+  "text": "Esse",
+  "start": 69.543,
+  "end": 69.822
+ },
+ {
+  "id": "w192",
+  "text": "é",
+  "start": 69.845,
+  "end": 69.868
+ },
+ {
+  "id": "w193",
+  "text": "o",
+  "start": 69.915,
+  "end": 69.938
+ },
+ {
+  "id": "w194",
+  "text": "vertedouro:",
+  "start": 69.984,
+  "end": 70.669
+ },
+ {
+  "id": "w195",
+  "text": "ele",
+  "start": 70.867,
+  "end": 71.064
+ },
+ {
+  "id": "w196",
+  "text": "pode",
+  "start": 71.111,
+  "end": 71.308
+ },
+ {
+  "id": "w197",
+  "text": "soltar",
+  "start": 71.331,
+  "end": 71.749
+ },
+ {
+  "id": "w198",
+  "text": "até",
+  "start": 71.807,
+  "end": 72.005
+ },
+ {
+  "id": "w199",
+  "text": "quarenta",
+  "start": 72.074,
+  "end": 72.562
+ },
+ {
+  "id": "w200",
+  "text": "vezes",
+  "start": 72.632,
+  "end": 72.945
+ },
+ {
+  "id": "w201",
+  "text": "a",
+  "start": 73.015,
+  "end": 73.038
+ },
+ {
+  "id": "w202",
+  "text": "água",
+  "start": 73.084,
+  "end": 73.293
+ },
+ {
+  "id": "w203",
+  "text": "das",
+  "start": 73.34,
+  "end": 73.467
+ },
+ {
+  "id": "w204",
+  "text": "Cataratas",
+  "start": 73.526,
+  "end": 74.083
+ },
+ {
+  "id": "w205",
+  "text": "do",
+  "start": 74.129,
+  "end": 74.199
+ },
+ {
+  "id": "w206",
+  "text": "Iguaçu.",
+  "start": 74.245,
+  "end": 74.884
+ },
+ {
+  "id": "w207",
+  "text": "Zerou?",
+  "start": 75.139,
+  "end": 75.673
+ },
+ {
+  "id": "w208",
+  "text": "Ainda",
+  "start": 75.894,
+  "end": 76.254
+ },
+ {
+  "id": "w209",
+  "text": "não.",
+  "start": 76.312,
+  "end": 76.684
+ },
+ {
+  "id": "w210",
+  "text": "Os",
+  "start": 76.939,
+  "end": 77.136
+ },
+ {
+  "id": "w211",
+  "text": "peixes",
+  "start": 77.206,
+  "end": 77.519
+ },
+ {
+  "id": "w212",
+  "text": "que",
+  "start": 77.566,
+  "end": 77.659
+ },
+ {
+  "id": "w213",
+  "text": "sobem",
+  "start": 77.705,
+  "end": 78.007
+ },
+ {
+  "id": "w214",
+  "text": "o",
+  "start": 78.054,
+  "end": 78.077
+ },
+ {
+  "id": "w215",
+  "text": "rio",
+  "start": 78.123,
+  "end": 78.263
+ },
+ {
+  "id": "w216",
+  "text": "pra",
+  "start": 78.297,
+  "end": 78.425
+ },
+ {
+  "id": "w217",
+  "text": "desovar",
+  "start": 78.472,
+  "end": 78.924
+ },
+ {
+  "id": "w218",
+  "text": "batem",
+  "start": 78.982,
+  "end": 79.296
+ },
+ {
+  "id": "w219",
+  "text": "no",
+  "start": 79.319,
+  "end": 79.389
+ },
+ {
+  "id": "w220",
+  "text": "paredão",
+  "start": 79.447,
+  "end": 79.888
+ },
+ {
+  "id": "w221",
+  "text": "e",
+  "start": 79.958,
+  "end": 80.027
+ },
+ {
+  "id": "w222",
+  "text": "não",
+  "start": 80.085,
+  "end": 80.225
+ },
+ {
+  "id": "w223",
+  "text": "passam.",
+  "start": 80.271,
+  "end": 80.759
+ },
+ {
+  "id": "w224",
+  "text": "Aí",
+  "start": 81.061,
+  "end": 81.246
+ },
+ {
+  "id": "w225",
+  "text": "você",
+  "start": 81.281,
+  "end": 81.478
+ },
+ {
+  "id": "w226",
+  "text": "cava",
+  "start": 81.548,
+  "end": 81.757
+ },
+ {
+  "id": "w227",
+  "text": "um",
+  "start": 81.78,
+  "end": 81.827
+ },
+ {
+  "id": "w228",
+  "text": "rio",
+  "start": 81.873,
+  "end": 82.001
+ },
+ {
+  "id": "w229",
+  "text": "só",
+  "start": 82.047,
+  "end": 82.163
+ },
+ {
+  "id": "w230",
+  "text": "pra",
+  "start": 82.222,
+  "end": 82.384
+ },
+ {
+  "id": "w231",
+  "text": "eles,",
+  "start": 82.442,
+  "end": 82.895
+ },
+ {
+  "id": "w232",
+  "text": "com",
+  "start": 83.197,
+  "end": 83.359
+ },
+ {
+  "id": "w233",
+  "text": "dez",
+  "start": 83.429,
+  "end": 83.615
+ },
+ {
+  "id": "w234",
+  "text": "quilômetros,",
+  "start": 83.661,
+  "end": 84.16
+ },
+ {
+  "id": "w235",
+  "text": "contornando",
+  "start": 84.195,
+  "end": 84.694
+ },
+ {
+  "id": "w236",
+  "text": "a",
+  "start": 84.718,
+  "end": 84.741
+ },
+ {
+  "id": "w237",
+  "text": "usina.",
+  "start": 84.787,
+  "end": 85.275
+ },
+ {
+  "id": "w238",
+  "text": "Esse",
+  "start": 85.53,
+  "end": 85.809
+ },
+ {
+  "id": "w239",
+  "text": "é",
+  "start": 85.832,
+  "end": 85.855
+ },
+ {
+  "id": "w240",
+  "text": "o",
+  "start": 85.902,
+  "end": 85.937
+ },
+ {
+  "id": "w241",
+  "text": "Canal",
+  "start": 85.983,
+  "end": 86.262
+ },
+ {
+  "id": "w242",
+  "text": "da",
+  "start": 86.308,
+  "end": 86.378
+ },
+ {
+  "id": "w243",
+  "text": "Piracema.",
+  "start": 86.424,
+  "end": 87.109
+ },
+ {
+  "id": "w244",
+  "text": "Agora",
+  "start": 87.33,
+  "end": 87.701
+ },
+ {
+  "id": "w245",
+  "text": "sim:",
+  "start": 87.759,
+  "end": 88.119
+ },
+ {
+  "id": "w246",
+  "text": "zerou.",
+  "start": 88.677,
+  "end": 89.153
+ },
+ {
+  "id": "w247",
+  "text": "Você",
+  "start": 89.559,
+  "end": 89.838
+ },
+ {
+  "id": "w248",
+  "text": "construiu",
+  "start": 89.907,
+  "end": 90.349
+ },
+ {
+  "id": "w249",
+  "text": "Itaipu.",
+  "start": 90.395,
+  "end": 91.068
+ },
+ {
+  "id": "w250",
+  "text": "Energia",
+  "start": 91.289,
+  "end": 91.799
+ },
+ {
+  "id": "w251",
+  "text": "pra",
+  "start": 91.846,
+  "end": 91.962
+ },
+ {
+  "id": "w252",
+  "text": "milhões",
+  "start": 92.008,
+  "end": 92.31
+ },
+ {
+  "id": "w253",
+  "text": "de",
+  "start": 92.333,
+  "end": 92.392
+ },
+ {
+  "id": "w254",
+  "text": "casas,",
+  "start": 92.45,
+  "end": 92.833
+ },
+ {
+  "id": "w255",
+  "text": "em",
+  "start": 92.856,
+  "end": 92.914
+ },
+ {
+  "id": "w256",
+  "text": "dois",
+  "start": 92.972,
+  "end": 93.146
+ },
+ {
+  "id": "w257",
+  "text": "países.",
+  "start": 93.216,
+  "end": 93.785
+ },
+ {
+  "id": "w258",
+  "text": "Manda",
+  "start": 94.005,
+  "end": 94.249
+ },
+ {
+  "id": "w259",
+  "text": "pra",
+  "start": 94.296,
+  "end": 94.412
+ },
+ {
+  "id": "w260",
+  "text": "quem",
+  "start": 94.458,
+  "end": 94.574
+ },
+ {
+  "id": "w261",
+  "text": "acha",
+  "start": 94.644,
+  "end": 94.795
+ },
+ {
+  "id": "w262",
+  "text": "que",
+  "start": 94.841,
+  "end": 94.934
+ },
+ {
+  "id": "w263",
+  "text": "rio",
+  "start": 94.981,
+  "end": 95.108
+ },
+ {
+  "id": "w264",
+  "text": "só",
+  "start": 95.155,
+  "end": 95.259
+ },
+ {
+  "id": "w265",
+  "text": "serve",
+  "start": 95.317,
+  "end": 95.573
+ },
+ {
+  "id": "w266",
+  "text": "pra",
+  "start": 95.619,
+  "end": 95.724
+ },
+ {
+  "id": "w267",
+  "text": "pescar.",
+  "start": 95.77,
+  "end": 96.455
+ }
+]
