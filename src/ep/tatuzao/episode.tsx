@@ -39,9 +39,9 @@ const SHOTS: Shot[] = [
   FK("terra amontoa → rosca → esteira → fresta", C5, [
     K(C5, [-6, YT + 1, 8], [-6, YT - 1, -0.5], 46, 2), K(T.arranca, [-7, YT + 1.5, 9], [-6, YT - 1, -0.5], 46, -1),
     K(T.parafuso, [-6, YT + 0.5, 7], [-6, YT - 1, -0.5], 44, 1), K(T.esteira, [-30, YT + 8, 26], [-20, YT, 0], 58, -1),
-    K(T.rosca, [-24, YT + 8, 26], [-18, YT, 0], 58, 1), K(T.fresta, [-14, YT + 2, 9], [-14, YT + 2.5, 0], 46, -1), K(C6 - 0.05, [-14, YT + 2, 8.8], [-14, YT + 2.5, 0], 46, 0)]),
+    K(T.rosca, [-24, YT + 8, 26], [-18, YT, 0], 58, 1), K(T.fresta, [-13, YT + 3.3, 7], [-13, YT + 3.1, 0], 34, -1), K(C6 - 0.05, [-13.4, YT + 3.3, 6.8], [-13.4, YT + 3.1, 0], 34, 0)]),
   FK("argamassa → a máquina anda → outra linha no caminho", C6, [
-    K(C6, [-16, YT + 3.3, 6], [-16, YT + 3.1, 0], 40, 2), K(T.argamassa, [-15, YT + 3, 6.5], [-15, YT + 3, 0], 42, -1),
+    K(C6, [-4, YT + 1.5, 10], [-11, YT + 2.6, 0], 46, 2), K(T.argamassa, [-5, YT + 1.8, 10.5], [-11, YT + 2.8, 0], 46, -1),
     K(T.anda, [-6, YT + 6, 18], [-6, YT, 0], 56, 1), K(T.z5, [-7, YT + 6, 19], [-6, YT, 0], 56, -1),
     K(T.caminho, [-4, 22, 26], [4, 22, 0], 54, 2), K(C7 - 0.05, [-4, 22.5, 26], [4, 22, 0], 54, 0)]),
   FK("estação fechada → passa por baixo → a cidade inteira", C7, [
@@ -86,6 +86,8 @@ const hud: HudData = {
     { a: T.sessenta, b: T.tunel - 0.1, label: "CADA ANEL", value: () => "60 t", y: 550, tone: "gold" },
     { a: T.frente, b: T.apertada - 0.1, label: "PRESSÃO", value: () => "TERRA + ÁGUA", y: 440, tone: "red" },
     { a: T.apertada, b: T.z3 - 0.1, label: "PRESSÃO", value: () => "EQUILIBRADA", y: 440, tone: "green" },
+    { a: T.fresta + 0.4, b: T.argamassa - 0.1, label: "ENTRE ANEL E TERRA", value: () => "FRESTA", y: 440, tone: "red" },
+    { a: T.argamassa + 0.3, b: T.z5 - 0.1, label: "FRESTA", value: () => "CHEIA", y: 440, tone: "green" },
     { a: T.vinte, b: T.agoraSim - 0.1, label: "POR BAIXO", value: () => "24 m", y: 440 },
   ],
   titles: [
@@ -101,5 +103,5 @@ const hud: HudData = {
 
 export const EP: Episode = {
   SHOTS, DYN, WORKER, COSTUME: COSTUMES.mep, HUD: hud, World, SFX, EXPOSURE,
-  ENV: { bg: "#9fd0ff", fog: "#e6f2ff", fogNear: 170, fogFar: 600, hemiSky: "#eef6ff", hemiGround: "#b98a58", hemiI: 1.25, sun: "#fff3dc", sunI: 2.5 },
+  ENV: { bg: "#9fd0ff", fog: "#e6f2ff", fogNear: 170, fogFar: 600, hemiSky: "#eef6ff", hemiGround: "#d9b080", hemiI: 1.35, sun: "#fff3dc", sunI: 2.5 },
 };

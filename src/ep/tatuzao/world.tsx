@@ -11,7 +11,7 @@ import { T } from "./cues";
 
 const PI = Math.PI;
 export const GY = 34, YT = 10, R = 3.3, XL1 = 30, X0 = -46;
-const SOIL = ["#9a6a3e", "#b07a46", "#8a5a32", "#c08a52", "#7a5030"], WATERC = "#4ab8ff", CONC = "#c4c9c7", CONC2 = "#a9b0ae";
+const SOIL = ["#b88a58", "#c9965e", "#a87a4c", "#d6a670", "#9a6e48"], WATERC = "#4ab8ff", CONC = "#c4c9c7", CONC2 = "#a9b0ae";
 
 export const built = (t: number) => t < CUTS[0];
 /** posição da roda de corte: anda do poço (X0) até depois da outra linha; no gancho, a máquina pronta no meio */
@@ -27,7 +27,7 @@ const st = (t: number) => {
     push: B ? 0 : ease(t, T.frente, T.frente + 0.6) * (1 - ease(t, T.apertada + 0.6, T.camara)),
     sag: B ? 0 : ease(t, T.afundar - 0.2, T.afundar + 0.6) * (1 - ease(t, T.apertada + 0.4, T.camara)),
     chamber: B ? 1 : ease(t, T.apertada - 0.2, T.apertada + 0.8),
-    pile: B ? 0 : ease(t, T.arranca + 0.2, T.parafuso) * (1 - ease(t, T.esteira, T.rosca + 0.5)),
+    pile: B ? 0 : ease(t, T.arranca + 0.2, T.parafuso) * (1 - ease(t, T.parafuso - 0.3, T.parafuso + 1.2)),
     screw: B ? 1 : ease(t, T.parafuso - 0.2, T.parafuso + 0.4),
     belt: B ? 1 : ease(t, T.esteira - 0.2, T.esteira + 0.4),
     gap: B ? 0 : ease(t, T.fresta, T.fresta + 0.6) * (1 - ease(t, T.argamassa, T.anda)),
@@ -42,6 +42,7 @@ const Soil: React.FC<{ t: number; s: S; xh: number }> = ({ s, xh }) => {
   const bands = [[0, 4], [4, YT - R], [YT + R, 17], [17, 22], [22, 27], [27, GY - 1.2]];
   return (
     <G>
+      <Box s={[260, 70, 50]} p={[0, -35, -25]} c={SOIL[4]} cast={false} />
       {bands.map(([y0, y1], i) => <Box key={i} s={[260, y1 - y0, 50]} p={[0, (y0 + y1) / 2, -25]} c={SOIL[i % SOIL.length]} cast={false} />)}
       {/* lençol de água (faixa azul dentro da terra) */}
       <Box s={[260, 1.6, 0.2]} p={[0, 18.5, 0.06]} c={WATERC} o={{ opacity: 0.55 }} cast={false} recv={false} />
@@ -59,7 +60,7 @@ const Soil: React.FC<{ t: number; s: S; xh: number }> = ({ s, xh }) => {
 // ---------------------------------------------------------------- a rua em cima: asfalto, calçada, prédios, carros; a vala; o afundamento
 const Street: React.FC<{ t: number; s: S; xh: number }> = ({ t, s, xh }) => {
   const blds = useMemo(() => Array.from({ length: 22 }, (_, i) => ({ x: -100 + i * 9.5 + rnd(i) * 2, h: 6 + rnd(i + 3) * 16, w: 6 + rnd(i + 5) * 2.5, c: ["#e8d6b6", "#cfe6ff", "#ffd9a8", "#f1e6d0", "#ffc2c2", "#d8dcdb"][i % 6] })), []);
-  const sagAt = (x: number) => s.sag * 1.6 * Math.max(0, 1 - Math.abs(x - (xh + 2)) / 7);
+  const sagAt = (x: number) => s.sag * 2.8 * Math.max(0, 1 - Math.abs(x - (xh + 2)) / 8);
   return (
     <G>
       {/* asfalto em trechos (para poder afundar sobre a roda) */}
@@ -126,8 +127,8 @@ const TBM: React.FC<{ t: number; s: S; xh: number }> = ({ t, s, xh }) => {
       {s.chamber > 0.5 && s.chamber < 1.0 || (t > T.apertada && t < T.camara + 1.2) ? [-2, 0, 2].map((dy, i) => <Cone key={i} rad={0.6} h={1.6} seg={6} p={[xh + 1.2 + fract(t * 1.3 + i * 0.3) * 1.5, YT + dy, 0.8]} r={[0, 0, -PI / 2]} c="#2fd14f" o={{ emissive: "#1aa83a", ei: 0.6 }} cast={false} />) : null}
       {/* rosca sem fim: tubo inclinado da câmara para trás, com a hélice girando */}
       <G p={[xh - 6.2, YT - 1.2, -0.6]} r={[0, 0, 0.22]} vis={s.screw > 0.01}>
-        <Cyl rt={0.55} h={7.5 * s.screw} r={[0, 0, PI / 2]} c="#bfe6ff" o={{ opacity: 0.35 }} seg={12} cast={false} />
-        {Array.from({ length: 14 }, (_, k) => <Box key={k} s={[0.12, 0.95, 0.22]} p={[-3.4 + k * 0.5, 0, 0]} r={[k * 0.9 + t * 6, 0, 0]} c="#ffd400" vis={k * 0.5 < 7 * s.screw} />)}
+        <Cyl rt={0.8} h={7.5 * s.screw} r={[0, 0, PI / 2]} c="#bfe6ff" o={{ opacity: 0.3 }} seg={12} cast={false} />
+        {Array.from({ length: 14 }, (_, k) => <Box key={k} s={[0.16, 1.4, 0.3]} p={[-3.4 + k * 0.5, 0, 0]} r={[k * 0.9 + t * 6, 0, 0]} c="#ffd400" vis={k * 0.5 < 7 * s.screw} />)}
       </G>
       {/* braço montador girando com uma aduela na mão */}
       <G p={[xh - SH + 0.6, YT, -0.4]} r={[s.rings > 0.01 && s.rings < 1 ? t * 2.4 : (s.B ? t * 0.8 : 0), 0, 0]} vis={s.shield > 0.5}>
@@ -150,8 +151,12 @@ const Lining: React.FC<{ t: number; s: S; xh: number }> = ({ s, xh }) => {
     <G>
       {half(R - 0.35, len, CONC, tail - len / 2)}
       {Array.from({ length: Math.min(shown, 80) }, (_, k) => <mesh key={k} position={[tail - 0.5 - k, YT, 0]} rotation={[0, 0, PI / 2]} material={mat(k % 2 ? CONC2 : "#8f9694", { side: "double" })}><cylinderGeometry args={[R - 0.33, R - 0.33, 0.08, 28, 1, true, PI / 2, PI]} /></mesh>)}
-      {/* fresta entre o anel e a terra: faixa escura; a argamassa a preenche de cinza */}
-      {half(R - 0.06, len, s.gap > 0.02 ? "#2a1a0e" : s.grout > 0.02 ? "#7d8582" : SOIL[1], tail - len / 2)}
+      {/* no corte: anel (cinza) e, por fora, a fresta (escura) que a argamassa preenche (cinza claro) */}
+      {[1, -1].map((sg) => <G key={sg}>
+        <Box s={[len, 0.55, 0.14]} p={[tail - len / 2, YT + sg * (R - 0.62), 0.05]} c={CONC2} cast={false} />
+        <Box s={[len, 0.9, 0.14]} p={[tail - len / 2, YT + sg * (R + 0.1), 0.05]} c={s.gap > 0.02 ? "#140a04" : s.grout > 0.02 ? "#d6dad8" : SOIL[1]} o={s.grout > 0.02 && s.gap < 0.02 ? { emissive: "#ffffff", ei: 0.15 } : {}} cast={false} />
+      </G>)}
+      {s.grout > 0.01 && s.grout < 1 ? Array.from({ length: 10 }, (_, i) => { const u = fract(i / 10 + s.grout * 3); return <Sph key={i} rad={0.22} p={[tail - 0.4 - u * 3, YT + R - 0.15, 0.2]} c="#e9ecea" cast={false} ws={6} hs={4} />; }) : null}
       {/* trilho e piso */}
       <Box s={[len, 0.3, 2.2]} p={[tail - len / 2, YT - R + 0.6, -0.6]} c="#6b7680" />
     </G>
