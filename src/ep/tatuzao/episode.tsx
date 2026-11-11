@@ -19,7 +19,7 @@ const FK = (name: string, t0: number, keys: Key[]): Shot => ({ name, t0, keys, f
 const SHOTS: Shot[] = [
   FK("gancho: a máquina pronta debaixo da cidade", 0, [
     K(0, [14, YT + 2, 22], [0, YT, 0], 50, 2), K(T.cento, [-10, YT + 4, 34], [-10, YT, 0], 56, -2),
-    K(T.sp, [0, 24, 52], [0, 20, 0], 60, 2), K(T.voce, [8, 30, 56], [4, 22, -4], 60, -1), K(C1 - 0.05, [8, 30.5, 56], [4, 22, -4], 60, 0)]),
+    K(T.sp, [6, 22, 50], [0, 20, 0], 60, 4), K(T.voce, [22, 30, 54], [8, 22, -4], 60, -3), K(T.voce + 1.6, [-6, 27, 50], [-2, 20, -4], 60, 3), K(C1 - 0.05, [-20, 25, 46], [-8, 18, -4], 58, -2)]),
   { name: "vala abre a rua → mergulho até o poço → roda", t0: C1, keys: [
     K(C1, [-6, GY + 10, 24], [-6, GY, -6], 56, 2), K(T.rua, [-4, GY + 12, 26], [-6, GY, -6], 56, -1),
     K(T.para, [-16, GY + 9, 22], [-22, GY, -6], 56, 2), K(T.cava + 0.3, [-40, YT + 5, 24], [-44, YT, 0], 56, -2),
