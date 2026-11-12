@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, rnd } from "../../toy/kit";
 import { Clouds, Palms, Puffs, Sky } from "../../toy/scenery";
 import { COSTUMES, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
-import { T } from "./cues";
+import { CUTS, T } from "./cues";
 
 const PI = Math.PI;
 export const built = (t: number) => t < T.cebu - 0.12;
@@ -183,7 +183,7 @@ const Fleet: React.FC<{ t: number }> = ({ t }) => {
   if (t > T.norte - 0.3 && t < T.p2 + 0.2) { const a = along(TORNA, ease(t, T.norte, T.tornaT + 0.8)); out.push(<Galleon key="r" p={a.p} yaw={a.yaw} t={t} sc={1.4} />); }
   // mar aberto: meses, sede, tinajas, chuva
   if (t > T.p2 && t < T.b2 + 0.2) out.push(<Galleon key="m" p={SEA_SCENE} yaw={0.1} t={t} />);
-  if (t > T.p3 - 0.2 && t < T.p4 - 0.5) out.push(<Galleon key="j" p={SEA_SCENE} yaw={0.1} t={t} cut={t > T.b3 && t < T.colgadas + 0.2} jars={ease(t, T.miles - 0.4, T.miles + 0.8)} hang={ease(t, T.colgadas - 0.2, T.colgadas + 0.5)} fill={ease(t, T.chubasco, T.chubasco + 1.2)} />);
+  if (t > Math.min(T.p3 - 0.2, CUTS[3] - 0.05) && t < T.p4 - 0.5) out.push(<Galleon key="j" p={SEA_SCENE} yaw={0.1} t={t} cut={t > T.b3 && t < T.colgadas + 0.2} jars={ease(t, T.miles - 0.4, T.miles + 0.8)} hang={ease(t, T.colgadas - 0.2, T.colgadas + 0.5)} fill={ease(t, T.chubasco, T.chubasco + 1.2)} />);
   // 1743: o Centurion captura o Covadonga perto das Filipinas
   if (t > T.p5 - 0.3 && t < T.historiadores) {
     const flag = 1 - ease(t, T.capturo + 0.6, T.millon), shots = [T.capturo - 0.4, T.capturo + 0.1, T.capturo + 0.6];

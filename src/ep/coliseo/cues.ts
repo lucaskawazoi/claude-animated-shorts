@@ -1,21 +1,21 @@
 // E3 — El Coliseo. Pontos da história = palavras ditas (sem React: a mixagem lê este arquivo).
 import { CUTS, DURATION_S, WINS, find } from "../../toy/cues";
 
-const b = (n: number) => find("sin motores", n, 0.1), ci = (n: number) => find("con ingenio", n, 0.05);
+const ci = (n: number) => find("con ingenio", n, 0.05);
 export const T = {
   espect: find("cincuenta mil espectadores"), diez: find("menos de diez"), puertas: find("ochenta puertas"),
-  roma: find("roma ano setenta"), vespasiano: find("el emperador vespasiano"), nero: find("donde neron"), lago: find("su lago privado"),
+  roma: find("roma ano setenta"), nohay: find("no hay motores"), vespasiano: find("el emperador vespasiano"), nero: find("donde neron"), lago: find("su lago privado"),
   p1: find("pero sobre un lago", 0, 0.1),
-  b1: b(0), c1: ci(0), vacian: find("vacian el lago"), llenan: find("llenan el hueco"), anillo: find("un anillo"), doce: find("doce metros"), cimientos: find("estos son los cimientos"),
+  b1: find("como construyes", 0, 0.1), c1: ci(0), vacian: find("vacian el lago"), llenan: find("llenan el hueco"), anillo: find("un anillo"), doce: find("doce metros"), cimientos: find("estos son los cimientos"),
   p2: find("pero encima van", 0, 0.1), cien: find("cien mil metros"),
-  b2: b(1), c2: ci(1), pilares: find("pilares de travertino"), arcos: find("arcos y bovedas"), reparten: find("reparten la carga"), estosArcos: find("estos son los arcos"),
+  b2: find("como aguantas", 0, 0.1), c2: ci(1), pilares: find("pilares de travertino"), arcos: find("arcos y bovedas"), reparten: find("desvia el peso"), estosArcos: find("estos son los arcos"),
   p3: find("pero cincuenta mil personas", 0, 0.1), atasco: find("un atasco gigante"),
-  b3: b(2), c3: ci(2), setenta: find("setenta y seis"), ficha: find("en tu ficha"), vomitorios: find("estos son los vomitorios"),
+  b3: find("como ordenas", 0, 0.1), c3: ci(2), setenta: find("setenta y seis"), ficha: find("en tu ficha"), vomitorios: find("estos son los vomitorios"),
   p4: find("pero el sol", 0, 0.1),
-  b4: b(3), c4: ci(3), toldo: find("un toldo gigante"), velario: find("el velario", 0), marineros: find("marineros"), esteVelario: find("este es el velario"),
+  b4: find("como das sombra", 0, 0.1), c4: ci(3), toldo: find("un toldo gigante"), velario: find("el velario", 0), marineros: find("marineros"), esteVelario: find("este es el velario"),
   ochenta: find("ano ochenta"), inaugura: find("se inaugura"), cienDias: find("cien dias"),
   p5: find("pero el publico", 0, 0.1),
-  b5: b(4), c5: ci(4), domiciano: find("el emperador domiciano"), excava: find("excava un sotano"), monta: find("montacargas"), suben: find("que suben animales"), hipogeo: find("este es el hipogeo"),
+  b5: find("como haces aparecer", 0, 0.1), c5: ci(4), domiciano: find("el emperador domiciano"), excava: find("excava un sotano"), monta: find("montacargas"), suben: find("que suben animales"), hipogeo: find("este es el hipogeo"),
   hoy: find("hoy le falta"), terremotos: find("terremotos"), cantera: find("como cantera"), sigue: find("pero sigue en pie"),
   manda: find("mandaselo"),
   end: DURATION_S,

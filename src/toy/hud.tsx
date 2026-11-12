@@ -15,7 +15,7 @@ export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.m
 export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold" };
 export type Title = { a: number; text: string; len?: number };
 export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string };
-export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }> };
+export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number, string?][]; reward: Reward; Extra?: React.FC<{ t: number }> };
 
 /** contador que sobe de a até b entre t0 e t1, com separador de milhar em espanhol */
 export const count = (t: number, t0: number, t1: number, a: number, b: number, dec = 0) => {
@@ -74,14 +74,14 @@ const Cross: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
 };
 
 /** o bordão do canal: carimbo cinza «SIN MOTORES» que leva um risco vermelho, e o amarelo «¡CON INGENIO!» por cima */
-const Stamp: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
+const Stamp: React.FC<{ t: number; a: number; b: number; label?: string }> = ({ t, a, b, label = "SIN MOTORES" }) => {
   const end = b + 1.5, k = win(t, a, end, 0.15); if (k <= 0) return null;
   const s1 = pop(t, a, 0.25), strike = ease(t, a + 0.3, a + 0.55), s2 = pop(t, b, 0.3), shake = t > b ? Math.sin((t - b) * 30) * 6 * (1 - prog(t, b, b + 0.5)) : 0;
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 560, height: 300, opacity: k }}>
       <div style={{ position: "absolute", left: 0, width: W, top: 0, display: "flex", justifyContent: "center", transform: `rotate(-4deg) scale(${s1 * (t > b ? 0.86 : 1)})`, opacity: t > b ? 0.75 : 1 }}>
         <div style={{ position: "relative", padding: "6px 30px 10px", border: "8px solid #5b6670", borderRadius: 18, background: "#d9dee2e6" }}>
-          <span style={{ fontFamily: FONT, fontSize: 70, color: "#5b6670", letterSpacing: 3 }}>SIN MOTORES</span>
+          <span style={{ fontFamily: FONT, fontSize: label.length > 13 ? 58 : 70, color: "#5b6670", letterSpacing: 3 }}>{label}</span>
           <div style={{ position: "absolute", left: -12, top: "48%", height: 16, width: `${104 * strike}%`, background: "#e0262b", borderRadius: 8, transform: "rotate(-8deg)", transformOrigin: "left center" }} />
         </div>
       </div>
@@ -140,7 +140,7 @@ export const Hud: React.FC<{ t: number; captions?: boolean }> = ({ t, captions =
       {d.alerts.map((a) => <Alert key={a} t={t} a={a} />)}
       {d.rewinds.map((a) => <Rewind key={a} t={t} a={a} />)}
       {d.crosses.map(([a, b]) => <Cross key={a} t={t} a={a} b={b} />)}
-      {d.stamps.map(([a, b]) => <Stamp key={a} t={t} a={a} b={b} />)}
+      {d.stamps.map(([a, b, l]) => <Stamp key={a} t={t} a={a} b={b} label={l} />)}
       <RewardEl t={t} r={d.reward} />
       </div>
       {captions ? <Caption t={t} /> : null}

@@ -1,19 +1,19 @@
 // E7 — Faro de Alejandría. Pontos da história = palavras ditas (sem React: a mixagem lê este arquivo).
 import { CUTS, DURATION_S, WINS, find } from "../../toy/cues";
 
-const b = (n: number) => find("sin motores", n, 0.1), ci = (n: number) => find("con ingenio", n, 0.05);
+const ci = (n: number) => find("con ingenio", n, 0.05);
 export const T = {
   treinta: find("treinta pisos"), construido: find("construido"), nombre: find("su nombre lo usas"),
-  alejandria: find("alejandria"), hace: find("hace unos"), costa: find("la costa es plana"), rocas: find("rocas escondidas"), barcos: find("los barcos no"),
-  b1: b(0), c1: ci(0), torre: find("una torre gigante"), isla: find("la isla de faros"), torreT: find("esta es la torre"),
+  alejandria: find("alejandria"), hace: find("hace unos"), nohay: find("no hay motores"), costa: find("la costa es plana"), rocas: find("rocas escondidas"), barcos: find("los barcos no"),
+  b1: find("como marcas", 0, 0.1), c1: ci(0), torre: find("una torre gigante"), isla: find("la isla de faros"), torreT: find("esta es la torre"),
   p2: find("pero la isla esta separada", 0, 0.1), mar: find("por el mar"),
-  b2: b(1), c2: ci(1), dique: find("un dique de piedra"), kilometro: find("un kilometro"), une: find("que une la isla"), puertos: find("crea dos puertos"), hepta: find("este es el heptastadion"),
+  b2: find("solucion un dique", 0, 0.1), c2: find("un dique"), dique: find("un dique de piedra"), kilometro: find("un kilometro"), une: find("que une la isla"), puertos: find("dos puertos"), hepta: find("este es el heptastadion"),
   p3: find("pero una torre tan alta", 0, 0.1), viento: find("el viento"), peso: find("su propio peso"),
-  b3: b(2), c3: ci(2), tres: find("tres pisos"), abajo: find("abajo cuadrado"), medio: find("en medio octogonal"), arriba: find("arriba redondo"), estrecho: find("mas estrecho"), pisosT: find("estos son los tres pisos"),
+  b3: find("como la sostienes", 0, 0.1), c3: ci(1), tres: find("tres pisos"), abajo: find("uno cuadrado"), medio: find("uno octogonal"), arriba: find("uno redondo"), estrecho: find("mas estrecho"), pisosT: find("estos son los tres pisos"),
   p4: find("pero de noche", 0, 0.1), nadie: find("nadie ve"),
-  b4: b(3), c4: ci(3), fuego: find("un fuego encendido"), cima: find("en la cima"), lejos: find("desde muy lejos"), fuegoT: find("este es el fuego"),
+  b4: find("como la ves", 0, 0.1), c4: ci(2), fuego: find("un fuego encendido"), cima: find("en la cima"), lejos: find("desde muy lejos"), fuegoT: find("este es el fuego"),
   p5: find("pero hay que subir", 0, 0.1), cien: find("cien metros"), noches: find("todas las noches"),
-  b5: b(4), c5: ci(4), dentro: find("por dentro"), rampa: find("una rampa ancha"), viajero: find("un viajero arabe"), jinetes: find("dos jinetes"), rampaT: find("esta es la rampa"),
+  b5: find("como lo subes", 0, 0.1), c5: ci(3), dentro: find("por dentro"), rampa: find("una rampa ancha"), viajero: find("un viajero arabe"), jinetes: find("dos jinetes"), rampaT: find("esta es la rampa"),
   terremotos: find("varios terremotos"), peor: find("el peor"), ruinas: find("en ruinas"), piedras: find("con sus piedras"), fortaleza: find("una fortaleza"), pie: find("sigue en pie"),
   nombre2: find("le dejo su nombre"), faros: find("todos los faros"), manda: find("mandaselo"),
   end: DURATION_S,
@@ -23,7 +23,8 @@ export { CUTS, WINS };
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
-for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2], [T.b3, T.c3], [T.b4, T.c4], [T.b5, T.c5]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
+for (const a of [T.c2]) S.push(["chime", a, -9]);
+for (const [a, c] of [[T.b1, T.c1], [T.b3, T.c3], [T.b4, T.c4], [T.b5, T.c5]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
 for (const a of [T.p2, T.p3, T.p4, T.p5]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.alejandria, T.b2, T.b3, T.b4, T.b5]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.torreT, T.hepta, T.pisosT, T.fuegoT, T.rampaT]) S.push(["ding", a + 0.05, -9]);

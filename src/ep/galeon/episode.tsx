@@ -29,12 +29,12 @@ const SHOTS: Shot[] = [
     K(C3, [SX + 8, 5, SZ + 8], [SX, 2.5, SZ], 52, 2), K(T.abierto, [SX + 12, 8, SZ + 12], [SX, 2, SZ], 56, 0), K(T.b2 + 0.4, [0, 40, -20], [-10, 0, -14], 56, 0),
     K(T.barcos, [-14, 6, -2], [-21, 1.5, -9], 52, 0), K(T.molave, [-15, 5, -3], [-21, 1.2, -9], 50, 0), K(C4 - 0.05, [-15, 5, -3], [-21, 1.2, -9], 50, 0)] },
   { name: "sede no convés → tinajas no porão", t0: C4, keys: [
-    K(C4, [SX + 6, 5, SZ + 6], [SX, 2.5, SZ], 48, -2), K(T.b3, [SX + 4, 4.5, SZ + 6], [SX, 1.5, SZ], 48, 0), K(T.miles, [SX + 0.5, 2.8, SZ + 4.4], [SX, 0.7, SZ], 48, 0),
-    K(W6, [SX + 0.7, 2.9, SZ + 4.5], [SX, 0.7, SZ], 48, 0), K(C5 - 0.42, [SX + 1.2, 3.6, SZ + 5.7], [SX + 30, 1, SZ + 40], 58, 4), K(C5 - 0.02, [SX + 1.2, 3.6, SZ + 5.8], [SX + 30, 1, SZ + 40], 58, 4)] },
+    K(C4, [SX + 6, 5, SZ + 6], [SX, 2.5, SZ], 48, -2), K(T.p3, [SX + 4, 4.5, SZ + 6], [SX, 1.5, SZ], 48, 0),
+    K(W6, [SX + 3.5, 4.2, SZ + 6], [SX, 1.4, SZ], 48, 0), K(C5 - 0.42, [SX + 1.2, 3.6, SZ + 5.7], [SX + 30, 1, SZ + 40], 58, 4), K(C5 - 0.02, [SX + 1.2, 3.6, SZ + 5.8], [SX + 30, 1, SZ + 40], 58, 4)] },
   { name: "tinajas nas vergas e a chuva → mercado de Manila → minas → cunhagem", t0: C5, keys: [
-    K(C5, [SX - 6, 7, SZ + 8], [SX, 5, SZ], 52, 2), K(T.tinajasT, [SX - 7, 8, SZ + 9], [SX, 5, SZ], 54, 0), K(T.p4 + 0.2, [-6, 40, -10], [-20, 0, -4], 56, 0),
-    K(T.europeos, [-26, 4, 7], [-26, 1.8, 1], 48, 0), K(T.plata0 + 0.4, [-25, 4.4, 7.4], [-25.4, 1.8, 1], 48, 0), K(T.b4 + 0.6, [10, 60, 10], [20, 0, 4], 56, 0),
-    K(T.minas, [36, 14, 16], [46, 6, 4], 54, 0), K(T.potosi, [30, 20, 18], [45, 6, 34], 54, 0), K(T.acunada, [34, 5, 13], [40.5, 1.5, 9], 50, 0), K(C6 - 0.05, [34, 5, 13], [40.5, 1.5, 9], 50, 0)] },
+    K(C5, [SX - 3, 4, SZ + 6], [SX, 1, SZ], 50, 2), K(T.miles + 0.6, [SX - 2, 3.2, SZ + 5], [SX, 0.8, SZ], 48, 0), K(T.colgadas, [SX - 6, 7, SZ + 8], [SX, 5, SZ], 52, 0), K(T.tinajasT, [SX - 7, 8, SZ + 9], [SX, 5, SZ], 54, 0), K(T.p4 + 0.2, [-6, 40, -10], [-20, 0, -4], 56, 0),
+    K(T.europeos, [-26, 4, 7], [-26, 1.8, 1], 48, 0), K(T.plata0 + 0.4, [-25, 4.4, 7.4], [-25.4, 1.8, 1], 48, 0), K(T.b4 + 0.4, [10, 60, 10], [20, 0, 4], 56, 0),
+    K(T.potosi, [30, 20, 18], [45, 6, 34], 54, 0), K(C6 - 0.05, [34, 5, 13], [40.5, 1.5, 9], 50, 0)] },
   { name: "moedas em meio mundo → o navio de guerra britânico", t0: C6, keys: [
     K(C6, [6, 130, 36], [6, 0, -4], 58, -2), K(T.realT, [5, 126, 34], [5, 0, -4], 58, 0), K(T.blanco, [4, 8, 12], [-4, 2, -1], 52, 0), K(T.y1743, [2, 6, 10], [-4, 2, -1], 50, 0), K(C7 - 0.05, [2, 6, 10], [-4, 2, -1], 50, 0)] },
   { name: "a captura do Covadonga → o último galeão → o comércio mundial", t0: C7, keys: [
@@ -53,7 +53,7 @@ const WORKER: [number, WorkerState][] = [
   [C3, S([SX - 2, 1.62, SZ + 0.4], 0.8, "think")],
   [T.barcos, S([-17.5, 0.7, -7], -1.0, "point")],
   [T.galeonT, S([-17.5, 0.7, -7], -0.6, "cheer")],
-  [C4, S([SX - 2, 1.62, SZ + 0.4], 0.8, "alarm")],
+  [T.p3, S([SX - 2, 1.62, SZ + 0.4], 0.8, "alarm")],
   [T.b3, S([SX + 3.2, 0.3, SZ + 0.2], 0.2, "point")],
   [C5, S([SX - 2, 1.62, SZ + 0.4], -0.6, "cheer")],
   [T.p4, S([-24.4, 0.7, 3.4], -0.6, "present")],
@@ -73,7 +73,8 @@ const hud: HudData = {
   pills: [
     { a: 0.05, b: T.un - 0.1, label: "RUTA", value: (t) => `${count(t, 0.05, 0.9, 0, 250)} AÑOS`, y: 440, tone: "gold" },
     { a: T.un, b: T.unio - 0.1, label: "BARCOS", value: (t) => (t < T.veces - 0.05 ? "1 AL AÑO" : "1 O 2 AL AÑO"), y: 440 },
-    { a: T.mil, b: T.ningun - 0.1, label: "AÑO", value: () => "1565", y: 440, tone: "gold" },
+    { a: T.mil, b: T.nohay - 0.1, label: "AÑO", value: () => "1565", y: 440, tone: "gold" },
+    { a: T.nohay, b: T.ningun - 0.1, label: "MOTORES", value: () => "0 · SOLO VELA", y: 440, tone: "red" },
     { a: T.contra, b: T.b1 - 0.1, label: "VIENTO", value: () => "EN CONTRA", y: 440, tone: "red" },
     { a: T.japon, b: T.tornaT, label: "RUMBO", value: (t) => (t < T.vientos - 0.1 ? "NORTE" : "ESTE"), y: 440, tone: "green" },
     { a: T.cuatro, b: T.b2 - 0.1, label: "MESES", value: (t) => (t < T.seis - 0.1 ? (t < T.cuatro + 0.6 ? "4" : "5") : "6"), y: 440, tone: "red" },
@@ -91,7 +92,7 @@ const hud: HudData = {
   alerts: [T.ningun, T.p2, T.p3, T.p4, T.p5],
   rewinds: [T.cebu, T.b2, T.b3, T.b4],
   crosses: [[T.contra, T.b1 - 0.1], [T.agua, T.b3 - 0.1], [T.europeos + 0.2, T.plata0 - 0.1]],
-  stamps: [[T.b1, T.c1], [T.b2, T.c2], [T.b3, T.c3], [T.b4, T.c4]],
+  stamps: [[T.b1, T.c1, "VIENTO EN CONTRA"], [T.b3, T.c3, "SIN PUERTOS"]],
   reward: { a: T.mundial, len: T.end - T.mundial, top: "COMERCIO MUNDIAL", big: (t) => `${count(t, T.mundial, T.mundial + 1.0, 0, 250)} AÑOS`, sub: "SIN UN SOLO MOTOR" },
   Extra: ({ t }) => (
     <>

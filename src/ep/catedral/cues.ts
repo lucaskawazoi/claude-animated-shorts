@@ -1,20 +1,20 @@
 // E8 — Catedral gótica (Notre-Dame de París). Pontos da história = palavras ditas (sem React: a mixagem lê este arquivo).
 import { CUTS, DURATION_S, WINS, find } from "../../toy/cues";
 
-const b = (n: number) => find("sin motores", n, 0.1), ci = (n: number) => find("con ingenio", n, 0.05);
+const ci = (n: number) => find("con ingenio", n, 0.05);
 export const T = {
   quienes: find("quienes pusieron"), nunca: find("nunca la vieron"), vitrales0: find("vitrales enormes"),
-  paris: find("paris"), quieren: find("quieren una catedral"), luz: find("llena de luz"),
+  paris: find("paris"), nohay: find("no hay motores"), quieren: find("quieren una catedral"), luz: find("llena de luz"),
   p1: find("pero un techo", 0, 0.1), empuja: find("empuja las paredes"), fuera1: find("hacia fuera"), por: find("por eso"), gruesos: find("muros gruesos"), pequenas: find("ventanas pequenas"),
-  b1: b(0), c1: ci(0), arco: find("un arco en punta"), abajo: find("mas hacia abajo"), lados: find("los lados"), ojival: find("este es el arco ojival"),
+  b1: find("como subes tan alto", 0, 0.1), c1: ci(0), arco: find("un arco en punta"), abajo: find("mas hacia abajo"), lados: find("los lados"), ojival: find("este es el arco ojival"),
   p2: find("pero la boveda de piedra", 0, 0.1), toneladas: find("toneladas"),
-  b2: b(1), c2: ci(1), nervios: find("nervios de piedra"), cruzan: find("se cruzan"), pilares: find("pocos pilares"), cruceria: find("esta es la boveda"),
+  b2: find("solucion nervios", 0, 0.1), c2: find("nervios de piedra"), nervios: find("nervios de piedra"), cruzan: find("se cruzan"), pilares: find("pocos pilares"), cruceria: find("esta es la boveda"),
   p3: find("pero alla arriba", 0, 0.1), empujando: find("sigue empujando"),
-  b3: b(2), c3: ci(2), brazos: find("brazos de piedra"), sostienen: find("que sostienen"), mano: find("como una mano"), arbotantes: find("estos son los arbotantes"),
+  b3: find("como la frenas", 0, 0.1), c3: ci(1), brazos: find("brazos de piedra"), sostienen: find("que apoyan"), mano: find("ese empuje"), arbotantes: find("estos son los arbotantes"),
   p4: find("pero hay que subir", 0, 0.1), treinta: find("treinta metros"),
-  b4: b(3), c4: ci(3), rueda: find("una rueda de madera"), hombres: find("hombres caminando"), paso: find("cada paso"), cuerda: find("enrolla la cuerda"), grua: find("esta es la grua"),
+  b4: find("como las subes", 0, 0.1), c4: ci(2), rueda: find("una rueda de madera"), hombres: find("hombres caminando"), paso: find("cada paso"), cuerda: find("enrolla la cuerda"), grua: find("esta es la grua"),
   p5: find("pero adentro", 0, 0.1), oscuro: find("sigue oscuro"),
-  b5: b(4), c5: ci(4), como: find("como el muro"), abrir: find("se puede abrir"), vidrio: find("vidrio tenido"), plomo: find("unido con plomo"), roseton: find("el roseton"), trece: find("casi trece metros"), vitralesT: find("estos son los vitrales"),
+  b5: find("como el muro", 0, 0.1), c5: find("se puede abrir"), como: find("como el muro"), abrir: find("se puede abrir"), vidrio: find("vidrio tenido"), plomo: find("tiras de plomo"), roseton: find("el roseton"), trece: find("casi trece metros"), vitralesT: find("estos son los vitrales"),
   y2019: find("en dos mil diecinueve"), incendio: find("un incendio"), destruyo: find("destruyo el techo"), rehacer: find("para rehacerlo"), labrar: find("a labrar"), hacha: find("a hacha"), ochocientos: find("hace ochocientos"),
   manda: find("mandaselo"),
   end: DURATION_S,
@@ -24,7 +24,8 @@ export { CUTS, WINS };
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
-for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2], [T.b3, T.c3], [T.b4, T.c4], [T.b5, T.c5]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
+for (const a of [T.c2, T.c5]) S.push(["chime", a, -9]);
+for (const [a, c] of [[T.b1, T.c1], [T.b3, T.c3], [T.b4, T.c4]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
 for (const a of [T.p1, T.p2, T.p3, T.p4, T.p5]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.paris, T.b2, T.b3, T.b4, T.b5]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.ojival, T.cruceria, T.arbotantes, T.grua, T.vitralesT]) S.push(["ding", a + 0.05, -9]);
