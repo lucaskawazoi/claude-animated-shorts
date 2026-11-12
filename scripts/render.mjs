@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 if (process.env.REMOTION_TMP) { fs.mkdirSync(process.env.REMOTION_TMP, { recursive: true }); process.env.TEMP = process.env.TMP = process.env.REMOTION_TMP; }
 import { bundle } from "@remotion/bundler";
+import webpack from "webpack";
 import { renderMedia, renderStill, selectComposition } from "@remotion/renderer";
 
 const [mode, out, a3, a4, a5] = process.argv.slice(2);
@@ -13,7 +14,13 @@ const browserExecutable = process.env.CHROME || "/usr/bin/google-chrome";
 const chromiumOptions = { gl: process.env.GL || "swangle", disableWebSecurity: false };
 const concurrency = Number(process.env.CONC || 8);
 const inputProps = JSON.parse(process.env.PROPS || "{}");
-const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts"), publicDir: path.resolve("public") });
+// EP=<slug>: renderiza aquele episódio sem depender de src/ep/current.ts (vários renders em paralelo, cada um no seu)
+const EPN = process.env.EP;
+const webpackOverride = (c) => (!EPN ? c : { ...c, plugins: [...(c.plugins ?? []),
+  new webpack.NormalModuleReplacementPlugin(/[\\/]ep[\\/]current$/, path.resolve(`src/ep/${EPN}/episode.tsx`)),
+  new webpack.NormalModuleReplacementPlugin(/^\.\.[\\/]words\.json$/, path.resolve(`src/ep/${EPN}/words.json`))] });
+if (EPN && !fs.existsSync(`src/ep/${EPN}/episode.tsx`)) throw new Error(`episódio não existe: ${EPN}`);
+const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts"), publicDir: path.resolve("public"), webpackOverride, enableCaching: !EPN });
 const composition = await selectComposition({ serveUrl, id: "ToyShort", browserExecutable, chromiumOptions, inputProps });
 const onBrowserLog = (l) => { if (l.type === "error" || l.type === "warning") console.log(`[${l.type}]`, l.text.slice(0, 300)); };
 

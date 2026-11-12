@@ -16,4 +16,5 @@ export type Episode = {
   ENV: Env;
   EXPOSURE: number[]; // curva de exposição por 0,25 s (scripts/exposure_fit.py); vazia = 1
   SFX: [string, number, number][]; // efeito, instante (s), ganho (dB) — lido pela mixagem
+  LIGHT?: (t: number) => number; // multiplicador das luzes no tempo (noite = <1); ausente = 1
 };

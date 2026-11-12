@@ -2,8 +2,8 @@
 # Testa se a régua (dissect) enxerga cada um dos 7 cortes duros de um episódio: renderiza 1 s em volta de cada corte
 # (escala 0,5) e mede com a mesma função da dissect. ~3-5 min. Uso: ./cutclips.sh <slug>
 set -euo pipefail
-./ep.sh "$1" >/dev/null
-C=$(bun -e 'import {CUTS} from "./src/toy/cues"; console.log(CUTS.join(","))')
+export EP="$1"   # cada render usa este episódio (scripts/render.mjs), sem trocar o atual
+C=$(python3 -c "import json;w=json.load(open('src/ep/$1/words.json'));D=w[-1]['end']+0.5;print(','.join(str(round(x*D/96.733*30)/30) for x in [10.867,21.933,31.967,45.033,54.233,71.867,81.5]))")
 mkdir -p out/cuts_$1
 for c in ${C//,/ }; do
   a=$(python3 -c "print(round($c*30)-15)"); b=$(python3 -c "print(round($c*30)+15)")

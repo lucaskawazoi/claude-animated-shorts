@@ -28,15 +28,15 @@ const Scene: React.FC<{ t: number; ov?: Props["cam"] }> = ({ t, ov }) => {
     l.position.set(f.x - 14, 30, f.z + 20); l.target.position.copy(f); l.target.updateMatrixWorld();
     const s = l.shadow.camera; s.left = -28; s.right = 28; s.top = 28; s.bottom = -28; s.near = 1; s.far = 100; s.updateProjectionMatrix();
   });
-  const w = workerAt(t), e = EP.ENV;
+  const w = workerAt(t), e = EP.ENV, L = EP.LIGHT ? EP.LIGHT(t) : 1;
   const pose = blendPose(poseOf(w.prev ?? w.pose, t), poseOf(w.pose, t), w.u ?? 1);
   if (w.mv) { pose.hop += 0.11 * Math.abs(Math.sin(t * 13)); pose.lean = 0.08; }
   return (
     <>
       <fog attach="fog" args={[e.fog, e.fogNear, e.fogFar]} />
-      <hemisphereLight args={[e.hemiSky, e.hemiGround, e.hemiI]} />
-      <ambientLight intensity={0.25} />
-      <directionalLight ref={sun} intensity={e.sunI} color={e.sun} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} shadow-normalBias={0.04} />
+      <hemisphereLight args={[e.hemiSky, e.hemiGround, e.hemiI * L]} />
+      <ambientLight intensity={0.25 * L} />
+      <directionalLight ref={sun} intensity={e.sunI * L} color={e.sun} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} shadow-normalBias={0.04} />
       <EP.World t={t} />
       <Worker p={w.p} yaw={w.yaw} pose={pose} t={t} scale={w.scale ?? 1.25} c={EP.COSTUME} prop={w.prop} />
     </>
