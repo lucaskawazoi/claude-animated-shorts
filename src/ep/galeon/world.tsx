@@ -178,14 +178,14 @@ const Fleet: React.FC<{ t: number }> = ({ t }) => {
   // gancho: o galeão no mapa, grande, fazendo a volta
   if (built(t)) { if (t < T.unio + 0.3) out.push(<Galleon key="h0" p={[lerp(-4, 10, t / T.unio), 0, -36]} yaw={0} t={t} sc={1.4} />); else { const a = along(TORNA, (t / T.cebu) * 0.5 + 0.2); out.push(<Galleon key="h" p={a.p} yaw={a.yaw} t={t} sc={1.4} />); } }
   // Cebu 1565: ancorado; tenta voltar ao leste e o vento empurra de volta
-  if (t > T.cebu - 0.12 && t < T.b1 + 0.5) { const go = ease(t, T.ningun, T.volver + 1.2), back = ease(t, T.viento, T.contra + 0.4); out.push(<Galleon key="c" p={[-15 + go * 9 - back * 7, 0, 10]} yaw={back > 0.5 ? PI : 0} t={t} sc={1.0} tilt={0.12 * back * Math.sin(t * 5)} />); }
+  if (t > T.cebu - 0.12 && t < T.norte - 0.3) { const go = ease(t, T.ningun, T.volver + 1.2), back = ease(t, T.viento, T.contra + 0.4); out.push(<Galleon key="c" p={[-15 + go * 9 - back * 7, 0, 10]} yaw={back > 0.5 ? PI : 0} t={t} sc={1.0} tilt={0.12 * back * Math.sin(t * 5)} />); }
   // tornaviaje: o galeão segue a rota desenhada
   if (t > T.norte - 0.3 && t < T.p2 + 0.2) { const a = along(TORNA, ease(t, T.norte, T.tornaT + 0.8)); out.push(<Galleon key="r" p={a.p} yaw={a.yaw} t={t} sc={1.4} />); }
   // mar aberto: meses, sede, tinajas, chuva
   if (t > T.p2 && t < T.b2 + 0.2) out.push(<Galleon key="m" p={SEA_SCENE} yaw={0.1} t={t} />);
   if (t > T.p3 - 0.2 && t < T.p4 - 0.5) out.push(<Galleon key="j" p={SEA_SCENE} yaw={0.1} t={t} cut={t > T.b3 && t < T.colgadas + 0.2} jars={ease(t, T.miles - 0.4, T.miles + 0.8)} hang={ease(t, T.colgadas - 0.2, T.colgadas + 0.5)} fill={ease(t, T.chubasco, T.chubasco + 1.2)} />);
   // 1743: o Centurion captura o Covadonga perto das Filipinas
-  if (t > T.p5 - 0.3 && t < T.ultimo) {
+  if (t > T.p5 - 0.3 && t < T.historiadores) {
     const flag = 1 - ease(t, T.capturo + 0.6, T.millon), shots = [T.capturo - 0.4, T.capturo + 0.1, T.capturo + 0.6];
     out.push(<Galleon key="cov" p={[-8, 0, 2]} yaw={PI * 0.9} t={t} sc={1.1} flag={flag} />);
     const e = ease(t, T.blanco - 0.3, T.guerra + 0.6);
@@ -193,7 +193,7 @@ const Fleet: React.FC<{ t: number }> = ({ t }) => {
     shots.forEach((s, i) => { const u = ease(t, s, s + 0.3) * (1 - ease(t, s + 0.4, s + 1.4)); if (u > 0.01) out.push(<Sph key={"s" + i} rad={1.6} p={[-2.2 + i * 0.8, 1.8 + u, -2.2]} sc={0.5 + u * 1.5} c="#f2f2f2" cast={false} ws={8} hs={6} />); });
   }
   // 1815: o último galeão parte ao entardecer
-  if (t > T.ultimo - 0.3 && t < T.historiadores + 0.3) out.push(<Galleon key="u" p={[lerp(-18, -4, ease(t, T.ultimo, T.historiadores)), 0, 6]} yaw={-0.3} t={t} sc={1.1} />);
+  if (t > T.ultimo - 0.3 && t < T.historiadores + 0.3) out.push(<Galleon key="u" p={[lerp(-20, -8, ease(t, T.ultimo, T.historiadores)), 0, 9]} yaw={-0.3} t={t} sc={Math.max(0.01, 1.1 * ease(t, T.ultimo - 0.3, T.ultimo + 0.9))} />);
   return <G>{out}</G>;
 };
 /** marinheiros com sede no convés (o problema da água) */
