@@ -113,6 +113,6 @@ const hud: HudData = {
 
 export const EP: Episode = {
   SHOTS, DYN, WORKER, COSTUME: COSTUMES.marinero, HUD: hud, World, SFX, EXPOSURE,
-  ENV: { bg: "#9fd0ff", fog: "#eef4f6", fogNear: 160, fogFar: 700, hemiSky: "#f2f7ff", hemiGround: "#8ab8d0", hemiI: 1.2, sun: "#fff2d6", sunI: 2.6 },
+  ENV: { bg: "#9fd0ff", fog: "#eef4f6", fogNear: 160, fogFar: 700, hemiSky: "#f2f7ff", hemiGround: "#a8d0e4", hemiI: 1.6, sun: "#fff2d6", sunI: 2.6 },
   LIGHT: (t) => 1 - 0.3 * dusk(t),
 };

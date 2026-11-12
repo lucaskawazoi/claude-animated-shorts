@@ -11,7 +11,8 @@ import { T } from "./cues";
 
 const PI = Math.PI;
 export const built = (t: number) => t < T.petra - 0.12;
-const SAND = "#e8c48a", R1 = "#c8705a", R2 = "#b65e4a", R3 = "#d98a6a", WATER = "#3f9ad8", MUD = "#a8784a";
+const SAND = "#e8c48a", R1 = "#cf7a62", R2 = "#c06a54", R3 = "#e09476", WATER = "#3f9ad8", MUD = "#a8784a";
+const STRATA = ["#f0b890", "#a85040", "#e8c0a0", "#b8604a"];
 const quake = (t: number) => (t > T.terremoto - 0.2 && t < T.suagua ? 1 - ease(t, T.rompio + 0.5, T.suagua) : 0);
 
 // ---------------------------------------------------------------- falésias
@@ -24,6 +25,10 @@ const Cliffs: React.FC = () => {
   return (
     <G>
       {segs.map((q, i) => <Box key={i} s={q.s} p={q.p} c={q.c} />)}
+      {/* estratos do arenito na face de dentro do Siq: textura que a régua (e o olho) usa para ver o movimento */}
+      {segs.map((q, i) => { const sd = q.p[2] > 0 ? 1 : -1, zf = q.p[2] - sd * (q.s[2] / 2 + 0.03); return [0.18, 0.34, 0.52, 0.71, 0.86].map((f, j) => <Box key={i + "-" + j} s={[2.34, 0.28 + 0.25 * rnd(i * 5 + j), 0.06]} p={[q.p[0], q.s[1] * f, zf]} c={STRATA[(i + j) % 4]} cast={false} />); })}
+      {[0.2, 0.4, 0.6, 0.8].map((f, j) => <Box key={"n" + j} s={[16.1, 0.5, 0.06]} p={[7, 22 * f, -9.97]} c={STRATA[j % 4]} cast={false} />)}
+      {[0.25, 0.5, 0.75].map((f, j) => <Box key={"c" + j} s={[12.1, 0.45, 0.06]} p={[3, 14 * f + 4.5, 6.96]} c={STRATA[(j + 1) % 4]} cast={false} vis={false} />)}
       {/* maciços em volta da praça; falésia leste com a fachada */}
       <Box s={[14, 28, 30]} p={[23, 14, 0]} c={R1} />
       <Box s={[16, 22, 12]} p={[7, 11, -16]} c={R2} />
