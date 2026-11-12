@@ -14,12 +14,22 @@ export const built = (t: number) => t < T.cebu - 0.12;
 const SEA = "#2f86c8", LAND = "#7fb85a", SAND = "#ecd9a0", WOOD = "#7a4a2a", MOLAVE = "#5a3420", SILVER = "#d8dde4";
 
 // ---------------------------------------------------------------- o mapa
+/** espuma de ondas espalhada: sem textura no mar a régua não vê a câmera se mexer */
+const Whitecaps: React.FC = () => {
+  const m = useMemo(() => {
+    const n = 1400, im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.06, 0.25), mat("#e8f6ff", { emissive: "#bfe6ff", ei: 0.3 }), n), o = new THREE.Object3D();
+    for (let i = 0; i < n; i++) { o.position.set(lerp(-90, 110, rnd(i * 3 + 1)), 0.05, lerp(-90, 70, rnd(i * 3 + 2))); o.rotation.y = (rnd(i * 3 + 3) - 0.5) * 0.6; o.scale.setScalar(lerp(0.6, 2.2, rnd(i + 7))); o.updateMatrix(); im.setMatrixAt(i, o.matrix); }
+    im.castShadow = false; im.receiveShadow = false; return im;
+  }, []);
+  return <primitive object={m} />;
+};
 const Isle: React.FC<{ p: V3; r: [number, number]; rot?: number; c?: string }> = ({ p, r, rot = 0, c = LAND }) => (
   <G p={p} r={[0, rot, 0]}><Sph rad={1} sc={[r[0] + 0.6, 0.5, r[1] + 0.6]} c={SAND} ws={20} hs={8} /><Sph rad={1} p={[0, 0.12, 0]} sc={[r[0], 0.7, r[1]]} c={c} ws={20} hs={8} /></G>
 );
 const Map: React.FC = () => (
   <G>
     <mesh rotation={[-PI / 2, 0, 0]} receiveShadow material={mat(SEA, { rough: 0.35 })}><planeGeometry args={[900, 900]} /></mesh>
+    <Whitecaps />
     {/* China */}
     <Box s={[34, 1.2, 140]} p={[-64, 0.1, -10]} c="#a9c27a" /><Box s={[1, 1.25, 140]} p={[-47, 0.1, -10]} c={SAND} />
     {/* Filipinas */}
@@ -158,7 +168,7 @@ const Rain: React.FC<{ t: number; c: V3 }> = ({ t, c }) => {
   if (!(t > T.chubasco - 0.4 && t < T.tinajasT + 0.5)) return null;
   return <G>{Array.from({ length: 40 }, (_, i) => { const u = fract(t * 1.6 + rnd(i)); return <Box key={i} s={[0.07, 0.9, 0.07]} p={[c[0] + lerp(-8, 8, rnd(i + 1)), 14 - u * 14, c[2] + lerp(-6, 6, rnd(i + 2))]} c="#bfe4ff" cast={false} recv={false} o={{ emissive: "#9fd4ff", ei: 0.4, opacity: 0.85, depthWrite: false }} />; })}</G>;
 };
-export const dusk = (t: number) => ease(t, T.ultimo - 0.4, T.y1815) * (1 - ease(t, T.historiadores, T.mundial));
+export const dusk = (t: number) => ease(t, T.ultimo + 0.2, T.y1815 + 0.8) * (1 - ease(t, T.historiadores + 0.3, T.mundial + 0.6));
 const Dusk: React.FC<{ t: number }> = ({ t }) => { const n = dusk(t); if (n <= 0.01) return null; return <mesh><sphereGeometry args={[560, 24, 16]} /><meshBasicMaterial color="#ff8a4a" side={1} transparent opacity={0.55 * n} fog={false} depthWrite={false} /></mesh>; };
 
 // ---------------------------------------------------------------- navios no tempo
@@ -166,7 +176,7 @@ export const SEA_SCENE: V3 = [8, 0, -44]; // o galeão sozinho em mar aberto (me
 const Fleet: React.FC<{ t: number }> = ({ t }) => {
   const out: React.ReactNode[] = [];
   // gancho: o galeão no mapa, grande, fazendo a volta
-  if (built(t)) { const a = along(TORNA, (t / T.cebu) * 0.5 + 0.2); out.push(<Galleon key="h" p={a.p} yaw={a.yaw} t={t} sc={1.4} />); }
+  if (built(t)) { if (t < T.unio + 0.3) out.push(<Galleon key="h0" p={[lerp(-4, 10, t / T.unio), 0, -36]} yaw={0} t={t} sc={1.4} />); else { const a = along(TORNA, (t / T.cebu) * 0.5 + 0.2); out.push(<Galleon key="h" p={a.p} yaw={a.yaw} t={t} sc={1.4} />); } }
   // Cebu 1565: ancorado; tenta voltar ao leste e o vento empurra de volta
   if (t > T.cebu - 0.12 && t < T.b1 + 0.5) { const go = ease(t, T.ningun, T.volver + 1.2), back = ease(t, T.viento, T.contra + 0.4); out.push(<Galleon key="c" p={[-15 + go * 9 - back * 7, 0, 10]} yaw={back > 0.5 ? PI : 0} t={t} sc={1.0} tilt={0.12 * back * Math.sin(t * 5)} />); }
   // tornaviaje: o galeão segue a rota desenhada

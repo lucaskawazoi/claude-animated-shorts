@@ -16,6 +16,14 @@ const STRATA = ["#f0b890", "#a85040", "#e8c0a0", "#b8604a"];
 const quake = (t: number) => (t > T.terremoto - 0.2 && t < T.suagua ? 1 - ease(t, T.rompio + 0.5, T.suagua) : 0);
 
 // ---------------------------------------------------------------- falésias
+/** rocha com estratos nas 4 faces: sem textura a régua não vê a câmera se mexer */
+const Rock: React.FC<{ s: V3; p: V3; c: string; n?: number }> = ({ s, p, c, n = 6 }) => (
+  <G p={p}>
+    <Box s={s} c={c} />
+    {Array.from({ length: n }, (_, j) => { const y = -s[1] / 2 + s[1] * (j + 0.5 + (rnd(j + s[0]) - 0.5) * 0.4) / n, h = 0.3 + 0.3 * rnd(j * 3 + s[2]), col = STRATA[(j + Math.round(s[0])) % 4];
+      return <G key={j}><Box s={[s[0] + 0.06, h, s[2] + 0.06]} p={[0, y, 0]} c={col} cast={false} /></G>; })}
+  </G>
+);
 const Cliffs: React.FC = () => {
   const segs = useMemo(() => {
     const out: { p: V3; s: V3; c: string }[] = [];
@@ -30,10 +38,10 @@ const Cliffs: React.FC = () => {
       {[0.2, 0.4, 0.6, 0.8].map((f, j) => <Box key={"n" + j} s={[16.1, 0.5, 0.06]} p={[7, 22 * f, -9.97]} c={STRATA[j % 4]} cast={false} />)}
       {[0.25, 0.5, 0.75].map((f, j) => <Box key={"c" + j} s={[12.1, 0.45, 0.06]} p={[3, 14 * f + 4.5, 6.96]} c={STRATA[(j + 1) % 4]} cast={false} vis={false} />)}
       {/* maciços em volta da praça; falésia leste com a fachada */}
-      <Box s={[14, 28, 30]} p={[23, 14, 0]} c={R1} />
-      <Box s={[16, 22, 12]} p={[7, 11, -16]} c={R2} />
-      <Box s={[12, 14, 10]} p={[3, 7, 12]} c={R3} /><Box s={[8, 16, 10]} p={[16, 8, 13]} c={R2} />
-      <Box s={[22, 18, 28]} p={[-61, 9, -17]} c={R2} />
+      <Rock s={[14, 28, 30]} p={[23, 14, 0]} c={R1} n={9} />
+      <Rock s={[16, 22, 12]} p={[7, 11, -16]} c={R2} n={7} />
+      <Rock s={[12, 14, 10]} p={[3, 7, 12]} c={R3} n={5} /><Rock s={[8, 16, 10]} p={[16, 8, 13]} c={R2} n={5} />
+      <Rock s={[22, 18, 28]} p={[-61, 9, -17]} c={R2} n={6} />
       {[[-30, -36, 18, 20], [-6, -38, 22, 24], [30, -30, 20, 26], [50, 10, 18, 22], [-80, 0, 20, 18], [40, 60, 24, 20], [-30, 50, 20, 18]].map(([x, z, r, h], i) => <Cone key={i} rad={r} h={h} seg={7} p={[x, h / 2, z]} c={[R1, R2, R3][i % 3]} o={{ flat: true }} />)}
     </G>
   );
@@ -105,7 +113,7 @@ const Channels: React.FC<{ t: number }> = ({ t }) => {
       {pk > 0.01 ? Array.from({ length: Math.floor(26 * pk) }, (_, i) => <G key={i} p={[-49 + i * 2, 1.1, -2.2]} r={[0, 0, PI / 2]}><Cyl rt={0.28} h={1.9} c="#c8703a" seg={10} /><Cyl rt={0.33} h={0.2} p={[0, 0.95, 0]} c="#a85a2a" seg={10} /></G>) : null}
       {/* fonte/ninfeu na praça onde a água chega */}
       <G p={[3, 0, 6]}>
-        <Box s={[3.2, 0.8, 2.4]} p={[0, 0.4, 0]} c="#c08070" /><Box s={[2.8, 0.1, 2.0]} p={[0, 0.78, 0]} c={WATER} vis={flow > 0.6 && broke < 0.6} cast={false} />
+        <Box s={[3.2, 0.8, 2.4]} p={[0, 0.4, 0]} c="#c08070" /><Box s={[2.8, 0.1, 2.0]} p={[0, 0.78, 0]} c={wc} vis={flow > 0.6 && broke < 0.6} cast={false} />
         <Pipe a={[-2.6, 1.8, -3.8]} b={[-0.8, 1.0, -0.6]} rad={0.2} c="#9a4e3e" />
       </G>
     </G>
@@ -175,7 +183,7 @@ const Treasury: React.FC<{ t: number }> = ({ t }) => {
       </G>)}
       <Box s={[1.6, 0.8, 13]} p={[FX - 0.9, 10.6, 0]} c={COL2} vis={vis(10)} />
       {/* rocha ainda não cortada: um bloco saliente que desce, com os entalhadores em cima */}
-      {cy > 0.05 ? <Box s={[4.2, cy, 13.6]} p={[FX - 2.1, cy / 2, 0]} c={R1} /> : null}
+      {cy > 0.05 ? <Rock s={[4.2, cy, 13.6]} p={[FX - 2.1, cy / 2, 0]} c={R1} n={Math.max(1, Math.round(cy / 3))} /> : null}
       <Crowd list={carvers} t={t} c={COSTUMES.nabateo} vis={t > T.tallar - 0.2 && t < T.fachadaT} />
       {/* escada curta demais (o problema) */}
       {t > T.p5 && t < T.tallar ? <G p={[FX - 4.6, 0, 3]} r={[0, 0, -0.18]}><Box s={[0.15, 5, 0.15]} p={[0, 2.5, -0.5]} c="#7a4a2a" /><Box s={[0.15, 5, 0.15]} p={[0, 2.5, 0.5]} c="#7a4a2a" />{[0.6, 1.4, 2.2, 3.0, 3.8, 4.6].map((y) => <Box key={y} s={[0.12, 0.12, 1.0]} p={[0, y, 0]} c="#7a4a2a" />)}</G> : null}
