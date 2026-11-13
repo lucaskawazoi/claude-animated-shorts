@@ -9,10 +9,12 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, MatOpts, Sph, V3, clamp, ease, fract, lerp, mat, prog, rnd, sstep } from "../../toy/kit";
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
 import { COSTUMES, Crowd, PoseName } from "../../toy/worker";
-import { CUTS, T } from "./cues";
+import { CUTS, T, WINS, XT } from "./cues";
 
 const PI = Math.PI;
 export const built = (t: number) => t < T.petra - 0.12;
+/** gancho: o operário foge de um camelo pelo Siq até a praça (6,5 u/s desde o quadro 0) */
+export const runX = (t: number) => -34 + 6.5 * Math.min(t, T.petra - 0.12);
 const SAND = "#e8c48a", R1 = "#cf7a62", R2 = "#c06a54", R3 = "#e09476", WATER = "#3f9ad8", MUD = "#a8784a", CLAY = "#7a3628"; // canal mais escuro que a parede
 const STRATA = ["#f0b890", "#a85040", "#e8c0a0", "#b8604a"];
 const quake = (t: number) => (t > T.terremoto - 0.2 && t < T.suagua ? 1 - ease(t, T.rompio + 0.5, T.suagua) : 0);
@@ -124,7 +126,8 @@ const head1 = (t: number) => L1 * prog(t, T.agua1 - 0.05, T.arrasa + 1.1) * (1 -
 // riada 2: bate na represa no «choca», entra no túnel no «se va por el túnel», sai longe no «lejos»
 const FLOOD2: V3[] = [[-51, 0, 30], [-51, 0, 6], [-50.3, 0, 1.6], [-53.4, 0, -0.8], [-55, 0, -3.5], [-55, 0, -31], [-54, 0, -35], [-50, 0, -41]];
 const L2 = plen(FLOOD2), sAt = (k: number) => plen(FLOOD2.slice(0, k + 1)) / L2;
-const u2At = (t: number) => keysAt(t, [[T.choca - 1.0, 0], [T.choca + 0.1, sAt(2)], [T.porTunel + 0.1, sAt(4)], [T.lejos + 0.15, sAt(5)], [T.lejos + 0.8, 1]], false);
+// a riada já desce o uádi a partir do corte extra (W3): quem olha de cima vê ela chegando enquanto o túnel é cavado
+const u2At = (t: number) => keysAt(t, [[WINS[3] + 0.05, 0], [T.choca + 0.1, sAt(2)], [T.porTunel + 0.1, sAt(4)], [T.lejos + 0.15, sAt(5)], [T.lejos + 0.8, 1]], false);
 const dry2 = (t: number) => ease(t, T.p2 + 0.25, T.pierde - 0.25);
 
 /** o que a riada leva: banca, jarros, caixotes e carroça no chão do Siq (voltam ao lugar no ⏪) */
@@ -144,13 +147,14 @@ const Floods: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G>
       <Flow pts={FLOOD1} u={u1} w={4.4} t={t} c="#a8804e" wave />
+      {/* a riada leva as bancas, mas elas ficam rodando na água dentro do quadro (x ≤ -29) em vez de sumir atrás da câmera */}
       {t < CUTS[2] ? GOODS.map((g, i) => {
-        const s0 = 31 + (g.x + 48), d = Math.max(0, h1 - s0 - 0.3) * 0.6, q = along(FLOOD1, s0 + d), f = clamp(d / 1.5);
-        return <G key={i} p={[q[0], f * (0.45 + 0.2 * Math.sin(t * 6 + i)), q[2] + g.z]} r={[d * 0.09 * Math.sin(i + 1), d * 0.05, d * 0.11 * (i % 2 ? 1 : -1)]}><Good k={g.k} i={i} /></G>;
+        const s0 = 31 + (g.x + 48), d = Math.min(Math.max(0, h1 - s0 - 0.3) * 0.6, -29 - 1.1 * i - g.x), q = along(FLOOD1, s0 + d), f = clamp(d / 1.5);
+        return <G key={i} p={[q[0], f * (0.45 + 0.2 * Math.sin(t * 6 + i)), q[2] + g.z]} r={[d * 0.09 * Math.sin(i + 1) + f * 0.5 * Math.sin(t * 2.1 + i), d * 0.05 + f * t * 1.4 * (i % 2 ? 1 : -1), d * 0.11 * (i % 2 ? 1 : -1) + f * 0.4 * Math.sin(t * 1.7 + i * 2)]}><Good k={g.k} i={i} /></G>;
       }) : null}
       {d2 < 0.999 ? <Flow pts={FLOOD2} u={u2} w={3.2} t={t} c="#b48a52" y={0.25 - 0.6 * d2} wave={d2 < 0.01} /> : null}
       {/* a água batendo na represa espirra para cima */}
-      {splash > 0 ? Array.from({ length: 12 }, (_, i) => { const u = fract((t - T.choca) * 1.5 + i / 12), hgt = 4.2 * u * (1 - u) * 4 * splash; return <Sph key={i} rad={0.35 + 0.25 * rnd(i)} p={[-49.9 - u * 1.6 * rnd(i + 3), 0.8 + hgt, -1.8 + 4.2 * rnd(i + 9)]} c="#f4fbff" cast={false} ws={8} hs={6} />; }) : null}
+      {splash > 0 ? Array.from({ length: 12 }, (_, i) => { const u = fract((t - T.choca) * 1.5 + i / 12), hgt = 6 * u * (1 - u) * 4 * splash; return <Sph key={i} rad={0.6 + 0.4 * rnd(i)} p={[-49.9 - u * 2.2 * rnd(i + 3), 0.8 + hgt, -1.8 + 4.2 * rnd(i + 9)]} c="#f4fbff" cast={false} ws={8} hs={6} />; }) : null}
       {/* a água que sai longe do desfiladeiro espalha na areia e some (se pierde) */}
       {grow > 0.01 && d2 < 0.999 ? <Sph rad={6} p={[-50, 0.04, -44]} sc={[1.5 * grow * (1 - d2) + 0.01, 0.04, 1.2 * grow * (1 - d2) + 0.01]} c="#8a6a48" ws={16} hs={4} cast={false} /> : null}
       {d2 > 0.01 && d2 < 0.999 ? Array.from({ length: 8 }, (_, i) => <Box key={i} s={[0.12, 0.6, 0.12]} p={[-50 + (rnd(i) - 0.5) * 12, 0.3 - d2 * 0.6, -44 + (rnd(i + 4) - 0.5) * 9]} c="#6a4a30" cast={false} />) : null}
@@ -160,12 +164,17 @@ const Floods: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- represa e túnel (raio-x)
 const xrayAt = (t: number) => wn(t, T.tunel - 0.25, T.p2 + 0.25, 0.5);
+// a presa sobe em 3 fiadas que caem no lugar (com poeira), com dois pedreiros na frente: o close nunca fica parado
+const DAMC = [CUTS[1] + 0.02, CUTS[1] + 0.42, CUTS[1] + 0.82];
 const Dam: React.FC<{ t: number }> = ({ t }) => {
-  const b = built(t), k = b ? 1 : ease(t, T.presa - 0.2, T.presa + 0.6), dig = b ? 1 : ease(t, T.tunel - 0.05, T.noventa + 1.7), len = 28 * dig;
+  const b = built(t), dig = b ? 1 : ease(t, T.tunel - 0.05, T.noventa + 1.7), len = 28 * dig;
   const xr = xrayAt(t);
   return (
     <G>
-      {k > 0.01 ? <G><Box s={[1.6, 3.2 * k, 6.2]} p={[-48.5, 1.6 * k, 0]} c="#a85848" />{[0.25, 0.55, 0.82].map((f, j) => <Box key={j} s={[1.64, 0.14, 6.24]} p={[-48.5, 3.2 * k * f, 0]} c="#7a3a2e" cast={false} />)}</G> : null}
+      {DAMC.map((tc, j) => { if (!b && t < tc) return null; const y = 0.533 + j * 1.067 + 2.6 * (1 - (b ? 1 : ease(t, tc, tc + 0.25)));
+        return <G key={j}><Box s={[1.6, 1.067, 6.2]} p={[-48.5, y, 0]} c="#a85848" /><Box s={[1.64, 0.12, 6.24]} p={[-48.5, y + 0.47, 0]} c="#7a3a2e" cast={false} /></G>; })}
+      <Puffs t={t} p={[-49.6, 0.3, 0.4]} n={8} period={0.5} rise={1.6} size={0.42} c="#e8d4a8" on={b ? 0 : Math.max(...DAMC.map((tc) => wn(t, tc + 0.2, tc + 0.75, 0.1)))} drift={[-1.2, 0, 0]} />
+      <Crowd list={[{ p: [-50.5, 0, -1.0], yaw: PI / 2, pose: "chisel", ph: 0 }, { p: [-50.5, 0, 1.8], yaw: PI / 2, pose: "chisel", ph: 0.25 }]} t={t} c={COSTUMES.nabateo} vis={t > CUTS[1] && t < WINS[3]} />
       {dig > 0.01 ? <G>
         <Box s={[4.6 * Math.min(1, dig * 6), 4.6 * Math.min(1, dig * 6), 0.2]} p={[-55, 2.3 * Math.min(1, dig * 6), -2.85]} c="#2a1a14" cast={false} />
         {dig > 0.97 ? <Box s={[4.6, 4.6, 0.2]} p={[-55, 2.3, -31.15]} c="#2a1a14" cast={false} /> : null}
@@ -173,9 +182,10 @@ const Dam: React.FC<{ t: number }> = ({ t }) => {
         <Box s={[4.4, 0.1, len]} p={[-55, 0.06, -2.9 - len / 2]} c="#3a2418" cast={false} />
         {[-57.2, -52.8].map((x) => <Box key={x} s={[0.16, 4.6, len]} p={[x, 2.3, -2.9 - len / 2]} c="#5a2a1e" cast={false} />)}
       </G> : null}
-      {/* o cavador na frente do túnel enquanto ele cresce */}
-      <Crowd list={[{ p: [-55, 0, -3.4 - len], yaw: PI, pose: "chisel", ph: 0 }]} t={t} c={COSTUMES.nabateo} vis={dig > 0.01 && dig < 0.995 && xr > 0.2} />
-      <Puffs t={t} p={[-55, 0.5, -3.8 - len]} n={5} period={0.8} rise={2} size={0.7} c="#e8d4a8" on={dig > 0.01 && dig < 0.995 ? xr : 0} drift={[0, 0, 0.5]} />
+      {/* três cavadores na frente do túnel enquanto ele cresce; no fim furam a rocha do outro lado (poeira) */}
+      <Crowd list={[-1.3, 0, 1.3].map((dx, i) => ({ p: [-55 + dx, 0, -3.4 - len] as V3, yaw: PI, pose: "chisel" as PoseName, ph: i * 0.2 }))} t={t} c={COSTUMES.nabateo} vis={dig > 0.01 && dig < 0.995 && xr > 0.2} />
+      <Puffs t={t} p={[-55, 0.5, -3.8 - len]} n={6} period={0.8} rise={2.4} size={1.2} c="#e8d4a8" on={dig > 0.01 && dig < 0.995 ? xr : 0} drift={[0, 0, 0.5]} />
+      <Puffs t={t} p={[-55, 1, -31.6]} n={10} period={0.7} rise={3} size={1.3} c="#e8d4a8" on={b ? 0 : wn(t, T.noventa + 1.65, T.noventa + 2.5, 0.15)} drift={[0, 0, -1.5]} />
     </G>
   );
 };
@@ -189,13 +199,25 @@ const CANG = Math.atan2(CE[1] - CS[1], CE[0] - CS[0]), TANG = Math.atan2(TE[1] -
 const muddyAt = (t: number) => ease(t, T.p3, T.arena) * (1 - ease(t, T.limpia + 0.2, T.limpia + 0.9));
 const dryAt = (t: number) => ease(t, T.p4 + 0.2, T.meses + 0.5) * (1 - ease(t, T.cisternasT, T.cisternasT + 1.0));
 const brokeAt = (t: number) => ease(t, T.canalesR - 0.05, T.canalesR + 0.5);
-const flowAt = (t: number) => (built(t) ? 1 : prog(t, T.siempre + 0.45, T.ciudad + 0.45));
+// ritmo 13/11: o plano dos canais abre com o operário já cavando (água atrás dele); no «canales tallados» o sulco corre a
+// parede; no «siempre un poco en bajada» a água o empurra, ele escorrega canal abaixo (gag) e cai na fonte na «ciudad»
+const carveAt = (t: number) => (built(t) ? 1 : keysAt(t, [[CUTS[2] + 0.1, 0], [T.canales - 0.1, 0.12], [T.canales + 4.2, 1]], false));
+const flowAt = (t: number) => (built(t) ? 1 : keysAt(t, [[CUTS[2] + 0.4, 0], [T.canales - 0.1, 0.105], [XT.slip, 0.105], [T.ciudad + 0.45, 1]], false));
+export const canalY = (x: number) => CS[1] + (CE[1] - CS[1]) * (x - CS[0]) / (CE[0] - CS[0]);
+/** onde está o operário do canal: cavando na frente do sulco → montado na cabeça da água → voo até a fonte */
+export const canalRider = (t: number): V3 => {
+  const L = CE[0] - CS[0];
+  if (t < XT.slip) { const x = CS[0] + L * Math.min(carveAt(t), 0.12) - 0.3; return [x, canalY(x) + 0.27, CS[2]]; }
+  if (t < T.ciudad + 0.45) { const x = CS[0] + L * flowAt(t) + 0.35; return [x, canalY(x) + 0.3, CS[2]]; }
+  const u = clamp((t - T.ciudad - 0.45) / 0.55);
+  return [lerp(CE[0] + 0.35, 9, u), lerp(CE[1] + 0.3, 0.32, u) + 2.6 * 4 * u * (1 - u), lerp(CS[2], 1.0, u)];
+};
 const basinK = (t: number) => (built(t) ? 1 : ease(t, T.estanques - 0.25, T.estanques + 0.55));
 // calhas na praça: boca do Siq → decantador → fonte (o trecho do meio some quando o decantador sobe no caminho)
 const TA: [V3, V3] = [[0.8, 1.75, 2.1], [2.45, 1.5, 1.75]], TB: [V3, V3] = [[2.45, 1.5, 1.75], [5.95, 1.1, 1.3]], TC: [V3, V3] = [[5.95, 1.05, 1.3], [7.45, 0.9, 1.05]];
 const FOUNT: V3 = [9, 0, 1.0];
 const Channels: React.FC<{ t: number }> = ({ t }) => {
-  const b = built(t), ck = b ? 1 : prog(t, T.canales - 0.1, T.canales + 4.2), pk = b ? 1 : ease(t, T.tubos - 0.1, T.tubos + 1.0);
+  const b = built(t), ck = carveAt(t), pk = b ? 1 : ease(t, T.tubos - 0.3, T.tubos + 0.8);
   const flow = flowAt(t), mud = muddyAt(t), dry = dryAt(t), brk = brokeAt(t), bk = basinK(t);
   const wl = Math.min(flow * (1 - dry), brk > 0.01 ? BREAK : 1), wc = mud > 0.5 ? MUD : WATER, wo: MatOpts = { emissive: mud > 0.5 ? "#000000" : "#1f6fb0", ei: 0.3 };
   const BP = at3(CS, CE, BREAK), up: V3 = [0, 0.31, 0];
@@ -251,6 +273,8 @@ const Fountain: React.FC<{ t: number; reach: boolean }> = ({ t, reach }) => {
       {[-1.5, 1.5].map((x) => <Box key={x} s={[0.2, 0.85, 2.4]} p={[x, 0.42, 0]} c="#c08070" />)}
       {fill > 0.02 ? <Box s={[2.8, 0.42 * fill, 2.0]} p={[0, 0.3 + 0.21 * fill, 0]} c={mud > 0.5 ? MUD : WATER} o={{ emissive: mud > 0.5 ? "#000000" : "#1f6fb0", ei: 0.3 }} cast={false} /> : null}
       {pile > 0.02 ? <Sph rad={0.9} p={[0.6, 0.3, 0.2]} sc={[1.2, 0.55 * pile, 1]} c="#c89048" cast={false} ws={10} hs={6} /> : null}
+      {/* o operário cai na fonte junto com a água: tchibum */}
+      <Puffs t={t} p={[0, 0.5, 0]} n={10} period={0.6} rise={2.2} size={0.55} c="#e8f6ff" on={b ? 0 : wn(t, T.ciudad + 0.95, T.ciudad + 1.7, 0.1)} drift={[0, 0, -0.4]} />
       {cracks ? <G>{[[-0.8, 0.3, 0.5], [0.2, -0.4, -0.7], [0.9, 0.2, 1.1], [-0.3, -0.1, 2.2]].map(([x, z, r], i) => <Box key={i} s={[1.1, 0.05, 0.07]} p={[x, 0.33, z]} r={[0, r, 0]} c="#5a3a22" cast={false} />)}<Box s={[2.8, 0.03, 2.0]} p={[0, 0.31, 0]} c="#b08458" cast={false} /></G> : null}
     </G>
   );
@@ -277,11 +301,16 @@ const Basin: React.FC<{ t: number }> = ({ t }) => {
       {hm > 0.01 ? <Box s={[3.0, hm, 1.6]} p={[0, 0.25 + sandH + hm / 2, 0]} c="#9a7448" o={{ opacity: 0.82, rough: 0.3, depthWrite: false }} cast={false} /> : null}
       {hc > 0.01 ? <Box s={[3.0, hc, 1.6]} p={[0, top - hc / 2, 0]} c="#4aa8e8" o={{ opacity: 0.6, rough: 0.2, emissive: "#1f6fb0", ei: 0.3, depthWrite: false }} cast={false} /> : null}
       {/* grãos de areia: giram enquanto a água entra, param no «se detiene», descem no «se va al fondo» */}
-      {lvl > 0.2 && sink < 0.999 ? Array.from({ length: 16 }, (_, i) => {
-        const sw = 1 - calm, gx = -1.25 + (i % 8) * 0.36 + sw * 0.25 * Math.sin(t * 3.2 + i * 1.7), gz = -0.45 + Math.floor(i / 8) * 0.9;
-        const yh = 0.45 + 0.5 * rnd(i) * lvl + sw * 0.15 * Math.sin(t * 4.5 + i), y = lerp(yh, 0.33 + sandH * 0.6, clamp(sink * 1.25 - rnd(i + 3) * 0.25));
+      {/* cada grão cai na sua vez (pesada → fondo): um caindo a cada ~0,1 s em vez de uma descida lenta e uniforme */}
+      {!b && lvl > 0.2 && t < CUTS[4] ? Array.from({ length: 16 }, (_, i) => {
+        const sw = 1 - calm, gx = -1.25 + (i % 8) * 0.36 + sw * 0.25 * Math.sin(t * 3.2 + i * 1.7), gz = -0.45 + Math.floor(i / 8) * 0.9, ti = T.pesada + 0.05 + 1.45 * rnd(i + 3);
+        const yh = 0.45 + 0.5 * rnd(i) * lvl + sw * 0.15 * Math.sin(t * 4.5 + i), y = lerp(yh, 0.3 + 0.12 * rnd(i + 5), ease(t, ti, ti + 0.3));
         return <Sph key={i} rad={0.12} p={[gx, y, gz]} c="#e0a050" cast={false} ws={6} hs={4} />;
       }) : null}
+      {/* gag: a primeira água turva espirra na cara do operário (atrás do tanque); a lama fica até ele limpar */}
+      {!b ? Array.from({ length: 7 }, (_, i) => { const u = prog(t, XT.spl + i * 0.025, XT.spl + 0.3 + i * 0.025); if (u <= 0 || u >= 1) return null;
+        return <Sph key={"m" + i} rad={0.16 + 0.06 * rnd(i)} p={[lerp(-1.0, -1.2, u) + (rnd(i + 1) - 0.5) * 0.3, lerp(1.3, 2.17, u) + 1.2 * 4 * u * (1 - u), lerp(0.2, 2.35, u)]} c="#8a6038" cast={false} ws={6} hs={4} />; }) : null}
+      {!b && wn(t, XT.spl + 0.28, T.detiene + 0.7, 0.1) > 0 ? <Sph rad={0.3} p={[-1.2, 2.15, 2.4]} sc={[1, 0.8, 0.35]} c="#8a6038" cast={false} ws={10} hs={6} /> : null}
       {/* ondas na superfície até a água parar */}
       {lvl > 0.3 && calm < 0.99 ? [0, 1].map((j) => <Box key={j} s={[2.6, 0.04, 0.12]} p={[0.2 * Math.sin(t * 5 + j), top + 0.02, -0.4 + j * 0.8 + 0.15 * Math.sin(t * 4 + j)]} c="#e8dcc0" o={{ opacity: 0.7 * (1 - calm), depthWrite: false }} cast={false} />) : null}
       {/* entra turva pela calha da esquerda */}
@@ -298,16 +327,21 @@ const MOUTHS: V3[] = Array.from({ length: 30 }, (_, i) => [lerp(-2.7, 8.7, ((i %
 const Cisterns: React.FC<{ t: number }> = ({ t }) => {
   const b = built(t); if (t < T.p4 && !b) return null;
   const dig = b ? 1 : ease(t, T.cisternas - 0.2, T.cavadas + 0.5);
+  // ritmo 13/11: a da direita o operário já cava desde o ⏪ (a parede do «sin tanques» não fica vazia); ela enche demais e
+  // transborda nele no «y la guardan» (gag) até a tampa fechar
+  const digR = b ? 1 : ease(t, T.b4 + 0.35, T.cavadas + 0.2), over = b ? 0 : wn(t, T.guardan - 0.05, T.sombra + 0.15, 0.12);
   const fill = b ? 0.8 : ease(t, T.recogen - 0.1, T.guardan + 0.3) * 0.9 * (1 - 0.85 * ease(t, T.rompio + 0.1, T.suagua + 0.4));
   const lid = b ? 1 : ease(t, T.guardan + 0.15, T.sombra + 0.2) * (1 - ease(t, T.rompio, T.rompio + 0.4)), used = ease(t, T.paraVerano, T.paraVerano + 0.7);
   return (
     <G p={[0, 0, 6.93]}>
       {CX.map((x, i) => {
-        const h = 4.4 * dig, f = Math.max(0, fill - (i === 2 ? 0.22 * used : 0)), crack = t > T.rompio + 0.05 && t < T.suagua + 2;
+        const di = i === 2 ? digR : dig, h = 4.4 * di, f = Math.max(0, fill + (i === 2 && !b ? 0.1 * ease(t, T.recogen, T.guardan) - 0.32 * used : 0)), crack = t > T.rompio + 0.05 && t < T.suagua + 2;
         return (
           <G key={i} p={[x + 2, 0, 0]}>
-            {h > 0.02 ? <Box s={[2.8, h, 0.1]} p={[0, 5.4 - h / 2, 0]} c="#2a1a14" cast={false} /> : null}
-            <Box s={[0.7, 1.2 * Math.min(1, dig * 3), 0.1]} p={[0, 6.0, 0]} c="#2a1a14" cast={false} vis={dig > 0.01} />
+            {h > 0.02 ? <Box s={[2.8, h, 0.1]} p={[0, 1.0 + h / 2, 0]} c="#2a1a14" cast={false} /> : null}
+            <Box s={[0.7, 1.2 * Math.min(1, di * 3), 0.1]} p={[0, 6.0, 0]} c="#2a1a14" cast={false} vis={di > 0.01} />
+            {i === 2 && over > 0 ? <G><Box s={[0.55, 6.4, 0.14]} p={[0.45, 3.2, -0.6]} c="#e8f6ff" o={{ emissive: "#9fd4ff", ei: 0.5, opacity: 0.85 * over, depthWrite: false }} cast={false} /><Puffs t={t} p={[0.6, 0.2, -0.9]} n={8} period={0.5} rise={1.6} size={0.55} c="#e8f6ff" on={over} drift={[0, 0, -0.5]} /></G> : null}
+            {i === 2 ? <Puffs t={t} p={[1.5, 1.6 + 3.4 * di, -0.4]} n={6} period={0.6} rise={1.2} size={0.4} c="#f0c8a0" on={di > 0.02 && di < 0.98 ? 1 : 0} drift={[0.6, 0, -0.4]} /> : null}
             {f > 0.01 ? <Box s={[2.6, 4.2 * f, 0.12]} p={[0, 1.1 + 2.1 * f, -0.03]} c={lid > 0.5 ? "#2f7ab8" : WATER} o={{ emissive: "#1f6fb0", ei: lid > 0.5 ? 0.15 : 0.35 }} cast={false} /> : null}
             {/* tampa de pedra: guarda a água na sombra */}
             {lid > 0.01 ? <Box s={[1.3, 1.6, 0.2]} p={[1.6 * (1 - lid), 6.0, -0.1]} c="#b8aa98" cast={false} /> : null}
@@ -361,6 +395,8 @@ const Treasury: React.FC<{ t: number }> = ({ t }) => {
       {/* seta ↓: o corte vai de cima para baixo */}
       {arrow > 0 && cy > 0.5 ? <G p={[FX - 4.8, cy + 1.6 - 0.6 * fract(t * 1.2), -3.8]} sc={arrow}><Box s={[0.4, 1.8, 0.4]} p={[0, 0.9, 0]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} /><Cone rad={0.75} h={1.0} seg={4} p={[0, -0.4, 0]} r={[PI, 0, 0]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} /></G> : null}
       <Crowd list={carvers} t={t} c={COSTUMES.nabateo} vis={t > T.b5 + 0.1 && t < CUTS[6]} />
+      {/* ritmo 13/11: lascas a cada golpe do cinzel (ritmo do braço: ~0,52 s) — a fileira de canteiros não fica parada */}
+      {t > T.b5 + 0.1 && t < CUTS[6] ? [...carvers.map((c) => c.p), [12.4, cy, -4.8] as V3].map((q, i) => <Puffs key={"ch" + i} t={t + i * 0.17} p={[q[0] + 0.7, q[1] + 0.15, q[2]]} n={5} period={0.52} rise={1.0} size={0.3} c="#f0c8a0" drift={[0.9, 0, 0.3]} />) : null}
       {/* escada curta demais (o problema): o operário sobe, não alcança, e ela cai no «desde el suelo» */}
       {t > T.p5 && t < T.tallar ? <G p={[FX - 4.6, 0, 3]} r={[0, 0, lerp(-0.18, 1.25, fall)]}><Box s={[0.15, 5, 0.15]} p={[0, 2.5, -0.5]} c="#7a4a2a" /><Box s={[0.15, 5, 0.15]} p={[0, 2.5, 0.5]} c="#7a4a2a" />{[0.6, 1.4, 2.2, 3.0, 3.8, 4.6].map((y) => <Box key={y} s={[0.12, 0.12, 1.0]} p={[0, y, 0]} c="#7a4a2a" />)}</G> : null}
     </G>
@@ -385,12 +421,22 @@ const Caravan: React.FC<{ t: number }> = ({ t }) => {
   // a rota do incienso entra no Siq; na chuva os camelos apertam o passo e saem antes da riada
   if (t > CUTS[0] - 0.3 && t < T.arrasa + 1) for (let i = 0; i < 3; i++) { const x = -47 - 3 * i + 3.0 * (t - CUTS[0]) + 9 * Math.max(0, t - T.p1 - 0.1) ** 1.2; if (x < -22) out.push(<Camel key={"s" + i} p={[x, 0, 1.35]} yaw={0} t={t + i * 0.4} load={LOADS[i]} run={t > T.p1 ? 1.8 : 1} />); }
   if (built(t)) for (let i = 0; i < 3; i++) out.push(<Camel key={"b" + i} p={[6 + i * 2.8, 0, -4]} yaw={PI} t={t + i * 0.4} />);
+  // gancho: um camelo a trote logo atrás do operário que foge
+  if (built(t)) out.push(<Camel key="h" p={[runX(t) - 3.1, 0, 0.7]} yaw={0} t={t} load={LOADS[1]} run={2.2} />);
   // o comércio vai para outras rutas: a caravana sai da praça pelo Siq
   if (t > T.comercio - 0.3) { const u = clamp((t - T.comercio + 0.3) / 4); for (let i = 0; i < 4; i++) out.push(<Camel key={"c" + i} p={[lerp(4, -20, u) - i * 2.8, 0, i % 2 ? -1.1 : -1.6]} yaw={PI} t={t + i * 0.4} load={LOADS[i]} />); }
   return <G>{out}</G>;
 };
 /** gente na praça no fim: vai saindo pelo Siq, um por um (la ciudad se fue vaciando); a areia cobre a praça */
 const PlazaPeople: React.FC<{ t: number }> = ({ t }) => {
+  // no gancho a praça está cheia (as «veinte mil personas»), andando; quem está no caminho do operário e do camelo se assusta
+  if (built(t)) {
+    const rx = runX(t);
+    return <Crowd t={t} c={COSTUMES.nabateo} list={Array.from({ length: 14 }, (_, i) => {
+      const sg = i % 2 ? 1 : -1, a = t * 0.5 * sg + i * 1.7, x = lerp(3, 14, rnd(i + 130)) + 1.1 * Math.cos(a), z = lerp(-6.5, 5.5, rnd(i + 140)) + 1.1 * Math.sin(a), near = Math.abs(x - rx) < 3.2 && Math.abs(z) < 3;
+      return { p: [x, 0, z] as V3, yaw: near ? -PI / 2 : sg > 0 ? -a : PI + a, pose: (near ? "alarm" : "walk") as PoseName, ph: i * 0.37 };
+    })} />;
+  }
   if (t < CUTS[6] - 0.2) return null;
   const list = Array.from({ length: 9 }, (_, i) => {
     const x0 = lerp(10.5, 14, rnd(i + 90)), z0 = lerp(-6, 5.5, rnd(i + 95)), go = T.vaciando - 0.5 + i * 0.22, w = Math.max(0, t - go);

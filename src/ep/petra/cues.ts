@@ -24,10 +24,14 @@ export const T = {
   end: DURATION_S,
 };
 export { CUTS, WINS };
+// pré-crítica de ritmo 13/11: cortes extras (fora da régua, todos a mais de 0,5 s dela) e os instantes dos gags
+export const XCUTS = [find("y aqui"), T.canales - 0.16, T.tubos - 0.16, T.siempre - 0.05];
+export const XT = { slip: T.siempre + 0.45, spl: T.estanques + 0.9 }; // o operário escorrega no canal · a lama espirra nele
 
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
+for (const x of XCUTS) S.push(["whoosh", x - 0.22, -13]);
 for (const a of [T.c3, T.c5]) S.push(["chime", a, -9]);
 for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2], [T.b4, T.c4]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
 for (const a of [T.p1, T.p2, T.p3, T.p4, T.p5]) S.push(["alert", a + 0.05, -12]);
@@ -35,11 +39,15 @@ for (const a of [T.petra, T.b2, T.b3, T.b4, T.b5]) S.push(["rewind", a - 0.05, -
 for (const a of [T.tunelT, T.canalesT, T.decantadores, T.cisternasT, T.fachadaT]) S.push(["ding", a + 0.05, -9]);
 for (const a of [T.casi, T.veinte, T.noventa, T.cuarenta]) S.push(["pop", a, -11]);
 S.push(["wind", 0.0, -13], ["camel", T.nabateos + 0.3, -11], ["flood", T.agua1, -7], ["buzzer", T.arrasa + 0.3, -13],
-  ["stone", T.presa, -10], ["dig", T.tunel, -11], ["flood", T.manda, -10], ["sink", T.pierde, -11],
+  ["stone", CUTS[1] + 0.25, -10], ["stone", CUTS[1] + 0.65, -11], ["stone", CUTS[1] + 1.05, -11], ["dig", T.tunel, -11], ["flood", T.manda, -10], ["sink", T.pierde, -11],
   ["chisel", T.canales, -12], ["clack", T.tubos, -12], ["stream", T.llevan, -11], ["sandfall", T.arena, -11],
   ["splash", T.detiene, -12], ["sandfall", T.fondo, -12], ["drip", T.limpia, -12], ["wind", T.meses, -11],
   ["dig", T.cisternas, -12], ["rain", T.recogen - 0.35, -12], ["splash", T.invierno, -12], ["buzzer", T.suelo + 0.2, -13],
   ["chisel", T.arriba, -10], ["chisel", T.piso, -11], ["fanfare", T.cuarenta, -10],
   ["quake", T.terremoto, -7], ["crack", T.rompio, -9], ["camel", T.comercio, -13], ["wind", T.vaciando, -11], ["sad", T.siglo, -13],
-  ["stone", T.sombra, -14], ["splash", T.canalesR + 0.15, -12]); // tampa da cisterna; o canal partido derrama
+  ["stone", T.sombra, -14], ["splash", T.canalesR + 0.15, -12], // tampa da cisterna; o canal partido derrama
+  // ritmo: gancho (camelo atrás do operário), riada chegando, túnel furado, gags (escorrega/fonte, lama, cisterna transborda), talha
+  ["hooves", 0.0, -13], ["camel", 0.8, -11], ["crowd", XCUTS[0] + 0.2, -16], ["river", WINS[3] + 0.4, -15], ["crumble", T.noventa + 1.7, -12],
+  ["splash", T.choca, -10], ["chisel", CUTS[2] + 0.15, -13], ["slide", XT.slip, -10], ["splash", T.ciudad + 0.95, -9], ["mud", XT.spl + 0.25, -10],
+  ["dig", T.b4 + 0.4, -13], ["splash", T.guardan, -10]);
 export const SFX = S;
