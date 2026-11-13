@@ -9,7 +9,7 @@ import { Box, Cone, Cyl, G, MatOpts, Pipe, Sph, V3, clamp, ease, fract, lerp, ma
 import { Clouds, Palms, Puffs, Sky, Trees } from "../../toy/scenery";
 import { Costume, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { FILL0, FILL1, LIFT0, LIFT1, SINK0, SINK1, SIT_T, T, XC } from "./cues";
+import { FILL0, FILL1, LIFT0, LIFT1, MOT0, MOT1, SINK0, SINK1, SIT_T, T, XC, XR } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI;
@@ -460,7 +460,7 @@ const Site: React.FC<{ t: number }> = ({ t }) => {
 const KING_P: V3 = [9.6, 0, 30.4];
 const King: React.FC<{ t: number }> = ({ t }) => {
   if (t < X3 || t >= C2) return null;
-  const k = poseOf(t < T.quiere ? "present" : "point", t);
+  const k = poseOf(t < X3 + 0.25 ? "present" : "point", t);
   return (
     <G>
       <Box s={[2.0, 0.5, 2.0]} p={[KING_P[0], 0.25, KING_P[2]]} c="#c8a040" />
@@ -473,12 +473,16 @@ const King: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
-const ghostRise = (t: number) => {
-  if (t >= X3 && t < C2) return ease(t, T.templo - 0.1, T.templo + 0.7);
-  if (t >= C2 && t < X4) return 1;
-  if (t >= C5 && t < X8) return 0.6 + 0.4 * Math.abs(Math.sin((t - C5) * 3)) * (t > T.necesita - 0.2 ? 1 : 0.4);
-  return 0;
+/** terraço a terraço, de baixo para cima (d = duração de cada degrau) */
+const stage = (t: number, a: number, d: number): Build => ({ b1: ease(t, a, a + d), b2: ease(t, a + 0.8 * d, a + 1.8 * d), b3: ease(t, a + 1.6 * d, a + 2.6 * d), bc: ease(t, a + 2.4 * d, a + 3.4 * d), bt: ease(t, a + 3.0 * d, a + 4.0 * d), wall: 0 });
+/** o templo fantasma: o desejo do rei (sobe logo que o plano abre) e o «tan grande necesita muchísima» (sobe e pulsa) */
+const ghostAt = (t: number): Build | null => {
+  if (t >= X3 && t < C2) return stage(t, X3 + 0.25, 0.5);
+  if (t >= C2 && t < X4) return FULL;
+  if (t >= C5 && t < X8 && t >= T.tanGrande - 0.2) return stage(t, T.tanGrande - 0.15, 0.3);
+  return null;
 };
+const ghostSc = (t: number) => (t >= C5 && t < X8 && t > T.necesita ? 0.96 + 0.04 * Math.abs(Math.sin((t - C5) * 3)) : 1);
 const Meru: React.FC<{ t: number }> = ({ t }) => {
   const u = t >= X3 && t < C2 ? ease(t, T.montana - 0.1, T.sagrada + 0.3) : 0; if (u <= 0.01) return null;
   const o: MatOpts = { opacity: 0.3 * u, depthWrite: false, emissive: "#8fd0ff", ei: 0.6 };
@@ -486,6 +490,29 @@ const Meru: React.FC<{ t: number }> = ({ t }) => {
     <G>
       <Cone rad={13} h={24 * u} seg={7} p={[0, 12 * u, 0]} c="#bfe6ff" o={o} cast={false} />
       {[[CX * 2, CX * 2], [-CX * 2, CX * 2], [CX * 2, -CX * 2], [-CX * 2, -CX * 2]].map(([x, z], i) => <Cone key={i} rad={7} h={15 * u} seg={6} p={[x, 7.5 * u, z]} c="#bfe6ff" o={o} cast={false} />)}
+    </G>
+  );
+};
+
+/** «No hay motores»: um motor de brinquedo surge roncando no buraco vazio, leva ✖ e tomba soltando fumaça */
+export const MOT_P: V3 = [-0.75, 0.4, 32.4];
+const Motor: React.FC<{ t: number }> = ({ t }) => {
+  if (t < MOT0 || t >= C1) return null;
+  const s = 1.2 * outBack(prog(t, MOT0, MOT0 + 0.3)), dead = ease(t, MOT1, MOT1 + 0.35), run = 1 - dead;
+  const sh = 0.05 * run * Math.sin(t * 47), pist = (i: number) => 0.18 * run * Math.abs(Math.sin(t * 22 + i * 2.1));
+  return (
+    <G>
+      <G p={[MOT_P[0] + sh, MOT_P[1] - 0.3 * dead, MOT_P[2]]} r={[0, 0.5, -1.3 * dead]} sc={[s, s, s]}>
+        <Box s={[1.3, 0.8, 0.9]} p={[0, 0.4, 0]} c="#5a6068" o={{ metal: 0.5, rough: 0.4 }} />
+        <Box s={[1.4, 0.1, 1.0]} p={[0, 0.82, 0]} c="#e0262b" />
+        {[-0.4, 0, 0.4].map((x, i) => <Cyl key={i} rt={0.15} h={0.45} p={[x, 1.05 + pist(i), 0]} c="#b8c0c8" o={{ metal: 0.6, rough: 0.3 }} seg={10} />)}
+        <G p={[0.75, 0.45, 0]} r={[t * 18 * run, 0, 0]}>
+          <Cyl rt={0.36} h={0.12} r={[0, 0, PI / 2]} c="#2a2a2a" seg={14} /><Box s={[0.14, 0.62, 0.1]} p={[0.07, 0, 0]} c="#ffd400" />
+        </G>
+        <Cyl rt={0.07} h={0.7} p={[-0.5, 1.2, -0.3]} c="#2a2a2a" seg={8} />
+      </G>
+      <Puffs t={t} p={[MOT_P[0] - 0.7, MOT_P[1] + 1.9, MOT_P[2] - 0.4]} n={6} period={0.4} rise={1.3} size={0.4} c="#3a3a3a" drift={[-0.4, 0, 0]} on={run > 0.3 ? 1 : 0} />
+      <Puffs t={t} p={[MOT_P[0], MOT_P[1] + 0.6, MOT_P[2]]} n={7} period={0.5} rise={1.0} size={0.6} c="#9a9a9a" drift={[0.6, 0, 0.4]} on={t > MOT1 + 0.2 && t < MOT1 + 0.7 ? 1 : 0} />
     </G>
   );
 };
@@ -506,7 +533,7 @@ const Dock: React.FC<{ t: number }> = ({ t }) => {
   const n = a ? 3 : 9, sp = a ? 7.5 : 9;
   const rafts = Array.from({ length: n }, (_, i) => {
     if (i === 0) return { p: [BASIN[0], 0.02, BASIN[2] - 1.0] as V3, yaw: 0, blocks: a ? 1 : 2 };
-    const s = CANAL_LEN - 4 - i * sp + (t - (a ? C3 : C5)) * 1.6, c = canalAt(s);
+    const s = CANAL_LEN - 4 - i * sp + (t - (a ? C3 : C5)) * (a ? 1.6 : 3.2), c = canalAt(s);
     return { p: [c.p[0], 0.02, c.p[2]] as V3, yaw: c.yaw, blocks: 2 };
   });
   const off = a ? ease(t, C3 + 0.2, X5 - 0.3) : 0; // o bloco sobe do cais para o barranco, em rolos
@@ -528,6 +555,7 @@ const Dock: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- SEC: o corte da areia sob a torre
 const SD1 = "#ebd29a", SD2 = "#dec184", SW1 = "#a8865a", SW2 = "#987650";
 /** afundamento da torre na areia seca (0..1) — volta de ré no «¿Cómo la mantienes?» */
+export const wobT = (t: number) => (t < T.b2 + 0.55 || t >= X6 ? 0 : 0.075 * Math.sin((t - T.b2 - 0.55) * 13) * (t < T.c2 ? 1 : Math.exp(-(t - T.c2) * 9)));
 export const sinkU = (t: number) => (t >= C4 ? 0 : t < T.b2 + 0.1 ? ease(t, SINK0, SINK1) : 1 - ease(t, T.b2 + 0.1, T.b2 + 0.6));
 const wetX = (t: number) => (t < C4 ? -3.5 : lerp(-3.5, 7.5, ease(t, T.humeda - 0.35, T.arenaSuelo + 0.7)));
 const GRAINS = Array.from({ length: 46 }, (_, i) => ({ x: lerp(-3.2, 7.2, rnd(i * 3 + 1)), y: lerp(0.4, 5.6, rnd(i * 3 + 2)), s: lerp(0.12, 0.22, rnd(i * 3 + 3)) }));
@@ -562,7 +590,7 @@ const Sec: React.FC<{ t: number }> = ({ t }) => {
         {drops}
       </> : null}
       {/* a torre na plataforma: afunda e entorta na areia seca; na úmida aguenta firme */}
-      <G p={[2.5, 6 - 1.5 * u - press, 0]} r={[0, 0, -0.2 * u]}>
+      <G p={[2.5, 6 - 1.5 * u - press, 0]} r={[0, 0, -0.2 * u + wobT(t)]}>
         <Box s={[5, 1.4, 4.56]} p={[0, 0.7, 0]} c={NEW.s1} />
         <Box s={[5.2, 0.2, 4.6]} p={[0, 1.4, 0]} c={NEW.s3} />
         <G p={[0, 1.5, -0.3]}><Prang w={2.8} h={6.4} pal={NEW} /></G>
@@ -570,6 +598,7 @@ const Sec: React.FC<{ t: number }> = ({ t }) => {
       {/* a areia empurrada para os lados */}
       {[-0.4, 5.4].map((x, i) => <Sph key={i} rad={1.2} p={[x, 6, 0.6]} sc={[1.2, Math.max(0.01, 0.55 * u), 1.4]} c={SD1} cast={false} vis={u > 0.02} />)}
       <Puffs t={t} p={[2.5, 6.1, 1.5]} n={8} period={0.5} rise={1.2} size={0.7} c="#efdcae" drift={[0, 0, 0.6]} on={t > SINK0 && t < SINK1 + 0.2 ? 1 : 0} />
+      <Puffs t={t} p={[2.5, 6.1, 1.8]} n={6} period={0.4} rise={0.6} size={0.5} c="#efdcae" drift={[1.4, 0, 0.3]} on={t > T.c2 - 0.02 && t < T.c2 + 0.4 ? 1 : 0} />
       {/* setas do peso */}
       {arrows ? [0.9, 4.1].map((x, i) => { const b = 0.35 * Math.abs(Math.sin(t * 7 + i)); return <G key={i} p={[x, 9.9 - b - 1.5 * u, 2.4]}><Cyl rt={0.16} h={1.3} p={[0, 0.65, 0]} c="#e0262b" cast={false} /><Cone rad={0.42} h={0.6} p={[0, -0.25, 0]} r={[PI, 0, 0]} c="#e0262b" cast={false} /></G>; }) : null}
     </G>
@@ -610,7 +639,7 @@ const CORE_CELLS = Array.from({ length: 48 }, (_, i) => ({ x: -2.4 + (i % 4) * 1
 const SKIN = [...Array.from({ length: 12 }, (_, i) => ({ face: 0, c: i % 4, r: Math.floor(i / 4) })), ...Array.from({ length: 12 }, (_, i) => ({ face: 1, c: i % 4, r: Math.floor(i / 4) }))];
 const Core: React.FC<{ t: number }> = ({ t }) => {
   if (t < X8 || t >= C6) return null;
-  const xray = t >= T.esteRelleno - 0.05 ? ease(t, T.esteRelleno - 0.05, T.esteRelleno + 0.35) : 0, glow = t > T.noSeVe && t < X9 ? pulse(t, T.noSeVe, X9) : xray > 0 ? 0.4 + 0.4 * Math.sin(t * 7) : 0;
+  const xray = t >= XR ? ease(t, XR + 0.05, XR + 0.45) : 0, glow = t > T.noSeVe && t < X9 ? pulse(t, T.noSeVe, X9) : xray > 0 ? 0.4 + 0.4 * Math.sin(t * 7) : 0;
   const seen = pulse(t, T.seVe - 0.05, T.seVe + 0.7);
   return (
     <G p={CORE0}>
@@ -620,10 +649,10 @@ const Core: React.FC<{ t: number }> = ({ t }) => {
         return <Box key={i} s={[1.5, 0.92, 1.5]} p={[q.x, q.y, q.z]} c={i % 2 ? LAT_W : "#b0503a"} o={glow > 0 ? { emissive: "#ff5a20", ei: 0.5 * glow } : undefined} />;
       })}
       {t >= X10 ? SKIN.map((s, i) => {
-        const t0 = T.tallada + 0.05 + (s.face * 12 + s.r * 4 + s.c) * 0.055, u = ease(t, t0, t0 + 0.35); if (u <= 0.001) return null;
+        const t0 = T.tallada + 0.05 + (s.face * 12 + s.r * 4 + s.c) * 0.045, u = ease(t, t0, t0 + 0.35); if (u <= 0.001) return null;
         const along = -2.4 + s.c * 1.6, y = 0.5 + s.r, slide = 2.8 * (1 - u);
         const p: V3 = s.face === 0 ? [along, y + 1.2 * (1 - u), 3.48 + slide] : [3.48 + slide, y + 1.2 * (1 - u), -along];
-        const ry = s.face === 0 ? 0 : PI / 2, o: MatOpts | undefined = xray > 0 ? { opacity: lerp(1, 0.28, xray), depthWrite: xray < 0.5 } : seen > 0 ? { emissive: "#ffd400", ei: 0.45 * seen } : undefined;
+        const ry = s.face === 0 ? 0 : PI / 2, o: MatOpts | undefined = xray > 0 ? { opacity: lerp(1, 0.28, xray), depthWrite: xray < 0.5, ...(seen > 0 ? { emissive: "#ffd400", ei: 0.45 * seen } : {}) } : seen > 0 ? { emissive: "#ffd400", ei: 0.45 * seen } : undefined;
         return (
           <G key={i} p={p} r={[0, ry, 0]}>
             <Box s={[1.56, 0.94, 0.55]} c={(s.c + s.r) % 2 ? NEW.s1 : NEW.s2} o={o} cast={!o} />
@@ -633,6 +662,7 @@ const Core: React.FC<{ t: number }> = ({ t }) => {
         );
       }) : null}
       <Puffs t={t} p={[0, 3.0, 0]} n={6} period={0.45} rise={0.8} size={0.28} c="#d88a60" drift={[0.4, 0, 0.6]} on={t > T.laterita && t < T.laterita + 1.0 ? 1 : 0} />
+      <Puffs t={t} p={[3.25, 1.3, 2.6]} n={4} period={0.52} rise={0.5} size={0.3} c="#d88a60" drift={[1.0, 0, 0.3]} on={t > X8 + 0.1 && t < T.laterita - 0.1 ? 1 : 0} />
     </G>
   );
 };
@@ -708,6 +738,12 @@ const Monks: React.FC<{ t: number }> = ({ t }) => {
   const list = [0, 1, 2, 3, 4].map((i) => ({ p: monkP(t, i), yaw: PI, pose: "walk" as PoseName, ph: i * 0.31 }));
   return <Crowd list={list} t={t} c={MONK} />;
 };
+/** o operário gira no «el giro» e fica tonto (estrelinhas) até os monges */
+export const WK12: V3 = [5.5, 0, 35.2];
+const Dizzy: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.giro + 0.8 || t >= T.monjes + 0.2) return null;
+  return <G p={[WK12[0], 2.6, WK12[2]]}>{[0, 1, 2, 3].map((i) => { const a = t * 7 + (i * PI) / 2; return <Sph key={i} rad={0.12} p={[0.45 * Math.cos(a), 0.08 * Math.sin(a * 2), 0.45 * Math.sin(a)]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.6 }} cast={false} ws={8} hs={6} />; })}</G>;
+};
 export const FLAG0: V3 = [-4.5, 0, 38.5];
 const Flag: React.FC<{ t: number }> = ({ t }) => {
   const tex = useMemo(() => {
@@ -724,15 +760,16 @@ const Flag: React.FC<{ t: number }> = ({ t }) => {
   const geo = useMemo(() => new THREE.PlaneGeometry(5.1, 3.4, 26, 6), []);
   const base = useMemo(() => Float32Array.from(geo.attributes.position.array as Float32Array), [geo]);
   const m = useMemo(() => new THREE.MeshStandardMaterial({ map: tex, side: THREE.DoubleSide, roughness: 0.85 }), [tex]);
-  if (t < X12) return null;
+  if (t < X13) return null;
+  const rise = ease(t, X13 + 0.05, T.bandera + 0.25), amp = lerp(0.25, 1, rise), fy = lerp(1.95, 6.5, rise);
   const pos = geo.attributes.position as THREE.BufferAttribute;
-  for (let i = 0; i < pos.count; i++) { const x = base[i * 3], y = base[i * 3 + 1], u = (x + 2.55) / 5.1; pos.setZ(i, 0.42 * u * Math.sin(x * 1.6 - t * 7.5 + y * 0.3)); pos.setY(i, y - 0.12 * u * u); }
+  for (let i = 0; i < pos.count; i++) { const x = base[i * 3], y = base[i * 3 + 1], u = (x + 2.55) / 5.1; pos.setZ(i, 0.42 * amp * u * Math.sin(x * 1.6 - t * 7.5 + y * 0.3)); pos.setY(i, y - 0.12 * u * u); }
   pos.needsUpdate = true; geo.computeVertexNormals();
   return (
     <G p={FLAG0}>
       <Cyl rt={0.08} h={8.4} p={[0, 4.2, 0]} c="#d8d8d8" o={{ metal: 0.3, rough: 0.4 }} />
       <Sph rad={0.16} p={[0, 8.45, 0]} c="#ffd400" />
-      <mesh geometry={geo} material={m} position={[2.62, 6.5, 0]} castShadow />
+      <mesh geometry={geo} material={m} position={[2.62, fy, 0]} castShadow />
     </G>
   );
 };
@@ -781,7 +818,7 @@ const Span: React.FC<{ t: number }> = ({ t }) => {
 /** nuvens mais rápidas no «siglo tras siglo» (o tempo passando) */
 const cloudT = (t: number) => t + 160 * ease(t, T.siglo - 0.5, X13 - 0.1);
 export const World: React.FC<{ t: number }> = ({ t }) => {
-  const b = buildAt(t), pal = palAge(ageAt(t)), m = moatAt(t), g = ghostRise(t);
+  const b = buildAt(t), pal = palAge(ageAt(t)), m = moatAt(t), gb = ghostAt(t);
   return (
     <>
       <Sky top="#2f8cf0" mid="#7cc2ff" low="#eaf2f8" />
@@ -794,12 +831,12 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Temple b={b} pal={pal} />
       <Enclosure g={b.wall} pal={pal} />
       {!m.covered ? <Causeway pal={pal} /> : null}
-      {g > 0.01 ? <G sc={[1, g, 1]}><Temple b={FULL} pal={GHOST_PAL} /></G> : null}
+      {gb ? <G sc={[1, ghostSc(t), 1]}><Temple b={gb} pal={GHOST_PAL} /></G> : null}
       <Meru t={t} />
       <OpenBuild t={t} /><OpenMoat t={t} /><OpenScale t={t} />
-      <Site t={t} /><King t={t} /><Dock t={t} /><RaftRun t={t} />
+      <Motor t={t} /><Site t={t} /><King t={t} /><Dock t={t} /><RaftRun t={t} />
       <Sec t={t} /><Lat t={t} /><Core t={t} /><Lift t={t} /><Wall t={t} />
-      <Monks t={t} /><Flag t={t} /><Castle t={t} />
+      <Monks t={t} /><Dizzy t={t} /><Flag t={t} /><Castle t={t} />
       <Span t={t} />
       {t >= X12 && t < X13 ? <Birds t={t} c={[0, H3 + 9, 0]} n={6} r={9} t0={X12} /> : null}
       <Flora t={t} />

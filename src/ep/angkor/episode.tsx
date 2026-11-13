@@ -2,15 +2,15 @@
 // Ritmo do lote 3: corte duro a cada ~4 s (os 7 da régua + 13 extras), chicote na entrada de todo plano, câmera sempre andando,
 // uma tentativa que dá errado com ✖ (a torre na areia seca afunda e entorta) e três aberturas por getInputProps().open.
 import React from "react";
-import { CamState, K, Key, Shot } from "../../toy/cam";
+import { CamState, K, Key, Shot, keyed } from "../../toy/cam";
 import { CUTS, WINS } from "../../toy/cues";
 import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { LIFT0, SFX, SINK0, SINK1, SIT_T, T, XC } from "./cues";
+import { LIFT0, MOT1, SFX, SINK0, SINK1, SIT_T, T, XC, XR } from "./cues";
 import { Open, OPEN } from "./open";
-import { BASIN, CORE0, H2, H3, KHMER, LAT0, MC, SEC0, SIT_P, WALL0, World, raftB, raftX4 } from "./world";
+import { BASIN, CORE0, H2, H3, KHMER, LAT0, MC, SEC0, SIT_P, WALL0, WK12, World, raftB, raftX4 } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const PI = Math.PI;
@@ -31,6 +31,13 @@ const raftCam = (t: number): CamState => {
   const roll = lerp(3, 0.5, ease(t, X4, X4 + 0.45)) + 0.8 * Math.sin(t * 1.3);
   return { pos, look, fov: 54, roll };
 };
+
+/** golpe de câmera: tranco curto que some em ~0,4 s */
+const jolt = (t: number, at: number[]) => at.reduce((s, a) => s + (t >= a && t < a + 0.6 ? Math.exp(-(t - a) * 8) * Math.sin((t - a) * 40) : 0), 0);
+const X5K: Key[] = [
+  K(X5, SEC(0.4, 7.6, 17.4), SEC(2.4, 5.3, 0.0), 56, -3), K(X5 + 0.45, SEC(0.9, 7.1, 16.6), SEC(2.5, 5.2, 0.0), 56, 0.5),
+  K(T.bajo, SEC(1.5, 7.4, 15.9), SEC(2.6, 6.0, 0.0), 56, -0.5), K(SINK0, SEC(1.9, 7.0, 15.3), SEC(2.7, 5.5, 0.0), 56, 0.5),
+  K(T.b2, SEC(2.4, 6.6, 15.0), SEC(2.8, 5.4, 0.0), 56, -0.5), K(X6 - 0.05, SEC(2.8, 7.6, 15.6), SEC(2.7, 6.8, 0.0), 56, 0)];
 
 /** as três aberturas (0 → X1), cada uma já em ação no quadro 0 */
 const OPENING: Record<Open, Shot> = {
@@ -54,7 +61,8 @@ const SHOTS: Shot[] = [
     K(X2 - 0.05, [18.2, 2.4, 19.2], [13.0, 0.2, 12.5], 58, 0)] },
   { name: "do alto, de frente: ⏪ 900 anos — o templo se desmonta e o fosso escoa", t0: X2, keys: [
     K(X2, [24.0, 26.0, 52.0], [0.0, 5.0, 0.0], 58, 3), K(X2 + 0.45, [22.0, 25.0, 50.0], [0.0, 4.5, 0.0], 58, -0.5),
-    K(T.nohay, [14.0, 22.0, 50.0], [0.0, 1.0, 4.0], 58, 0.5), ...hold(C1, [11.0, 20.5, 48.5], [0.0, 0.5, 6.0], 58, 0)] },
+    K(T.novecientos + 0.3, [16.0, 17.0, 47.0], [0.0, 2.0, 16.0], 58, 0.5), K(T.nohay, [6.5, 7.5, 40.0], [-0.2, 0.8, 29.6], 56, -0.5),
+    ...hold(C1, [5.8, 7.0, 39.0], [-0.2, 0.8, 29.6], 56, 0)] },
   { name: "rente ao chão na obra: o bloco nos rolos, pedra, madeira, corda e muita gente", t0: C1, keys: [
     K(C1, [-18.5, 1.7, 31.0], [-6.0, 1.4, 18.5], 56, 3), K(C1 + 0.45, [-17.8, 2.0, 30.0], [-6.0, 1.3, 18.5], 56, -0.5),
     K(T.piedra, [-15.5, 2.3, 28.5], [-3.5, 1.0, 18.0], 56, 0.5), K(T.cuerda, [-14.0, 2.6, 29.5], [-6.0, 0.8, 22.0], 56, -0.5),
@@ -72,10 +80,10 @@ const SHOTS: Shot[] = [
   { name: "do alto, o porto: a fila de balsas chega e o bloco sobe o barranco", t0: C3, keys: [
     K(C3, [-58.0, 13.0, -38.0], [-40.0, 0.0, -19.0], 56, 3), K(C3 + 0.45, [-57.0, 12.0, -36.5], [-40.0, 0.0, -19.5], 56, -0.5),
     K(T.estosCanales, [-56.0, 12.5, -34.0], [-38.0, 0.0, -20.0], 56, 0.5), K(X5 - 0.05, [-55.0, 13.0, -32.5], [-37.0, 0.0, -20.0], 56, 0)] },
-  { name: "corte da areia seca: o peso → a torre afunda e entorta (✖) → ⏪ volta", t0: X5, keys: [
-    K(X5, SEC(0.4, 7.6, 17.4), SEC(2.4, 5.3, 0.0), 56, -3), K(X5 + 0.45, SEC(0.9, 7.1, 16.6), SEC(2.5, 5.2, 0.0), 56, 0.5),
-    K(T.bajo, SEC(1.5, 7.4, 15.9), SEC(2.6, 6.0, 0.0), 56, -0.5), K(SINK0, SEC(1.9, 7.0, 15.3), SEC(2.7, 5.5, 0.0), 56, 0.5),
-    K(T.b2, SEC(2.4, 6.6, 15.0), SEC(2.8, 5.4, 0.0), 56, -0.5), K(X6 - 0.05, SEC(2.8, 7.6, 15.6), SEC(2.7, 6.8, 0.0), 56, 0)] },
+  { name: "corte da areia seca: o peso → a torre afunda e entorta (✖) → ⏪ volta, balança no carimbo e firma", t0: X5, keys: X5K, fn: (t) => {
+    const c = keyed(X5K, t), j = jolt(t, [T.b2 + 0.06, T.c2]);
+    return { ...c, pos: [c.pos[0], c.pos[1] + 0.22 * j, c.pos[2]], fov: c.fov - 1.5 * Math.abs(j), roll: c.roll + 2.5 * j };
+  } },
   { name: "do alto: o fosso enche em volta de todo o templo (~200 m)", t0: X6, keys: [
     K(X6, [-40.0, 58.0, 78.0], [0.0, 0.0, -4.0], 58, 3), K(X6 + 0.45, [-37.0, 62.0, 76.0], [0.0, 0.0, -4.0], 58, -0.5),
     K(T.doscientos, [-30.0, 66.0, 74.0], [0.0, 0.0, -2.0], 58, 0.5), ...hold(C4, [-24.0, 70.0, 72.0], [0.0, 0.0, 0.0], 58, 0)] },
@@ -101,7 +109,10 @@ const SHOTS: Shot[] = [
     K(X10 - 0.05, LAT(-0.6, 1.5, 5.6), LAT(0.3, 0.6, 2.5), 52, 0)] },
   { name: "a pele de arenisca talhada cobre o núcleo → raio-x: o recheio", t0: X10, keys: [
     K(X10, CORE(-1.5, 1.9, 8.2), CORE(0.4, 1.5, 3.4), 54, 3), K(X10 + 0.45, CORE(-1.0, 1.8, 7.8), CORE(0.4, 1.5, 3.4), 54, -0.5),
-    K(T.seVe, CORE(1.0, 2.6, 9.4), CORE(1.0, 1.4, 2.0), 56, 0.5), K(T.esteRelleno, CORE(-5.0, 5.5, 10.0), CORE(0.4, 1.4, 0.0), 56, -0.5),
+    K(XR - 0.05, CORE(0.4, 2.3, 8.9), CORE(0.8, 1.4, 2.6), 55, 0.5)] },
+  { name: "de cima, de lado: raio-x — a pele de arenisca fica transparente e o recheio de laterita acende", t0: XR, keys: [
+    K(XR, CORE(-5.8, 6.0, 10.6), CORE(0.4, 1.4, 0.0), 56, 3), K(XR + 0.45, CORE(-5.4, 5.7, 10.2), CORE(0.4, 1.4, 0.0), 56, -0.5),
+    K(T.esteRelleno, CORE(-5.0, 5.5, 10.0), CORE(0.4, 1.4, 0.0), 56, -0.5),
     K(T.p4 + 0.2, CORE(-6.0, 6.0, 10.5), CORE(0.4, 1.6, 0.0), 56, 0.5), ...hold(C6, CORE(-6.2, 6.1, 10.6), CORE(0.4, 1.6, 0.0), 56, 0)] },
   { name: "no terraço de cima: o bloco de 1 t e a torre lá no alto → o cinzel abre os furos (HIPÓTESIS)", t0: C6, keys: [
     K(C6, [7.0, 8.2, 15.0], [0.0, 12.5, 2.0], 58, -3), K(C6 + 0.45, [6.4, 8.6, 14.2], [0.0, 12.8, 2.0], 58, 0.5),
@@ -115,11 +126,11 @@ const SHOTS: Shot[] = [
     K(C7, WALL(-1.6, 2.0, 5.2), WALL(0.0, 2.2, 0.5), 56, -3), K(C7 + 0.45, WALL(-1.2, 2.1, 5.0), WALL(0.2, 2.3, 0.5), 56, 0.5),
     K(T.estosAg, WALL(0.4, 2.4, 4.6), WALL(0.9, 2.4, 0.5), 54, -0.5), K(X12 - 0.05, WALL(1.0, 2.6, 4.4), WALL(1.2, 2.4, 0.5), 52, 0)] },
   { name: "o giro: monges na calçada, séculos passando, a selva cresce", t0: X12, keys: [
-    K(X12, [9.5, 3.0, 48.0], [0.0, 6.0, 4.0], 58, 3), K(X12 + 0.45, [9.0, 3.2, 47.2], [0.0, 6.2, 4.0], 58, -0.5),
+    K(X12, [7.0, 2.8, 47.5], [0.5, 3.2, 26.0], 56, 3), K(X12 + 0.45, [6.8, 2.9, 47.0], [0.5, 3.3, 26.0], 56, -0.5),
     K(T.monjes, [7.5, 3.0, 45.0], [0.0, 3.0, 22.0], 56, 0.5), K(T.siglo, [8.5, 5.0, 47.0], [0.0, 8.0, 0.0], 58, -0.5),
     K(X13 - 0.05, [10.5, 7.0, 50.0], [0.0, 9.0, 0.0], 60, 0.5)] },
   { name: "a bandeira do Camboja na frente do templo → chicote para o castelo de areia na margem", t0: X13, keys: [
-    K(X13, [-1.9, 4.9, 55.0], [-1.6, 7.6, 30.0], 56, -3), K(X13 + 0.45, [-1.8, 5.0, 54.2], [-1.6, 7.8, 30.0], 56, 0.5),
+    K(X13, [-1.9, 3.6, 54.0], [-2.6, 3.6, 30.0], 56, -3), K(X13 + 0.45, [-1.8, 3.9, 53.8], [-2.4, 4.6, 30.0], 56, 0.5),
     K(T.bandera, [-1.6, 5.2, 53.4], [-1.4, 8.4, 28.0], 56, -0.5), K(W10 - 0.02, [-1.5, 5.3, 53.0], [-1.3, 8.6, 27.0], 56, 0),
     K(W10 + 0.5, [3.0, 2.3, 42.0], [5.2, 0.8, 37.3], 52, 3), K(T.castillos, [3.4, 2.1, 41.4], [5.2, 0.7, 37.3], 50, 0.5),
     K(T.end, [2.6, 2.8, 42.8], [5.0, 0.9, 37.3], 52, 0)] },
@@ -141,7 +152,7 @@ const secJump = (t: number): V3 => { const u = ease(t, X7 + 0.1, X7 + 0.5); retu
 const WORKER: [number, WorkerState][] = [
   ...OPEN_W[OPEN],
   [X1, S([14.3, 0, 11.2], 0.4, "present")], [T.arena0, S([14.3, 0, 11.2], 0.4, "point")],
-  [X2, S([0.8, 0.4, 31.0], 0.4, "alarm")], [T.nohay, S([0.8, 0.4, 31.0], 0.4, "present")],
+  [X2, S([1.0, 0.4, 30.4], 0.4, "alarm")], [T.nohay, S([1.0, 0.4, 30.4], 0.4, "present")], [MOT1, S([1.0, 0.4, 30.4], -0.9, "point")],
   [C1, S([-10.5, 0, 25.5], -0.97, "present")], [T.piedra, S([-10.5, 0, 25.5], 2.42, "point")], [T.cuerda, S([-10.5, 0, 25.5], 0.6, "point")], [T.manos, S([-10.5, 0, 25.5], -0.97, "cheer")],
   [X3, S([8.0, 0, 29.4], -2.88, "present")], [T.templo, S([8.0, 0, 29.4], -2.88, "point")], [T.p1, S([8.0, 0, 29.4], -2.88, "alarm")],
   [C2, S([-8.0, 0.3, -111.0], 0, "cheer", { scale: 2.2 })],
@@ -154,14 +165,17 @@ const WORKER: [number, WorkerState][] = [
   [C4, S(SEC(5.7, 6, 1.0), -PI / 2, "point")], [T.todoAno, S(SEC(5.7, 6, 1.0), -0.3, "present")],
   [X7 + 0.1, S(SEC(4.2, 7.4, 1.2), -0.3, "cheer", { follow: secJump })], [X7 + 0.5, S(SEC(4.2, 7.4, 1.2), -0.3, "cheer")], [T.esteFoso, S(SEC(4.2, 7.4, 1.2), -PI / 2, "point")],
   [C5, S([-44.0, 0.38, -19.6], 0.4, "present")], [T.tanGrande, S([-44.0, 0.38, -19.6], 1.2, "think")],
-  [X8, S(CORE(-4.9, 0, 3.2), 2.1, "point")],
+  [X8, S(CORE(3.75, 0, 2.6), -PI / 2, "chisel", { prop: "hammer" })], [T.laterita - 0.05, S(CORE(5.0, 0, 3.4), -0.9, "alarm")],
   [X9, S(LAT(2.3, 0, 2.9), -1.86, "point")], [T.aire - 0.1, S(LAT(2.3, 0, 2.9), -1.86, "chisel", { prop: "hammer" })],
   [X10, S(CORE(-4.4, 0, 4.6), 0.6, "present")], [T.seVe, S(CORE(-4.4, 0, 4.6), 2.2, "point")], [T.esteRelleno, S(CORE(-4.4, 0, 4.6), 0.6, "cheer")], [T.p4, S(CORE(-4.4, 0, 4.6), 0.6, "alarm")],
   [C6, S([-1.6, H3, 4.0], PI / 2, "point")], [T.tallan - 0.15, S([-1.6, H3, 4.0], PI / 2, "chisel", { prop: "hammer" })],
   [X11, S([1.6, H3, 4.0], -PI / 2, "present")], [T.subirlos, S([1.6, H3, 4.0], -0.6, "cheer")],
   [C7, S(WALL(2.4, 0, 1.6), -2.68, "point")],
-  [X12, S([5.5, 0, 35.2], 0.3, "present")], [T.siglo, S([5.5, 0, 35.2], -0.6, "think")],
-  [X13, S([7.4, 0, 35.6], -1.2, "pour", { prop: "jar" })], [T.manda, S([7.4, 0, 35.6], -0.5, "cheer")],
+  [X12, S(WK12, 0.3, "present")],
+  // «y el giro»: ele gira duas voltas e fica tonto até os monges passarem
+  ...Array.from({ length: 12 }, (_, k): [number, WorkerState] => [T.giro + 0.15 + k * 0.05, S(WK12, 0.3 + ((k + 1) * PI) / 3, "alarm")]),
+  [T.giro + 0.8, S(WK12, 0.3, "think")], [T.monjes, S(WK12, -0.5, "point")], [T.siglo, S(WK12, -0.6, "think")],
+  [X13, S([-3.6, 0, 39.1], -1.1, "pull")], [T.bandera + 0.35, S([7.4, 0, 35.6], -1.2, "pour", { prop: "jar" })], [T.manda, S([7.4, 0, 35.6], -0.5, "cheer")],
 ];
 void H2; void MC;
 
@@ -210,7 +224,7 @@ const hud: HudData = {
   titles: [{ a: T.estosCanales, text: "CANALES" }, { a: T.esteFoso, text: "FOSO" }, { a: T.esteRelleno, text: "RELLENO" }, { a: T.estosAg, text: "AGUJEROS", len: 1.35 }],
   alerts: [T.p1, T.p2, T.p3, T.p4],
   rewinds: [T.camboya, T.b2, T.asi],
-  crosses: [[SINK0 + 0.3, T.b2 - 0.05]],
+  crosses: [[T.motores, C1 - 0.05], [SINK0 + 0.3, T.b2 - 0.05], [T.lejos, T.lejos + 0.85]],
   stamps: [[T.b1, T.c1, "SIN CAMIONES"], [T.b2, T.c2, "SIN HORMIGÓN"]],
   reward: { a: T.manda - 0.1, len: T.end - T.manda + 0.1, top: "EN PIE HACE CASI", big: (t) => `${count(t, T.manda - 0.1, T.manda + 1.1, 0, 900)} AÑOS`, sub: "SOBRE ARENA" },
   Extra: ({ t }) => {

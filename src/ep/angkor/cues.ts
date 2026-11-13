@@ -7,7 +7,7 @@ export const T = {
   monumento: find("el monumento"), grande: find("mas grande del mundo"), mundo: find("del mundo"),
   millones0: find("millones de bloques", 0), piedra0: find("de piedra"), todo0: find("y todo apoyado"), arena0: find("sobre arena"),
   camboya: find("camboya", 0), hace: find("hace casi"), novecientos: find("novecientos"),
-  nohay: find("no hay motores"), gruas: find("ni gruas"), camiones: find("ni camiones"),
+  nohay: find("no hay motores"), motores: find("motores"), gruas: find("ni gruas"), camiones: find("ni camiones"),
   solo: find("solo piedra"), piedra: find("piedra madera"), madera: find("madera cuerda"), cuerda: find("cuerda y miles"), manos: find("miles de manos"),
   rey: find("el rey"), sury: find("suryavarman"), quiere: find("quiere un templo"), templo: find("un templo con"), montana: find("montana sagrada"), sagrada: find("sagrada"),
   p1: find("pero la piedra", 0, 0.1), treinta: find("treinta kilometros"), kulen: find("monte kulen"),
@@ -25,7 +25,7 @@ export const T = {
   p3: find("pero la arenisca", 0, 0.1), lejos: find("muy lejos"), tanGrande: find("tan grande"), necesita: find("necesita muchisima"),
   sol: find("solucion", 0, 0.1), noSeVe: find("lo que no se ve"), laterita: find("laterita"), rojiza: find("una piedra rojiza"),
   corta: find("se corta"), blanda: find("blanda"), endurece: find("se endurece"), aire: find("al aire"),
-  tallada: find("la arenisca tallada"), seVe: find("para lo que se ve"), esteRelleno: find("este es el relleno"),
+  tallada: find("la arenisca tallada"), seVe: find("para lo que se ve"), sobre: find("sobre todo"), esteRelleno: find("este es el relleno"),
   // 4: os buracos
   p4: find("pero hay que subir", 0, 0.1), tonelada: find("una tonelada"), alto: find("lo alto de las torres"),
   prob: find("lo mas probable", 0, 0.05), tallan: find("tallan agujeros"), pequenos: find("agujeros pequenos"),
@@ -42,6 +42,10 @@ const fr = (x: number) => Math.round(x * 30) / 30;
 /** cortes duros EXTRA (ritmo do lote 3: um corte a cada ~4 s; os 7 da régua continuam), nas viradas de frase, todos ≥1,5 s de um corte da régua */
 export const XC = [T.millones0, T.camboya, T.rey, T.segun1, T.p2, T.foso0, T.asi, T.sol, T.rojiza, T.tallada, T.donde, T.giro, T.hoy].map(fr);
 const X13 = XC[12];
+/** corte extra para o raio-x do recheio (pré-crítica de ritmo, 13/11: a fachada parada de 53,5 a 55,5 s) */
+export const XR = fr(T.sobre + 0.2);
+/** o motor de brinquedo que aparece no buraco vazio e leva ✖ no «motores» */
+export const MOT0 = T.novecientos + 0.65, MOT1 = T.motores + 0.12;
 
 // tempos derivados que o mundo e o painel compartilham
 /** a tentativa que dá errado: a torre na areia seca afunda e entorta (✖); no «¿Cómo la mantienes?» volta de ré */
@@ -93,6 +97,17 @@ S.push(
   ["giro", T.giro, -9], ["bells", T.monjes, -12], ["whoosh", T.siglo, -14],
   ["clack", T.siglo + 0.15, -15], ["clack", T.siglo + 0.4, -15], ["clack", T.siglo + 0.65, -15], ["clack", T.siglo + 0.9, -15],
   ["ak-flag", X13 + 0.05, -11], ["chime", T.bandera + 0.05, -10],
+  // pré-crítica de ritmo (13/11): o motor que leva ✖, o templo fantasma bloco a bloco, a torre que balança e firma,
+  // o ✖ do «muy lejos», as marteladas na laterita, o raio-x antes, o operário que gira no «giro», a bandeira que sobe
+  ["vn-compressor", MOT0, -13], ["buzzer", T.motores + 0.05, -12], ["crumble", MOT1 + 0.1, -12], ["smoke", MOT1 + 0.3, -15],
+  ["ss-rise", XC[2] + 0.25, -12], ...[0.3, 0.7, 1.1, 1.5].map((d): [string, number, number] => ["clack", XC[2] + d, -14]),
+  ...[-0.1, 0.15, 0.4, 0.65].map((d): [string, number, number] => ["clack", T.tanGrande + d, -14]),
+  ["creak", T.b2 + 0.75, -13], ["thud", T.c2, -9],
+  ["buzzer", T.lejos + 0.05, -12], ["ss-rise", T.tanGrande - 0.15, -12],
+  ["chisel", XC[7] + 0.2, -12], ["chisel", XC[7] + 0.72, -13], ["chisel", XC[7] + 1.24, -12],
+  ["whoosh", XR - 0.2, -14], ["ss-shimmer", XR + 0.1, -12],
+  ["qe-twist", T.giro + 0.2, -10], ["qe-pling", T.giro + 0.85, -12],
+  ["vn-rope", X13 + 0.1, -11], ["qe-taut", X13 + 0.8, -13],
   ["fanfare", T.manda - 0.15, -8], ["confetti", T.manda + 0.3, -12], ["sandfall", T.castillos, -13], ["waves", T.playa, -15],
 );
 export const SFX = S;
