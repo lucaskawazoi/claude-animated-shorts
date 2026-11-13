@@ -6,7 +6,7 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { BOING, CANDLE_OUT, CRASH, DROP_A, NWIN, SFX, T, TIP0, TRIP1, XC, winAt } from "./cues";
+import { BOING, CANDLE_OUT, CRASH, DROP_A, NWIN, SFX, T, TIP0, TRIP1, TRIP_UP, XC, winAt } from "./cues";
 import { Open, OPEN } from "./open";
 import { BYZ, DB, H_NEW, World, fgA, hopA, nLit, quake, runX } from "./world";
 import { EXPOSURE } from "./exposure";
@@ -99,12 +99,12 @@ const SHOTS: Shot[] = [
     K(X9 - 0.05, [-1.0, 8.4, 0.6], [4.8, 11.6, -1.5], 60, 0)] },
   { name: "do centro, olhando para cima: a luz entra por baixo e a cúpula flutua num anel de luz", t0: X9, keys: [
     K(X9, [0.3, 1.0, 0.9], [0.0, 14.0, -1.4], 70, -6), K(X9 + 0.45, [0.3, 1.1, 0.8], [0.0, 14.0, -1.3], 70, 0),
-    K(T.flotar1, [0.2, 1.3, 0.7], [0.0, 14.0, -1.2], 66, 8), K(T.ventanas, [0.1, 1.6, 0.6], [0.0, 14.0, -1.0], 64, 16),
-    K(XN - 0.05, [0.1, 1.7, 0.6], [0.0, 14.0, -1.0], 64, 18)] },
-  { name: "rente ao chão: o operário olha tanto para cima que cai de costas (✖); a câmera segue o olhar até o anel de janelas", t0: XN, keys: [
+    K(XN - 0.05, [0.2, 1.4, 0.7], [0.0, 14.0, -1.1], 66, 14)] },
+  { name: "rente ao chão: o operário olha para cima e cai de costas em «flotar» (✖) → a câmera segue o olhar e gira no anel → desce: ele levanta e comemora", t0: XN, keys: [
     K(XN, [2.9, 1.3, 3.9], [-0.8, 2.3, -2.4], 64, 3), K(XN + 0.45, [2.6, 1.4, 3.6], [-0.8, 2.4, -2.4], 64, -0.5),
-    K(TRIP1 + 0.3, [2.4, 1.4, 3.4], [-0.7, 2.5, -2.3], 64, 0.5), K(T.ventanas + 0.15, [2.2, 1.5, 3.2], [-0.6, 5.5, -2.2], 64, 0),
-    K(X10 - 0.05, [2.0, 1.6, 3.0], [-0.4, 9.5, -1.8], 64, -1)] },
+    K(TRIP1 + 0.4, [2.4, 1.4, 3.4], [-0.7, 2.5, -2.3], 64, 0.5), K(T.anillo + 0.25, [2.2, 1.5, 3.2], [-0.4, 9.5, -1.8], 64, 0),
+    K(TRIP_UP - 0.1, [2.0, 1.6, 3.0], [-0.2, 10.0, -1.6], 64, 40), K(TRIP_UP + 0.25, [2.4, 1.4, 3.4], [-0.9, 2.6, -2.1], 64, -2),
+    K(X10 - 0.05, [2.1, 1.4, 2.9], [-1.3, 2.8, -1.8], 64, 0)] },
   { name: "da rua da cidade: Constantinopla treme (558) — a câmera treme junto, telhas caem", t0: X10, keys: X10_KEYS,
     fn: (t) => { const c = keyed(X10_KEYS, t), q = quake(t) * (1 - ease(t, C6 - 0.6, C6 - 0.3)), f = Math.floor(t * 30), j = (n: number) => (((f * 7919 + n * 104729) % 1000) / 500 - 1) * q;
       return { ...c, pos: [c.pos[0] + 2.0 * j(1), c.pos[1] + 1.5 * j(2), c.pos[2] + 1.2 * j(3)], look: [c.look[0] + 1.2 * j(4), c.look[1] + 1.2 * j(5), c.look[2]], roll: c.roll + 10 * j(6) }; } },
@@ -180,7 +180,7 @@ const WORKER: [number, WorkerState][] = [
   [X7, S(W7, -1.9, "present", IN)],
   [CANDLE_OUT - 1.15, S(W7, -1.9, "cheer", IN)],
   [CANDLE_OUT + 0.05, S(W7, -1.9, "alarm", IN)],
-  [T.b2, S(W7, -1.9, "think", IN)],
+  [T.b2, S(W7, -1.9, "present", { ...IN, follow: (t) => { const u = t - T.b2; return [W7[0] + 0.35 * Math.sin(u * 4.5), 0.07 * Math.abs(Math.sin(u * 9)), W7[2] - 0.5 * Math.sin(u * 2.2)]; } })], // tateia no escuro
   [C5, S([-0.4, 0, 0.2], 0.68, "think", IN)],
   [T.c2, S([-0.4, 0, 0.2], 0.68, "cheer", IN)],
   [X8, S([0, 0, 0], 0, "idle", { scale: 0 })],
@@ -238,7 +238,7 @@ const hud: HudData = {
   ],
   alerts: [T.p1, T.p2, T.p3, T.p4],
   rewinds: [T.constantinopla, T.b1, T.s2, T.b3],
-  crosses: [...(OPEN === "c" ? [[1.0, X1 - 0.05] as [number, number]] : []), [TIP0 + 0.25, X4 - 0.05], [CANDLE_OUT + 0.1, T.b2 - 0.12], [TRIP1 + 0.03, T.ventanas - 0.02], [T.cae + 0.25, T.b3 - 0.1]],
+  crosses: [...(OPEN === "c" ? [[1.0, X1 - 0.05] as [number, number]] : []), [TIP0 + 0.25, X4 - 0.05], [CANDLE_OUT + 0.1, T.b2 - 0.12], [TRIP1 + 0.03, TRIP1 + 1.0], [T.cae + 0.25, T.b3 - 0.1]],
   stamps: [[T.b1, T.c1, "SIN ACERO"], [T.b2, T.c2, "SIN ELECTRICIDAD"], [T.b3, T.c3, "SIN HORMIGÓN"]],
   reward: { a: T.manda - 0.1, len: T.end - T.manda + 0.1, top: "EN PIE DESDE EL AÑO", big: (t) => `${count(t, T.manda - 0.1, T.manda + 1.1, 0, 537)}`, sub: "SIN UN SOLO MOTOR" },
   Extra: ({ t }) => {

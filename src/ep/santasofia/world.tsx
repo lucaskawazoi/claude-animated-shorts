@@ -10,7 +10,7 @@ import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, outBack, pip
 import { Clouds, Hills, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { BOING, CANDLE_ON, CANDLE_OUT, CRASH, DROP_A, FALL0, FALL1, LAND, NOHAY_DROP, NWIN, SPIN0, T, TIP0, TRIP0, TRIP1, XC, winAt } from "./cues";
+import { BOING, CANDLE_ON, CANDLE_OUT, CRASH, DROP_A, FALL0, FALL1, LAND, NOHAY_DROP, NWIN, SPIN0, T, TIP0, TRIP0, TRIP1, TRIP_UP, XC, winAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI;
@@ -450,13 +450,13 @@ const BrickStack: React.FC<{ p: V3; s: number }> = ({ p, s }) => (
 );
 /** «No hay motores, ni acero, ni hormigón armado»: o que NÃO existe surge, leva um ✖ e some no «solo» */
 const XMark: React.FC<{ t: number; a: number; y: number }> = ({ t, a, y }) => {
-  const u = pp(t, a + 0.22); if (u <= 0.002) return null;
+  const u = pp(t, a); if (u <= 0.002) return null;
   return <G p={[0, y, 1.4]} sc={1.1 * u}>{[0.8, -0.8].map((r) => <Box key={r} s={[2.4, 0.42, 0.25]} r={[0, 0, r]} c="#ff2d2d" o={{ emissive: "#ff2d2d", ei: 0.4 }} cast={false} />)}</G>;
 };
 const NoHay: React.FC<{ t: number }> = ({ t }) => {
   if (!(t >= NOHAY_DROP[0] - 0.33 && t < T.ladrillo)) return null;
   const gone = 1 - ease(t, T.solo - 0.1, T.solo + 0.2), sc = (i: number) => (t < NOHAY_DROP[i] - 0.32 ? 0.001 : Math.max(0.001, gone));
-  const dy = (i: number) => 9 * (1 - prog(t, NOHAY_DROP[i] - 0.32, NOHAY_DROP[i]) ** 2); // cai do céu
+  const dy = (i: number) => { const l = t - NOHAY_DROP[i]; return l < 0 ? 9 * (1 - prog(t, NOHAY_DROP[i] - 0.32, NOHAY_DROP[i]) ** 2) : 0.9 * Math.abs(Math.sin(l * PI / 0.32)) * Math.exp(-l * 2.6); }; // cai do céu e quica
   return (
     <G>
       <G p={[-9.6, dy(0), 8.4]} sc={sc(0)}>
@@ -867,15 +867,15 @@ const Candle: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
-/** XN «…anillo de luz.»: o operário olha tanto para cima que se inclina e cai de costas (✖); deitado, segue olhando */
+/** XN «…por debajo»: o operário olha tanto para cima que se inclina e cai de costas em «flotar» (✖); levanta e comemora em «Estas son las ventanas» */
 const Trip: React.FC<{ t: number }> = ({ t }) => {
   if (!(t >= XN && t < X10)) return null;
   const s = prog(t, TRIP0, TRIP1), land = t - TRIP1;
-  const lean = t < TRIP0 ? -0.06 - 0.3 * ease(t, XN + 0.1, TRIP0) - 0.05 * Math.sin(t * 13) * ease(t, XN + 0.3, TRIP0) : t < TRIP1 ? -0.36 - 1.16 * s * s : -1.52 + 0.1 * Math.sin(land * 30) * Math.exp(-land * 9);
-  const pose = { ...poseOf(t < TRIP1 ? "cheer" : "alarm", t), lean, hop: 0 };
+  const lean = t < TRIP0 ? -0.06 - 0.3 * ease(t, XN + 0.1, TRIP0) - 0.05 * Math.sin(t * 13) * ease(t, XN + 0.3, TRIP0) : t < TRIP1 ? -0.36 - 1.16 * s * s : (-1.52 + 0.1 * Math.sin(land * 30) * Math.exp(-land * 9)) * (1 - ease(t, TRIP_UP, TRIP_UP + 0.3));
+  const up = ease(t, TRIP_UP, TRIP_UP + 0.3), pose = { ...poseOf(t < TRIP1 || t > TRIP_UP + 0.2 ? "cheer" : "alarm", t), lean, hop: t > TRIP_UP + 0.3 ? 0.15 * Math.abs(Math.sin(t * 7)) : 0 };
   return (
     <G>
-      <Worker p={[-0.4, t < TRIP0 ? 0 : 0.36 * Math.min(1, s), 0.2]} yaw={0.9} pose={pose} t={t} c={BYZ} scale={1.05} />
+      <Worker p={[-0.4, t < TRIP0 ? 0 : 0.36 * Math.min(1, s) * (1 - up), 0.2]} yaw={0.9} pose={pose} t={t} c={BYZ} scale={1.05} />
       <Puffs t={t} p={[-1.8, 0.05, -1.0]} n={7} period={0.5} rise={0.6} size={0.5} c="#e8dcc4" on={land > 0 && land < 0.4 ? 1 : 0} drift={[-0.8, 0, 0.3]} />
     </G>
   );
