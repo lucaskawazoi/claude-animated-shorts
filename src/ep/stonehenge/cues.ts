@@ -33,7 +33,16 @@ export { CUTS, WINS };
 
 /** cortes duros extras (ritmo do lote 3: um corte a cada ~4 s; os 7 da régua continuam), todos a ≥1,5 s de um corte da régua */
 export const XCUTS = [T.algunas, T.inglaterra, T.levantar, T.desliza - 0.3, T.b2, T.empujan - 0.1, T.esteHoyo - 0.3,
-  T.palancas - 0.05, T.capa - 0.05, T.cada - 0.05, T.giro - 0.05, T.sale - 0.2, T.nadie + 0.35]; // [11] = o plano do sol no eixo
+  T.palancas - 0.05, T.capa - 0.05, T.cada - 0.05, T.giro - 0.05, T.sale - 0.2, T.nadie + 0.35, // [11] = o plano do sol no eixo
+  T.cientos - 0.2]; // [13] (fora de ordem para não renumerar): de frente para os que puxam, um escorrega
+/** pré-crítica de ritmo (13/11): cada trecho parado ganhou um objeto em movimento ou uma piada */
+export const RUN0 = T.cuatromil, RUN1 = T.cuatromil + 1.25; // o operário corre até a câmera na planície vazia
+export const NOGO = { m: T.nohay + 0.22, w: T.ruedas + 0.17, g: T.gruas + 0.25 }; // motor cai, roda rola, grua brota (cada um leva ✖)
+export const PULL0 = T.prob1 - 0.1, SLIDE0 = T.trineo + 0.3; // a multidão já puxa; a pedra anda assim que sobe no trenó
+export const FLY_AT = [T.trineo + 0.98, T.rieles, T.cientos + 0.3]; // pouso dos trilhos levados de trás para a frente
+export const SLIP = T.cientos + 0.3; // um dos que puxam escorrega e é arrastado de costas (✖)
+export const RUL0 = T.esteHoyo - 0.15; // régua de 4 m e dintel-fantasma já no «este es el hoyo»
+export const TS = T.sube + 0.12; // um tronco escapa do topo da torre, bate na cabeça do operário e volta (✖)
 /** a queda cômica: o dintel solto escorrega dos pilares, cai e quica no chão; no «solución» volta de ré */
 export const FALL0 = T.caer - 0.12, FALL1 = T.caer + 0.5;
 
@@ -61,10 +70,10 @@ S.push(["chime", T.b4 + 0.05, -8]);
 for (const a of [T.p1, T.p2, T.p3]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.inglaterra, T.b2, T.b3, T.b4]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.esteTrineo, T.esteHoyo, T.estaTorre, T.juntas]) S.push(["ding", a + 0.05, -9]);
-for (const a of [T.treinta + 0.05, T.doscientos, T.nohay + 0.05, T.ruedas + 0.05, T.gruas + 0.05, T.metros, T.largo]) S.push(["pop", a, -11]);
+for (const a of [T.treinta + 0.05, T.doscientos, T.metros, T.largo]) S.push(["pop", a, -11]);
 for (let k = 1; k <= NSTEP; k++) if (k < 3 || k % 3 === 0) S.push(["sh-log", stepAt(k) - 0.05, k < 3 ? -9 : -15]);
 S.push(["wind", 0.0, -16], ["sink", T.inglaterra + 0.1, -10], ["crowd", T.gente, -15], ["chime", T.circulo + 0.1, -12],
-  ["sh-tip", T.toneladas, -13], ["buzzer", T.toneladas + 0.6, -14], ["thud", T.trineo + 0.25, -9], ["drag", T.desliza, -10], ["drag", T.tiran, -11], ["qe-heave", T.cientos, -10],
+  ["sh-tip", T.toneladas, -13], ["buzzer", T.toneladas + 0.6, -14], ["thud", T.trineo + 0.25, -9], ["drag", SLIDE0 + 0.05, -10], ["drag", T.tiran, -11], ["qe-heave", T.cientos, -10],
   ["drag", T.esteTrineo - 0.3, -12], ["thud", T.acostada + 0.15, -11],
   ["dig", T.cavan, -9], ["dig", T.cavan + 0.7, -12], ["drag", T.empujan, -10], ["sh-tip", T.punta, -7],
   ["qe-heave", T.enderezan, -9], ["qe-taut", T.enderezan + 0.05, -12], ["stone", T.tirando + 0.5, -12],
@@ -78,4 +87,16 @@ S.push(["wind", 0.0, -16], ["sink", T.inglaterra + 0.1, -10], ["crowd", T.gente,
   ["qe-heave", T.b3 + 0.1, -10], ["thud", T.b3 + 0.62, -8], ["qe-boing", T.b3 + 0.7, -12], ["buzzer", T.b3 + 0.72, -14],
   // o fim: o sofá cai do céu, ele empurra e nada; confete até o fim da voz
   ["whoosh", T.sofa - 0.45, -14], ["thud", T.sofa, -6], ["qe-boing", T.sofa + 0.1, -11], ["qe-heave", T.sofa + 0.45, -10], ["confetti", T.sofa + 0.2, -12]);
+// pré-crítica de ritmo: corrida, motor/roda/grua, multidão, trilhos voando, escorregão, régua, tronco na cabeça
+const [m, w, g] = [NOGO.m, NOGO.w, NOGO.g];
+S.push(["whoosh", RUN0, -14], ["qe-slip", RUN1 - 0.1, -12],
+  ["whoosh", m - 0.3, -14], ["thud", m, -6], ["stamp", m + 0.07, -9], ["buzzer", m + 0.1, -14], ["pop", m + 0.57, -13],
+  ["sh-log", w - 0.3, -12], ["stamp", w + 0.08, -9], ["thud", w + 0.36, -10], ["pop", w + 0.48, -13],
+  ["qe-boing", g - 0.25, -11], ["stamp", g + 0.07, -9], ["buzzer", g + 0.1, -14], ["pop", g + 0.72, -13],
+  ["qe-heave", PULL0 + 0.1, -11], ["qe-taut", PULL0 + 0.05, -12], ["crowd", PULL0, -15],
+  ...FLY_AT.flatMap((a): [string, number, number][] => [["whoosh", a - 0.6, -16], ["sh-log", a - 0.02, -11]]),
+  ["qe-slip", SLIP, -11], ["thud", SLIP + 0.25, -9], ["qe-boing", SLIP + 0.3, -12], ["stamp", SLIP + 0.3, -10], ["buzzer", SLIP + 0.33, -15],
+  ["chime", RUL0, -14], ["pop", RUL0 + 0.05, -13],
+  ["qe-slip", TS, -12], ["whoosh", TS + 0.05, -15], ["thud", TS + 0.35, -8], ["qe-boing", TS + 0.38, -10], ["stamp", TS + 0.4, -10], ["buzzer", TS + 0.42, -14],
+  ["thud", TS + 0.6, -12], ["rewind", TS + 1.2, -14], ["sh-log", TS + 1.55, -12]);
 export const SFX = S;

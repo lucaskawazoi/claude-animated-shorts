@@ -6,14 +6,14 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { FALL0, FALL1, NSTEP, SFX, T, XCUTS, stepAt } from "./cues";
+import { FALL0, FALL1, NSTEP, RUN0, RUN1, SFX, SLIDE0, T, TS, XCUTS, stepAt } from "./cues";
 import { Open, OPEN } from "./open";
-import { CX, HERO_RY, HL as H, HL1, NEO, PEBBLE, SOFA, World, dawn, dragZ, pushX, pushY } from "./world";
+import { CX, HERO_RY, HL as H, HL1, NEO, PEBBLE, RUN_B, SOFA, TS_OP, World, dawn, dragZ, pushX, pushY, runP, toeX } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
-const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13] = XCUTS;
+const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14] = XCUTS;
 
 /** as três aberturas (0 → «algunas»), cada uma já em ação no quadro 0 */
 const OPENING: Record<Open, Shot> = {
@@ -38,12 +38,13 @@ const SHOTS: Shot[] = [
     K(X1, [5.5, 6.5, -9.5], [0.0, 2.4, 0.0], 58, 3), K(X1 + 0.45, [8.0, 9.5, -11.5], [0.0, 1.8, 0.0], 58, -0.5),
     K(T.doscientos, [12.0, 13.0, -13.0], [0.0, 1.5, 0.0], 58, 1.5), K(T.rueda, [16.0, 15.0, -4.0], [0.0, 1.5, 0.0], 58, -0.5),
     K(X2 - 0.05, [16.5, 16.5, 3.0], [0.0, 1.0, 0.0], 58, 0.5)] },
-  { name: "de baixo, de fora: ⏪ Inglaterra há 4500 anos, tudo afunda e a planície fica vazia", t0: X2, keys: [
+  { name: "de baixo, de fora: ⏪ Inglaterra há 4500 anos, tudo afunda → o operário corre da planície vazia até a câmera", t0: X2, keys: [
     K(X2, [-15.5, 1.7, -12.4], [0.0, 2.6, 0.0], 56, -3), K(X2 + 0.45, [-14.4, 2.1, -11.4], [0.0, 2.3, 0.0], 56, 0.5),
-    K(T.cuatromil, [-13.6, 2.9, -10.6], [0.0, 1.6, 0.0], 56, -0.5), K(C1 - 0.05, [-12.0, 6.5, -9.0], [0.0, 0.0, 0.0], 58, 0)] },
+    K(RUN0, [-14.0, 2.2, -11.2], [-2.5, 1.4, 0.5], 56, -0.5), K(RUN0 + 0.9, [-13.8, 2.1, -11.4], [-6.5, 1.3, -3.5], 56, 1.5),
+    K(C1 - 0.05, [-13.6, 2.0, -11.6], [-9.9, 1.5, -5.9], 54, -1)] },
   { name: "acampamento: madeira, corda, pedra, gente", t0: C1, keys: [
-    K(C1, H(-41.2, 2.0, 6.6), H(-31.5, 1.3, 0.0), 56, 3), K(C1 + 0.45, H(-40.0, 2.4, 5.8), H(-31.5, 1.3, 0.0), 56, -0.5),
-    K(T.madera, H(-39.6, 2.6, 6.0), H(-30.5, 1.2, 0.5), 56, 0.5), K(T.gente, H(-40.5, 2.9, 6.6), H(-32.0, 1.2, 0.0), 58, -0.5),
+    K(C1, H(-40.9, 3.0, 6.4), H(-34.6, 0.9, 1.8), 56, 3), K(C1 + 0.45, H(-40.4, 3.2, 6.0), H(-34.6, 0.8, 1.8), 56, -0.5),
+    K(T.gruas + 0.9, H(-40.0, 3.0, 6.2), H(-33.8, 0.9, 1.6), 56, 1), K(T.madera, H(-39.6, 2.6, 6.0), H(-30.5, 1.2, 0.5), 56, 0.5), K(T.gente, H(-40.5, 2.9, 6.6), H(-32.0, 1.2, 0.0), 58, -0.5),
     K(X3 - 0.05, H(-41.0, 3.4, 7.0), H(-31.0, 1.4, -0.5), 58, 0)] },
   { name: "de trás do acampamento: o círculo fantasma → empurram e a pedra não sai do lugar (✖)", t0: X3, keys: [
     K(X3, H(-47.5, 7.0, 3.0), H(-12.0, 2.0, -6.0), 56, -3), K(X3 + 0.45, H(-46.5, 7.8, 3.6), H(-10.0, 2.2, -7.0), 56, 0.5),
@@ -51,13 +52,15 @@ const SHOTS: Shot[] = [
     K(C2 - 0.05, H(-34.2, 2.3, 6.9), H(-34.3, 0.9, 0.0), 56, 0)] },
   { name: "de cima: a pedra pula no trenó", t0: C2, keys: [
     K(C2, H(-31.6, 7.0, -3.6), H(-33.0, 0.3, 0.0), 54, -3), K(W3, H(-31.9, 6.8, -3.9), H(-33.0, 0.3, 0.0), 54, -2),
-    K(W3 + 0.6, H(-26.0, 3.6, -6.5), H(-32.5, 0.8, 0.5), 58, 4), K(T.trineo, H(-27.0, 3.0, -6.2), H(-33.0, 0.8, 0.0), 56, 0),
-    K(X4 - 0.05, H(-27.4, 2.8, -6.0), H(-32.6, 0.8, 0.0), 56, -0.5)] },
+    K(W3 + 0.6, H(-15.0, 5.2, 0.4), H(-30.0, 0.2, 0.4), 52, 4), K(T.trineo, H(-14.6, 5.0, 0.4), H(-30.0, 0.3, 0.4), 52, 0.5),
+    K(X4 - 0.05, H(-13.6, 4.8, 0.4), H(-29.0, 0.3, 0.4), 52, -0.5)] },
   { name: "rente ao chão: desliza sobre troncos-trilho → centenas na corda", t0: X4, keys: [
     K(X4, H(-23.0, 1.6, -6.2), H(-30.0, 0.5, -0.6), 54, 3), K(X4 + 0.45, H(-23.6, 1.9, -6.4), H(-29.0, 0.4, -0.4), 54, -0.5),
     K(T.troncos, H(-25.6, 5.2, -10.6), H(-27.6, 0.2, 0.4), 54, 0.5), K(T.rieles + 0.2, H(-24.4, 5.8, -10.0), H(-21.8, 0.2, 0.6), 54, -0.5),
-    K(T.cientos, H(-33.5, 6.5, -6.5), H(-21.0, 0.5, 1.5), 58, 1), K(T.tiran, H(-32.0, 7.5, -8.0), H(-19.5, 0.5, 1.5), 58, 0),
-    K(C3 - 0.05, H(-31.4, 7.8, -8.4), H(-19.0, 0.5, 1.5), 58, 0.5)] },
+    K(X14 - 0.05, H(-25.0, 6.2, -10.2), H(-21.5, 0.3, 0.8), 54, 0)] },
+  { name: "de frente, na fila: centenas na corda, caras de esforço → um escorrega e vai arrastado de costas (✖)", t0: X14, keys: [
+    K(X14, H(-12.0, 4.8, 0.4), H(-19.8, -0.2, 1.5), 54, -3), K(X14 + 0.45, H(-11.6, 5.0, 0.6), H(-19.4, -0.2, 1.5), 54, 0.5),
+    K(T.tiran, H(-11.3, 5.0, 0.6), H(-19.0, -0.2, 1.5), 54, -0.5), K(C3 - 0.05, H(-10.8, 5.1, 0.6), H(-18.4, -0.2, 1.5), 54, 0)] },
   { name: "de fora, no canteiro: chega deitada → o fantasma em pé", t0: C3, keys: [
     K(C3, H(-12.8, 3.8, 9.4), H(-11.5, 0.9, 0.0), 56, 3), K(C3 + 0.45, H(-11.8, 4.0, 8.9), H(-10.4, 0.9, 0.0), 56, -0.5),
     K(T.acostada + 0.3, H(-6.4, 6.0, 11.6), H(-3.2, 0.6, 0.0), 62, 0.5), K(T.depie, H(-5.0, 6.2, 11.4), H(-2.2, 1.4, 0.0), 60, -0.5),
@@ -89,7 +92,8 @@ const SHOTS: Shot[] = [
     K(T.otroTronco + 0.3, [7.2, 2.0, 18.0], [2.0, 1.0, 11.6], 56, -0.5), K(X9 - 0.05, [6.6, 2.3, 18.2], [1.4, 1.4, 11.5], 56, 0)] },
   { name: "do alto: capa a capa a torre sobe → esta é a torre → solta lá em cima", t0: X9, keys: [
     K(X9, [-5.2, 7.8, 16.6], [0.0, 2.0, 11.2], 58, 3), K(X9 + 0.45, [-4.4, 7.0, 17.4], [0.0, 2.2, 11.2], 58, -0.5),
-    K(T.torre, [-3.2, 6.4, 18.6], [0.0, 4.0, 11.0], 58, 0.5), K(T.estaTorre, [3.5, 5.6, 19.2], [0.0, 3.4, 11.0], 58, -0.5),
+    K(TS - 0.3, [-7.6, 5.3, 20.2], [-2.6, 1.5, 11.8], 58, 1), K(TS + 1.5, [-7.0, 5.6, 20.0], [-2.2, 2.2, 11.6], 58, -0.5),
+    K(T.estaTorre, [3.5, 5.6, 19.2], [0.0, 3.4, 11.0], 58, -0.5),
     K(T.p3, [4.0, 6.2, 17.5], [0.0, 4.6, 10.6], 56, 0.5), K(C6 - 0.05, [4.2, 6.5, 17.2], [0.0, 4.6, 10.6], 56, 0)] },
   { name: "de cima, por dentro: o dintel solto cai e quica (✖) → ⏪ volta → talham", t0: C6, keys: [
     K(C6, [1.4, 10.2, 3.6], [0.0, 4.3, 10.6], 56, 3), K(C6 + 0.45, [0.6, 9.6, 4.0], [0.0, 4.3, 10.6], 56, -0.5),
@@ -132,8 +136,9 @@ const WORKER: [number, WorkerState][] = [
   ...OPEN_W[OPEN],
   [T.algunas - 0.01, S([-1.5, 0, 4.0], 2.6, "present")],
   [T.algunas + 0.3, S([-1.5, 0, 4.0], 2.6, "point")],
-  [T.inglaterra, S([-1.5, 0, 4.0], 2.6, "alarm")],
-  [T.cuatromil, S([-1.5, 0, 4.0], 2.6, "present")],
+  [T.inglaterra, S([-3.0, 0, -0.5], -2.45, "alarm")],
+  [RUN0, S(RUN_B, -2.45, "walk", { follow: runP })], // (p = onde a corrida termina: o próximo item não anda)
+  [RUN1, S(RUN_B, -2.43, "present")],
   [C1, S(camp, -1.13, "present")],
   [T.madera, S(camp, 0.35, "point")],
   [T.piedra, S(camp, -1.6, "point")],
@@ -141,8 +146,8 @@ const WORKER: [number, WorkerState][] = [
   [T.levantar, S(camp, 1.77, "point")],
   [T.b1, S(camp, -1.13, "think")],
   [C2, S(H(-30.0, 0, 2.6), HERO_RY - 0.4, "cheer")],
-  [T.trineo, S(H(-30.0, 0, 2.6), HERO_RY - 0.8, "point")],
-  [T.desliza, S(H(-30.0, 0, 2.6), HERO_RY + Math.PI / 2, "walk", { follow: (t) => H(-30.2 + 5.6 * Math.min(1, Math.max(0, (t - T.desliza) / 6.0)) + 0.6, 0, 2.6) })],
+  [T.trineo, S(H(-29.2, 0, -1.4), HERO_RY - 0.8, "point")],
+  [SLIDE0, S(H(-29.2, 0, -1.4), HERO_RY + Math.PI / 2, "walk", { follow: (t) => H(toeX(t) + 1.0, 0, -1.4) })],
   [C3, S(sec, HERO_RY, "present")],
   [T.p1, S(sec, HERO_RY, "alarm")],
   [T.b2, S(sec, HERO_RY, "think")],
@@ -160,8 +165,11 @@ const WORKER: [number, WorkerState][] = [
   [T.palancas, S(lever, Math.PI / 2, "point")],
   [T.levantan, S(lever, Math.PI / 2, "pull")],
   [T.tronco1 + 0.3, S(lever, 0.5, "cheer")],
-  [T.capa, S([-6.4, 0, 13.6], 0.4, "cheer")],
-  [T.p3, S([-6.4, 0, 13.6], 0.4, "alarm")],
+  [T.capa, S(TS_OP, 0.8, "cheer")],
+  [TS - 0.05, S(TS_OP, 1.6, "alarm")], // o tronco que escapa da torre bate na cabeça dele
+  [TS + 0.35, S(TS_OP, 0.3, "think")],
+  [TS + 1.45, S(TS_OP, 0.8, "cheer")],
+  [T.p3, S(TS_OP, 0.8, "alarm")],
   [C6, S([1.8, 0, 7.2], Math.PI - 0.2, "point")],
   [T.caer - 0.1, S([3.4, 0, 7.6], -2.2, "alarm", { follow: dodge })], // (p = onde o pulo termina: o próximo item não anda)
   [T.caer + 0.3, S([3.4, 0, 7.6], -2.6, "alarm")],
@@ -196,24 +204,7 @@ const StampLo: React.FC<{ t: number; a: number; b: number; label: string }> = ({
     </div>
   );
 };
-/** ao lado das pílulas MOTORES / RUEDAS / GRÚAS 0: o ícone surge e leva um ✖ */
-const NOPE: [number, number, "gear" | "wheel" | "crane"][] = [[T.nohay, 440, "gear"], [T.ruedas, 550, "wheel"], [T.gruas, 660, "crane"]];
-const Nope: React.FC<{ t: number; a: number; y: number; kind: "gear" | "wheel" | "crane" }> = ({ t, a, y, kind }) => {
-  const k = win(t, a, T.madera - 0.15, 0.15); if (k <= 0) return null;
-  const x = ease(t, a + 0.25, a + 0.45), B = "#14202b", C = "#8a5a2e";
-  return (
-    <div style={{ position: "absolute", left: 770, top: y - 14, width: 110, height: 110, opacity: k, transform: `scale(${pop(t, a, 0.3)}) rotate(${-8 + 6 * Math.sin(t * 6)}deg)` }}>
-      <svg viewBox="0 0 120 120" width="110" height="110">
-        <circle cx="60" cy="60" r="54" fill="#ffffffd9" stroke={B} strokeWidth="6" />
-        {kind === "gear" ? <g>{Array.from({ length: 8 }, (_, i) => <rect key={i} x="54" y="20" width="12" height="16" fill="#6b7680" transform={`rotate(${i * 45} 60 60)`} />)}<circle cx="60" cy="60" r="24" fill="#6b7680" /><circle cx="60" cy="60" r="9" fill="#ffffff" /></g> : null}
-        {kind === "wheel" ? <g><circle cx="60" cy="60" r="30" fill="none" stroke={C} strokeWidth="9" />{[0, 45, 90, 135].map((d) => <line key={d} x1="60" y1="30" x2="60" y2="90" stroke={C} strokeWidth="5" transform={`rotate(${d} 60 60)`} />)}</g> : null}
-        {kind === "crane" ? <g stroke="#e0a020" strokeWidth="8" strokeLinecap="round" fill="none"><path d="M40 98 L40 26 L92 26" /><path d="M40 44 L60 26" /><path d="M86 26 L86 52" stroke={B} strokeWidth="3" /><path d="M80 52 L92 52 L86 62 Z" fill={B} stroke={B} strokeWidth="2" /></g> : null}
-        {x > 0 ? <path d="M22 22 L98 98 M98 22 L22 98" stroke="#e0262b" strokeWidth="12" strokeLinecap="round" pathLength={1} strokeDasharray={`${x} 1`} /> : null}
-      </svg>
-    </div>
-  );
-};
-
+// (os ícones pequenos ao lado das pílulas saíram: motor, roda e grua aparecem grandes no mundo e levam um ✖ 3D)
 const HAVE: [number, string][] = [[T.madera, "MADERA"], [T.cuerda, "CUERDA"], [T.piedra, "PIEDRA"], [T.gente, "MUCHA GENTE"]];
 const steps = (t: number) => { let n = 0; for (let k = 1; k <= NSTEP; k++) if (t >= stepAt(k)) n++; return n; };
 const hyp = (t: number) => Math.max(win(t, T.prob1, T.esteTrineo - 0.1, 0.2), win(t, T.c3, T.estaTorre - 0.1, 0.2));
@@ -222,10 +213,10 @@ const hud: HudData = {
     { a: T.treinta, b: T.algunas - 0.1, label: "PIEDRAS DE HASTA", value: (t) => `${count(t, T.treinta, T.treinta + 0.8, 0, 30)} t`, y: 440 },
     { a: T.doscientos, b: T.rueda - 0.1, label: "DISTANCIA", value: () => "+200 km", y: 440, tone: "gold" },
     { a: T.rueda, b: T.inglaterra - 0.1, label: "RUEDAS", value: () => "0", y: 440, tone: "red" },
-    { a: T.inglaterra, b: T.nohay - 0.1, label: "HACE", value: () => "~4500 AÑOS", y: 440, tone: "gold" },
-    { a: T.nohay, b: T.madera - 0.15, label: "MOTORES", value: () => "0", y: 440, tone: "red" },
-    { a: T.ruedas, b: T.madera - 0.15, label: "RUEDAS", value: () => "0", y: 550, tone: "red" },
-    { a: T.gruas, b: T.madera - 0.15, label: "GRÚAS", value: () => "0", y: 660, tone: "red" },
+    { a: T.inglaterra, b: T.nohay - 0.1, label: "HACE", value: (t) => `~${count(t, T.inglaterra + 0.2, RUN1 - 0.2, 0, 4500).replace(/\./g, "")} AÑOS`, y: 440, tone: "gold" },
+    { a: T.nohay, b: T.madera - 0.15, label: "MOTORES", value: () => "0", y: 250, tone: "red" },
+    { a: T.ruedas, b: T.madera - 0.15, label: "RUEDAS", value: () => "0", y: 345, tone: "red" },
+    { a: T.gruas, b: T.madera - 0.15, label: "GRÚAS", value: () => "0", y: 440, tone: "red" },
     { a: T.madera, b: T.levantar - 0.1, label: "TIENEN", value: (t) => HAVE.filter(([a]) => t >= a - 0.1).slice(-1)[0]?.[1] ?? "", y: 440, tone: "green" },
     { a: T.circulo, b: T.b1 - 0.1, label: "MISIÓN", value: () => "CÍRCULO", y: 440, tone: "gold" },
     { a: T.cientos, b: T.esteTrineo - 0.1, label: "PERSONAS", value: () => "~10 POR TONELADA", y: 440 },
@@ -253,7 +244,6 @@ const hud: HudData = {
     return (
       <>
         {STAMPS.map(([a, b, l]) => <StampLo key={a} t={t} a={a} b={b} label={l} />)}
-        {NOPE.map(([a, y, kind]) => <Nope key={a} t={t} a={a} y={y} kind={kind} />)}
         {map > 0 ? (
           <div style={{ position: "absolute", left: 0, width: 1080, top: 600, display: "flex", justifyContent: "center", opacity: map, transform: `scale(${pop(t, T.algunas, 0.3)}) rotate(-2deg)` }}>
             <div style={{ position: "relative", width: 560, height: 400, borderRadius: 34, background: "#bfe3f5", border: "8px solid #14202b", boxShadow: "0 10px 0 #00000055", overflow: "hidden" }}>

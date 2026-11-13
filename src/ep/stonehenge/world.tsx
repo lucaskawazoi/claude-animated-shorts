@@ -4,11 +4,11 @@
 // (corte em seção no plano 4) e é endireitada com cordas; o dintel sobe numa torre de troncos (por fora, +z) e encaixa nos salientes.
 import React, { useMemo } from "react";
 import * as THREE from "three";
-import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBack, prog, rnd } from "../../toy/kit";
+import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBack, prog, rnd, sstep } from "../../toy/kit";
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { FALL0, FALL1, NSTEP, T, XCUTS, stepAt } from "./cues";
+import { FALL0, FALL1, FLY_AT, NOGO, NSTEP, PULL0, RUL0, RUN0, RUN1, SLIDE0, SLIP, T, TS, XCUTS, stepAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI, D2R = PI / 180;
@@ -127,6 +127,74 @@ const OpenPush: React.FC<{ t: number }> = ({ t }) => {
       {t > PEBBLE && t < OPEN_END ? Array.from({ length: 4 }, (_, i) => { const a = t * 7 + (i * PI) / 2; return <Sph key={i} rad={0.09} p={[land + 0.45 * Math.cos(a), 2.15 + 0.08 * Math.sin(a * 2), 27 + 0.45 * Math.sin(a)]} c="#ffe14a" o={{ emissive: "#ffcc00", ei: 0.9 }} cast={false} ws={6} hs={4} />; }) : null}
     </G>
   );
+};
+
+// ---------------------------------------------------------------- ✖ grande em 3D e os objetos que «no hay»
+/** ✖ grande virado para a câmera (cam no mesmo referencial de p): bate grande, assenta tremendo e some em b */
+const XMark: React.FC<{ t: number; a: number; b: number; p: V3; cam: V3; size?: number }> = ({ t, a, b, p, cam, size = 2.2 }) => {
+  if (t < a || t > b) return null;
+  const dx = cam[0] - p[0], dy = cam[1] - p[1], dz = cam[2] - p[2], yaw = Math.atan2(dx, dz), pitch = -Math.atan2(dy, Math.hypot(dx, dz));
+  const s = ((1 + 0.6 * (1 - ease(t, a, a + 0.14))) * (1 - ease(t, b - 0.1, b)) * size) / 2.2, wob = 0.14 * Math.sin((t - a) * 16) * Math.exp(-(t - a) * 4);
+  return (
+    <G p={p} r={[0, yaw, 0]}><G r={[pitch, 0, wob]} sc={Math.max(0.001, s)}>
+      {[1, -1].map((k) => <G key={k} r={[0, 0, (k * PI) / 4]}>
+        <Box s={[2.46, 0.52, 0.06]} p={[0, 0, -0.06]} c="#14202b" cast={false} />
+        <Box s={[2.3, 0.36, 0.1]} c="#ff2d2d" o={{ emissive: "#ff2020", ei: 0.6 }} cast={false} />
+      </G>)}
+    </G></G>
+  );
+};
+/** «no hay motores, ni ruedas, ni grúas»: perto da câmera do acampamento um motor cai do céu, uma roda entra rolando e tomba,
+ *  uma grua brota do chão — cada um leva um ✖ grande e some num puf. Grupo virado para a câmera: x = direita da tela, z = para ela */
+const NG_O: V3 = [-35.2, 0, 2.1], NG_CAM: V3 = [-40.4, 3.2, 6.0], NG_YAW = Math.atan2(NG_CAM[0] - NG_O[0], NG_CAM[2] - NG_O[2]);
+const NG_C: V3 = [0, 3.2, Math.hypot(NG_CAM[0] - NG_O[0], NG_CAM[2] - NG_O[2])]; // a câmera no referencial do grupo
+const poof = (t: number, a: number) => Math.max(0.001, 1 - ease(t, a, a + 0.15));
+const YEL = "#f0b020", STEEL = "#5f6b75";
+const NoGo: React.FC<{ t: number }> = ({ t }) => {
+  const { m, w, g } = NOGO; if (t < m - 0.35 || t > g + 1.0) return null;
+  const ms = prog(t, m - 0.31, m), ma = t - m, my = ms < 1 ? 7 * (1 - ms * ms) : ma < 0.5 ? 0.35 * Math.abs(Math.sin((ma * PI) / 0.2)) * Math.exp(-ma * 7) : 0;
+  const wx = 4.5 * (1 - ease(t, w - 0.3, w)), tip = -(PI / 2 - 0.1) * ease(t, w + 0.13, w + 0.36), gy = outBack(prog(t, g - 0.25, g));
+  return (
+    <G p={NG_O} r={[0, NG_YAW, 0]}>
+      {t > m - 0.31 && t < m + 0.75 ? <G p={[0, my, 0]} sc={poof(t, m + 0.57)}>
+        <Box s={[2.1, 1.25, 1.2]} p={[0, 0.7, 0]} c={STEEL} />
+        {[-0.7, -0.23, 0.23, 0.7].map((x) => <Box key={x} s={[0.16, 0.3, 1.1]} p={[x, 1.45, 0]} c="#8f9aa3" />)}
+        <G p={[0.45, 0.7, 0.66]} r={[0, 0, t * 9]}><Cyl rt={0.5} h={0.14} r={[PI / 2, 0, 0]} c="#d23b2b" />{Array.from({ length: 6 }, (_, i) => <Box key={i} s={[0.2, 0.22, 0.14]} p={[0.58 * Math.cos(i * PI / 3), 0.58 * Math.sin(i * PI / 3), 0]} r={[0, 0, i * PI / 3]} c="#d23b2b" />)}<Cyl rt={0.14} h={0.18} r={[PI / 2, 0, 0]} c="#ffd400" /></G>
+        <Cyl rt={0.12} h={0.8} p={[-0.65, 1.7, -0.2]} c="#333a40" seg={8} />
+        <Puffs t={t} p={[-0.65, 2.1, -0.2]} n={5} period={0.5} rise={0.8} size={0.24} c="#5a5f66" drift={[0.3, 0, 0]} />
+      </G> : null}
+      <Puffs t={t} p={[0, 0.05, 0]} n={7} period={0.45} rise={0.7} size={0.42} c="#e2d6bc" on={t > m && t < m + 0.4 ? 1 : 0} />
+      {t > w - 0.3 && t < w + 0.65 ? <G p={[wx, 0, 0]} r={[tip, 0, 0]} sc={poof(t, w + 0.48)}>
+        <G p={[0, 1.2, 0]} r={[0, 0, -wx / 1.2]}>
+          <mesh castShadow material={mat("#8a5a2e")}><torusGeometry args={[1.08, 0.18, 8, 24]} /></mesh>
+          {[0, 1, 2, 3].map((i) => <Box key={i} s={[2.16, 0.13, 0.13]} r={[0, 0, (i * PI) / 4]} c="#7a4e26" />)}
+          <Cyl rt={0.18} h={0.3} r={[PI / 2, 0, 0]} c="#5a3a24" />
+        </G>
+      </G> : null}
+      {t > g - 0.25 && t < g + 0.9 ? <G sc={[poof(t, g + 0.72), Math.max(0.001, gy) * poof(t, g + 0.72), poof(t, g + 0.72)]}>
+        <Box s={[1.0, 0.15, 1.0]} p={[-0.2, 0.075, 0]} c="#555" />
+        <Box s={[0.3, 2.7, 0.3]} p={[-0.2, 1.35, 0]} c={YEL} />
+        {[0.5, 1.1, 1.7].map((y) => <Box key={y} s={[0.34, 0.06, 0.34]} p={[-0.2, y, 0]} c="#3a2a10" cast={false} />)}
+        <Box s={[2.6, 0.22, 0.24]} p={[0.75, 2.7, 0]} c={YEL} /><Box s={[0.9, 0.22, 0.24]} p={[-0.9, 2.7, 0]} c={YEL} />
+        <Box s={[0.42, 0.42, 0.42]} p={[-1.22, 2.44, 0]} c="#555" /><Box s={[0.45, 0.4, 0.4]} p={[-0.2, 2.42, 0.02]} c="#e05030" />
+        <G p={[1.8, 2.6, 0]} r={[0, 0, 0.25 * Math.sin(t * 6)]}><Box s={[0.03, 0.9, 0.03]} p={[0, -0.45, 0]} c="#222" cast={false} /><Box s={[0.22, 0.2, 0.08]} p={[0, -0.95, 0]} c="#333" /></G>
+      </G> : null}
+      {[[m, 0.75], [w, 0.75], [g, 1.3]].map(([a, y], i) => <Puffs key={i} t={t} p={[0, y, 0.2]} n={8} period={0.4} rise={0.5} size={0.5} c="#ffffff" drift={[0, 0, 0]} on={t > a + [0.57, 0.48, 0.72][i] && t < a + [0.57, 0.48, 0.72][i] + 0.35 ? 1 : 0} />)}
+      <XMark t={t} a={m + 0.07} b={m + 0.62} p={[0, 0.75, 0.8]} cam={NG_C} size={1.6} />
+      <XMark t={t} a={w + 0.08} b={w + 0.53} p={[0, 1.0, 0.8]} cam={NG_C} size={1.6} />
+      <XMark t={t} a={g + 0.07} b={g + 0.77} p={[0.3, 1.5, 0.8]} cam={NG_C} size={1.7} />
+    </G>
+  );
+};
+
+/** o operário corre da planície vazia até a câmera («hace unos cuatro mil quinientos años») */
+export const RUN_A: V3 = [-3.0, 0, -0.5], RUN_B: V3 = [-10.6, 0, -8.0];
+export const runP = (t: number): V3 => { const u = 0.5 - 0.5 * Math.cos(PI * prog(t, RUN0, RUN1)); return [lerp(RUN_A[0], RUN_B[0], u), 0, lerp(RUN_A[2], RUN_B[2], u)]; };
+const RunDust: React.FC<{ t: number }> = ({ t }) => {
+  if (t < RUN0 || t > RUN1 + 0.5) return null;
+  const p = runP(t);
+  return <G><Puffs t={t} p={[p[0], 0.05, p[2]]} n={6} period={0.35} rise={0.5} size={0.3} c="#d8c8a8" drift={[0.9, 0, 0.9]} on={t < RUN1 ? 1 : 0} />
+    <Puffs t={t} p={[RUN_B[0], 0.05, RUN_B[2]]} n={7} period={0.45} rise={0.7} size={0.45} c="#d8c8a8" drift={[0.5, 0, 0.5]} on={t > RUN1 - 0.12 && t < RUN1 + 0.4 ? 1 : 0} /></G>;
 };
 
 // ---------------------------------------------------------------- chão com o buraco do pilar herói
@@ -257,7 +325,11 @@ const GhostRing: React.FC<{ t: number }> = ({ t }) => {
 const L = 5.6, W = 1.3; // comprimento e largura do pilar herói (1,5 enterrado)
 const RAMP_SLOPE = Math.atan2(1.5, 2.2); // 34,3°: a parede em rampa
 /** ponta de baixo da pedra (no referencial do herói, x–y) ao longo do caminho do trenó: −30,2 no acampamento */
-const toeX = (t: number) => t < C3 ? -30.2 + 5.6 * ease(t, T.desliza, C3 + 2.5) : -10.4 + 6.1 * ease(t, C3, T.acostada + 0.15);
+const SPD = 1.3; // u/s: a multidão arrasta a pedra sobre os trilhos (arranque de 0,5 s)
+export const toeX = (t: number) => {
+  if (t >= C3) return -10.4 + 6.1 * ease(t, C3, T.acostada + 0.15);
+  const d = t - SLIDE0; return -30.2 + (d <= 0 ? 0 : d < 0.5 ? SPD * d * d : SPD * (d - 0.25));
+};
 const onSled = (t: number) => t > T.trineo + 0.12;
 /** estado da pedra herói: ponta (x,y) e ângulo θ (0 = deitada com a cabeça para −x; 90° = em pé) */
 const heroPose = (t: number): { tx: number; ty: number; th: number } => {
@@ -282,7 +354,7 @@ const heroHead = (p: { tx: number; ty: number; th: number }, f = 1): V3 => [p.tx
 const knobGrow = (t: number) => (t < T.tallan ? (hook(t) ? 1 : 0) : ease(t, T.tallan + 0.1, T.comoMadera + 0.5));
 
 const HeroStone: React.FC<{ t: number }> = ({ t }) => {
-  const p = heroPose(t), c = heroCenter(p), sh = t > T.toneladas && t < T.c1 ? 0.05 * Math.sin(t * 47) * (1 - prog(t, T.toneladas, T.c1)) : 0;
+  const p = heroPose(t), c = heroCenter(p), sh = (t > T.toneladas && t < T.c1 ? 0.05 * Math.sin(t * 47) * (1 - prog(t, T.toneladas, T.c1)) : 0) + (t > PULL0 + 0.3 && t < T.trineo - 0.25 ? 0.03 * Math.sin(t * 43) : 0);
   const dy = hook(t) ? -(UH + LH + 0.4) * sinkT(t, 0) : 0, k = knobGrow(t), glow = win2(t, T.saliente - 0.1, T.encima + 0.1);
   const lit = t > T.piedra - 0.05 && t < T.piedra + 0.7 ? 0.6 * Math.sin(prog(t, T.piedra - 0.05, T.piedra + 0.7) * PI) : 0;
   if (hook(t) && sinkT(t, 0) >= 1) return null;
@@ -404,17 +476,25 @@ const GhostUpright: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- trenó, trilhos de troncos, acampamento e a equipe na corda
-const RAIL0 = -39.2, RAILN = 12;
-const railAt = (k: number) => (k <= 4 ? -1 : k === 5 ? T.rieles : k === 6 ? T.cientos + 0.3 : C3 - 0.02);
+const RAIL0 = -42.2, RAILN = 13, FLYD = 0.6;
+/** trilhos levados de trás para a frente: o trecho «de» sai de trás do trenó, voa dando cambalhota e pousa na frente («para») */
+const FLY: [number, number, number][] = [[0, 5, FLY_AT[0]], [1, 6, FLY_AT[1]], [2, 7, FLY_AT[2]]];
 const Track: React.FC<{ t: number }> = ({ t }) => {
   if (t < CUTS[0] || t > C5) return null;
   const hi = t > T.troncos - 0.1 && t < T.cientos + 0.4 ? 0.5 + 0.5 * Math.sin((t - T.troncos) * 10) : 0;
   return (
     <G>
       {Array.from({ length: RAILN }, (_, k) => {
-        const a = railAt(k); if (t < a) return null;
-        const drop = a > 0 ? 1.6 * (1 - ease(t, a, a + 0.3)) : 0, x = RAIL0 + 3 * k + 1.5;
-        return <G key={k} p={[x, drop, 0]}>{[-0.55, 0.55].map((z) => <Cyl key={z} rt={0.13} h={3.0} p={[0, 0.12, z]} r={[0, 0, PI / 2]} c={k % 2 ? WOOD : WOOD2} seg={7} o={hi > 0 ? { emissive: "#ffb000", ei: 0.55 * hi } : undefined} />)}</G>;
+        const x = RAIL0 + 3 * k + 1.5, src = FLY.find((f) => f[0] === k), dst = FLY.find((f) => f[1] === k);
+        if (src && t >= src[2] - FLYD) return null; // já foi levado para a frente
+        let p: V3 = [x, 0, 0], rz = 0;
+        if (dst) {
+          const a = dst[2]; if (t < a - FLYD) return null;
+          const u = prog(t, a - FLYD, a), q = t - a, xs = RAIL0 + 3 * dst[0] + 1.5;
+          p = [lerp(xs, x, sstep(u)), 3.2 * Math.sin(PI * u) + (q > 0 && q < 0.4 ? 0.18 * Math.abs(Math.sin((q * PI) / 0.14)) * Math.exp(-q * 8) : 0), 0];
+          rz = 0.35 * Math.sin(PI * u); // voa quase deitado (girando, o par parecia dois postes no quadro parado)
+        } else if (k > 4) { const a = C3 - 0.02; if (t < a) return null; p = [x, 1.6 * (1 - ease(t, a, a + 0.3)), 0]; }
+        return <G key={k} p={p} r={[0, 0, rz]}>{[-0.55, 0.55].map((z) => <Cyl key={z} rt={0.13} h={3.0} p={[0, 0.12, z]} r={[0, 0, PI / 2]} c={k % 2 ? WOOD : WOOD2} seg={7} o={hi > 0 ? { emissive: "#ffb000", ei: 0.55 * hi } : undefined} />)}</G>;
       })}
     </G>
   );
@@ -436,17 +516,24 @@ const MiniPeople: React.FC<{ list: V3[]; t: number }> = ({ list, t }) => (
 );
 const Team: React.FC<{ t: number }> = ({ t }) => {
   if (t < CUTS[1] || t > T.p1 + 0.6) return null;
-  const front = toeX(t) + 0.3, moving = t > T.desliza && Math.abs(toeX(t + 0.05) - toeX(t)) > 0.001, sec = sectionOn(t);
+  const front = toeX(t) + 0.3, pulling = t < C3 ? t > PULL0 : Math.abs(toeX(t + 0.05) - toeX(t)) > 0.001, sec = sectionOn(t);
   // as duas filas puxam pelo lado de fora (+z): a câmera do trenó fica do outro lado e vê os trilhos; na seção, uma fila atrás da face
-  const rows = sec ? [-1.35] : [1.05, 2.25], gone = ease(t, T.p1, T.p1 + 0.5);
-  const crew = rows.flatMap((z, r) => Array.from({ length: sec ? 4 : 6 }, (_, j) => ({ p: [front + 2.0 + j * 1.25, 0, z] as V3, yaw: PI / 2, pose: (moving ? "pull" : "idle") as PoseName, ph: j * 0.37 + r * 0.2 })));
-  const minis: V3[] = sec ? [] : rows.flatMap((z) => Array.from({ length: 9 }, (_, j) => [front + 9.7 + j * 1.25, 0, z] as V3));
+  const rows = sec ? [-1.35] : [1.05, 2.25], gone = ease(t, T.p1, T.p1 + 0.5), slip = !sec && t >= SLIP && t < C3;
+  const crew = rows.flatMap((z, r) => Array.from({ length: sec ? 4 : 6 }, (_, j) => ({ p: [front + 2.0 + j * 1.25, 0, z] as V3, yaw: PI / 2, pose: (pulling ? "pull" : "idle") as PoseName, ph: j * 0.37 + r * 0.2 })))
+    .filter((_, i) => !(slip && i === 5));
+  // os pequenos do fim da corda somem nos planos em que a câmera fica no meio da fila (de frente)
+  const minis: V3[] = sec || t < XCUTS[3] || (t >= XCUTS[13] && t < C3) ? [] : rows.flatMap((z) => Array.from({ length: 9 }, (_, j) => [front + 9.7 + j * 1.25, 0, z] as V3));
   const far = front + (sec ? 7.2 : 21);
+  // o escorregão: o da ponta da fila de dentro perde o pé, cai de costas e vai arrastado segurando a corda
+  const sx = front + 2.0 + 5 * 1.25 + 0.5 * ease(t, SLIP, SLIP + 0.25), q = t - SLIP - 0.25, rz = 1.4 * ease(t, SLIP, SLIP + 0.25) - (q > 0 && q < 0.5 ? 0.15 * Math.abs(Math.sin((q * PI) / 0.18)) * Math.exp(-q * 7) : 0);
   return (
     <G>
       {rows.map((z) => <Pipe key={z} a={[front + 0.1, 0.62, sec ? -0.4 : 0.4]} b={[far, 1.05, z]} rad={0.045} c="#c9a466" cast={false} />)}
       <Crowd list={crew} t={t} c={NEO} scale={1.0 * (1 - gone) + 0.001} />
       {minis.length ? <MiniPeople list={minis} t={t} /> : null}
+      {slip ? <G p={[sx, 0.24 * ease(t, SLIP, SLIP + 0.25), 1.05]} r={[0, 0, rz]}><Crowd list={[{ p: [0, 0, 0], yaw: PI / 2, pose: "alarm", ph: 0 }]} t={t} c={NEO} /></G> : null}
+      {slip ? <Puffs t={t} p={[sx - 0.6, 0.05, 1.05]} n={6} period={0.4} rise={0.5} size={0.3} c="#d8c8a8" drift={[0.8, 0, 0]} /> : null}
+      <XMark t={t} a={SLIP + 0.3} b={C3 - 0.02} p={[sx - 1.0, 2.0, 1.05]} cam={[-11.5, 5.0, 0.6]} size={1.1} />
     </G>
   );
 };
@@ -597,7 +684,7 @@ const Levers: React.FC<{ t: number }> = ({ t }) => {
 };
 /** régua de altura ao lado do pilar 1: «a más de cuatro metros de altura» */
 const Ruler: React.FC<{ t: number }> = ({ t }) => {
-  const k = ease(t, T.altura - 0.05, T.metros + 0.5), on = t > T.altura - 0.1 && t < T.b3 + 0.4; if (!on) return null;
+  const k = ease(t, RUL0, RUL0 + 1.0), on = t > RUL0 - 0.05 && t < T.b3 + 0.4; if (!on) return null;
   const x = -1.95, z = 10.75, h = UH * k;
   return <G><Box s={[0.08, Math.max(0.01, h), 0.08]} p={[x, h / 2, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />
     <Cone rad={0.2} h={0.35} seg={8} p={[x, h + 0.1, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />
@@ -605,7 +692,7 @@ const Ruler: React.FC<{ t: number }> = ({ t }) => {
 };
 /** «encima de dos pilares va otra piedra»: o lugar do dintel em fantasma sobre os dois pilares */
 const GhostLintel: React.FC<{ t: number }> = ({ t }) => {
-  const k = ease(t, T.pilares - 0.1, T.pilares + 0.3); if (k <= 0.01 || t > T.b3 + 0.3) return null;
+  const k = ease(t, RUL0 - 0.05, RUL0 + 0.3); if (k <= 0.01 || t > T.b3 + 0.3) return null;
   return <Box s={[2.1, LH, UD]} p={[0, UH + LH / 2 + 1.2 * (1 - k), LZ0]} c="#ffd84a" o={{ ...GHOST, opacity: 0.62 * (0.8 + 0.2 * Math.sin(t * 9)), ei: 0.8 }} cast={false} />;
 };
 /** pó no chão onde o dintel cai */
@@ -635,6 +722,25 @@ const JointFx: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 /** pilar 1 do par (o vizinho do herói) já em pé no canteiro — parte do círculo (slot 1), desenhado em Ring */
+
+/** «capa a capa, la piedra sube»: um tronco escapa do topo do lado A, bate na cabeça do operário, cai e volta de ré (✖) */
+export const TS_OP: V3 = [-3.4, 0, 12.8];
+const TS_HEAD: V3 = [TS_OP[0], 2.3, TS_OP[2]], TS_TOP: V3 = [-0.85, 2.6, 11.65], TS_GND: V3 = [-4.2, 0.17, 12.1];
+const arc = (a: V3, b: V3, u: number, h: number): V3 => [lerp(a[0], b[0], u), lerp(a[1], b[1], u) + h * Math.sin(PI * u), lerp(a[2], b[2], u)];
+const TowerSlip: React.FC<{ t: number }> = ({ t }) => {
+  if (t < TS || t > TS + 1.6) return null;
+  const back = t > TS + 1.2, u = back ? ease(t, TS + 1.2, TS + 1.55) : 0;
+  const p = back ? arc(TS_GND, TS_TOP, u, 1.2) : t < TS + 0.35 ? arc(TS_TOP, TS_HEAD, prog(t, TS, TS + 0.35), 0.9) : arc(TS_HEAD, TS_GND, prog(t, TS + 0.35, TS + 0.6), 0.6);
+  const rz = back ? 3 * PI * (1 - u) : 3 * PI * ease(t, TS, TS + 0.6);
+  return (
+    <G>
+      <G p={p} r={[0, 0.5, rz]}><Cyl rt={LOG / 2} h={1.5} r={[0, 0, PI / 2]} c={WOOD} seg={7} /></G>
+      <Puffs t={t} p={TS_GND} n={6} period={0.45} rise={0.6} size={0.35} c="#e2d6bc" on={t > TS + 0.6 && t < TS + 1.0 ? 1 : 0} />
+      {t > TS + 0.35 ? Array.from({ length: 4 }, (_, i) => { const a = t * 7 + (i * PI) / 2; return <Sph key={i} rad={0.1} p={[TS_HEAD[0] + 0.45 * Math.cos(a), TS_HEAD[1] + 0.1 + 0.08 * Math.sin(a * 2), TS_HEAD[2] + 0.45 * Math.sin(a)]} c="#ffe14a" o={{ emissive: "#ffcc00", ei: 0.9 }} cast={false} ws={6} hs={4} />; }) : null}
+      <XMark t={t} a={TS + 0.4} b={TS + 1.15} p={[TS_OP[0] + 0.3, 3.3, TS_OP[2] + 0.5]} cam={[-5.5, 5.5, 20.5]} size={1.6} />
+    </G>
+  );
+};
 
 // ---------------------------------------------------------------- o fim: «…a quien no puede mover ni el sofá»
 export const SOFA: V3 = [-3.7, 0, -5.2];
@@ -688,11 +794,11 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Earthworks />
     <Ring t={t} /><Trilithons t={t} /><Bluestones t={t} /><GhostRing t={t} />
     <G p={HERO} r={[0, HERO_RY, 0]}>
-      <Pit t={t} /><Dig t={t} /><Pushers t={t} /><GhostUpright t={t} /><Stake t={t} /><HeroStone t={t} />
+      <Pit t={t} /><Dig t={t} /><Pushers t={t} /><GhostUpright t={t} /><Stake t={t} /><HeroStone t={t} /><NoGo t={t} />
       <Track t={t} /><Sled t={t} /><Team t={t} /><Camp t={t} /><Raisers t={t} />
     </G>
     <Lintel t={t} /><GhostLintel t={t} /><Tower t={t} /><Levers t={t} /><Ruler t={t} /><FallDust t={t} /><Carving t={t} /><JointFx t={t} />
     <Glow t={t} /><Axis t={t} />
-    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} /><HandCrew t={t} /><Sofa t={t} /><Confetti t={t} />
+    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} /><HandCrew t={t} /><Sofa t={t} /><Confetti t={t} /><RunDust t={t} /><TowerSlip t={t} />
   </>
 );
