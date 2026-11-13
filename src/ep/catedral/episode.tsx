@@ -2,14 +2,14 @@
 // Pré-crítica 13/11: câmera de perto em cada verbo (a 7–14 unidades do mecanismo), operário fora da linha da câmera,
 // painel sem contador que pisca números intermediários, mesa como selo, recompensa em cima e a ação embaixo.
 import React from "react";
-import { K, Shot } from "../../toy/cam";
+import { K, Key, Shot, keyed } from "../../toy/cam";
 import { CUTS, WINS } from "../../toy/cues";
 import type { Episode } from "../../toy/episode";
 import { FONT, HudData, pop, stroke, win } from "../../toy/hud";
-import { V3, ease } from "../../toy/kit";
+import { V3, ease, outBack, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { COSTUMES } from "../../toy/worker";
-import { SFX, T } from "./cues";
+import { FINAL, SFX, T, TRIP, TRIP_END } from "./cues";
 import { World } from "./world";
 import { EXPOSURE } from "./exposure";
 
@@ -17,16 +17,24 @@ const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
 const PI = Math.PI;
 
-const SHOTS: Shot[] = [
-  { name: "Notre-Dame pronta; o fantasma do primeiro pedreiro põe a pedra e some; vitrais → ⏪ ilha vazia", t0: 0, keys: [
+// janela 0 tem câmera na mão forte (DYN 4,2): a deriva lenta (cam.ts) tirava do quadro o motor e a viga; no close dos objetos ela é descontada
+const DYN0 = 4.2;
+const steady0 = (keys: Key[]) => (t: number) => {
+  const c = keyed(keys, t), w = ease(t, T.paris + 0.5, T.motores - 0.4); if (w <= 0) return c;
+  const n = (f: number, ph: number) => Math.sin(t * f + ph);
+  return { ...c, pos: [c.pos[0] - w * DYN0 * 0.7 * n(0.9, 9), c.pos[1] - w * DYN0 * 0.2 * n(1.3, 4), c.pos[2]] as V3, look: [c.look[0] - w * DYN0 * 0.3 * n(1.1, 3), c.look[1], c.look[2]] as V3 };
+};
+const KEYS0: Key[] = [
     K(0, [-40, 14, 32], [-16, 8, 4], 55, 2), K(T.quienes, [-24.5, 3.4, 13.8], [-18.4, 2.0, 7.4], 52, 0), K(T.nunca + 0.2, [-24.5, 4.0, 14.6], [-18, 3.4, 7], 54, 0), K(T.nunca + 1.1, [-24.2, 4.6, 14.4], [-17.6, 4.4, 6.8], 54, 0),
     K(T.vitrales0, [-26, 11, 7.5], [-14.4, 11.5, 0], 50, 0), K(T.paris - 0.15, [-25.2, 11.2, 7.0], [-14.4, 11.4, 0], 50, 0),
-    K(T.paris + 0.4, [-18, 14, 28], [-26, 2, 6], 58, 0), K(C1 - 0.05, [-22, 34, 22], [-26, 0, 6], 58, 1)] },
+    K(T.paris + 0.4, [-24, 11, 24], [-32, 1.2, 9], 58, 0), K(T.motores - 0.35, [-34.7, 3.3, 14.6], [-38.75, 0.6, 10.0], 52, 0), K(C1 - 0.05, [-35.2, 3.0, 14.0], [-38.75, 0.55, 10.0], 50, 0)];
+const SHOTS: Shot[] = [
+  { name: "Notre-Dame pronta; o fantasma do primeiro pedreiro põe a pedra e some; vitrais → ⏪ ilha vazia → motor e viga levam ✖", t0: 0, keys: KEYS0, fn: steady0(KEYS0) },
   { name: "piedra, madera, hierro, músculo → o sonho alto e cheio de luz → a igreja românica abre as paredes, muros grossos", t0: C1, keys: [
-    K(C1, [-44.5, 2.8, 10.9], [-36, 1.4, 10.9], 56, 2), K(T.musculo + 0.2, [-44, 3.0, 11.0], [-36, 1.6, 11.1], 56, 0),
+    K(C1, [-46.8, 3.0, 10.55], [-38.6, 0.75, 10.55], 50, 2), K(T.piedra + 0.3, [-46.4, 3.1, 10.65], [-38.4, 0.8, 10.6], 50, 0), K(T.musculo + 0.2, [-44, 3.0, 11.0], [-36, 1.6, 11.1], 56, 0),
     K(T.altisima, [-45, 4.5, 11.0], [-26, 9.5, 11], 56, 0), K(T.luz + 0.3, [-45.5, 5, 11], [-24, 11, 11], 56, 0),
     K(T.p1 + 0.5, [-47, 4.9, 11.0], [-30, 3.4, 11], 58, 0), K(T.fuera1 + 0.2, [-46.5, 4.9, 11.2], [-30, 3.6, 11], 58, 0),
-    K(T.gruesos, [-40, 5.5, 17], [-30, 3, 11], 54, 0), K(C2 - 0.05, [-39, 5.8, 17.8], [-30, 3, 11], 54, 0)] },
+    K(T.gruesos, [-40, 5.5, 5.0], [-30, 3, 11], 54, 0), K(C2 - 0.05, [-39, 5.8, 4.2], [-30, 3, 11], 54, 0)] },
   { name: "janelas pequenas de perto → arco redondo se abre sob o peso → ogival manda o peso aos pilares → os dois lado a lado", t0: C2, keys: [
     K(C2, [-25.2, 1.3, 18.6], [-30.4, 3.8, 13.6], 56, -2), K(T.b1 - 0.1, [-25.4, 1.4, 18.4], [-30.4, 3.8, 13.6], 56, 0),
     K(W3, [-29.5, 6.5, 12], [-33, 5.8, -7], 56, 0), K(T.pesoR, [-33.0, 6.2, 8.5], [-33.0, 6.4, -7], 54, 0), K(T.abra + 0.3, [-33.1, 6.0, 8.2], [-33.0, 6.2, -7], 54, 0),
@@ -41,14 +49,15 @@ const SHOTS: Shot[] = [
     K(T.p3 + 0.2, [-31, 8.6, -17.5], [-30, 6.2, -7], 54, 0), K(C4 - 0.05, [-31, 8.7, -17.2], [-30, 6.2, -7], 54, 0)] },
   { name: "nave em seção pelo oeste: a parede tomba para fora → pilar e braço de pedra → o empurrão desce até o chão", t0: C4, keys: [
     K(C4, [-27.5, 10.5, 6.8], [-12, 10, 6.2], 56, 2), K(T.empujando + 0.3, [-26.5, 10.5, 7.2], [-12, 10, 6.4], 56, 0),
-    K(T.brazos, [-24, 9.5, 15], [-12, 8.2, 7.5], 56, 0), K(T.lejos, [-23.5, 10.5, 15.5], [-12, 9, 7.2], 56, 0),
+    K(T.b3 + 0.5, [-27.0, 9.6, 7.8], [-12, 9.4, 6.8], 56, 0), K(T.brazos - 0.15, [-28.0, 7.4, 8.0], [-12, 6.6, 8.2], 56, 0),
+    K(T.sostienen, [-27.2, 7.6, 8.2], [-12, 6.8, 8.2], 55, 0), K(T.lejos + 0.1, [-25.5, 7.0, 13.2], [-12, 6.8, 7.4], 56, 0),
     K(T.llevan + 0.2, [-23.5, 8.5, 16.5], [-12, 7.2, 8.0], 56, 0), K(W6 + 0.15, [-22.8, 6.2, 16.2], [-12, 4.5, 8.8], 56, 0),
     K(C5 - 0.42, [-22.8, 6.2, 16.3], [10, 2, 40], 58, 4), K(C5 - 0.02, [-22.8, 6.2, 16.4], [10, 2, 40], 58, 4)] },
   { name: "debaixo dos arcobotantes → a pedra enorme no chão → 30 m → grua: homens dentro, eixo, corda, força → pedra no alto", t0: C5, keys: [
     K(C5, [-27, 4.0, 22], [-8, 8, 8], 56, -2), K(C5 + 0.7, [-26.5, 4.0, 21.5], [-8.5, 7.8, 8], 56, 0),
     K(T.enormes - 0.05, [-22.5, 3.2, 14.5], [-15.5, 1.6, 5.7], 54, 0), K(T.treinta - 0.3, [-22.3, 3.4, 14.2], [-15, 2.6, 5.7], 54, 0),
     K(T.treinta + 0.6, [-25, 6.5, 17], [-13.5, 10.5, 5.7], 56, 0), K(T.c4, [-14.5, 16.8, 14], [-10.5, 15.5, 4.5], 54, 0),
-    K(T.rueda + 0.5, [-11.2, 15.9, 12.6], [-10.5, 15.6, 4.5], 52, 0), K(T.hombres + 0.1, [-10.9, 15.2, 10.6], [-10.5, 14.6, 4.5], 52, 0),
+    K(T.rueda + 0.5, [-11.2, 15.9, 12.6], [-10.5, 15.6, 4.5], 52, 0), K(T.hombres + 0.1, [-10.9, 15.2, 10.6], [-10.5, 14.6, 4.5], 52, 0), K(TRIP + 0.25, [-11.7, 15.5, 11.4], [-11.5, 14.8, 4.5], 52, 0),
     K(T.eje + 0.1, [-6.5, 16.8, 9.8], [-10.5, 15.8, 5.6], 50, 0), K(T.cuerda + 0.3, [-6.0, 18.0, 12.5], [-12.5, 16.5, 5.5], 52, 0),
     K(T.grande, [-11.0, 15.9, 13.2], [-10.5, 15.6, 4.5], 54, 0), K(T.eje2 + 0.2, [-10.7, 15.7, 11], [-10.5, 15.7, 4.5], 52, 0),
     K(T.multiplica, [-26, 10.5, 18], [-14, 10.5, 5], 56, 0), K(T.grua, [-24, 17.5, 15], [-13, 15, 5], 54, 0), K(C6 - 0.05, [-23.6, 17.6, 14.8], [-13, 15, 5], 54, 0)] },
@@ -62,16 +71,18 @@ const SHOTS: Shot[] = [
     K(T.vitralesT + 0.2, [-34, 12, 10], [-13.5, 12, 0], 54, 0), K(T.y2019, [-16, 24, 18], [2, 15, 1], 54, 0),
     K(T.incendio + 0.3, [-5, 24, 15], [5, 16, 0], 52, 0), K(T.destruyo + 0.9, [-4, 23.5, 15.5], [5, 15, 0], 52, 0),
     K(T.carpinteros, [1.5, 3.8, 24.5], [-6, 1.6, 16], 54, 0), K(T.labrar, [-0.8, 3.0, 22.5], [-6, 1.5, 16.3], 52, 0), K(T.hacha + 0.2, [-1.2, 2.7, 21.6], [-6, 1.6, 16.5], 50, 0),
-    K(T.ochocientos + 0.3, [-0.6, 3.8, 24.2], [-5.6, 1.6, 15.6], 54, 0), K(W10, [-0.4, 3.9, 24.6], [-5.6, 1.7, 15.6], 54, 0), K(W10 + 0.7, [-0.35, 3.95, 24.7], [-5.6, 1.7, 15.6], 54, 0), K(T.end, [0, 4.2, 25.5], [-5.6, 1.8, 15.6], 56, 0)] },
+    K(T.ochocientos + 0.3, [-0.6, 3.8, 24.2], [-5.6, 1.6, 15.6], 54, 0), K(W10, [-0.4, 3.9, 24.6], [-5.6, 1.7, 15.6], 54, 0), K(W10 + 0.7, [-0.35, 3.95, 24.7], [-5.6, 1.7, 15.6], 54, 0), K(FINAL - 0.1, [-0.3, 3.95, 24.8], [-5.6, 1.7, 15.6], 54, 0), K(T.end, [-1.9, 3.2, 22.0], [-6.0, 1.3, 16.4], 52, 0)] },
 ];
 // janela 7 (a grua) era 3,8: a deriva de ±3 unidades tirava a roda do quadro nos closes; o movimento agora vem das chaves
-const DYN = [4.2, 0.7, 5.0, 2.4, 0.15, 0.3, 3.6, 1.0, 0.3, 1.3, 0.08];
+const DYN = [DYN0, 0.7, 5.0, 2.4, 0.15, 0.3, 3.6, 1.0, 0.3, 1.3, 0.08];
 
 const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState> = {}): WorkerState => ({ p, yaw, pose, ...o });
 const WORKER: [number, WorkerState][] = [
   [0, S([1.5, 0, 12], 0.2, "present")],
-  [T.paris, S([-28, 0, 4], -0.6, "present")],
-  [C1, S([-37.6, 0, 12.15], -PI / 2, "present")],
+  [T.paris, S([-33.5, 0, 5.0], -0.6, "present")],
+  [T.motores - 0.95, S([-38.85, 0, 8.0], 0.4, "alarm")],
+  [C1, S([-36.0, 0, 9.4], -PI / 2, "alarm", { follow: () => [-36.0, 0, 9.4] })],
+  [T.piedra, S([-37.6, 0, 12.15], -PI / 2, "present")],
   [T.musculo, S([-37.6, 0, 12.15], -PI / 2, "cheer")],
   [T.quieren, S([-37.6, 0, 12.15], -2.0, "think")],
   [T.p1, S([-33.5, 0, 19.5], -0.9, "alarm")],
@@ -102,6 +113,7 @@ const WORKER: [number, WorkerState][] = [
   [T.ochocientos, S([-11.5, 0, 16.8], 0.4, "cheer")],
 ];
 
+const REW = { top: "A HACHA, COMO HACE", big: "800 AÑOS", sub: "SIN UN SOLO MOTOR" };
 const hud: HudData = {
   pills: [
     { a: 0.05, b: T.quienes - 0.1, label: "OBRA", value: () => "~200 AÑOS", y: 440, tone: "gold" },
@@ -138,11 +150,24 @@ const hud: HudData = {
   ],
   alerts: [T.p1, T.p2, T.p3, T.p4, T.p5],
   rewinds: [T.paris, T.b2, T.b3, T.b4, T.b5],
-  crosses: [[T.pequenas, T.b1 - 0.1], [T.abra, T.c1 - 0.1], [T.oscuro, T.b5 - 0.1]],
+  crosses: [[T.pequenas, T.b1 - 0.1], [T.abra, T.c1 - 0.1], [TRIP + 0.12, TRIP_END - 0.02], [T.oscuro, T.b5 - 0.1]],
   stamps: [[T.b1, T.c1, "SIN ACERO"], [T.b3, T.c3, "SIN VIGAS DE ACERO"], [T.b4, T.c4, "SIN MOTOR"]],
-  reward: { a: T.ochocientos, len: T.end - T.ochocientos, top: "A HACHA, COMO HACE", big: () => "800 AÑOS", sub: "SIN UN SOLO MOTOR" },
+  reward: { a: T.ochocientos, len: FINAL + 0.05 - T.ochocientos, top: REW.top, big: () => REW.big, sub: REW.sub },
   // «como una mesa sobre sus patas»: a comparação vira selo no lugar da pílula (o tramo fica embaixo, livre)
-  Extra: ({ t }) => {
+  Extra: ({ t }) => (t >= FINAL - 0.25 ? <Punch t={t} /> : <Mesa t={t} />),
+};
+// golpe final: o mesmo letreiro do RewardEl (mesma posição e fontes) dá um zoom e assenta 12% maior
+const Punch: React.FC<{ t: number }> = ({ t }) => {
+  const u = prog(t, FINAL, FINAL + 0.35), s = t < FINAL ? 1 : 1 + 0.12 * outBack(u) + 0.14 * Math.sin(PI * Math.min(1, u * 1.6)) * (1 - u);
+  return (
+    <div style={{ position: "absolute", left: 0, width: 1080, top: 300, display: "flex", flexDirection: "column", alignItems: "center", transform: `scale(${s})`, transformOrigin: "50% 40%" }}>
+      <span style={{ fontFamily: FONT, fontSize: 56, color: "#fff", ...stroke(10) }}>{REW.top}</span>
+      <span style={{ fontFamily: FONT, fontSize: 150, color: "#5cff7a", lineHeight: 1, ...stroke(16, "#05381a") }}>{REW.big}</span>
+      <span style={{ fontFamily: FONT, fontSize: 72, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(12, "#3a2300") }}>{REW.sub}</span>
+    </div>
+  );
+};
+const Mesa: React.FC<{ t: number }> = ({ t }) => {
     const k = win(t, T.mesa, T.cruceria - 0.05, 0.15); if (k <= 0) return null;
     const legs = t >= T.patas - 0.05, leg = legs ? "#ffc93a" : "#b07a42";
     return (
@@ -158,7 +183,6 @@ const hud: HudData = {
         </div>
       </div>
     );
-  },
 };
 
 // interior escuro: a luz cai NO corte (o corte esconde o salto) e volta em 1,6 s com o vidro; nunca abaixo de 0,6

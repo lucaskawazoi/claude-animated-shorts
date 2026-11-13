@@ -11,7 +11,7 @@ import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, pipeXf
 import { Clouds, Puffs, Sky, Trees } from "../../toy/scenery";
 import { COSTUMES, Worker, poseOf } from "../../toy/worker";
 import type { Pose } from "../../toy/worker";
-import { AXE_P, CUTS, T, WINS } from "./cues";
+import { AXE_P, CUTS, DROP, FINAL, HIT, NOTECH, T, TRIP, TRIP_END, WINS } from "./cues";
 
 const PI = Math.PI;
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
@@ -136,6 +136,53 @@ const Materials: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ---------------------------------------------------------------- «no hay motores, ni vigas de acero, ni computadoras»
+// cada um cai no lugar dos materiais, de perto, e leva um ✖ vermelho virado para a câmera; somem no «solo piedra»
+const XMark: React.FC<{ t: number; a: number; yaw: number; p: V3; sc: number }> = ({ t, a, yaw, p, sc }) => {
+  if (t < a) return null;
+  const k = lerp(1.8, 1, ease(t, a, a + 0.14)) * sc, o = { emissive: "#ff2a1a", ei: 0.9 };
+  return (
+    <G p={p} r={[0, yaw, 0]} sc={k}>
+      {[-1, 1].map((d) => <G key={d} r={[0, 0, (d * PI) / 4]}><Box s={[0.28, 1.1, 0.08]} c="#3a0808" cast={false} /><Box s={[0.18, 0.98, 0.1]} c="#ff3b30" o={o} cast={false} /></G>)}
+    </G>
+  );
+};
+const NoTech: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t > NOTECH.motor[0] && t < T.solo + 0.3)) return null;
+  const out = Math.max(0.01, 1 - ease(t, T.solo - 0.1, T.solo + 0.2));
+  // o ✖ olha para a câmera do plano: sudeste antes do corte, oeste depois (o corte esconde a virada)
+  const yaw = t < C1 ? 0.71 : -PI / 2, tw: V3 = t < C1 ? [0.65, 0, 0.76] : [-1, 0, 0];
+  const fall = (a: number) => { const u = clamp((t - a) / DROP); return 3.2 * (1 - u * u); };
+  const M = { metal: 0.55, rough: 0.35 };
+  const item = (key: string, [a, x]: readonly [number, number], p: V3, h: number, body: React.ReactNode) => (t < a ? null : (
+    <G key={key}>
+      <G p={[p[0], fall(a), p[2]]} sc={out}>{body}</G>
+      <XMark t={t} a={x} yaw={yaw} p={[p[0] + tw[0] * 0.3, h, p[2] + tw[2] * 0.3]} sc={out} />
+    </G>));
+  return (
+    <G>
+      {item("motor", NOTECH.motor, [-38.9, 0, 9.4], 1.95, <>
+        <Box s={[0.95, 0.55, 0.75]} p={[0, 0.3, 0]} c="#4a5a6a" o={M} />
+        <Box s={[0.6, 0.32, 0.6]} p={[0, 0.72, 0]} c="#6b7b8b" o={M} />
+        {[-0.2, 0, 0.2].map((x) => <Box key={x} s={[0.08, 0.12, 0.62]} p={[x, 0.93, 0]} c="#3a4550" o={M} />)}
+        <Cyl rt={0.34} h={0.12} p={[0.52, 0.36, 0]} r={[0, 0, PI / 2]} c="#2a2a2a" seg={12} />
+        <Cyl rt={0.07} h={0.6} p={[-0.32, 1.05, 0.22]} c="#2a2a2a" seg={6} />
+        <Box s={[0.26, 0.2, 0.22]} p={[0.18, 0.95, -0.22]} c="#d8352a" />
+      </>)}
+      {item("viga", NOTECH.viga, [-38.6, 0, 10.55], 1.4, <>
+        {[0.05, 0.66].map((y) => <Box key={y} s={[2.0, 0.1, 0.6]} p={[0, y, 0]} c="#56636f" o={M} />)}
+        <Box s={[2.0, 0.52, 0.1]} p={[0, 0.355, 0]} c="#4d5966" o={M} />
+      </>)}
+      {item("compu", NOTECH.compu, [-38.9, 0, 11.65], 1.5, <>
+        <Box s={[0.5, 0.12, 0.5]} p={[0.05, 0.06, 0]} c="#cfc6b0" />
+        <Box s={[0.72, 0.62, 0.74]} p={[0.05, 0.47, 0]} c="#ddd5c0" />
+        <Box s={[0.03, 0.46, 0.56]} p={[-0.32, 0.48, 0]} c="#1d3d7a" o={{ emissive: "#2a6ad0", ei: 0.7 }} cast={false} />
+        <Box s={[0.3, 0.05, 0.66]} p={[-0.6, 0.03, 0]} c="#cfc6b0" />
+      </>)}
+    </G>
+  );
+};
+
 // ---------------------------------------------------------------- o sonho: a catedral alta e cheia de luz (translúcida)
 const Dream: React.FC<{ t: number }> = ({ t }) => {
   const g = ease(t, T.quieren - 0.15, T.altisima + 0.5) * (1 - ease(t, T.p1 - 0.05, T.p1 + 0.75));
@@ -172,6 +219,12 @@ const Romanesque: React.FC<{ t: number }> = ({ t }) => {
         {crack > 0.05 ? [[-2.9, 3.2, 0.5], [-3.0, 2.3, -0.4], [-3.05, 1.4, 0.6]].map(([x, y, r], j) => <Box key={j} s={[0.1, 1.0 * crack, th + 0.06]} p={[x, y, 0]} r={[0, 0, r]} c="#1c1410" cast={false} />) : null}
       </G>)}
       <Arch S={4.4 + th} th={0.7} pointed={false} d={7} c={ST} p={[0, 4 - sink, 0]} r={[0, PI / 2, 0]} />
+      {/* «hacia fuera… por eso»: pedaços caem das paredes que abrem, com pó (somem quando os muros engrossam) */}
+      {([[-1, -2.6, T.fuera1], [1, -1.4, T.fuera1 + 0.18], [-1, -0.6, T.por - 0.05], [1, -2.9, T.por + 0.15], [-1, -1.9, T.por + 0.35]] as [number, number, number][]).map(([s, x, a], j) => {
+        if (t < a) return null; const u = clamp((t - a) / 0.5), keep = 1 - ease(t, T.gruesos - 0.25, T.gruesos + 0.1); if (keep <= 0.01) return null;
+        return <Box key={j} s={[0.7, 0.55, 0.6]} p={[x, 4.0 - 3.75 * u * u, s * (2.6 + th / 2 + 1.3 * u)]} r={[u * 2.2, u * 1.3, s * u * 1.6]} sc={keep} c={ST2} />;
+      })}
+      {[-1, 1].map((s) => <Puffs key={s} t={t} p={[-1.8, 0.3, s * 3.9]} n={5} period={1.3} rise={1.7} size={0.75} c="#d8d0c0" on={ease(t, T.fuera1 + 0.35, T.fuera1 + 0.6) * (1 - ease(t, T.gruesos - 0.3, T.gruesos))} drift={[1.6, 0, s * 0.8]} />)}
       {/* o empurrão: setas vermelhas saindo da abóbada para os lados, na ponta oeste (a que a câmera vê) */}
       {[-1, 1].map((s) => <Arrow key={s} a={[-3.7, 4.3 - sink, s * 2.6]} b={[-3.7, 4.3 - sink, s * 4.6]} k={tilt} rad={0.24} />)}
     </G>
@@ -197,15 +250,17 @@ const ArchDemo: React.FC<{ t: number }> = ({ t }) => {
   const openR = splay * (1 - ease(t, T.c1, T.arco)), sideR = Math.max(openR, ease(t, T.menos - 0.2, T.menos + 0.35));
   const sideP = ease(t, T.menos - 0.2, T.menos + 0.35);
   const pg = pil > 0.05 ? { emissive: "#1fa84a", ei: 0.55 * pil } : undefined;
+  const more = ease(t, T.lados - 0.15, T.lados + 0.35), sp = splay + 0.7 * more; // «los lados»: o redondo cede mais
   return (
     <G p={[DEMO.x, 0, DEMO.z]}>
       {/* redondo: o peso abre as paredes */}
       <G p={[-DX, 0, 0]}>
-        {[-1, 1].map((s) => <G key={s} p={[s * 2.45, 0, 0]} r={[0, 0, -s * 0.17 * splay]}><Box s={[0.9, 3.4, 1.1]} p={[0, 1.7, 0]} c={ST2} /></G>)}
-        <Arch S={AS} th={ATH} pointed={false} d={1.1} c={ST} p={[0, 3.4 - 0.55 * splay, 0]} />
-        {splay > 0.05 ? <Box s={[0.12, 0.85 * splay, 1.16]} p={[0, 5.35 - 0.55 * splay, 0]} r={[0, 0, 0.2]} c="#1c1410" cast={false} /> : null}
-        {drop > 0.01 ? <Box s={[1.7, 1.0, 1.15]} p={[0, 6.8 + (1 - drop) * 6 - 0.55 * splay, 0]} c={SLAB} /> : null}
-        {[-1, 1].map((s) => <Arrow key={s} a={[s * 2.7, 4.5 - 0.4 * splay, 0.75]} b={[s * 4.05, 4.5 - 0.4 * splay, 0.75]} k={s < 0 ? sideR : openR} rad={0.32} />)}
+        {[-1, 1].map((s) => <G key={s} p={[s * 2.45, 0, 0]} r={[0, 0, -s * 0.17 * sp]}><Box s={[0.9, 3.4, 1.1]} p={[0, 1.7, 0]} c={ST2} /></G>)}
+        <Arch S={AS} th={ATH} pointed={false} d={1.1} c={ST} p={[0, 3.4 - 0.55 * sp, 0]} />
+        {splay > 0.05 ? <Box s={[0.12 + 0.1 * more, 0.85 * splay + 0.4 * more, 1.16]} p={[0, 5.35 - 0.55 * sp, 0]} r={[0, 0, 0.2]} c="#1c1410" cast={false} /> : null}
+        {drop > 0.01 ? <Box s={[1.7, 1.0, 1.15]} p={[0, 6.8 + (1 - drop) * 6 - 0.55 * sp, 0]} c={SLAB} /> : null}
+        {more > 0.01 ? [[-0.35, 0], [0.3, 0.08], [0.05, 0.16]].map(([x, d], j) => { const u = clamp((t - T.lados - d) / 0.45); return u > 0 ? <Box key={j} s={[0.28, 0.22, 0.3]} p={[x + x * u, 5.0 - 4.85 * u * u, 0.2]} r={[u * 3, 0, u * 2]} c={ST2} /> : null; }) : null}
+        {[-1, 1].map((s) => <Arrow key={s} a={[s * 2.7, 4.5 - 0.4 * sp, 0.75]} b={[s * 4.05 + s * 0.5 * more, 4.5 - 0.4 * sp, 0.75]} k={s < 0 ? sideR : openR} rad={0.32} />)}
       </G>
       {/* ogival: a forma manda o peso para baixo, pelos pilares */}
       <G p={[DX, 0, 0]} sc={[1, Math.max(0.01, kp), 1]}>
@@ -276,7 +331,10 @@ const BayDemo: React.FC<{ t: number }> = ({ t }) => {
 const wallsK = (t: number) => (built(t) || t >= C3 - 0.02 ? 1 : 0);
 const lean = (t: number) => (built(t) ? 0 : ease(t, T.empujando - 0.35, T.empujando + 0.45) * (1 - ease(t, T.sostienen - 0.05, T.lejos + 0.25)));
 // só o primeiro tramo cresce no «brazos» (a câmera de seção vê um pilar e um braço, sem cerca); os outros no chicote antes do corte
-const pierK = (t: number, j: number) => (built(t) ? 1 : j < 2 ? ease(t, T.brazos - 0.2, T.brazos + 0.4) : ease(t, T.suelo + 0.05 + j * 0.015, T.suelo + 0.4 + j * 0.015));
+const pierK = (t: number, j: number) => (built(t) ? 1 : j < 2 ? ease(t, T.brazos - 0.12, T.brazos + 0.16) : ease(t, T.suelo + 0.05 + j * 0.015, T.suelo + 0.4 + j * 0.015));
+/** o braço do primeiro tramo: nasce em pé no topo do pilar e tomba (acelerando) até bater na parede no HIT */
+const ARM0 = T.brazos + 0.22, ARM1 = T.brazos + 0.32;
+const armTip = (t: number) => { const u = clamp((t - ARM1) / (HIT - ARM1)); return u * u; };
 const armK = (t: number, j: number) => (built(t) ? 1 : j < 2 ? ease(t, T.brazos + 0.3, T.sostienen) : ease(t, T.suelo + 0.25 + j * 0.015, C5 - 0.1));
 export const openK = (t: number) => (built(t) ? 1 : ease(t, T.abrir - 0.2, T.vidrio + 0.2));
 const tintK = (t: number) => (built(t) ? 1 : ease(t, T.tenido - 0.1, T.oxidos + 0.45));
@@ -290,8 +348,12 @@ const GLASS = ["#2f5fd0", "#d8352a", "#2fa85a", "#e8b030", "#7a3fc0"];
 
 const Nave: React.FC<{ t: number }> = ({ t }) => {
   if (!wallsK(t)) return null;
-  const h = HW, ln0 = lean(t), ln = ln0 * (1 + 0.12 * Math.sin(t * 11) * ease(t, T.empujando + 0.4, T.b3)), op = openK(t), ld = leadK(t), tn = tintK(t);
-  const carry = built(t) ? 0 : ease(t, T.yaNo - 0.3, T.yaNo + 0.2) * (1 - ease(t, T.abrir + 0.3, T.vidrio + 0.3));
+  // o tremor para quando o braço de pedra bate (HIT); a parede endireita no «que apoyan la pared»
+  const h = HW, ln0 = lean(t), ln = ln0 * (1 + 0.12 * Math.sin(t * 11) * ease(t, T.empujando + 0.4, T.b3) * (1 - ease(t, HIT - 0.05, HIT + 0.1))), op = openK(t), ld = leadK(t), tn = tintK(t);
+  // «ya no carga»: os pilares brilham e apagam no «el peso» (a parede, solta, dá um pulinho tramo a tramo) antes do «abrir»
+  const carry = built(t) ? 0 : ease(t, T.yaNo - 0.3, T.yaNo + 0.2) * (1 - ease(t, T.pesoC + 0.15, T.abrir + 0.15));
+  const hop = (i: number) => (built(t) ? 0 : 0.45 * Math.sin(PI * clamp((t - T.pesoC - 0.1 - i * 0.06) / 0.32)));
+  const green = !built(t) && t >= HIT, bend = ease(t, HIT, HIT + 0.35), k0 = green ? 1 - ease(t, T.suelo, T.suelo + 0.4) : ln0;
   const inner = carry > 0.05 ? { emissive: "#ffb000", ei: 0.5 * carry } : undefined;
   return (
     <G>
@@ -304,7 +366,7 @@ const Nave: React.FC<{ t: number }> = ({ t }) => {
             return (
               <G key={i}>
                 <Box s={[0.9, hh, 1.1]} p={[bayX(i), 7 + hh / 2, 0]} c={ST2} />
-                <Box s={[BW - 0.9, hh * (1 - op * 0.82), 1]} p={[cx, 7 + (hh * (1 - op * 0.82)) / 2, 0]} c={ST} vis={op < 0.99} />
+                <Box s={[BW - 0.9, hh * (1 - op * 0.82), 1]} p={[cx, 7 + (hh * (1 - op * 0.82)) / 2 + hop(i), 0]} c={ST} vis={op < 0.99} />
                 {op > 0.02 ? <G p={[cx, 7.4, 0]}>
                   {[-1, 1].map((f) => <G key={f} p={[0, 0, f * 0.52]} r={[0, f > 0 ? 0 : PI, 0]}>
                     <Lancet w={2.6} h={4.6 * op} c={gc} o={{ emissive: gc, ei: 0.25 + 0.35 * tn }} />
@@ -318,7 +380,9 @@ const Nave: React.FC<{ t: number }> = ({ t }) => {
           {/* janelas pequenas embaixo: escuras por fora, uma fresta clara por dentro */}
           {Array.from({ length: BAYS }, (_, i) => <G key={i} p={[bayX(i) + BW / 2, 3.6, 0]}><Box s={[0.6, 1.4, 1.04]} c={DARK} cast={false} /><Box s={[0.5, 1.3, 0.02]} p={[0, 0, -s * 0.53]} c="#dfefff" o={{ emissive: "#cfe6ff", ei: 0.9 }} cast={false} /></G>)}
           {/* o empurrão lá em cima: setas para fora (a que fica na ponta oeste é a da câmera de seção) */}
-          {[-10.5, -2, 6, 14].map((x) => <Arrow key={x} a={[x, 12.2, s * 0.7]} b={[x, 12.2, s * 3.4]} k={ln0} rad={0.3} />)}
+          {/* a primeira (junto do braço): no HIT fica verde e vira para baixo, ao longo do braço */}
+          <Arrow a={[-10.8, 12.2, s * 0.7]} b={green ? vlerp([-10.8, 12.2, s * 3.4], [-10.8, 9.84, s * 2.86], bend) : [-10.8, 12.2, s * 3.4]} k={k0} rad={0.3} col={green ? GREEN : RED} />
+          {[-2, 6, 14].map((x) => <Arrow key={x} a={[x, 12.2, s * 0.7]} b={[x, 12.2, s * 3.4]} k={ln0} rad={0.3} />)}
         </G>
       ))}
       {/* abside semicircular */}
@@ -356,10 +420,19 @@ const Buttresses: React.FC<{ t: number }> = ({ t }) => {
     <G>{Array.from({ length: BAYS + 1 }, (_, i) => { const x = bayX(i); return [-1, 1].map((s) => {
       const j = i * 2 + (s > 0 ? 1 : 0), k = pierK(t, j), a = armK(t, j); if (k <= 0.01) return null;
       const up: V3 = [x, 12.2, s * (ZW + 0.5)], lo: V3 = [x, 9.4, s * (ZW + 0.5)], top: V3 = [x, 7.4, s * 9.4], mid: V3 = [x, 5.4, s * 9.4];
+      // primeiro tramo: o braço nasce em pé e tomba até a parede (bate no HIT); os outros crescem em linha reta no chicote
+      const swing = !built(t) && j < 2, g = ease(t, ARM0, ARM1), f = armTip(t);
+      const tipOf = (o: V3, e: V3): V3 => { const L = Math.hypot(e[1] - o[1], e[2] - o[2]), ph = Math.atan2(Math.abs(e[2] - o[2]), e[1] - o[1]) * f; return [x, o[1] + L * g * Math.cos(ph), o[2] - s * L * g * Math.sin(ph)]; };
       return (
         <G key={j}>
           <G sc={[1, Math.max(0.01, k), 1]}><Box s={[1.2, 8, 1.4]} p={[x, 4, s * 10]} c={ST2} /><Cone rad={0.6} h={1.5} seg={4} p={[x, 8.75, s * 10]} r={[0, PI / 4, 0]} c={ST2} /></G>
-          {a > 0.01 ? <><Pipe a={top} b={vlerp(top, up, a)} rad={0.36} c={ST} seg={6} /><Pipe a={mid} b={vlerp(mid, lo, a)} rad={0.26} c={ST} seg={6} /></> : null}
+          {swing ? (g > 0.01 ? <><Pipe a={top} b={tipOf(top, up)} rad={0.36} c={ST} seg={6} /><Pipe a={mid} b={tipOf(mid, lo)} rad={0.26} c={ST} seg={6} /></> : null)
+            : a > 0.01 ? <><Pipe a={top} b={vlerp(top, up, a)} rad={0.36} c={ST} seg={6} /><Pipe a={mid} b={vlerp(mid, lo, a)} rad={0.26} c={ST} seg={6} /></> : null}
+          {swing ? <Puffs t={t} p={[x, 0.2, s * 10]} n={6} period={1.2} rise={1.4} size={0.8} c="#d8d0c0" on={ease(t, T.brazos + 0.05, T.brazos + 0.2) * (1 - ease(t, T.brazos + 0.8, T.brazos + 1.2))} drift={[1.2, 0, s * 1.2]} /> : null}
+          {swing ? <Puffs t={t} p={up} n={6} period={1.0} rise={1.2} size={0.6} c="#e8e0d0" on={ease(t, HIT - 0.02, HIT + 0.1) * (1 - ease(t, HIT + 0.55, HIT + 0.9))} drift={[0.8, 0, s * 1.4]} /> : null}
+          {/* «desde lejos»: a régua amarela mede a distância da parede até o pilar */}
+          {swing && t > T.lejos - 0.1 && t < T.llevan + 0.6 ? (() => { const m = ease(t, T.lejos - 0.1, T.lejos + 0.3) * (1 - ease(t, T.llevan + 0.2, T.llevan + 0.6)), z0 = s * (ZW + 0.55), L = 9.3 - ZW - 0.55, Y = { emissive: "#ffb000", ei: 0.8 };
+            return m > 0.02 ? <G p={[x - 0.9, 4.6, 0]}><Box s={[0.14, 0.14, L * m]} p={[0, 0, z0 + (s * L * m) / 2]} c="#ffd400" o={Y} cast={false} />{[0, 1].map((e) => <Box key={e} s={[0.14, 0.8, 0.14]} p={[0, 0, z0 + s * L * m * e]} c="#ffd400" o={Y} cast={false} />)}</G> : null; })() : null}
           {fl > 0.02 && i < 1 ? <Flow t={t} pts={[up, top, [x - 0.72, 7.2, s * 9.7], [x - 0.72, 0.3, s * 9.7]]} k={fl} n={4} speed={0.85} r={0.24} ph={i * 0.21} /> : null}
           {fl > 0.02 && i < 1 ? <mesh position={[x, 0.08, s * 10]} rotation={[-PI / 2, 0, 0]} scale={1 + 0.8 * fract(t * 1.7 + i * 0.3)} material={mat("#3fcf6a", { emissive: "#1fa84a", ei: 0.8, opacity: q(0.6 * fl * (1 - fract(t * 1.7 + i * 0.3))), depthWrite: false })}><ringGeometry args={[1.0, 1.35, 20]} /></mesh> : null}
         </G>
@@ -370,6 +443,11 @@ const Buttresses: React.FC<{ t: number }> = ({ t }) => {
 const Facade: React.FC<{ t: number }> = ({ t }) => {
   if (!(built(t) || t >= C6 - 0.02)) return null;
   const rk = roseK(t), mk = ease(t, T.trece - 0.15, T.trece + 0.3) * (1 - ease(t, T.vitralesT, T.vitralesT + 0.4));
+  // gancho («y aun así, sus muros se abren en vitrales enormes»): pétalas acendem uma a uma, a roda gira, raios e cresce
+  const hk = built(t) ? 1 : 0, lit = (i: number) => (hk ? ease(t, T.aun + i * 0.075, T.aun + i * 0.075 + 0.12) : 1);
+  const bump = (i: number) => (hk ? Math.sin(PI * clamp((t - T.aun - i * 0.075) / 0.3)) : 0);
+  const glow = hk * ease(t, T.vitrales0 - 0.1, T.vitrales0 + 0.25), spin = hk * ease(t, T.abren - 0.1, T.enorme0 + 0.6) * PI * 2;
+  const big = hk ? 1 + 0.22 * ease(t, T.enorme0 - 0.05, T.enorme0 + 0.3) : 1, ctr = hk ? ease(t, T.abren - 0.05, T.abren + 0.2) : 1;
   return (
     <G p={[X0 - 1.2, 0, 0]}>
       <Box s={[2.4, 17, 10]} p={[0, 8.5, 0]} c={ST} />
@@ -378,10 +456,11 @@ const Facade: React.FC<{ t: number }> = ({ t }) => {
       {[-3, 0, 3].map((z) => <Lancet key={z} w={z ? 1.8 : 2.4} h={z ? 3.6 : 4.4} c="#4a3b2e" p={[-1.22, 0.2, z]} r={[0, -PI / 2, 0]} />)}
       <Box s={[2.5, 0.5, 18]} p={[0, 6.4, 0]} c={ST2} />
       {/* rosácea: vista dos dois lados */}
-      {[-1, 1].map((f) => <G key={f} p={[f * 1.22, 11, 0]} r={[0, f * PI / 2, 0]} sc={Math.max(0.01, rk)}>
+      {[-1, 1].map((f) => <G key={f} p={[f * 1.22, 11, 0]} r={[0, f * PI / 2, 0]} sc={Math.max(0.01, rk * big)}>
         <mesh material={mat("#2a2630", { side: "double" })}><circleGeometry args={[3.0, 32]} /></mesh>
-        {Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * PI * 2; return <mesh key={i} position={[Math.cos(a) * 1.95, Math.sin(a) * 1.95, 0.02]} material={mat(GLASS[i % 5], { side: "double", emissive: GLASS[i % 5], ei: 0.6 })}><circleGeometry args={[0.72, 12]} /></mesh>; })}
-        <mesh position={[0, 0, 0.02]} material={mat("#e8b030", { side: "double", emissive: "#e8b030", ei: 0.7 })}><circleGeometry args={[0.9, 16]} /></mesh>
+        <G r={[0, 0, spin]}>{Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * PI * 2, ei = hk ? q(0.12 + 0.6 * lit(i) + 0.8 * glow) : 0.6; return <mesh key={i} position={[Math.cos(a) * 1.95, Math.sin(a) * 1.95, 0.02]} scale={1 + 0.3 * bump(i)} material={mat(GLASS[i % 5], { side: "double", emissive: GLASS[i % 5], ei })}><circleGeometry args={[0.72, 12]} /></mesh>; })}</G>
+        <mesh position={[0, 0, 0.02]} scale={1 + 0.25 * Math.sin(PI * ctr)} material={mat("#e8b030", { side: "double", emissive: "#e8b030", ei: hk ? q(0.15 + 0.55 * ctr + 0.8 * glow) : 0.7 })}><circleGeometry args={[0.9, 16]} /></mesh>
+        {glow > 0.02 ? Array.from({ length: 16 }, (_, j) => { const a = (j / 16) * PI * 2, L = 2.8 * glow * (j % 2 ? 0.65 : 1), rr = 3.25 + L / 2; return <Box key={j} s={[0.22, L, 0.04]} p={[Math.cos(a) * rr, Math.sin(a) * rr, 0.03]} r={[0, 0, a - PI / 2]} c="#fff2a8" o={{ emissive: "#ffe060", ei: 1, opacity: q(0.85 * glow), depthWrite: false }} cast={false} recv={false} />; }) : null}
       </G>)}
       {/* régua de 13 m atravessando a rosácea por fora */}
       {mk > 0.02 ? <G p={[-1.42, 11, 0]}><Box s={[0.1, 0.22, 6.4 * mk]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.7 }} cast={false} />{[-1, 1].map((s) => <Box key={s} s={[0.1, 1.0, 0.18]} p={[0, 0, s * 3.2 * mk]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.7 }} cast={false} />)}</G> : null}
@@ -452,7 +531,11 @@ const Crane: React.FC<{ t: number }> = ({ t }) => {
         <Cyl rt={coilR} h={0.55} p={[0, WY, 1.45]} r={[PI / 2, 0, 0]} c={axle > 0.05 ? "#ff7a5a" : "#c8a46a"} o={axO} seg={12} />
         {[-0.18, 0, 0.18].map((z) => <Cyl key={z} rt={coilR + 0.01} h={0.04} p={[0, WY, 1.45 + z]} r={[PI / 2, 0, 0]} c="#8a6a3a" seg={12} cast={false} />)}
         {/* homens andando dentro da roda */}
-        {[-0.55, 0.35].map((x, i) => <Worker key={i} p={[x, WY - Math.sqrt((WR - 0.08) ** 2 - x * x), 0]} yaw={PI / 2} pose={poseOf("walk", t * 1.25 + i * 0.5)} t={t} c={COSTUMES.mason} scale={0.82} mustache={i === 0} />)}
+        {/* gag (TRIP→TRIP_END): o de bigode tropeça, a roda o carrega para cima de costas e ele escorrega de volta */}
+        {[-0.55, 0.35].map((x, i) => {
+          const up = i === 0 ? (t < TRIP + 0.38 ? ease(t, TRIP, TRIP + 0.38) : 1 - ease(t, TRIP + 0.38, TRIP_END - 0.05)) : 0, trip = up > 0.01;
+          return <G key={i} p={[0, WY, 0]} r={[0, 0, -0.95 * up]}><Worker p={[x, -Math.sqrt((WR - 0.08) ** 2 - x * x), 0]} yaw={PI / 2} pose={poseOf(trip ? "alarm" : "walk", trip ? t : t * 1.25 + i * 0.5)} t={t} c={COSTUMES.mason} scale={0.82} mustache={i === 0} /></G>;
+        })}
         {/* mastro, lança por cima da roda, escora e polia */}
         <Pipe a={[2.6, 0.25, 1.2]} b={[2.6, 5.7, 1.2]} rad={0.17} c={OAK} seg={6} />
         <Pipe a={[2.6, 5.6, 1.2]} b={BOOM} rad={0.17} c={OAK} seg={6} />
@@ -501,8 +584,16 @@ const swing = (t: number, t0: number) => {
   const f = fract((t - t0) / AXE_P);
   if (f < 0.14) return 1; if (f < 0.72) return 1 - ease(f, 0.14, 0.72); const u = (f - 0.72) / 0.28; return u * u;
 };
-const AxeMan: React.FC<{ t: number; p: V3; t0: number; mustache?: boolean }> = ({ t, p, t0, mustache }) => {
-  const s = swing(t, t0), rx = lerp(-2.85, -1.85, s), lean = lerp(0.02, 0.26, s), el = -0.15, rz = 0.3, SC = 1.12;
+/** último golpe regular antes de `cut` (a partir dele o carpinteiro para ou prepara o golpe final) */
+const lastHit = (t0: number, cut: number) => t0 + Math.floor((cut - t0) / AXE_P) * AXE_P;
+const axeS = (t: number, t0: number, fin: boolean) => {
+  const w0 = lastHit(t0, fin ? FINAL - 0.6 : FINAL - 0.75);
+  if (t < w0) return swing(t, t0);
+  if (!fin || t >= FINAL) return 1; // parado com o machado cravado
+  return t < FINAL - 0.12 ? lerp(1, -0.5, ease(t, w0 + 0.06, FINAL - 0.2)) : lerp(-0.5, 1, ease(t, FINAL - 0.12, FINAL));
+};
+const AxeMan: React.FC<{ t: number; p: V3; t0: number; fin: boolean; mustache?: boolean }> = ({ t, p, t0, fin, mustache }) => {
+  const s = axeS(t, t0, fin), rx = lerp(-2.85, -1.85, s), lean = lerp(0.02, 0.26, s), el = -0.15, rz = 0.3, SC = 1.12;
   const pose: Pose = { l: { rx, rz, el }, r: { rx, rz: -rz, el }, hx: lerp(-0.15, 0.25, s), hy: 0, hz: 0, lean, hop: 0 };
   return (
     <G>
@@ -522,16 +613,26 @@ const Carpenters: React.FC<{ t: number }> = ({ t }) => {
     <G>
       {[0, 1, 2].map((i) => {
         const x = CARP.x - 3.4 + i * 3.4, z = CARP.z, t0 = T.labrar + ph[i], hewn = ease(t, T.carpinteros + i * 0.15, T.hacha + 0.5 + i * 0.1);
-        const since = fract((t - t0) / AXE_P) * AXE_P, hit: V3 = [x - 0.08, 1.15, z + 1.95];
+        const since = fract((t - t0) / AXE_P) * AXE_P, hit: V3 = [x - 0.08, 1.15, z + 1.95], fin = i === 1;
+        const chipsOn = t < lastHit(t0, fin ? FINAL - 0.6 : FINAL - 0.75) + 0.46;
+        // golpe final (só o do meio): os cavaletes saltam para fora e a viga despenca no chão
+        const kick = fin ? ease(t, FINAL, FINAL + 0.22) : 0, u = fin ? clamp((t - FINAL - 0.05) / 0.25) : 0;
+        const by = 0.32 + 0.45 * (1 - u * u) + (fin && t > FINAL + 0.3 ? 0.08 * Math.sin(PI * clamp((t - FINAL - 0.3) / 0.2)) : 0), tilt = 0.06 * u;
+        const sinceF = t - FINAL;
         return (
           <G key={i}>
-            {[-1.1, 1.1].map((dx) => <Box key={dx} s={[0.5, 0.32, 0.6]} p={[x + dx, 0.16, z + 1.85]} c="#6b4423" />)}
+            {[-1.1, 1.1].map((dx) => <Box key={dx} s={[0.5, 0.32, 0.6]} p={[x + dx * (1 + 0.45 * kick), 0.16 + 0.12 * Math.sin(PI * kick), z + 1.85]} r={[0, 0, -Math.sign(dx) * 0.9 * kick]} c="#6b4423" />)}
             {/* tora redonda que vai virando viga quadrada */}
-            <Box s={[3.0, 0.64, 0.64]} p={[x, 0.32 + 0.45, z + 1.85]} c={OAK} />
-            <Cyl rt={lerp(0.47, 0.3, hewn)} h={3.02} seg={9} p={[x, 0.32 + 0.45, z + 1.85]} r={[0, 0, PI / 2]} c="#7a5230" />
-            <AxeMan t={t} p={[x, 0, z]} t0={t0} mustache={i === 1} />
+            <G p={[x, by, z + 1.85]} r={[0, 0, tilt]}>
+              <Box s={[3.0, 0.64, 0.64]} c={OAK} />
+              <Cyl rt={lerp(0.47, 0.3, hewn)} h={3.02} seg={9} r={[0, 0, PI / 2]} c="#7a5230" />
+            </G>
+            <AxeMan t={t} p={[x, 0, z]} t0={t0} fin={fin} mustache={i === 1} />
             {/* lascas saindo a cada golpe */}
-            {t > T.carpinteros && since < 0.45 ? Array.from({ length: 6 }, (_, j) => { const u = since / 0.45, a = rnd(j + i * 7) * PI * 2; return <Box key={j} s={[0.14, 0.05, 0.1]} p={[hit[0] + Math.cos(a) * u * 1.1, hit[1] + u * 1.3 - u * u * 1.6, hit[2] + Math.abs(Math.sin(a)) * u * 0.9]} r={[u * 6, u * 4, 0]} c="#e8c080" cast={false} />; }) : null}
+            {t > T.carpinteros && since < 0.45 && chipsOn ? Array.from({ length: 6 }, (_, j) => { const u = since / 0.45, a = rnd(j + i * 7) * PI * 2; return <Box key={j} s={[0.14, 0.05, 0.1]} p={[hit[0] + Math.cos(a) * u * 1.1, hit[1] + u * 1.3 - u * u * 1.6, hit[2] + Math.abs(Math.sin(a)) * u * 0.9]} r={[u * 6, u * 4, 0]} c="#e8c080" cast={false} />; }) : null}
+            {/* o golpe final: chuva de lascas e serragem */}
+            {fin && sinceF >= 0 && sinceF < 0.8 ? Array.from({ length: 22 }, (_, j) => { const v = sinceF / 0.8, a = rnd(j + 40) * PI * 2, sp = 1.2 + rnd(j + 60) * 1.4; return <Box key={j} s={[0.18, 0.06, 0.12]} p={[hit[0] + Math.cos(a) * v * sp, hit[1] + v * 2.6 - v * v * 3.4, hit[2] + Math.abs(Math.sin(a)) * v * sp * 0.8]} r={[v * 7, v * 5, 0]} c={j % 3 ? "#e8c080" : "#c89a5a"} cast={false} />; }) : null}
+            {fin ? <Puffs t={t} p={[hit[0], 0.6, hit[2]]} n={8} period={1.0} rise={1.3} size={0.3} c="#e8d4a8" on={ease(t, FINAL, FINAL + 0.08) * (1 - ease(t, FINAL + 0.6, FINAL + 1.0))} drift={[0.6, 0, 1.2]} /> : null}
           </G>
         );
       })}
@@ -544,7 +645,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Sky top="#3a86d8" mid="#8cc3ee" low="#f0f2f2" />
     <Clouds t={t} n={8} y={34} />
     <City />
-    <Ghost t={t} /><Materials t={t} /><Dream t={t} /><Romanesque t={t} /><ArchDemo t={t} /><BayDemo t={t} />
+    <Ghost t={t} /><NoTech t={t} /><Materials t={t} /><Dream t={t} /><Romanesque t={t} /><ArchDemo t={t} /><BayDemo t={t} />
     <Nave t={t} /><Vault t={t} /><Buttresses t={t} /><Facade t={t} /><Roof t={t} /><Crane t={t} /><Beams t={t} /><Interior t={t} />
     <Carpenters t={t} />
   </>

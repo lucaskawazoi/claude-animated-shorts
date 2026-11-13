@@ -19,12 +19,24 @@ export const T = {
   p5: find("pero adentro", 0, 0.1), oscuro: find("sigue oscuro"),
   b5: find("como el muro", 0, 0.1), c5: find("se puede abrir"), como: find("como el muro"), yaNo: find("ya no carga"), abrir: find("se puede abrir"), vidrio: find("vidrio tenido"), tenido: find("tenido con"), oxidos: find("oxidos de metal"), plomo: find("tiras de plomo"), roseton: find("el roseton"), trece: find("casi trece metros"), vitralesT: find("estos son los vitrales"),
   y2019: find("en dos mil diecinueve"), incendio: find("un incendio"), destruyo: find("destruyo el techo"), rehacer: find("para rehacerlo"), carpinteros: find("los carpinteros"), labrar: find("a labrar"), hacha: find("a hacha"), ochocientos: find("hace ochocientos"),
-  manda: find("mandaselo"),
+  manda: find("mandaselo"), antes: find("antes"),
+  // pré-crítica de ritmo (13/11 tarde): âncoras dos novos acontecimentos
+  aun: find("aun asi"), abren: find("se abren"), enorme0: find("enormes"), motores: find("motores"), solo: find("solo piedra"),
+  piedraB: find("piedra por fuera"), caminando: find("caminando dentro"), pesoC: find("el peso", 3),
   end: DURATION_S,
 };
 export { CUTS, WINS };
 /** ritmo do machado: golpes em labrar, labrar+P e hacha (o som «axe» cai nesses instantes) */
 export const AXE_P = (T.hacha - T.labrar) / 2;
+/** «no hay motores, ni vigas de acero, ni computadoras»: cada objeto cai (pouso) e leva o ✖ */
+export const NOTECH = { motor: [T.motores - 0.2, T.motores + 0.3], viga: [T.acero0 - 0.1, T.acero0 + 0.5], compu: [T.compu - 0.05, T.compu + 0.42] } as const;
+export const DROP = 0.25;
+/** o braço de pedra bate na parede no «piedra» de «brazos de piedra» */
+export const HIT = T.piedraB + 0.1;
+/** o tropeção na roda (gag): sobe com a roda e escorrega de volta antes do «cada paso» */
+export const TRIP = T.caminando + 0.15, TRIP_END = TRIP + 0.62;
+/** o golpe final do carpinteiro do meio, no «antes» */
+export const FINAL = T.antes + 0.07;
 
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
@@ -40,9 +52,14 @@ S.push(["bells", 0.0, -12], ["stone", T.primera + 0.25, -11], ["glass", T.vitral
   ["thud", T.pesoR + 0.25, -10], ["crack", T.abra + 0.1, -9], ["stone", T.arco, -11], ["thud", T.forma + 0.3, -11],
   ["thud", T.pesando - 0.15, -8], ["crack", T.toneladas + 0.25, -10], ["crumble", T.muro, -12],
   ["stone", T.nervios, -12], ["stone", T.cruzan, -12], ["slide", T.cae + 0.3, -12], ["crack", T.empujando, -10],
-  ["stone", T.brazos, -10], ["thud", T.sostienen, -10], ["thud", T.suelo, -11],
+  ["stone", T.brazos, -10], ["thud", T.sostienen, -13], ["thud", T.suelo, -11],
   ["drag", T.enormes, -12], ["wheel", T.rueda, -10], ["wheel", T.paso, -11], ["creak", T.cuerda, -11], ["thud", T.grua - 0.3, -10], ["buzzer", T.oscuro, -13],
   ["glass", T.vidrio, -10], ["glass", T.plomo, -12], ["glass", T.roseton + 0.3, -10],
   ["blaze", T.incendio, -9], ["crumble", T.destruyo, -9], ["axe", T.labrar - AXE_P, -13], ["axe", T.labrar, -9], ["axe", T.labrar + AXE_P, -10], ["axe", T.hacha, -9], ["axe", T.hacha + AXE_P, -12],
-  ["bells", T.ochocientos, -11], ["fanfare", T.manda - 0.2, -11]);
+  ["bells", T.ochocientos, -11], ["fanfare", T.manda - 0.2, -11],
+  // pré-crítica de ritmo: o que é novo na tela tem som
+  ["chime", T.aun + 0.1, -14], ["thud", NOTECH.motor[0] + DROP, -11], ["strike", NOTECH.motor[1], -9],
+  ["thud", NOTECH.viga[0] + DROP, -11], ["strike", NOTECH.viga[1], -9], ["pop", NOTECH.compu[0] + DROP, -11], ["strike", NOTECH.compu[1], -9],
+  ["crumble", T.por, -13], ["crack", T.lados, -11], ["thud", HIT, -8], ["sad", TRIP + 0.2, -14], ["thud", TRIP_END - 0.05, -12],
+  ["clack", T.pesoC + 0.1, -13], ["axe", FINAL, -5], ["crack", FINAL + 0.03, -9], ["thud", FINAL + 0.32, -7]);
 export const SFX = S;
