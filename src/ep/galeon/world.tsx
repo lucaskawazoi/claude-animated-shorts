@@ -67,7 +67,7 @@ const alongQ = (q: V3[], u: number): { p: V3; yaw: number } => {
 export const along = (pts: V3[], u: number) => alongQ(pathPts(pts, 200), u);
 /** tornaviaje: sobe ao norte até a altura do Japão («Japón» ≈ 36% da rota), vira a leste com o vento e a corrente, chega a Acapulco */
 const pw = (t: number, k: [number, number][]) => { if (t <= k[0][0]) return k[0][1]; for (let i = 1; i < k.length; i++) if (t <= k[i][0]) return lerp(k[i - 1][1], k[i][1], ease(t, k[i - 1][0], k[i][0])); return k[k.length - 1][1]; };
-export const routeU = (t: number) => pw(t, [[C2, 0], [T.norte, 0.05], [T.japon + 0.45, 0.36], [T.vientos + 0.2, 0.42], [T.corriente + 0.1, 0.53], [C3 - 0.4, 0.88], [C3 + 0.6, 1]]);
+export const routeU = (t: number) => pw(t, [[C2, 0], [T.norte, 0.05], [T.japon + 0.45, 0.36], [T.vientos + 0.2, 0.41], [T.corriente + 0.1, 0.58], [C3 - 0.4, 0.88], [C3 + 0.6, 1]]);
 export const shipOnRoute = (t: number) => alongQ(TQ, routeU(t));
 /** a volta inteira no mapa do «Esta es la ruta…» (ritmo, 13/11): chega a Acapulco, desce pelo sul de volta a Manila com os
  *  alísios e já começa a subir de novo — o circuito fechando, em vez do mapa parado */
@@ -110,8 +110,6 @@ const HangJar: React.FC<{ p: V3; t: number; k: number; w: number; i: number }> =
     </G>
   </G>
 );
-/** ordem em que as colunas de tinajas enchem: do meio (bem iluminado, onde a câmera entra) para as pontas */
-const FILL = [4, 5, 3, 6, 2, 7, 1, 8, 0, 9];
 type GP = { p: V3; yaw: number; t: number; sc?: number; flag?: number; cut?: boolean; jars?: number; hang?: number; fill?: number; enemy?: boolean; tilt?: number; roll?: number; bob?: number; wind?: number; sail?: number; cargo?: number; brit?: number; tally?: number };
 export const Galleon: React.FC<GP> = ({ p, yaw, t, sc = 1, flag = 1, cut = false, jars = 0, hang = 0, fill = 0, enemy = false, tilt = 0, roll = 0, bob = 1, wind = 0, sail = 1, cargo = 0, brit = 0, tally = 0 }) => {
   const H = enemy ? "#3a3a44" : "#8a5a32", SAIL = "#f6efe0", bx = 0.06 + 0.32 * wind, bt = 0.06 + 0.5 * Math.abs(wind);
@@ -153,7 +151,7 @@ export const Galleon: React.FC<GP> = ({ p, yaw, t, sc = 1, flag = 1, cut = false
         return k === 0 || k === 1 ? <G key={i} p={[x, 1.68 + (1 - u) * 2.5, z]}><Box s={[0.8, 0.5, 0.6]} p={[0, 0.25, 0]} c="#6b3a1a" /><Box s={[0.72, 0.1, 0.52]} p={[0, 0.52, 0]} c={SILVER} o={{ metal: 0.7, rough: 0.3, emissive: "#ffffff", ei: 0.25 }} /><Box s={[0.8, 0.4, 0.06]} p={[0, 0.7, -0.33]} r={[-0.5, 0, 0]} c="#6b3a1a" /></G>
           : <Cyl key={i} rt={0.28} h={0.9} p={[x, 1.96 + (1 - u) * 2.5, z]} r={[PI / 2, 0, 0]} c={["#c8352a", "#e8b030", "#2fa85a", "#7a3ac8"][i % 4]} seg={10} />; }) : null}
       {/* porão cortado: três fileiras de tinajas debaixo do convés, que caem uma a uma (jars = progresso linear) e assentam com um quique */}
-      {cut ? Array.from({ length: 30 }, (_, i) => { const col = i % 10, row = Math.floor(i / 10), u = (jars - ((FILL.indexOf(col) * 3 + row) / 30) * 0.88) / 0.12; if (u <= 0) return null;
+      {cut ? Array.from({ length: 30 }, (_, i) => { const col = i % 10, row = Math.floor(i / 10), n = col * 3 + row, u = n < 9 ? 2 : (jars - ((n - 9) / 21) * 0.92) / 0.1; if (u <= 0) return null;
         const f = Math.min(1, u), k = outBack(Math.min(1, u * 2.2)), sq = u > 1 && u < 1.6 ? 0.22 * Math.sin(((u - 1) / 0.6) * PI) : 0;
         return <G key={i} p={[-3.4 + col * 0.75, 0.3 + 0.35 * (1 - f * f), -0.75 + row * 0.7]} sc={[k * 0.82 * (1 + sq * 0.5), k * 0.82 * (1 - sq), k * 0.82 * (1 + sq * 0.5)]}><Sph rad={0.38} p={[0, 0.48, 0]} sc={[1, 1.3, 1]} c={i % 3 ? "#c0703a" : "#a85a30"} ws={10} hs={8} /><Cyl rt={0.2} h={0.12} p={[0, 0.98, 0]} c="#6b3a20" seg={8} /></G>; }) : null}
     </G>
@@ -164,7 +162,7 @@ export const Galleon: React.FC<GP> = ({ p, yaw, t, sc = 1, flag = 1, cut = false
 const CEBU_Z = 10;
 export const cebuShip = (t: number) => {
   const arrive = ease(t, X.cebu, C1 - 0.2), turn = ease(t, T.ningun, T.ningun + 1.0), go = ease(t, T.ningun + 0.9, T.viento), back = ease(t, T.viento, T.contra + 0.6);
-  const puff = 0.25 + 0.75 * ease(t, T.mil - 0.25, T.mil + 0.35), wind = lerp(lerp(puff, 0, turn), -1, ease(t, T.viento - 0.2, T.viento + 0.3));
+  const puff = 0.25 + 0.75 * ease(t, X.cebu + 0.15, X.cebu + 0.65), wind = lerp(lerp(puff, 0, turn), -1, ease(t, T.viento - 0.2, T.viento + 0.3));
   return { x: -5 - 6 * arrive + 3 * go - 5 * back, yaw: PI * (1 - turn), wind, tilt: 0.1 * back * Math.sin(t * 5) - 0.08 * ease(t, T.viento, T.viento + 0.4) * (1 - back * 0.5) };
 };
 
@@ -396,13 +394,15 @@ const Deck: React.FC<{ t: number }> = ({ t }) => {
   if (saved) return <Crowd list={[-2, -0.6, 0.8, 2.2].map((x, i) => ({ p: [SX + x, 1.75, SZ + (i % 2) * 0.6 - 0.3] as V3, yaw: 1.0 + i * 0.25, pose: "cheer" as PoseName, ph: i * 0.37 }))} t={t} c={COSTUMES.marinero} scale={0.7} />;
   if (!months && !thirst) return null;
   const list = [-2, -0.6, 0.8, 2.2].map((x, i) => ({ p: [SX + x, 1.75, SZ + (i % 2) * 0.6 - 0.3] as V3, yaw: 1.2 + i * 0.3, pose: (months ? (i % 2 ? "belly" : "think") : i === 3 ? "alarm" : i % 2 ? "think" : "alarm") as PoseName, ph: i * 0.3 }));
-  const tip = thirst ? 1.45 * ease(t, T.rios, T.agua + 0.2) : 0, drops = prog(t, T.agua + 0.05, T.agua + 0.75);
+  const shake = prog(t, T.agua + 0.3, T.agua + 0.45) * (1 - prog(t, C5 - 0.5, C5 - 0.42)), tip = thirst ? 1.45 * ease(t, T.rios, T.agua + 0.2) + 0.2 * Math.sin(t * 15) * shake : 0, drops = prog(t, T.agua + 0.05, T.agua + 0.75);
   return (
     <G>
       <Crowd list={list.slice(0, 3)} t={t} c={COSTUMES.marinero} scale={0.7} />
       <Worker p={[SX + 2.5, 1.75, SZ + 1.0]} yaw={-0.6} pose={poseOf(thirst ? "pour" : "think", t)} t={t} c={COSTUMES.marinero} scale={0.7} />
       <G p={[SX + 3.2, 1.75, SZ + 0.35]} r={[tip, 0, 0]}><G p={[0, 0, -0.35]}><Cyl rt={0.4} rb={0.35} h={0.9} p={[0, 0.45, 0]} c={WOOD} seg={10} /><Cyl rt={0.36} h={0.05} p={[0, 0.92, 0]} c="#1a120a" seg={10} />
         {[0.2, 0.7].map((y) => <Cyl key={y} rt={0.41} h={0.06} p={[0, y, 0]} c="#3a3a3a" seg={10} />)}</G></G>
+      {/* sacode o barril: sai uma última gota, sozinha */}
+      {thirst && t > T.agua + 0.85 && t < T.agua + 1.35 ? <Sph rad={0.09} p={[SX + 3.2, 2.15 - prog(t, T.agua + 0.85, T.agua + 1.35) * 0.45, SZ + 1.32]} c="#7fd0ff" o={{ emissive: "#4ab0ff", ei: 0.6 }} cast={false} ws={6} hs={4} /> : null}
       {thirst && drops > 0 && drops < 1 ? [0, 1].map((d) => { const u = clamp(drops * 2 - d * 0.6); return u > 0 && u < 1 ? <Sph key={d} rad={0.07} p={[SX + 3.2, 2.15 - u * 0.45, SZ + 1.22 + u * 0.1]} c="#7fd0ff" o={{ emissive: "#4ab0ff", ei: 0.6 }} cast={false} ws={6} hs={4} /> : null; }) : null}
     </G>
   );
@@ -411,10 +411,10 @@ const Deck: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- navios no tempo
 export const COV: V3 = [-8, 0, 2], COV_YAW = PI * 0.9, BRI_END: V3 = [-6.6, 0, -2.0];
 export const briAt = (t: number) => {
-  const e = ease(t, T.blanco - 0.4, T.guerra + 0.7), y0 = -Math.atan2(BRI_END[2] + 30, BRI_END[0] + 3);
-  return { p: [lerp(-3, BRI_END[0], e), 0, lerp(-30, BRI_END[2], e)] as V3, yaw: lerp(y0, COV_YAW - 2 * PI, ease(e, 0.55, 1)) };
+  const e = ease(t, T.p5 + 0.7, T.guerra + 0.7), y0 = -Math.atan2(BRI_END[2] + 26, BRI_END[0] + 3); // o inimigo já vem do horizonte no «cargado»
+  return { p: [lerp(-3, BRI_END[0], e), 0, lerp(-26, BRI_END[2], e)] as V3, yaw: lerp(y0, COV_YAW - 2 * PI, ease(e, 0.55, 1)) };
 };
-export const lastShip = (t: number) => { const u = prog(t, T.zarpo + 0.2, X.hist); return { p: [-15 + 22 * u * u, 0, -1.6] as V3, sail: ease(t, T.zarpo - 0.12, T.zarpo + 0.45) }; };
+export const lastShip = (t: number) => { const u = prog(t, T.zarpo + 0.2, X.hist); return { p: [-15 + 13 * u * u, 0, -1.6] as V3, sail: ease(t, T.zarpo - 0.12, T.zarpo + 0.45) }; }; // ainda saindo do quadro no corte
 const SHOTS = [T.capturo - 0.4, T.capturo + 0.1, T.capturo + 0.6];
 const Fleet: React.FC<{ t: number }> = ({ t }) => {
   const out: React.ReactNode[] = [];
@@ -490,7 +490,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Route pts={TORNA} u={built(t) ? 1 : t >= C2 && t < X.p2 ? Math.min(1, routeU(t) + 0.14) * (t > T.norte - 0.3 ? 1 : 0.0) : 0} c="#ffd34a" t={t} pulse={t >= C3 && t < X.p2 ? 1.6 : 0} />
       {/* Cebu: o vento que levou o barco para o oeste e agora sopra contra */}
       {cs ? <Arrows t={t} z={CEBU_Z} dir={-1} y={3.2} k={0.55} x0={cs.x - 12} x1={cs.x + 16} n={8} v={0.32} dz={6.4} dy={1.6}
-        on={ease(t, T.mil - 0.25, T.mil + 0.3) * (1 - ease(t, C1 + 0.4, T.ningun + 0.5)) + ease(t, T.viento - 0.3, T.viento + 0.3) * (1 - ease(t, T.c1, T.fraile))} c="#ffffff" /> : null}
+        on={ease(t, X.cebu + 0.05, X.cebu + 0.45) * (1 - ease(t, C1 + 0.4, T.ningun + 0.5)) + ease(t, T.viento - 0.3, T.viento + 0.3) * (1 - ease(t, T.c1, T.fraile))} c="#ffffff" /> : null}
       {/* mapa das tentativas: o vento dos trópicos sopra para o oeste e devolve os barcos */}
       {tryOn(t) ? <Arrows t={t} z={13.5} dir={-1} y={3} k={1.5} x0={-16} x1={36} n={10} v={0.34} dz={15} dy={0.8} on={ease(t, T.porque - 0.3, T.porque + 0.15)} c="#ffffff" /> : null}
       {/* o circuito: alísios para o oeste na volta pelo sul */}

@@ -25,6 +25,8 @@ const steady = (c: CamState, t: number): CamState => {
   const d = dynAt(t);
   return { ...c, pos: [c.pos[0] - d * 0.7 * Math.sin(t * 0.9 + 9), c.pos[1] - d * 0.2 * Math.sin(t * 1.3 + 4), c.pos[2]], look: [c.look[0] - d * 0.3 * Math.sin(t * 1.1 + 3), c.look[1], c.look[2]] };
 };
+const FOLLOW0: V3 = [14, 0, -34]; // âncora do plano que segue o tornaviaje
+const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
 const shot = (name: string, t0: number, keys: Key[]): Shot => ({ name, t0, keys, fn: (t) => steady(keyed(keys, t), t) });
 /** fim de plano antes de um corte da régua: 0,4 s parado (a régua precisa ver a troca) */
 const hold = (c: number, pos: V3, look: V3, fov = 54, roll = 0) => [K(c - 0.42, pos, look, fov, roll), K(c - 0.02, pos, look, fov, roll)];
@@ -45,7 +47,8 @@ const SHOTS: Shot[] = [
   shot("mapa: o barco sobe ao norte até a altura do Japão", C2, [
     K(C2, [-14, 92, 20], [-14, 0, -12], 58, 0), K(T.japon + 0.4, [-11, 84, 4], [-11, 0, -27], 58, 0), K(X.vientos - 0.02, [-9, 82, 0], [-9, 0, -30], 58, 0)]),
   { name: "seguindo o barco: setas do vento oeste e a Kuroshio o empurram para o leste", t0: X.vientos, keys: [K(X.vientos, [0, 44, 0], [0, 0, 0])],
-    fn: (t) => { const a = shipOnRoute(Math.min(t, C3 - 0.42)); return steady({ pos: [a.p[0] + 3, 44, a.p[2] + 21], look: [a.p[0] + 4, 0, a.p[2] - 3], fov: 56, roll: 0 }, t); } },
+    // a câmera segue o barco só pela metade: ele atravessa o quadro em vez de ficar parado no centro (ritmo, 13/11)
+    fn: (t) => { const a = shipOnRoute(Math.min(t, C3 - 0.42)).p, m: V3 = [lerp(FOLLOW0[0], a[0], 0.6), 0, lerp(FOLLOW0[2], a[2], 0.6)]; return steady({ pos: [m[0] + 3, 46, m[2] + 22], look: [m[0] + 4, 0, m[2] - 3], fov: 56, roll: 0 }, t); } },
   shot("o mapa inteiro: a ruta del tornaviaje fechada", C3, [K(C3, [6, 128, 42], [6, 0, -6], 58, 0), K(X.p2 - 0.02, [6, 120, 39], [6, 0, -6], 58, 0)]),
   shot("mar aberto: sol e lua correndo, os meses riscados na vela", X.p2, [
     K(X.p2, [SX + 9, 3.8, SZ + 10], [SX, 3.0, SZ], 54, 2), K(T.seisW, [SX + 10, 4.6, SZ + 11.5], [SX, 3.2, SZ], 54, 0),
@@ -60,8 +63,9 @@ const SHOTS: Shot[] = [
     K(X.p3, [SX + 13, 9, SZ + 14], [SX + 1.5, 1.8, SZ], 56, 2), K(T.agua, [SX + 7.0, 3.6, SZ + 6.2], [SX + 2.6, 2.2, SZ + 0.3], 52, 0),
     ...hold(C5, [SX + 6.2, 3.3, SZ + 5.7], [SX + 2.8, 2.2, SZ + 0.4], 50, 0)]),
   shot("porão em corte: miles de tinajas bajo cubierta", C5, [
-    K(C5, [SX - 2.4, 1.25, SZ + 5.5], [SX - 0.3, 0.9, SZ], 54, -2), K(T.miles - 0.4, [SX - 1.4, 1.3, SZ + 5.0], [SX + 0.3, 0.85, SZ], 52, 0),
-    K(T.bajo - 0.5, [SX + 0.2, 1.35, SZ + 4.9], [SX + 1.4, 0.85, SZ], 52, 0), K(X.colgadas - 0.02, [SX + 0.8, 1.45, SZ + 5.0], [SX + 2.0, 0.9, SZ], 52, 0)]),
+    // a câmera acompanha a frente das tinajas que caem (da popa à proa) até o fim do plano
+    K(C5, [SX - 2.1, 1.3, SZ + 5.1], [SX - 1.4, 0.85, SZ], 54, -2), K(T.c3 - 0.2, [SX - 0.6, 1.3, SZ + 5.0], [SX + 0.1, 0.85, SZ], 52, 0),
+    K(T.bajo - 1.1, [SX + 1.3, 1.32, SZ + 5.0], [SX + 2.0, 0.85, SZ], 52, 0), K(X.colgadas - 0.02, [SX + 2.3, 1.4, SZ + 5.1], [SX + 3.0, 0.9, SZ], 52, 0)]),
   shot("tinajas colgadas de las jarcias; o chubasco as enche", X.colgadas, [
     K(X.colgadas, [SX - 3.4, 6.9, SZ + 5.4], [SX + 0.6, 4.4, SZ + 0.6], 54, 2), K(T.chubasco + 0.5, [SX - 2.6, 6.6, SZ + 4.8], [SX + 0.8, 4.3, SZ + 1.0], 52, 0),
     K(T.tinajasT, [SX - 3.8, 7.0, SZ + 6.6], [SX + 0.6, 4.2, SZ], 54, 0), K(X.p4 - 0.02, [SX - 6, 7.6, SZ + 9.5], [SX + 0.4, 3.6, SZ], 56, 0)]),
@@ -74,13 +78,13 @@ const SHOTS: Shot[] = [
     K(C6, [45.5, 3.4, 9.8], [40.4, 1.6, 5.3], 52, -2), K(X.medio - 0.02, [45.0, 3.2, 9.4], [40.4, 1.6, 5.3], 50, 0)]),
   shot("moedas voando a meio mundo → real de a ocho", X.medio, [K(X.medio, [-2, 150, 46], [-2, 0, -2], 58, 0), K(X.p5 - 0.02, [-2, 140, 42], [-2, 0, -2], 58, 0)]),
   shot("o galeão carregado de prata e seda vira alvo; o inimigo vem do horizonte", X.p5, [
-    K(X.p5, [-5.5, 12, 10], [-8, 1.5, 1.4], 54, 2), K(T.p5 + 1.5, [-6, 13, 10.5], [-8, 1.5, 1.2], 54, 0), K(T.blanco + 0.2, [-7.5, 19, 12], [-8, 0, -2.5], 56, 0),
+    K(X.p5, [-5.5, 12, 10], [-8, 1.5, 1.4], 54, 2), K(T.p5 + 1.4, [-6.5, 14, 11], [-8, 1.2, -1.5], 54, 0), K(T.blanco + 0.2, [-7.5, 19, 12], [-8, 0, -2.5], 56, 0),
     ...hold(C7, [-8, 22, 12.5], [-8, 0, -3.5], 56, 0)]),
   shot("1743: o navio britânico atira, aborda, troca a bandeira e leva a prata", C7, [
     K(C7, [5, 11, 15], [-7.3, 1.5, -0.4], 58, 2), K(T.capturo, [4.4, 10.6, 15.4], [-7.3, 1.5, -0.4], 58, 0), K(T.millon, [3.8, 10.8, 15.8], [-7.3, 2.0, -0.4], 58, 0),
     K(X.ultimo - 0.02, [3.4, 11, 16.2], [-7.3, 2.0, -0.4], 58, 0)]),
   shot("1815: o último galeão solta as velas e sai do quadro a toda vela", X.ultimo, [
-    K(X.ultimo, [-7.5, 5.2, 15], [-15, 2.6, -1.4], 54, 2), K(T.zarpo + 0.5, [-6.5, 5.2, 15.5], [-12.5, 2.6, -1.4], 54, 0), K(X.hist - 0.02, [-4.5, 5.3, 15.5], [-8, 2.6, -1.4], 54, 0)]),
+    K(X.ultimo, [-7.5, 5.2, 15], [-15, 2.6, -1.4], 54, 2), K(T.zarpo + 0.5, [-6.5, 5.2, 15.5], [-12.5, 2.6, -1.4], 54, 0), K(X.hist - 0.02, [-3, 5.3, 15.5], [-6.5, 2.6, -1.4], 54, 0)]),
   shot("mapa: o último galeão, grande, cruza o Pacífico; as rotas acendem; as caixas da China caem na América", X.hist, [
     K(X.hist, [-3, 96, 46], [-3, 0, -8], 58, 0), K(T.mundial, [11, 106, 42], [11, 0, -16], 58, 0), K(W10, [17, 110, 40], [17, 0, -19], 58, 0), K(T.end, [17, 104, 38], [17, 0, -19], 60, 6)]),
 ];

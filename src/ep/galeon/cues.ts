@@ -28,7 +28,7 @@ export const X = {
   cruz: T.cruz, hist: T.historiadores,
 };
 /** tinajas do porão: caem uma a uma do «¿Cómo bebes?» até o «bajo cubierta» (progresso linear 0..1) */
-export const JARS: [number, number] = [CUTS[4] - 0.45, T.bajo + 0.2]; // já há tinajas caindo no 1º quadro do porão
+export const JARS: [number, number] = [CUTS[4] - 0.12, T.colgadas - 0.1]; // da popa à proa, uma a cada ~0,21 s, até o fim do plano
 /** a mordida no real de a ocho (o mercador testa a prata) */
 export const BITE = T.realT + 0.72;
 /** pacotes que caem na América no «Mándaselo»: lançamento a cada 0,3 s, 1 s de voo */
@@ -65,6 +65,7 @@ S.push(["pop", T.nohay, -10], ["smoke", T.nohay + 0.1, -15], ["buzzer", T.nohay 
   ["qe-boing", AXE[2] + 0.05, -10], ["crack", T.olasW + 0.05, -11], ["pop", T.olasW + 0.62, -13], ["cheer", T.galeonT + 0.35, -16],
   ["slide", X.p4 + 0.2, -13], ["gravel", T.potosi - 0.05, -12], ["crack", BITE, -10],
   ["whoosh", X.hist - 0.15, -14]);
-for (let k = 0; k < 6; k++) S.push(["clack", JARS[0] + 0.45 + k * 0.7, -12]);
+for (let k = 0; k < 7; k++) S.push(["clack", JARS[0] + 0.5 + k * 0.62, -12]);
+S.push(["drip", T.agua + 0.95, -12]);
 for (const a of PARCELS.filter((_, i) => i % 2 === 0)) S.push(["thud", a + 1.0, -14]);
 export const SFX = S;
