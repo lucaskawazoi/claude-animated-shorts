@@ -9,14 +9,15 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog, sstep, vlerp } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { SFX, T, XC } from "./cues";
-import { COMM_HEX, H, PONCHO, World, X0, cordsAt, deckAt, mainB, newB, ropeP, tug } from "./world";
+import { SFX, T, XC, XN } from "./cues";
+import { COMM_HEX, H, PEB0, PONCHO, World, X0, cordsAt, deckAt, hopAt, mainB, newB, pebP, ropeP, tug } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const PI = Math.PI;
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
 const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11] = XC;
+const [XA, XB, XF, XG, XD, XE] = XN; // cortes extra da pré-crítica de ritmo (13/11)
 
 // dinamismo por janela (todas altas menos a última; a ordem segue a da referência: 7 e 3 as mais agitadas, 11 a mais calma)
 const DYN = [3.6, 2.6, 4.5, 2.4, 2.2, 2.6, 4.8, 3.0, 2.4, 2.8, 0.1];
@@ -51,7 +52,7 @@ const bCam = (t: number): CamState => {
   const w = walkMain(-8.5, 3.5, 0, X1)(t);
   const k = ease(t, TRZ - 0.3, TRZ + 0.25), back = ease(t, TRZ + 0.6, X1);
   const zc = lerp(2.9, 2.0, k) + back * 1.2, a = lerp(6.1, 4.2, k) + back * 2.5; // a/zc ≥ 2,1 sempre
-  const fp: V3 = [w[0] + 0.05, w[1] + a, w[2] + zc], fl: V3 = [w[0] + 0.1, w[1] + lerp(1.0, 0.8, k), w[2]];
+  const fp: V3 = [w[0] + 0.05, w[1] + a, w[2] + zc], fl: V3 = [w[0] + 0.1, w[1] + lerp(1.0, 2.2, k), w[2]];
   const fov = 54, roll = lerp(-2, 1.5, k);
   if (t >= B_UP) return { pos: fp, look: fl, fov, roll };
   const u = t / B_UP, uz = 1 - (1 - u) ** 2, uy = sstep(u), ux = sstep(Math.min(1, u * 1.4));
@@ -71,6 +72,11 @@ const hookCam = (t: number): CamState => {
   return c;
 };
 
+/** XA: do ar sobre o cânion, enquadra o operário na borda; quando ele chuta a pedrinha, a câmera desce junto até o respingo */
+const abyss = (t: number): CamState => {
+  const k = sstep(prog(t, PEB0() - 0.1, PEB0() + 0.4)), q = pebP(t), m = prog(t, XA, C2 - 0.42);
+  return { pos: [lerp(-11.5, -10.3, m), lerp(H + 1.6, H + 0.8, m), lerp(6.5, 7.2, m)], look: vlerp([-17.0, H + 1.4, 1.0], [q[0], q[1] - 0.6, q[2]], k), fov: 56, roll: lerp(-4, 3, m) };
+};
 const SHOTS: Shot[] = [
   { name: "abertura (a/b/c) → close da baranda trançada", t0: 0, keys: [...OPENINGS.a, ...HOOK_TAIL], fn: hookCam },
   shot("a ponte inteira com gente nas margens → +500 anos → os Andes", X1, [
@@ -81,13 +87,13 @@ const SHOTS: Shot[] = [
     K(C1, [-26.0, H + 9.0, 4.0], [-6.0, H - 0.5, 0.5], 58, -5), K(C1 + 0.45, [-23.5, H + 7.6, 2.4], [-4.5, H - 2.0, 0.5], 56, 1),
     K(T.motores + 0.3, [-22.5, H + 7.2, 2.0], [-3.5, H - 2.5, 0.5], 56, -1),
     K(T.solo + 0.6, [-19.0, H + 2.8, 2.8], [-30.0, H + 0.8, 8.5], 56, 2), K(X2, [-19.6, H + 2.6, 3.4], [-30.0, H + 0.9, 8.0], 56, -1)]),
-  shot("o caminho inca até a borda → o arco que cruza → o rio lá no fundo", X2, [
-    K(X2, [-31.0, H + 8.0, 9.4], [-6.0, H - 1.0, 0.0], 58, 3), K(T.cruzar, [-26.5, H + 7.0, 8.4], [0.0, H - 2.0, 0.0], 58, -1),
-    K(T.fondo + 0.2, [-13.0, H + 6.0, 6.2], [-2.0, 2.0, 2.0], 58, 2), ...hold(C2, [-11.0, H + 5.4, 6.0], [-1.6, 0.8, 2.0], 58, 1)]),
+  shot("o caminho inca até a borda → o arco que cruza", X2, [
+    K(X2, [-31.0, H + 8.0, 9.4], [-6.0, H - 1.0, 0.0], 58, 3), K(XA, [-26.0, H + 7.0, 8.2], [0.0, H - 2.0, 0.0], 58, -1)]),
+  { name: "na borda: chuta uma pedrinha → a câmera desce com ela até o rio (o abismo)", t0: XA, keys: [K(XA, [-11.5, H + 1.6, 6.5], [-17.0, H + 1.4, 1.0])], fn: (t) => desway(t, abyss(t)) },
   shot("capim da puna ao vento → chicote → arranca o tufo", C2, [
-    K(C2, [-29.5, H + 0.9, 13.5], [-26.6, H + 0.8, 6.0], 52, -6), K(C2 + 0.45, [-28.4, H + 1.2, 12.0], [-26.0, H + 0.9, 5.4], 52, 2),
-    K(W3 - 0.05, [-27.6, H + 1.3, 11.0], [-25.8, H + 0.9, 5.0], 52, 0), K(W3 + 0.45, [-22.4, H + 2.9, 9.8], [-26.0, H + 1.1, 2.8], 54, 4),
-    K(T.puna + 0.3, [-22.8, H + 2.6, 9.2], [-26.0, H + 1.0, 2.8], 52, -1), K(X3, [-23.4, H + 2.3, 8.6], [-26.0, H + 1.1, 2.6], 50, 1)]),
+    K(C2, [-29.5, H + 0.9, 13.5], [-26.6, H + 1.8, 6.0], 52, -6), K(C2 + 0.45, [-28.4, H + 1.2, 12.0], [-26.0, H + 1.8, 5.4], 52, 2),
+    K(W3 - 0.05, [-27.6, H + 1.3, 11.0], [-25.8, H + 1.8, 5.0], 52, 0), K(W3 + 0.45, [-22.4, H + 2.9, 9.8], [-26.0, H + 2.3, 2.8], 54, 4),
+    K(T.puna + 0.3, [-22.8, H + 2.6, 9.2], [-26.0, H + 2.0, 2.8], 52, -1), K(X3, [-23.4, H + 2.3, 8.6], [-26.0, H + 1.1, 2.6], 50, 1)]),
   shot("de cima: torce um cordão → ~90 cordões → de ponta: o feixe gira e vira soga", X3, [
     K(X3, [-26.7, H + 6.4, 7.8], [-27.5, H + 1.3, 3.3], 54, -3), K(T.finos + 0.3, [-22.8, H + 4.6, 7.8], [-25.4, H + 1.4, 3.7], 54, 1),
     K(T.casi + 0.2, [-18.6, H + 2.5, 6.8], [-24.2, H + 1.5, 4.0], 54, -1), K(T.trenzados, [-18.9, H + 2.2, 6.2], [-24.4, H + 1.5, 4.0], 52, 0),
@@ -97,46 +103,55 @@ const SHOTS: Shot[] = [
     K(T.pierna + 0.45, [-29.7, H + 1.2, 9.2], [-24.3, H + 0.9, 8.6], 50, 1),
     K(T.rompe - 0.15, [-29.6, H + 2.4, 10.4], [-24.5, H + 2.0, 13.4], 52, 2), K(T.rompe + 0.5, [-29.9, H + 2.0, 10.0], [-24.5, H + 1.4, 13.4], 50, -2),
     K(T.noo, [-30.0, H + 2.2, 10.8], [-24.5, H + 1.9, 14.4], 50, 1), K(T.sogas + 0.45, [-33.0, H + 6.5, 6.0], [-25.0, H + 0.4, -3.8], 56, -2),
-    K(X4, [-32.4, H + 6.7, 5.4], [-24.4, H + 0.5, -3.4], 56, 1)]),
+    K(X4, [-30.0, H + 4.6, 2.2], [-25.6, H + 0.4, -4.2], 52, 2)]),
   shot("as sogas voam e ficam frouxas de margem a margem", X4, [
     K(X4, [-21.0, H + 9.0, 14.0], [-2.0, H - 4.0, 0.0], 58, -3), K(T.tensas, [-17.0, H + 8.6, 16.0], [0.0, H - 4.0, 0.0], 58, 1),
-    K(T.otra + 0.3, [-8.0, H + 8.5, 19.0], [9.0, H - 2.0, 0.0], 58, 1), ...hold(C4, [-7.6, H + 8.4, 19.2], [9.4, H - 2.0, 0.0], 58, 0)]),
+    K(XB, [-14.0, H + 8.4, 17.4], [4.0, H - 3.0, 0.0], 58, -1)]),
+  shot("gag: pisa na soga frouxa e escorrega pela barriga até o meio do cânion ✖", XB, [
+    K(XB, [-21.0, H + 3.8, 7.6], [-13.0, H + 1.5, 0.0], 56, -3), K(T.otra + 0.3, [-12.8, H + 2.2, 9.0], [-6.5, H - 6.6, 0.0], 54, 2),
+    ...hold(C4, [-12.4, H + 2.0, 9.2], [-6.2, H - 7.0, 0.0], 54, 1)]), // sobre o cânion: de trás da borda, a beira tapava a vista
   shot("close: a soga dá voltas na pedra grande", C4, [
     K(C4, [-14.6, H + 3.8, 6.2], [-19.4, H + 0.9, 0.2], 54, -5), K(C4 + 0.45, [-15.4, H + 3.2, 5.0], [-19.6, H + 0.9, 0.0], 52, 1),
     K(X5, [-16.2, H + 2.8, 4.2], [-19.6, H + 0.85, 0.0], 50, -1)]),
-  shot("atrás da fila: decenas puxam a la vez → a barriga some → anclajes → sogas redondas", X5, [
+  shot("atrás da fila: decenas puxam a la vez → a barriga some", X5, [
     K(X5, [-37.0, H + 4.4, 2.2], [-14.0, H - 1.0, -0.2], 58, 4), K(X5 + 0.5, [-36.0, H + 3.8, 1.9], [-14.0, H - 1.0, -0.2], 56, -2),
-    K(T.tensarlas + 0.4, [-35.4, H + 3.5, 2.1], [-13.0, H - 1.2, -0.2], 56, 1), K(T.anclajes + 0.5, [-24.2, H + 3.0, 4.6], [-19.0, H + 0.9, 0.0], 52, -1),
-    K(W6 - 0.05, [-18.5, H + 3.4, 4.0], [-12.0, H - 0.4, 0.0], 54, 0), K(W6 + 0.3, [-16.6, H + 2.6, 2.6], [-2.0, H - 1.6, 0.0], 56, 4),
+    K(T.tensarlas + 0.4, [-35.4, H + 3.5, 2.1], [-13.0, H - 1.2, -0.2], 56, 1), K(XF, [-34.6, H + 3.3, 2.3], [-12.6, H - 1.3, -0.2], 56, -1)]),
+  shot("anclajes: a câmera roda em volta da pedra amarrada → chicote para as sogas redondas", XF, [
+    K(XF, [-25.5, H + 3.6, 6.2], [-19.6, H + 0.9, 0.0], 52, -3), K(W6 - 0.05, [-15.4, H + 3.3, 5.0], [-18.2, H + 0.7, 0.0], 54, 2),
+    K(W6 + 0.3, [-16.6, H + 2.6, 2.6], [-2.0, H - 1.6, 0.0], 56, 4),
     K(C5 - 0.02, [-16.65, H + 2.6, 2.62], [-2.0, H - 1.6, 0.0], 56, 4)]),
   shot("de baixo: em cima das sogas redondas, escorrega e fica pendurado ✖", C5, [
     K(C5, [-5.6, H - 6.8, 8.6], [-9.6, H - 0.2, 0.0], 54, -5), K(C5 + 0.45, [-6.4, H - 6.2, 8.0], [-9.6, H - 0.4, 0.0], 52, 1),
     K(T.caminar + 0.6, [-6.8, H - 6.6, 8.2], [-9.6, H - 1.6, 0.0], 52, -1), K(X6, [-7.4, H - 5.6, 8.4], [-9.8, H - 1.2, 0.0], 52, 1)]),
-  shot("de cima: ramos em onda, esteras, barandas sobem", X6, [
-    K(X6, [-21.0, H + 6.0, 12.5], [0.0, H - 1.5, 0.0], 58, -3), K(T.tejen, [-19.5, H + 5.2, 11.5], [0.0, H - 1.5, 0.0], 56, 0),
-    K(T.esteras + 0.6, [-17.2, H + 4.6, 10.6], [2.0, H - 1.5, 0.0], 54, -1), K(T.barandas + 0.4, [-12.5, H + 3.6, 9.0], [2.0, H - 0.8, 0.0], 54, 1),
-    K(X7, [-11.5, H + 3.4, 8.6], [2.5, H - 0.8, 0.0], 54, 0)]),
-  shot("no piso pronto, atrás do operário que atravessa", X7, [
-    K(X7, [-17.2, H + 2.4, -1.8], [-4.0, H + 0.2, 0.3], 58, 3), K(X8, [-15.4, H + 2.0, -1.2], [-2.0, H - 0.2, 0.3], 56, -1)]),
+  shot("de perto: ramos em onda, depois as esteras", X6, [
+    K(X6, [-17.5, H + 4.8, 8.0], [0.0, H - 1.2, 0.0], 56, -3), K(T.esteras + 0.2, [-14.0, H + 3.8, 7.0], [3.0, H - 1.2, 0.0], 54, 1),
+    K(XG, [-12.6, H + 3.5, 6.5], [4.0, H - 1.0, 0.0], 54, -1)]),
+  shot("as duas barandas sobem e os laços amarram", XG, [
+    K(XG, [-9.0, H + 2.0, 6.6], [-1.5, H - 0.6, 0.0], 54, -3), K(X7, [-5.0, H + 2.5, 6.2], [2.5, H - 0.6, 0.0], 54, 2)]),
+  shot("no piso pronto, atrás do operário que atravessa (fora da baranda)", X7, [
+    K(X7, [-16.0, H + 3.1, -3.0], [-9.0, H + 0.6, 0.0], 58, 3), K(X8, [-11.0, H + 2.7, -2.9], [-3.0, H + 0.3, 0.0], 56, -1)]),
   shot("de baixo: chuva e sol, a palha apodrece e cai", X8, [
     K(X8, [-9.5, H - 4.4, 10.5], [-1.0, H - 0.9, 0.0], 56, -2), K(T.b4 + 0.3, [-7.2, H - 3.2, 11.2], [0.0, H - 1.2, 0.0], 54, 1),
     ...hold(C6, [-6.6, H - 3.0, 11.4], [0.4, H - 1.3, 0.0], 54, 0)]),
   shot("a ponte podre vista do alto do cânion → a nova começa", C6, [
     K(C6, [-8.0, H + 10.0, 26.0], [1.0, H - 3.5, -1.0], 58, -5), K(C6 + 0.45, [-6.5, H + 8.6, 24.0], [0.5, H - 3.0, -1.0], 58, 1),
-    K(T.c4 + 0.3, [-4.5, H + 6.5, 20.0], [0.0, H - 2.5, -1.0], 56, 2), K(X9, [-3.0, H + 7.5, 21.5], [0.0, H - 2.5, -1.7], 58, -1)]),
-  shot("atrás das comunidades: 4 cores tecem a nova em 3 dias", X9, [
-    K(X9, [-29.0, H + 4.8, -12.0], [2.0, H - 1.5, -1.5], 58, 3), K(T.tres, [-27.0, H + 4.2, -10.5], [1.0, H - 1.5, -1.5], 56, -1),
-    ...hold(C7, [-26.6, H + 4.1, -10.2], [1.0, H - 1.6, -1.5], 56, 0)]),
+    K(T.c4 + 0.3, [-4.5, H + 6.5, 20.0], [0.0, H - 2.5, -1.0], 56, 2), K(XD, [-3.8, H + 7.0, 20.8], [0.0, H - 2.5, -1.4], 58, -1)]),
+  shot("o miolo podre despenca no rio → a primeira soga nova voa por trás", XD, [
+    K(XD, [-11.6, H + 1.8, 17.5], [-12.0, H - 3.4, -3.4], 62, -3), K(X9, [-10.4, H + 2.3, 17.0], [-11.6, H - 3.2, -3.2], 62, 2)]),
+  shot("as 4 comunidades chegam às margens", X9, [
+    K(X9, [-25.5, H + 2.8, -11.5], [-17.0, H + 0.8, -2.0], 54, 3), K(XE, [-24.0, H + 2.5, -10.2], [-15.0, H + 0.6, -1.8], 52, -1)]),
+  shot("de perto: o piso novo corre de margem a margem com os 4 tecelões", XE, [
+    K(XE, [-11.5, H + 1.6, -8.6], [-6.5, H - 1.0, -3.4], 54, -3), ...hold(C7, [2.5, H + 2.0, -8.8], [6.0, H - 1.0, -3.4], 54, 2)]),
   shot("de dentro do cânion: a velha cai no rio → sobe para a nova", C7, [
     K(C7, [2.5, 5.5, 24.0], [0.0, 12.0, -1.0], 60, 5), K(C7 + 0.45, [1.5, 6.5, 22.0], [0.0, 11.5, -1.0], 58, -1),
     K(T.alRio + 0.3, [1.2, 6.0, 21.0], [0.0, 5.0, 0.0], 58, 1), K(X10, [0.5, 9.5, 19.0], [0.0, H - 1.0, -3.4], 58, 0)]),
   shot("da outra margem: gente cruzando a nova → giro → UNESCO", X10, [
     K(X10, [27.0, H + 5.5, -15.0], [0.0, H - 2.0, -3.4], 58, 5), K(X10 + 0.45, [25.0, H + 4.6, -13.5], [0.0, H - 1.5, -3.4], 56, -1),
     K(X11, [21.0, H + 6.5, -2.0], [0.0, H - 1.4, -3.4], 58, -2)]),
-  shot("close no operário na nova → a costumbre → os Andes", X11, [
-    K(X11, [6.0, H + 2.2, 4.5], [1.5, H - 0.4, -3.4], 54, 3), K(T.costumbre + 0.6, [10.0, H + 6.0, 12.0], [0.0, H - 1.2, -3.4], 58, 0),
-    K(W10, [10.4, H + 6.4, 12.6], [0.0, H - 1.2, -3.4], 58, 0), K(W10 + 0.6, [11.0, H + 8.5, 15.5], [-8.0, H + 4.0, -40.0], 60, 3),
-    K(T.end, [11.4, H + 8.8, 16.5], [-8.0, H + 4.2, -40.0], 60, 0)]),
+  shot("close no operário na nova → a costumbre → «Mándaselo»: pula na cama elástica", X11, [
+    K(X11, [6.0, H + 2.2, 4.5], [1.5, H - 0.4, -3.4], 54, 3), K(T.costumbre + 0.6, [8.0, H + 3.0, 7.0], [1.0, H + 0.4, -3.4], 56, 0),
+    K(W10 - 0.05, [8.2, H + 3.1, 7.3], [1.0, H + 0.6, -3.4], 56, 0), K(W10 + 0.35, [5.6, H + 1.2, 4.0], [1.5, H + 2.4, -3.4], 54, 4),
+    K(T.end, [6.4, H + 1.6, 4.8], [1.5, H + 2.6, -3.4], 54, 0)]),
 ];
 
 // ---------------------------------------------------------------- operário
@@ -153,14 +168,27 @@ const slip = (t: number): V3 => {
   const bounce = t > T.caminar + 0.28 ? 0.25 * Math.exp(-(t - T.caminar - 0.28) * 5) * Math.sin((t - T.caminar) * 16) : 0;
   return [-9.6 + 0.16 * Math.sin(t * 9) * (1 - d) + 0.25 * d * Math.sin(t * 3), p[1] + 0.13 - d * 2.55 + bounce, p[2]];
 };
+/** gag «tensas de una orilla a la otra»: pisa na soga frouxa e escorrega pela barriga dela até o meio do cânion ✖ */
+const slide = (t: number): V3 => {
+  const b = mainB(t), u = 0.3 * ease(t, T.orilla + 0.22, T.otra + 0.2), p = ropeP(b, t, u, 0), land = T.otra + 0.2;
+  return [p[0], p[1] + 0.12 + (t > land ? 0.35 * Math.exp(-(t - land) * 4) * Math.sin((t - land) * 14) : 0), p[2]];
+};
+/** gag «se pudre»: o graveto podre cede e as pernas afundam no piso ✖; sai no «¿cómo mantienes…?» */
+const sink = (t: number): V3 => {
+  const p = deckAt(mainB(t), t, -3.0, 0, 0.2), d = 0.85 * ease(t, T.pudre, T.pudre + 0.1) * (1 - ease(t, T.b4 - 0.35, T.b4 + 0.05));
+  return [p[0], p[1] - d + (t > T.pudre + 0.1 ? 0.06 * Math.sin((t - T.pudre) * 18) * Math.exp(-(t - T.pudre) * 3) : 0), p[2]];
+};
 const puller0 = (t: number): V3 => [-(22.4 + tug(t) * 1.8 + 0.12 * Math.sin(t * 9)), H, -0.36];
 const WORKER: [number, WorkerState][] = [
   [0, S(FAR, PI / 2, "walk", { follow: hookWalk })],
   [X1, S(FAR, PI / 2, "walk", { follow: walkMain(3.5, 8.0, X1, C1) })],
   [C1, S([-17.0, H + 0.9, 1.0], PI / 2, "idle")],
   [T.nohay, S([-17.0, H + 0.9, 1.0], PI / 2, "think")],
+  // cada «0» (acero, cables, motores): aponta a coisa que surgiu aos pés e a joga no cânion
+  ...[T.acero, T.cables, T.motores].flatMap((a): [number, WorkerState][] => [[a, S([-17.0, H + 0.9, 1.0], PI / 2, "point")], [a + 0.28, S([-17.0, H + 0.9, 1.0], PI / 2, "present")]]),
   [T.solo, S([-17.0, H + 0.9, 1.0], -PI / 2 + 0.4, "point")],
   [T.cruzar, S([-17.0, H + 0.9, 1.0], PI / 2, "point")],
+  [T.fondo - 0.3, S([-17.0, H + 0.9, 1.0], PI / 2, "point")],
   [T.canon, S([-17.0, H + 0.9, 1.0], PI / 2, "alarm")],
   ...tp(C2, S([-26.0, H, 2.1], 0.2, "present")),
   [T.puna, S([-26.0, H, 2.1], 0.2, "pull")],
@@ -173,18 +201,25 @@ const WORKER: [number, WorkerState][] = [
   [T.noo, S([-23.0, H, 13.5], -PI / 2 - 0.2, "cheer")],
   [T.sogas, S(FAR, 0, "idle", { scale: 0 })],
   [T.p1, S([-17.0, H + 0.9, 1.4], PI / 2 - 0.3, "alarm")],
-  [T.s2, S([-17.0, H + 0.9, 1.4], PI / 2 - 0.3, "think")],
+  [XB, S(FAR, PI / 2, "alarm", { follow: slide })],
   ...tp(C4, S([-21.4, H, 1.9], PI / 2 + 0.5, "chisel")),
   [X5 - 0.02, S(FAR, -PI / 2, "pull", { follow: puller0 })],
-  [T.anclajes, S([-21.0, H, -2.6], PI / 2 - 0.6, "present")],
-  [T.p2, S([-16.0, H + 0.9, 0.6], PI / 2, "think")],
+  ...tp(XF, S([-19.2, H, 2.5], PI + 0.3, "chisel")),
+  [T.anclajes + 0.75, S([-19.2, H, 2.5], 0.2, "cheer")],
+  ...tp(T.p2, S([-15.6, H + 0.9, -1.2], PI / 2, "think")),
   [C5 - 0.1, S(FAR, 0, "alarm", { follow: slip })],
   [T.s3, S(FAR, 0, "idle", { scale: 0 })],
   [X7 - 0.05, S(FAR, PI / 2, "walk", { follow: walkMain(-12.5, -3.0, X7, T.p3 + 0.3) })],
-  [T.p3 + 0.3, S(FAR, 0.2, "alarm", { follow: walkMain(-3.0, -3.0, 0, 1) })],
-  [T.b4, S(FAR, 0.2, "think", { follow: walkMain(-3.0, -3.0, 0, 1) })],
+  [T.p3 + 0.3, S(FAR, 0.2, "idle", { follow: sink })],
+  [T.pudre, S(FAR, 0.2, "alarm", { follow: sink })],
+  [T.b4, S(FAR, 0.2, "think", { follow: sink })],
   [C6, S(FAR, 0, "idle", { scale: 0 })],
-  [X10, S(FAR, 0.5, "cheer", { follow: (t) => deckAt(newB(t), t, 1.5, 0, 0.2) })],
+  // «no lo mantienes, lo rehaces»: na base da nova, lança a primeira soga para o outro lado
+  [XD, S([-16.3, H + 0.9, -3.4], PI / 2, "point")],
+  [T.rehaces - 0.2, S([-16.3, H + 0.9, -3.4], PI / 2, "present")],
+  [T.rehaces + 0.4, S([-16.3, H + 0.9, -3.4], PI / 2, "cheer")],
+  [X9, S(FAR, 0, "idle", { scale: 0 })],
+  [X10, S(FAR, 0.5, "cheer", { follow: (t) => { const p = deckAt(newB(t), t, 1.5, 0, 0.2); return [p[0], p[1] + hopAt(t), p[2]]; } })],
 ];
 
 // ---------------------------------------------------------------- painel
@@ -239,14 +274,17 @@ const hud: HudData = {
     { a: T.trece, b: T.algo - 0.1, label: "UNESCO", value: () => "2013", y: 440, tone: "gold" },
   ],
   titles: [
-    { a: T.sogas, text: "SOGAS" }, { a: T.anclajes, text: "ANCLAJES" }, { a: T.estePiso, text: "PISO" },
+    { a: T.sogas, text: "SOGAS" }, { a: T.anclajes, text: "ANCLAJES" }, { a: T.estePiso, text: "PISO", len: 1.6 },
     { a: T.renovacion, text: "RENOVACIÓN", len: 1.4 }, { a: T.giro, text: "¡GIRO!", len: 0.95 },
   ],
-  alerts: [T.canon, T.p1, T.p2, T.p3],
+  alerts: [T.canon, T.p1, T.p2], // o ⚠ do «pero la hierba» virou o ✖ da perna no piso podre
   rewinds: [T.andes, T.cienJuntos, T.s3, T.b4],
-  crosses: [[T.rompe, T.cienJuntos - 0.05], [T.caminar + 0.1, T.s3 - 0.08]],
+  crosses: [
+    [T.acero + 0.05, T.acero + 0.45], [T.cables + 0.05, T.cables + 0.45], [T.motores + 0.05, T.motores + 0.5], // cada «0» vai para o cânion
+    [T.rompe, T.cienJuntos - 0.05], [T.otra - 0.05, T.s2 + 0.1], [T.caminar + 0.1, T.s3 - 0.08], [T.pudre + 0.05, T.sol + 0.1],
+  ],
   stamps: [[T.b1, T.c1, "SIN CABLES DE ACERO"], [T.b4, T.c4, "SIN MATERIAL QUE DURE"]],
-  reward: { a: T.costumbre, len: T.end - T.costumbre, top: "PATRIMONIO DE LA HUMANIDAD", big: (t) => `+${count(t, T.costumbre, T.costumbre + 1.1, 0, 500)} AÑOS`, sub: "SIN UN SOLO MOTOR" },
+  reward: { a: T.costumbre, len: T.end - T.costumbre + 1 /* + 1: fica até o último quadro (antes apagava nos 0,25 s finais) */, top: "PATRIMONIO DE LA HUMANIDAD", big: (t) => `+${count(t, T.costumbre, T.costumbre + 1.1, 0, 500)} AÑOS`, sub: "SIN UN SOLO MOTOR" },
   Extra: ({ t }) => {
     const leg = win(t, T.gruesa, T.unCordon - 0.1, 0.15), sun = win(t, T.sol - 0.05, T.b4 - 0.05, 0.12), dots = win(t, T.cuatro, T.tres - 0.1, 0.15);
     const badge = win(t, T.unesco, T.costumbre - 0.1, 0.2), hand = win(t, T.algo, T.costumbre - 0.1, 0.15);

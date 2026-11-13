@@ -164,10 +164,14 @@ export const mainB = (t: number): BS => {
     floor: ease(t, T.tejen - 0.15, T.esteras - 0.05), mats: ease(t, T.esteras - 0.1, T.dos - 0.15), rails: ease(t, T.dos - 0.05, T.arriba + 0.35), ties: ease(t, T.arriba + 0.15, T.barandas + 0.45),
   };
 };
+/** gag final («Mándaselo»): o operário pula duas vezes na ponte nova, que afunda e devolve como cama elástica */
+export const HOPS = () => [[T.manda, T.manda + 0.62, 2.4], [T.manda + 0.62, T.manda + 1.3, 1.5]] as const;
+export const hopAt = (t: number) => HOPS().reduce((s, [a, b, h]) => s + (t > a && t < b ? h * Math.sin((PI * (t - a)) / (b - a)) : 0), 0);
+const trampoline = (t: number) => HOPS().reduce((s, [, b, h]) => s + (t > b ? 0.45 * h * Math.exp(-(t - b) * 3.5) * Math.sin((t - b) * 13) : 0), 0);
 export const newB = (t: number): BS => {
   if (t < T.rehaces - 0.1) return OFF;
   return {
-    ...OFF, z: NZ, base: ease(t, T.rehaces - 0.1, T.rehaces + 0.35), sag: lerp(6, TAUT, ease(t, T.rehaces + 0.2, T.cadaAno1 + 0.3)), sway: 0.14,
+    ...OFF, z: NZ, base: ease(t, T.rehaces - 0.1, T.rehaces + 0.35), sag: lerp(6, TAUT, ease(t, T.rehaces + 0.2, T.cadaAno1 + 0.3)) + trampoline(t), sway: 0.14,
     floor: ease(t, T.nuevo - 0.05, T.tres + 0.25), mats: ease(t, T.nuevo + 0.25, T.tres + 0.45), rails: ease(t, T.nuevo + 0.05, T.nuevo + 0.55), ties: ease(t, T.nuevo + 0.45, T.tres + 0.45),
   };
 };
@@ -209,7 +213,9 @@ const Bridge: React.FC<{ b: BS; t: number }> = ({ b, t }) => {
       {Array.from({ length: NMAT }, (_, i) => {
         const ua = i / NMAT, ub = (i + 1) / NMAT; if (ub > b.mats + 0.001) return null;
         const a = ropeP(b, t, ua, 0), c = ropeP(b, t, ub, 0), len = Math.hypot(c[0] - a[0], c[1] - a[1]);
-        return <Box key={i} s={[len + 0.04, 0.045, 1.06]} p={[(a[0] + c[0]) / 2, (a[1] + c[1]) / 2 + 0.215, (a[2] + c[2]) / 2]} r={[0, 0, Math.atan2(c[1] - a[1], c[0] - a[0])]} c={i % 2 ? m1 : m2} />;
+        const fd = !fresh && i >= 2 && i <= 5 && b.drop === 0 ? Math.max(0, t - (T.noLo + 0.05 + (i - 2) * 0.09)) : 0; // «no lo mantienes»: o miolo podre despenca
+        if (fd > 1.9) return null;
+        return <Box key={i} s={[len + 0.04, 0.045, 1.06]} p={[(a[0] + c[0]) / 2 + fd * 0.8, (a[1] + c[1]) / 2 + 0.215 - 7 * fd * fd, (a[2] + c[2]) / 2 + fd * 1.5]} r={[fd * 3, fd * 2, Math.atan2(c[1] - a[1], c[0] - a[0]) + fd * 4]} c={i % 2 ? m1 : m2} />;
       })}
       {b.rails > 0.5 ? RAIL_DZ.map((dz) => Array.from({ length: NTIE }, (_, k) => {
         const u = (k + 1) / (NTIE + 1); if (u > b.ties) return null;
@@ -294,7 +300,7 @@ const Proof: React.FC<{ t: number }> = ({ t }) => {
   const snap = T.rompe + 0.03, ds = t - snap;
   const s1y = ds < 0 ? H + 1.45 : Math.max(H + 0.42, H + 1.45 - 15 * ds * ds), bounce = ds > 0.37 ? 0.18 * Math.abs(Math.sin((ds - 0.37) * 12)) * Math.exp(-(ds - 0.37) * 6) : 0;
   const d2 = t - (T.cienJuntos - 0.05), s2y = d2 < 0 ? H + 3.0 : H + 1.4 + 0.55 * Math.exp(-d2 * 5) * Math.cos(d2 * 15);
-  const coil = (i: number) => (t < T.sogas - 0.05 ? 0 : clamp(ease(t, T.sogas - 0.05 + i * 0.07, T.sogas + 0.3 + i * 0.07) * 1.1)) * (1 - ease(t, T.p1 + 0.15 + i * 0.08, T.p1 + 0.7 + i * 0.08));
+  const coil = (i: number) => (t < T.sogas - 0.05 + i * 0.12 ? 0 : 1) * (1 - ease(t, T.p1 + 0.15 + i * 0.08, T.p1 + 0.7 + i * 0.08));
   return (
     <G>
       {/* a soga pronta no chão, junto do pé do operário */}
@@ -313,7 +319,8 @@ const Proof: React.FC<{ t: number }> = ({ t }) => {
       {/* «estas son las sogas»: seis rolos junto da base; somem voando para o outro lado no «pero» */}
       {[[-24, -3], [-26, -3], [-28, -3], [-24, -5.6], [-26, -5.6], [-28, -5.6]].map(([x, z], i) => {
         const k = coil(i); if (k <= 0.01) return null;
-        return <G key={i} p={[x, H, z]} sc={k}>{[0, 1, 2].map((j) => <mesh key={j} position={[0, 0.18 + j * 0.3, 0]} rotation={[PI / 2, 0, j * 0.7]} material={mat(j % 2 ? "#cfa94e" : STRAW)} castShadow><torusGeometry args={[0.72 - j * 0.06, 0.17, 6, 18]} /></mesh>)}</G>;
+        const tl = T.sogas - 0.05 + i * 0.12, dt = t - tl, fall = dt < 0.3 ? 4.5 * (1 - dt / 0.3) ** 2 : 0.5 * Math.abs(Math.sin((dt - 0.3) * 9)) * Math.exp(-(dt - 0.3) * 4);
+        return <G key={i} p={[x, H + fall, z]} r={[0.25 * Math.sin(dt * 7) * Math.exp(-Math.max(0, dt) * 2), dt * 0.6, 0]} sc={k}>{[0, 1, 2].map((j) => <mesh key={j} position={[0, 0.18 + j * 0.3, 0]} rotation={[PI / 2, 0, j * 0.7]} material={mat(j % 2 ? "#cfa94e" : STRAW)} castShadow><torusGeometry args={[0.72 - j * 0.06, 0.17, 6, 18]} /></mesh>)}</G>;
       })}
     </G>
   );
@@ -365,6 +372,40 @@ const Folk: React.FC<{ t: number }> = ({ t }) => {
   return null;
 };
 
+/** «no hay acero, ni cables, ni motores»: cada coisa surge aos pés do operário e ele a joga no cânion */
+export const JUNK = () => [T.acero, T.cables, T.motores];
+const Junk: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.acero || t > T.solo + 1.5) return null;
+  return <G>{JUNK().map((a, i) => {
+    const dt = t - a; if (dt < 0 || dt > 2.4) return null;
+    const fly = Math.max(0, dt - 0.32), k = Math.min(1, dt / 0.14);
+    const p: V3 = [-16.1 + fly * 6.5, H + 1.15 + fly * 3.2 - 6 * fly * fly, 1.0 + (i - 1) * 0.55 + fly * 0.6];
+    const r: V3 = [fly * 6, fly * 3, fly * 5];
+    return <G key={i} p={p} r={r} sc={k}>
+      {i === 0 ? <><Box s={[1.5, 0.08, 0.36]} p={[0, 0.16, 0]} c="#8b98a5" /><Box s={[1.5, 0.08, 0.36]} p={[0, -0.16, 0]} c="#8b98a5" /><Box s={[1.5, 0.32, 0.07]} p={[0, 0, 0]} c="#7c8894" /></> : null}
+      {i === 1 ? <><Cyl rt={0.42} h={0.5} p={[0, 0, 0]} r={[PI / 2, 0, 0]} c="#3d4650" seg={12} /><Cyl rt={0.16} h={0.54} p={[0, 0, 0]} r={[PI / 2, 0, 0]} c="#c0c6cc" seg={10} /></> : null}
+      {i === 2 ? <><Box s={[0.75, 0.55, 0.55]} p={[0, 0, 0]} c="#c8352a" /><Cyl rt={0.14} h={0.4} p={[0.5, 0, 0]} r={[0, 0, PI / 2]} c="#9aa3ab" seg={8} /><Box s={[0.85, 0.08, 0.6]} p={[0, -0.3, 0]} c="#4a5058" /></> : null}
+    </G>;
+  })}</G>;
+};
+/** «en el fondo de un cañón»: o operário chuta uma pedrinha da borda e ela cai até o rio (respingo) */
+export const PEB0 = () => T.fondo - 0.12, PEB_T = 1.42;
+export const pebP = (t: number): V3 => { const u = clamp(t - PEB0(), 0, PEB_T); return [-16.3 + 9 * u, H + 0.95 + 1.1 * u - 8.6 * u * u, 1.0 + 0.3 * u]; };
+const Pebble: React.FC<{ t: number }> = ({ t }) => {
+  const dt = t - PEB0(); if (dt < 0 || dt > PEB_T + 0.9) return null;
+  const p = pebP(t);
+  return <G>
+    {dt < PEB_T ? <Sph rad={0.45} p={p} c="#8d867a" ws={8} hs={6} o={{ flat: true }} /> : null}
+    <Puffs t={t} p={[p[0], 0.3, p[2]]} n={8} period={0.8} rise={1.6} size={0.5} c="#ffffff" on={dt > PEB_T - 0.02 && dt < PEB_T + 0.6 ? 1 : 0} />
+  </G>;
+};
+/** tecelões da nova (4 cores): surgem quando a frente do piso novo passa por eles */
+const NewWeavers: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.nuevo - 0.1 || t > CUTS[6] + 0.1) return null;
+  const b = newB(t), us = [0.2, 0.4, 0.6, 0.8];
+  return <G>{us.map((u, i) => { const k = clamp((b.floor - u) * 8); if (k <= 0.01) return null; const p = deckAt(b, t, lerp(-X0, X0, u), (i % 2 ? 0.25 : -0.25), 0.2); return <Crowd key={i} list={[{ p, yaw: i % 2 ? 0.4 : -0.5, pose: "chisel", ph: i * 0.4 }]} t={t} c={COMM[i]} scale={k} />; })}</G>;
+};
+
 // ---------------------------------------------------------------- efeitos: seta do caminho, chuva, respingo
 const Path: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, T.cruzar - 0.1, T.rio + 0.5) * (1 - ease(t, CUTS[1] - 0.2, CUTS[1])); if (k <= 0.01) return null;
@@ -384,7 +425,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Mountains /><Canyon /><River t={t} /><Abutments />
       <Bridge b={mainB(t)} t={t} /><Bridge b={newB(t)} t={t} /><Anchors t={t} />
       <Workshop t={t} /><Proof t={t} />
-      <Pullers t={t} /><Weavers t={t} /><Communities t={t} /><Folk t={t} />
+      <Pullers t={t} /><Weavers t={t} /><NewWeavers t={t} /><Communities t={t} /><Folk t={t} /><Junk t={t} /><Pebble t={t} />
       <Path t={t} /><Rain t={t} />
       <Puffs t={t} p={[0, 0.3, 0.5]} n={12} period={1.1} rise={5} size={1.4} c="#ffffff" on={t > land - 0.05 && t < land + 1.4 ? 1 : 0} drift={[0, 0, 1.5]} />
     </>
