@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, rnd } from "../../toy/kit";
 import { Clouds, Ground, GroundPal, Puffs, Sky } from "../../toy/scenery";
 import { COSTUMES, Crowd, PoseName } from "../../toy/worker";
+import { CUTS } from "../../toy/cues";
 import { T } from "./cues";
 
 const PI = Math.PI;
@@ -137,7 +138,8 @@ const Ashlar: React.FC<{ t: number }> = ({ t }) => {
     for (let row = 0; row < 5; row++) { const h = 0.5 + rnd(row) * 0.25; let x = -3; while (x < 3) { const w = 0.6 + rnd(row * 13 + x * 7) * 0.7; if (!(row < 4 && x + w > -0.6 && x < 0.6)) out.push({ p: [x + w / 2, y + h / 2, 0], s: [w - 0.05, h - 0.05, 0.8], r: (rnd(row * 3 + x) - 0.5) * 0.12 }); x += w; } y += h; }
     return out;
   }, []);
-  if (k <= 0.01) return null;
+  // ponytail: o plano 6 (fontes) olha por cima do muro; fora de quadro em todos os outros planos, então some só nele
+  if (k <= 0.01 || (t >= CUTS[5] && t < CUTS[6])) return null;
   return (
     <G p={[WALL.x + shake, H, WALL.z]} r={[-lean, 0, 0]}>
       <Box s={[6.1, 2.9 * k, 0.7]} p={[0, 1.45 * k, -0.05]} c="#5a5650" cast={false} />
@@ -158,17 +160,19 @@ const Fountains: React.FC<{ t: number }> = ({ t }) => {
     <G>
       {/* canal da encosta da montanha (sul) até a primeira fonte */}
       {/* manancial: rocha com água borbulhando na borda sul do selado, e o canal até a primeira fonte */}
-      <Sph rad={1.3} p={[-3.8, H + 0.3, 11.8]} sc={[1.2, 0.8, 1]} c={STONE2} ws={8} hs={6} />
-      <Puffs t={t} p={[-3.8, H + 1.0, 11.4]} n={9} period={1.0} rise={0.8} size={0.26} c="#7cc8ff" on={t > T.manantial - 0.4 ? 1 : 0} />
-      {Array.from({ length: 6 }, (_, j) => <Sph key={j} rad={0.11} p={[-3.8, H + 0.38, 11.2 - fract(t * 0.9 + j / 6) * 2.2]} c="#9fdcff" o={{ emissive: "#4ab0ff", ei: 0.5 }} vis={flow > 0.2} cast={false} ws={6} hs={4} />)}
-      <Box s={[0.6, 0.3, 2.2 * k]} p={[-3.8, H + 0.15, 10.1]} c={STONE2} />
-      <Box s={[0.35, 0.05, 2.2 * flow]} p={[-3.8, H + 0.32, 10.1]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
+      {/* manancial no alto (a água sai a ~2,4 m) → canal sobre pilares → 16 fontes em escada: «siempre en bajada» */}
+      <Sph rad={1.0} p={[-3.8, H + 1.0, 12.0]} sc={[1.1, 1.7, 1]} c={STONE2} ws={8} hs={6} />
+      <Puffs t={t} p={[-3.8, H + 2.4, 11.0]} n={9} period={1.0} rise={0.8} size={0.26} c="#7cc8ff" on={t > T.manantial - 0.4 ? 1 : 0} />
+      {Array.from({ length: 6 }, (_, j) => <Sph key={j} rad={0.11} p={[-3.8, H + 2.33, 11.2 - fract(t * 0.9 + j / 6) * 2.2]} c="#9fdcff" o={{ emissive: "#4ab0ff", ei: 0.5 }} vis={flow > 0.2} cast={false} ws={6} hs={4} />)}
+      <Box s={[0.6, 0.3, 2.2 * k]} p={[-3.8, H + 2.1, 10.1]} c={STONE2} />
+      {[10.8, 9.4].map((z) => <Box key={z} s={[0.4, 2.0, 0.4]} p={[-3.8, H + 1.0, z]} c={STONE2} />)}
+      <Box s={[0.35, 0.05, 2.2 * flow]} p={[-3.8, H + 2.27, 10.1]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
       {Array.from({ length: 16 }, (_, i) => {
         const u = clamp(k * 1.5 - (i / 16) * 0.5); if (u <= 0.01) return null;
-        const z = 9 - i * 1.15, y = H + 0.05 - i * 0.03;
+        const z = 9 - i * 1.15, y = H + 0.05 + (15 - i) * 0.12;
         return (
           <G key={i} p={[-3.8, y, z]} sc={[1, u, 1]}>
-            <Box s={[0.9, 0.4, 0.8]} p={[0, 0.2, 0]} c={STONE} /><Box s={[0.7, 0.05, 0.6]} p={[0, 0.38, 0]} c="#4aa8ff" vis={flow > (i / 16)} cast={false} />
+            <Box s={[0.9, y - H + 0.01, 0.8]} p={[0, -(y - H) / 2, 0]} c={STONE2} /><Box s={[0.9, 0.4, 0.8]} p={[0, 0.2, 0]} c={STONE} /><Box s={[0.7, 0.05, 0.6]} p={[0, 0.38, 0]} c="#4aa8ff" vis={flow > (i / 16)} cast={false} />
             {Array.from({ length: 3 }, (_, j) => { const w = fract(t * 2 + j / 3); return <Sph key={j} rad={0.06} p={[0, 0.5 - w * 0.4, -0.45 - w * 0.25]} c="#7cc8ff" vis={flow > i / 16} cast={false} ws={5} hs={4} />; })}
           </G>
         );
