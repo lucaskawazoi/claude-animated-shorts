@@ -34,7 +34,7 @@ const SHOTS: Shot[] = [
   { name: "tinajas nas vergas e a chuva → mercado de Manila → minas → cunhagem", t0: C5, keys: [
     K(C5, [SX - 3, 4, SZ + 6], [SX, 1, SZ], 50, 2), K(T.miles + 0.6, [SX - 2, 3.2, SZ + 5], [SX, 0.8, SZ], 48, 0), K(T.colgadas, [SX - 6, 7, SZ + 8], [SX, 5, SZ], 52, 0), K(T.tinajasT, [SX - 7, 8, SZ + 9], [SX, 5, SZ], 54, 0), K(T.p4 + 0.2, [-6, 40, -10], [-20, 0, -4], 56, 0),
     K(T.europeos, [-26, 4, 7], [-26, 1.8, 1], 48, 0), K(T.plata0 + 0.4, [-25, 4.4, 7.4], [-25.4, 1.8, 1], 48, 0), K(T.b4 + 0.4, [10, 60, 10], [20, 0, 4], 56, 0),
-    K(T.potosi, [30, 20, 18], [45, 6, 34], 54, 0), K(C6 - 0.05, [34, 5, 13], [40.5, 1.5, 9], 50, 0)] },
+    K(T.mexico, [30, 26, 2], [45, 2, 10], 54, 0), K(T.acunada - 0.1, [34.5, 9.5, 14], [42, 1.5, 7.5], 50, 0), K(C6 - 0.05, [34.6, 9.2, 14.2], [42, 1.5, 7.5], 50, 0)] },
   { name: "moedas em meio mundo → o navio de guerra britânico", t0: C6, keys: [
     K(C6, [6, 130, 36], [6, 0, -4], 58, -2), K(T.realT, [5, 126, 34], [5, 0, -4], 58, 0), K(T.blanco, [4, 8, 12], [-4, 2, -1], 52, 0), K(T.y1743, [2, 6, 10], [-4, 2, -1], 50, 0), K(C7 - 0.05, [2, 6, 10], [-4, 2, -1], 50, 0)] },
   { name: "a captura do Covadonga → o último galeão → o comércio mundial", t0: C7, keys: [

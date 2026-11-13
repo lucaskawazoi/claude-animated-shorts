@@ -134,7 +134,7 @@ const Market: React.FC<{ t: number }> = ({ t }) => {
 /** mina de prata no México + Potosí: veios brilham, carrinhos; prensa cunha moedas */
 const Mine: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.b4 - 0.3 || t > T.realT + 0.6) return null;
-  const glow = ease(t, T.minas - 0.2, T.mexico + 0.3), glow2 = ease(t, T.potosi - 0.2, T.potosi + 0.4), mint = ease(t, T.acunada - 0.2, T.acunada + 0.6);
+  const glow = ease(t, T.minas - 0.2, T.mexico + 0.3), glow2 = ease(t, T.potosi - 0.2, T.potosi + 0.4), mint = ease(t, T.mexico, T.mexico + 0.6); // a cunhagem já está lá quando a voz chega em «acuñada» (o corte vem 0,1 s depois)
   return (
     <G>
       {[[47, 2], [45, 36]].map(([x, z], j) => <G key={j}>{Array.from({ length: 5 }, (_, i) => <Box key={i} s={[0.4, 3, 0.2]} p={[x - 2.2 + i * 1.1, 3 + (i % 2) * 1.6, z + 4.6 - Math.abs(i - 2) * 0.4]} r={[0.5, 0, (rnd(i + j) - 0.5) * 0.8]} c={SILVER} o={{ emissive: "#ffffff", ei: 0.7 * (j ? glow2 : glow), metal: 0.6 }} cast={false} vis={(j ? glow2 : glow) > 0.05} />)}</G>)}

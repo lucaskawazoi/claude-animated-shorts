@@ -1,1 +1,1 @@
-export { T } from "./coliseo/cues";
+export { T } from "./galeon/cues";

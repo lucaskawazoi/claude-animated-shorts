@@ -69,7 +69,7 @@ const towerK = (t: number, i: number) => (built(t) ? 1 : ease(t, T.torres - 0.3 
 const flash = (t: number, t0: number) => ease(t, t0, t0 + 0.25) * (1 - ease(t, t0 + 0.35, t0 + 1.4));
 const Tower: React.FC<{ p: V3; k: number; i: number; t: number }> = ({ p, k, i, t }) => {
   if (k <= 0.01) return null;
-  const smoke = t > T.humo - 0.2 && t < T.giro ? ease(t, T.humo + i * 0.32, T.humo + i * 0.32 + 0.4) : 0;
+  const smoke = t > T.humo - 0.8 && t < T.giro ? ease(t, T.humo - 0.7 + i * 0.25, T.humo - 0.3 + i * 0.25) : 0; // já subindo quando a voz diz «humo»
   const fire = t > T.fuego - 0.2 && t < T.giro ? ease(t, T.fuego + i * 0.2, T.fuego + i * 0.2 + 0.3) : 0;
   const M: V3[] = []; for (const s of [-1, 1]) for (const q of [-1.5, 0, 1.5]) M.push([q, 0, s * 2.0], [s * 2.0, 0, q]);
   return (
@@ -79,10 +79,10 @@ const Tower: React.FC<{ p: V3; k: number; i: number; t: number }> = ({ p, k, i, 
       {M.map((m, j) => <Box key={j} s={[0.7, 0.6, 0.7]} p={[m[0], 5.5, m[2]]} c={BRICK2} />)}
       {i % 3 === 1 ? <G p={[0, 5.2, 0]}>{[[-1, -1], [-1, 1], [1, -1], [1, 1]].map(([a, b], j) => <Cyl key={j} rt={0.1} h={1.4} p={[a * 1.1, 0.7, b * 1.1]} c="#b23a2a" seg={6} />)}<Cone rad={2.3} h={1.1} seg={4} p={[0, 1.9, 0]} r={[0, PI / 4, 0]} c="#3f4a4a" /></G> : null}
       <G p={[0, 5.4, 0]} vis={fire > 0.01}>
-        <Cone rad={0.7 * fire} h={1.8 * fire * (1 + 0.15 * Math.sin(t * 17 + i))} seg={6} p={[0, 0.9, 0]} c="#ff8a1a" o={{ emissive: "#ff6a00", ei: 1.6 }} cast={false} />
-        <Cone rad={0.4 * fire} h={1.1 * fire} seg={6} p={[0, 0.6, 0]} c="#ffe066" o={{ emissive: "#ffd000", ei: 1.6 }} cast={false} />
+        <Cone rad={1.1 * fire} h={2.8 * fire * (1 + 0.15 * Math.sin(t * 17 + i))} seg={6} p={[0, 1.4, 0]} c="#ff8a1a" o={{ emissive: "#ff6a00", ei: 1.8 }} cast={false} />
+        <Cone rad={0.6 * fire} h={1.7 * fire} seg={6} p={[0, 0.9, 0]} c="#ffe066" o={{ emissive: "#ffd000", ei: 1.8 }} cast={false} />
       </G>
-      <Puffs t={t} p={[0, 5.8, 0]} n={10} period={2.6} rise={14} size={1.3} c="#6b6b6b" on={smoke} drift={[1.2, 0, -0.6]} o={i * 0.13} />
+      <Puffs t={t} p={[0, 5.8, 0]} n={12} period={2.0} rise={14} size={1.7} c="#6b6b6b" on={smoke} drift={[1.2, 0, -0.6]} o={i * 0.13} />
     </G>
   );
 };

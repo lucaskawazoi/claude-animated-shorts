@@ -129,9 +129,11 @@ const Basin: React.FC<{ t: number }> = ({ t }) => {
     <G p={[BASIN.x, 0, BASIN.z]} sc={[1, Math.max(0.01, k), 1]}>
       <Box s={[3.4, 1.3, 2.0]} p={[0, 0.65, 0]} c="#d0806a" />
       <Pipe a={[-6.5, 1.0, 5]} b={[-1.7, 1.0, 0]} rad={0.2} c="#c8703a" />
-      <Box s={[3.0, 0.9, 1.6]} p={[0, 0.85, 0]} c={wc} o={{ opacity: 0.5, rough: 0.3, depthWrite: false }} cast={false} />
+      <Box s={[3.0, 0.9, 1.6]} p={[0, 0.85, 0]} c={wc} o={{ opacity: 0.75, rough: 0.3, depthWrite: false }} cast={false} />
+      {/* por cima sai a água limpa, pela boca da direita */}
+      {Array.from({ length: 6 }, (_, i) => { const u = fract(t * 1.2 + i / 6); return <Sph key={i} rad={0.12} p={[1.9 + u * 1.8, 1.2 - u * u * 1.0, 0]} c="#6fc4ff" o={{ emissive: "#3fa0ff", ei: 0.5 }} vis={clear > 0.5} cast={false} ws={6} hs={4} />; })}
       <Box s={[3.0, 0.2 * sink + 0.02, 1.6]} p={[0, 0.42 + 0.1 * sink, 0]} c="#b0884e" cast={false} />
-      {Array.from({ length: 14 }, (_, i) => <Sph key={i} rad={0.15} p={[-1.3 + (i % 7) * 0.43, lerp(1.25 - rnd(i) * 0.2, 0.5, clamp(sink * 1.2 - rnd(i + 3) * 0.2)), -0.5 + Math.floor(i / 7) * 0.9]} c="#c89048" cast={false} ws={6} hs={4} vis={clear < 0.95 || sink < 0.98} />)}
+      {Array.from({ length: 14 }, (_, i) => <Sph key={i} rad={0.2} p={[-1.3 + (i % 7) * 0.43, lerp(1.25 - rnd(i) * 0.2, 0.5, clamp(sink * 1.2 - rnd(i + 3) * 0.2)), -0.5 + Math.floor(i / 7) * 0.9]} c="#c89048" cast={false} ws={6} hs={4} vis={clear < 0.95 || sink < 0.98} />)}
       <Box s={[0.5, 0.25, 0.4]} p={[-1.9, 1.15, 0]} c="#9a4e3e" /><Box s={[0.5, 0.25, 0.4]} p={[1.9, 1.15, 0]} c="#9a4e3e" />
     </G>
   );

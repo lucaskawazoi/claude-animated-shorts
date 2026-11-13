@@ -9,9 +9,9 @@ export const T = {
   p1: find("pero una biblia", 0, 0.1), miles: find("miles de letras"), iguales: find("todas iguales"),
   b2: find("como haces miles", 0, 0.1), c2: ci(1), molde: find("un molde de mano"), viertes: find("viertes plomo"), enfria: find("se enfria"), sale: find("sale una letra"), esteMolde: find("este es el molde"),
   p2: find("pero la tinta", 0, 0.1), agua: find("hecha con agua"), resbala: find("resbala sobre"),
-  b3: find("solucion tinta", 0, 0.1), c3: find("tinta con aceite"), tinta: find("tinta con aceite"), espesa: find("espesa como"), estaTinta: find("esta es la tinta"),
+  b3: find("solucion tinta", 0, 0.1), c3: find("tinta con aceite"), tinta: find("tinta con aceite"), espesa: find("espesa como"), pega: find("se pega"), pasa: find("pasa limpia"), papel: find("al papel"), estaTinta: find("esta es la tinta"),
   p3: find("pero hay que apretar", 0, 0.1), parejo: find("fuerte y parejo"), pagina: find("pagina tras pagina"),
-  b4: find("como aprietas", 0, 0.1), c4: ci(2), prensa: find("una prensa de tornillo"), uvas: find("exprimian uvas"), rin: find("del rin"), estaPrensa: find("esta es la prensa"),
+  b4: find("como aprietas", 0, 0.1), c4: ci(2), prensa: find("una prensa de tornillo"), uvas: find("exprimian uvas"), rin: find("del rin"), girar: find("al girar"), aprieta: find("y aprieta"), estaPrensa: find("esta es la prensa"),
   p4: find("pero el libro", 0, 0.1), aMano: find("escrito a mano"),
   b5: find("solucion casi trescientos", 0, 0.1), c5: find("casi trescientos"), trescientos: find("casi trescientos"), unidas: find("letras unidas"), imitar: find("para imitar"),
   giro: find("aqui viene el giro"), fortuna: find("costaba una fortuna"), prestado: find("pidio prestado"), juicio: find("en mil cuatrocientos cincuenta y cinco"), fust: find("johann"), gano: find("le gano un juicio"), quedo: find("se quedo con"),
@@ -32,6 +32,6 @@ for (const a of [T.tipos, T.esteMolde, T.estaTinta, T.estaPrensa]) S.push(["ding
 for (const a of [T.anio, T.ciento, T.mil450, T.miles, T.trescientos, T.juicio, T.cuarenta]) S.push(["pop", a, -11]);
 S.push(["quill", 0.2, -14], ["quill", T.letra, -13], ["clack", T.ordenan, -12], ["clack", T.ordenan + 0.25, -13], ["thud", T.imprimen + 0.2, -11],
   ["pourmetal", T.viertes, -10], ["sizzle", T.enfria, -12], ["clack", T.sale + 0.1, -11], ["drip", T.resbala, -11], ["buzzer", T.resbala + 0.4, -13],
-  ["squelch", T.tinta + 0.2, -11], ["creak", T.prensa + 0.2, -10], ["thud", T.prensa + 0.9, -10], ["grapes", T.uvas, -11], ["paper", T.estaPrensa + 0.3, -12],
+  ["squelch", T.tinta + 0.2, -11], ["creak", T.girar, -10], ["thud", T.aprieta, -10], ["paper", T.papel, -13], ["grapes", T.uvas, -11], ["paper", T.estaPrensa + 0.3, -12],
   ["giro", T.giro, -9], ["coins", T.fortuna + 0.2, -10], ["gavel", T.gano, -7], ["sad", T.nada - 0.2, -11], ["fanfare", T.hoy, -8], ["confetti", T.cuarenta + 0.3, -11]);
 export const SFX = S;

@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, rnd } from "../../toy/kit";
 import { Clouds, Ground, GroundPal, Hills, Puffs, Sky, Trees } from "../../toy/scenery";
 import { COSTUMES, Crowd, Worker, poseOf, PoseName } from "../../toy/worker";
+import { CUTS } from "../../toy/cues";
 import { T } from "./cues";
 
 const PI = Math.PI;
@@ -90,7 +91,8 @@ const Copyist: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => (
     <Worker p={[0, -0.3, -1.25]} yaw={0} pose={poseOf("read", t)} t={t} c={{ ...COSTUMES.rome, top: "#6b4a2a", kilt: "#6b4a2a", kiltLen: 0.62, hat: "none", hatC: "#000" }} mustache={false} scale={1.1} />
   </G>
 );
-const typesIn = (t: number) => ease(t, T.ordenan - 0.2, T.imprimen);
+// as letras só voam depois do corte 2, para o plano aberto ver o caminho caixa → forma
+const typesIn = (t: number) => ease(t, Math.max(T.ordenan - 0.2, CUTS[1] + 0.1), T.imprimen);
 const typesBack = (t: number) => ease(t, T.usar - 0.1, T.tipos);
 const Case: React.FC<{ t: number }> = ({ t }) => {
   const many = ease(t, T.trescientos - 0.2, T.unidas + 0.6);
@@ -130,44 +132,73 @@ const Forme: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
   );
 };
 const Foundry: React.FC<{ t: number }> = ({ t }) => {
-  const pour = ease(t, T.viertes - 0.2, T.viertes + 0.4) * (1 - ease(t, T.enfria, T.enfria + 0.4));
-  const n = Math.floor(18 * ease(t, T.sale - 0.3, T.esteMolde + 0.6)) + (t > T.p2 ? 18 : 0);
+  // a concha sai do cadinho, para sobre o molde, inclina e derrama; o molde (duas metades) abre e solta uma letra que vai para a pilha
+  const go = ease(t, T.molde - 0.3, T.viertes), back = ease(t, T.enfria + 0.1, T.enfria + 0.8), at = go * (1 - back);
+  const tilt = ease(t, T.viertes, T.viertes + 0.4) * (1 - ease(t, T.enfria - 0.2, T.enfria + 0.1));
+  const pour = tilt, cool = ease(t, T.enfria, T.sale);
+  const open = ease(t, T.sale - 0.35, T.sale + 0.05) * (1 - ease(t, T.esteMolde - 0.2, T.esteMolde + 0.2));
+  const hop = ease(t, T.sale, T.sale + 0.6), first = t > T.sale - 0.05;
+  const n = Math.floor(17 * ease(t, T.sale + 0.6, T.esteMolde + 0.6)) + (t > T.p2 ? 18 : 0);
+  const M: V3 = [-0.5, 1.2, 0], pile = (k: number): V3 => [0.15 + (k % 6) * 0.17, 1.07 + Math.floor(k / 18) * 0.14, -0.35 + (Math.floor(k / 6) % 3) * 0.2];
+  const L: V3 = [lerp(-2.8, M[0], at), lerp(2.6, 2.05, at), lerp(-1.6, M[2], at)]; // concha (coords da mesa)
+  const P0 = pile(0), hp: V3 = [lerp(M[0], P0[0], hop), lerp(1.3, P0[1], hop) + Math.sin(hop * PI) * 0.5, lerp(M[2], P0[2], hop)];
   return (
     <G p={[-0.8, 0.3, -3.6]}>
       <Box s={[2.0, 1.6, 1.6]} p={[0, 0.8, 0]} c="#a85a3a" /><Box s={[0.8, 0.5, 0.1]} p={[0, 0.6, 0.81]} c="#ff8a1a" o={{ emissive: "#ff6a00", ei: 2.2 }} cast={false} />
       <Cyl rt={0.45} rb={0.35} h={0.5} p={[0, 1.85, 0]} c="#555" seg={10} /><Cyl rt={0.4} h={0.05} p={[0, 2.08, 0]} c="#ffb84a" o={{ emissive: "#ff8a00", ei: 2 }} seg={10} cast={false} />
       <Puffs t={t} p={[0, 2.2, 0]} n={5} period={2.2} rise={2.2} size={0.25} c="#d8d8d8" />
-      {/* mesa com o molde de mão e a pilha de letras idênticas */}
       <G p={[2.0, 0, 1.6]}>
         <Box s={[2.2, 1.0, 1.2]} p={[0, 0.5, 0]} c={WOOD} />
-        <Box s={[0.5, 0.4, 0.4]} p={[-0.5, 1.2, 0]} c="#7a4e2a" /><Box s={[0.12, 0.12, 0.12]} p={[-0.5, 1.45, 0]} c="#ffb84a" o={{ emissive: "#ff8a00", ei: 1.5 * pour }} vis={pour > 0.05} cast={false} />
-        {Array.from({ length: n }, (_, k) => <Box key={k} s={[0.16, 0.13, 0.16]} p={[0.15 + (k % 6) * 0.17, 1.07 + Math.floor(k / 18) * 0.14, -0.35 + (Math.floor(k / 6) % 3) * 0.2]} c="#b8bec6" cast={false} />)}
+        {/* molde de mão: duas metades de madeira com o miolo de ferro */}
+        {[-1, 1].map((sd) => <G key={sd} p={[M[0] + sd * (0.14 + 0.16 * open), M[1], M[2]]}><Box s={[0.26, 0.42, 0.46]} c="#7a4e2a" /><Box s={[0.06, 0.3, 0.3]} p={[-sd * 0.13, 0.04, 0]} c="#8a8f96" cast={false} /></G>)}
+        <Box s={[0.12, 0.06, 0.12]} p={[M[0], M[1] + 0.24, M[2]]} c="#ffb84a" o={{ emissive: "#ff7a00", ei: 2.5 * (1 - cool) }} vis={pour > 0.2 && !first} cast={false} />
+        {/* a concha e o fio de metal derretido */}
+        <G p={L} r={[0, 0, -1.1 * tilt]} vis={go > 0.01 && back < 0.99}><Sph rad={0.2} sc={[1, 0.6, 1]} c="#4a4a4a" ws={8} hs={6} /><Cyl rt={0.14} h={0.03} p={[0, 0.1, 0]} c="#ffb84a" o={{ emissive: "#ff8a00", ei: 2 }} seg={8} cast={false} /><Cyl rt={0.035} h={1.2} p={[0.7, 0.15, 0]} r={[0, 0, PI / 2 - 0.3]} c="#3a2a1e" seg={5} /></G>
+        <Cyl rt={0.035} h={0.62} p={[M[0], M[1] + 0.56, M[2]]} c="#ffb84a" o={{ emissive: "#ff8a00", ei: 2.6 }} seg={6} vis={pour > 0.35} cast={false} />
+        {/* a letra recém-fundida (ainda quente) pula para a pilha de letras idênticas */}
+        <Box s={[0.16, 0.13, 0.16]} p={hp} c={hop < 0.7 ? "#ffcf8a" : "#b8bec6"} o={{ emissive: "#ff8a00", ei: 0.8 * (1 - hop) }} vis={first && t < T.esteMolde + 0.6} cast={false} />
+        {Array.from({ length: n }, (_, k) => <Box key={k} s={[0.16, 0.13, 0.16]} p={pile(k + 1)} c="#b8bec6" cast={false} />)}
       </G>
     </G>
   );
 };
-const Ink: React.FC<{ t: number }> = ({ t }) => (
-  <G p={[5.0, 0.3, -3.2]}>
-    <Box s={[1.8, 1.0, 1.2]} p={[0, 0.5, 0]} c={WOOD} /><Box s={[1.0, 0.1, 0.8]} p={[0, 1.05, 0]} c="#3a3a3a" />
-    <Box s={[0.9, 0.04, 0.7]} p={[0, 1.12, 0]} c="#0e0b0a" o={{ rough: 0.15 }} vis={t > T.tinta - 0.1} cast={false} />
-    <Cyl rt={0.18} h={0.3} p={[-0.6, 1.15, 0.3]} c="#4aa8ff" seg={8} vis={t > T.p2 && t < T.tinta} />
-    {[-0.35, 0.35].map((dx, i) => <G key={i} p={[dx, 1.35 + 0.15 * Math.abs(Math.sin(t * 6 + i)) * (t > T.tinta && t < T.estaTinta ? 1 : 0), 0.2]}><Sph rad={0.2} c="#3a2a1e" ws={8} hs={6} /><Cyl rt={0.05} h={0.5} p={[0, 0.3, 0]} c={WOOD2} seg={5} /></G>)}
-  </G>
-);
+const Ink: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
+  const oil = t > T.b3 - 0.1, onType = ease(t, T.pega - 0.4, T.pega), done = ease(t, T.pasa - 0.5, T.pasa - 0.2);
+  const dab = t > T.tinta && t < T.pasa - 0.2 ? Math.abs(Math.sin((t - T.tinta) * 7)) : 0;
+  const black = ease(t, T.pega - 0.1, T.pega + 0.8), down = ease(t, T.pasa, T.pasa + 0.3) * (1 - ease(t, T.papel, T.papel + 0.4)), lifted = t > T.papel;
+  return (
+    <G p={[5.0, 0.3, -3.2]}>
+      <Box s={[1.8, 1.0, 1.2]} p={[0, 0.5, 0]} c={WOOD} />
+      {/* a pedra de tinta: azul (água) antes, preta e brilhante (óleo + fuligem) depois */}
+      <Box s={[0.72, 0.08, 0.7]} p={[-0.45, 1.04, 0]} c="#3a3a3a" />
+      <Box s={[0.66, 0.03, 0.62]} p={[-0.45, 1.1, 0]} c={oil ? "#0e0b0a" : "#4aa8ff"} o={{ rough: 0.12 }} vis={t > T.p2} cast={false} />
+      {/* a forma com 12 tipos: ficam pretos onde a boneca bate */}
+      <Box s={[0.66, 0.06, 0.52]} p={[0.45, 1.03, 0]} c="#3a3632" />
+      {Array.from({ length: 12 }, (_, k) => <Box key={k} s={[0.12, 0.1, 0.12]} p={[0.24 + (k % 4) * 0.14, 1.1, -0.15 + Math.floor(k / 4) * 0.15]} c={black > (k + 1) / 13 ? "#141010" : "#c8ced6"} o={{ rough: black > (k + 1) / 13 ? 0.15 : 0.6 }} cast={false} />)}
+      {[-0.13, 0.13].map((dz, i) => { const x = lerp(lerp(-0.45, 0.45, onType), 0.95, done); return (
+        <G key={i} p={[x + i * 0.12 - 0.06, 1.42 + 0.22 * dab - 0.05 * onType + 0.2 * done, dz]}><Sph rad={0.17} sc={[1, 0.8, 1]} c={oil ? "#1a1412" : "#3a2a1e"} ws={8} hs={6} /><Cyl rt={0.045} h={0.45} p={[0, 0.3, 0]} c={WOOD2} seg={5} /></G>); })}
+      {/* a folha desce sobre os tipos e sobe impressa, virada para a câmera */}
+      <Box s={[0.6, 0.012, 0.5]} p={[0.45, 1.17 + 0.5 * (1 - down), 0]} c="#f7f0dc" vis={t > T.pasa - 0.3 && !lifted} cast={false} />
+      <Page p={[0.45, 1.65, 0.25]} r={[-PI / 2 + 1.0, 0, 0]} tex={tex} s={0.62} vis={lifted && t < T.p3} />
+    </G>
+  );
+};
 /** a prensa de parafuso: o operário puxa a barra, a platina desce, a folha sai impressa */
-export const pressCycle = (t: number) => (t > T.prensa && t < T.giro ? 0.5 + 0.5 * Math.sin((t - T.prensa) * 3.2 - PI / 2) : 0);
+export const pressCycle = (t: number) => t > T.giro ? 0 : t < T.estaPrensa + 0.6 ? ease(t, T.girar, T.aprieta + 0.2) * (1 - ease(t, T.estaPrensa - 0.1, T.estaPrensa + 0.5)) : 0.5 - 0.5 * Math.cos((t - T.estaPrensa - 0.6) * 3.2);
 const Press: React.FC<{ t: number; tex: THREE.Texture }> = ({ t, tex }) => {
   const taken = ease(t, T.quedo - 0.1, T.quedo + 1.2), d = pressCycle(t);
   return (
     <G p={[11.5 + 2 * taken, 0.3, -3.0 + 11 * taken]}>
       <Box s={[0.5, 4.4, 0.5]} p={[-1.3, 2.2, 0]} c={WOOD2} /><Box s={[0.5, 4.4, 0.5]} p={[1.3, 2.2, 0]} c={WOOD2} />
       <Box s={[3.2, 0.5, 0.7]} p={[0, 4.2, 0]} c={WOOD2} /><Box s={[3.2, 0.4, 0.7]} p={[0, 3.2, 0]} c={WOOD2} />
-      <Cyl rt={0.18} h={1.4} p={[0, 2.6 - 0.25 * d, 0]} c="#c9a36a" seg={10} />
-      {Array.from({ length: 5 }, (_, k) => <Cyl key={k} rt={0.22} h={0.05} p={[0, 2.1 + k * 0.22 - 0.25 * d, 0]} r={[0.25, 0, 0]} c="#9a7a4a" seg={10} cast={false} />)}
-      <Box s={[2.0, 0.08, 0.12]} p={[0.9, 2.3 - 0.25 * d, 0.2]} r={[0, -0.6 + 1.0 * d, 0]} c={WOOD2} />
-      <Box s={[1.6, 0.25, 1.2]} p={[0, 1.75 - 0.3 * d, 0]} c={WOOD} />
+      {/* parafuso: desce 0,57 e gira (as roscas inclinadas balançam); a barra dá quase meia volta; a platina encosta na folha */}
+      <Cyl rt={0.18} h={2.2} p={[0, 3.0 - 0.57 * d, 0]} c="#c9a36a" seg={10} />
+      <G p={[0, 2.1 - 0.57 * d, 0]} r={[0, 5 * d, 0]}>{Array.from({ length: 5 }, (_, k) => <Cyl key={k} rt={0.24} h={0.05} p={[0, k * 0.22, 0]} r={[0.3, 0, 0]} c="#9a7a4a" seg={10} cast={false} />)}</G>
+      <G p={[0, 2.3 - 0.57 * d, 0]} r={[0, -0.6 + 2.6 * d, 0]}><Box s={[2.0, 0.09, 0.12]} p={[0.9, 0, 0]} c={WOOD2} /></G>
+      <Box s={[1.6, 0.25, 1.2]} p={[0, 1.75 - 0.57 * d, 0]} c={WOOD} />
       <Box s={[2.4, 0.9, 2.2]} p={[0, 0.45, 0.5]} c={WOOD} /><Box s={[1.4, 0.1, 1.0]} p={[0, 0.95, 0.2]} c="#2a2622" />
-      <Page p={[0, 1.02, 0.2]} tex={tex} vis={t > T.estaPrensa - 0.4 && t < T.giro} s={0.95} />
+      <Box s={[0.76, 0.012, 0.95]} p={[0, 1.02, 0.2]} c="#f7f0dc" vis={t > T.parejo && t < T.estaPrensa} cast={false} />
+      <Page p={[0, 1.02, 0.2]} tex={tex} vis={t >= T.estaPrensa && t < T.giro} s={0.95} />
     </G>
   );
 };
@@ -234,7 +265,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Clouds t={t} n={8} />
       <Town t={t} /><Workshop /><Vineyard t={t} />
       <Trees spots={[[-24, 0, 8], [-28, 0, 4], [22, 0, -6], [36, 0, -10], [-40, 0, -8]]} />
-      <Copyist t={t} tex={tex} /><Case t={t} /><Forme t={t} tex={tex} /><Foundry t={t} /><Ink t={t} /><Press t={t} tex={tex} /><Bibles t={t} tex={tex} />
+      <Copyist t={t} tex={tex} /><Case t={t} /><Forme t={t} tex={tex} /><Foundry t={t} /><Ink t={t} tex={tex} /><Press t={t} tex={tex} /><Bibles t={t} tex={tex} />
       <Fust t={t} /><Gavel t={t} /><Museum t={t} tex={tex} />
     </>
   );

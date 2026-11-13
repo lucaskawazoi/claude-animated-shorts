@@ -1,2 +1,2 @@
 // Episódio atual (troque com ./ep.sh <slug>, que também copia as palavras para src/words.json).
-export { EP } from "./coliseo/episode";
+export { EP } from "./galeon/episode";

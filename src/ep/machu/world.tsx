@@ -13,7 +13,8 @@ export const H = 10;
 const STONE = "#a9a59b", STONE2 = "#8f8b82", GRASS = "#6fbf48", JUNGLE = "#3f8f3a";
 const GROUND: GroundPal = { base: "#4f9a3a", patch: ["#468f34", "#5aa842", "#3f8a30"], blade: "#2f7a2a", x: [-80, 80], z: [-70, 50], nBlades: 300 };
 export const built = (t: number) => t < T.peru - 0.12;
-const quake = (t: number) => (t > T.tiembla - 0.3 && t < T.b3 ? 1 - ease(t, T.tiembla + 0.9, T.b3) : t > T.fallas && t < T.pie ? 0.5 : 0);
+// tremor: no «tiembla», no gancho e de novo no «aguanta» (o muro inclinado treme e não cai)
+const quake = (t: number) => (t > T.tiembla - 0.3 && t < T.b3 ? 1 - ease(t, T.tiembla + 0.9, T.b3) : t > T.fallas && t < T.pie ? 0.5 : t > T.aguanta - 0.9 && t < T.silleria - 0.2 ? 0.9 : 0);
 
 // ---------------------------------------------------------------- relevo
 const Ridge: React.FC = () => {
@@ -128,9 +129,9 @@ const Houses: React.FC<{ t: number }> = ({ t }) => {
 /** muro de silharia: pedras poligonais encaixadas, inclinado para dentro, com porta em trapézio */
 export const WALL = { x: 1.0, z: 8.6 };
 const Ashlar: React.FC<{ t: number }> = ({ t }) => {
-  const k = built(t) ? 1 : ease(t, T.talladas - 0.2, T.muros + 0.4), lean = ease(t, T.muros, T.muros + 0.5) * 0.1 + (built(t) ? 0.1 : 0);
+  const k = built(t) ? 1 : ease(t, T.talladas - 0.2, T.muros + 0.4), lean = ease(t, T.muros, T.muros + 0.5) * 0.16 + (built(t) ? 0.16 : 0);
   const door = built(t) ? 1 : ease(t, T.trapecio - 0.6, T.trapecio + 0.2);
-  const shake = quake(t) * 0.06 * Math.sin(t * 40);
+  const shake = quake(t) * 0.1 * Math.sin(t * 40);
   const stones = useMemo(() => {
     const out: { p: V3; s: V3; r: number }[] = []; let y = 0;
     for (let row = 0; row < 5; row++) { const h = 0.5 + rnd(row) * 0.25; let x = -3; while (x < 3) { const w = 0.6 + rnd(row * 13 + x * 7) * 0.7; if (!(row < 4 && x + w > -0.6 && x < 0.6)) out.push({ p: [x + w / 2, y + h / 2, 0], s: [w - 0.05, h - 0.05, 0.8], r: (rnd(row * 3 + x) - 0.5) * 0.12 }); x += w; } y += h; }
@@ -139,7 +140,7 @@ const Ashlar: React.FC<{ t: number }> = ({ t }) => {
   if (k <= 0.01) return null;
   return (
     <G p={[WALL.x + shake, H, WALL.z]} r={[-lean, 0, 0]}>
-      <Box s={[6.1, 2.9, 0.7]} p={[0, 1.45, -0.05]} c="#5a5650" cast={false} />
+      <Box s={[6.1, 2.9 * k, 0.7]} p={[0, 1.45 * k, -0.05]} c="#5a5650" cast={false} />
       {stones.map((s, i) => <Box key={i} s={s.s} p={[s.p[0], s.p[1] * k + (1 - k) * 3, s.p[2]]} r={[0, 0, s.r]} c={i % 3 ? STONE : "#b5b1a7"} vis={i / stones.length < k * 1.2} />)}
       {/* porta trapezoidal: mais estreita em cima */}
       <mesh position={[0, 0, 0.42]} material={mat("#2a2622")} visible={door > 0.01} scale={[1, door, 1]}>
@@ -152,13 +153,14 @@ const Ashlar: React.FC<{ t: number }> = ({ t }) => {
 /** manancial → canal de pedra → 16 fontes em fila, descendo */
 const Fountains: React.FC<{ t: number }> = ({ t }) => {
   const k = built(t) ? 1 : ease(t, T.manantial - 0.2, T.dieciseis + 0.5), flow = built(t) ? 1 : ease(t, T.canal, T.dieciseis + 0.4);
-  if (k <= 0.01) return null;
+  if (t < T.p4) return null; // ponytail: o manancial (pedra que borbulha) já está lá antes de ser nomeado
   return (
     <G>
       {/* canal da encosta da montanha (sul) até a primeira fonte */}
       {/* manancial: rocha com água borbulhando na borda sul do selado, e o canal até a primeira fonte */}
-      <Sph rad={1.0} p={[-3.8, H + 0.3, 11.2]} sc={[1.2, 0.8, 1]} c={STONE2} ws={8} hs={6} />
-      <Puffs t={t} p={[-3.8, H + 0.8, 11.2]} n={6} period={1.2} rise={0.6} size={0.18} c="#7cc8ff" on={k} />
+      <Sph rad={1.3} p={[-3.8, H + 0.3, 11.8]} sc={[1.2, 0.8, 1]} c={STONE2} ws={8} hs={6} />
+      <Puffs t={t} p={[-3.8, H + 1.0, 11.4]} n={9} period={1.0} rise={0.8} size={0.26} c="#7cc8ff" on={t > T.manantial - 0.4 ? 1 : 0} />
+      {Array.from({ length: 6 }, (_, j) => <Sph key={j} rad={0.11} p={[-3.8, H + 0.38, 11.2 - fract(t * 0.9 + j / 6) * 2.2]} c="#9fdcff" o={{ emissive: "#4ab0ff", ei: 0.5 }} vis={flow > 0.2} cast={false} ws={6} hs={4} />)}
       <Box s={[0.6, 0.3, 2.2 * k]} p={[-3.8, H + 0.15, 10.1]} c={STONE2} />
       <Box s={[0.35, 0.05, 2.2 * flow]} p={[-3.8, H + 0.32, 10.1]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
       {Array.from({ length: 16 }, (_, i) => {
@@ -184,6 +186,7 @@ const Quarry: React.FC<{ t: number }> = ({ t }) => {
       {[0, 1, 2].map((i) => <Box key={i} s={[0.06, 2.6, 0.06]} p={[2.9 + i * 0.6, H + 1.4, -13.38]} r={[0, 0, 0.3 - i * 0.3]} c="#ff3b30" o={{ emissive: "#ff2a1a", ei: 1.4 }} vis={crack > 0.05 && split < 0.9} cast={false} />)}
       {[[0, -15.3], [6.6, -14.8], [-3, -14.2]].map(([x, z], i) => <Box key={i} s={[2.2, 1.6, 1.8]} p={[x, H + 0.8, z]} r={[0, rnd(i) * 0.6, 0]} c="#a3a095" />)}
       <Crowd list={cutters} t={t} c={COSTUMES.inca} vis={t > T.p5 && t < T.siglo} />
+      <Puffs t={t} p={[2.3, H + 1.1, -13.4]} n={6} period={0.5} rise={0.5} size={0.12} c="#d8d3c8" on={t > T.labra - 0.3 && t < T.siglo ? 1 : 0} />
     </G>
   );
 };
