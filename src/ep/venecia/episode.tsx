@@ -10,7 +10,7 @@ import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import type { Costume } from "../../toy/worker";
-import { Open, SFX, T } from "./cues";
+import { BOUNCES, LOGHIT, NOPE, Open, SFX, SLAMS, T } from "./cues";
 import { IMPACT, POLE2_X, TOP, World, gondolaAt, gondolaStern, malletAt, openOf, pilesDriven, raftAt } from "./world";
 import { EXPOSURE } from "./exposure";
 
@@ -56,11 +56,17 @@ const openCam = (t: number) => {
   return steady(c, t);
 };
 
+const slamKick = (c: CamState, t: number): CamState => {
+  let k = 0; for (const s of Object.values(SLAMS).flat()) if (t >= s) k = Math.max(k, 1 - prog(t, s, s + 0.3));
+  return k > 0 ? { ...c, pos: [c.pos[0], c.pos[1] + 0.14 * k * Math.sin(t * 80), c.pos[2]] } : c;
+};
+const kicked = (sh: Shot): Shot => ({ ...sh, fn: (t) => slamKick(sh.fn!(t), t) });
+
 const SHOTS: Shot[] = [
   { name: "abertura a|b|c (padrão c): «una ciudad entera sobre el agua»", t0: 0, keys: OPEN_KEYS.c, fn: openCam },
-  shot("debajo: a floresta de pilotes na face do barro, onda de brilho contando «millones»", T.debajo, [
+  kicked(shot("debajo: a floresta de pilotes na face do barro, onda de brilho contando «millones»; os 2 que faltam despencam e se cravam", T.debajo, [
     K(T.debajo, [1.4, -1.0, 12.6], [1.0, -2.0, 3.0], 54, 2), K(T.debajo + 0.45, [0.2, -1.6, 12.2], [0.4, -2.2, 3.0], 54, -0.5),
-    K(T.clavados, [-1.6, -2.2, 11.6], [-1.2, -2.6, 3.0], 54, 0.5), K(T.siguen - 0.05, [-3.4, -2.0, 11.4], [-2.6, -2.4, 3.0], 54, 0)]),
+    K(T.clavados, [-1.6, -2.2, 11.6], [-1.2, -2.6, 3.0], 54, 0.5), K(T.siguen - 0.05, [-3.4, -2.0, 11.4], [-2.6, -2.4, 3.0], 54, 0)])),
   shot("a cidade de longe, sinos → ⏪ «Venecia, hace más de mil años»: a ilha vazia", T.siguen, [
     K(T.siguen, [12.0, 7.5, 19.0], [1.0, 1.5, -1.0], 58, -2), K(T.siguen + 0.45, [9.6, 5.4, 16.4], [1.0, 1.5, -1.0], 58, 0.5),
     K(T.venecia + 0.3, [7.5, 6.5, 15.5], [0.0, 0.5, -1.0], 58, 0.9), ...hold(C1, [-2.5, 11.0, 18.5], [0.0, 0.0, -1.5], 58, -0.5)]),
@@ -69,7 +75,7 @@ const SHOTS: Shot[] = [
     K(T.hormigon, [-11.8, 3.8, 7.2], [-2.4, 2.0, 1.1], 52, 0.5), K(T.madera, [-11.4, 4.0, 8.4], [-2.4, 2.1, 1.2], 50, -0.5),
     K(T.brazos, [-9.0, 3.6, 9.4], [-2.0, 2.2, 0.8], 48, 0.5), K(T.p1 - 0.05, [-8.4, 3.4, 9.8], [-1.8, 2.2, 0.8], 48, 0)]),
   shot("do fundo do buraco: a face de barro → «blando» treme → a casa pousa e afunda (✖)", T.p1, [
-    K(T.p1, [4.6, -2.4, 12.0], [3.6, -1.6, 3.0], 52, -1.5), K(T.p1 + 0.45, [4.2, -1.8, 12.4], [3.6, -1.2, 3.0], 52, 0.5),
+    K(T.p1, [4.6, -2.4, 12.0], [3.6, -1.6, 3.0], 52, -1.5), K(T.p1 + 0.45, [4.2, -1.8, 12.4], [3.6, -0.6, 3.0], 52, 0.5),
     K(T.blando - 0.3, [3.6, 0.6, 12.8], [3.8, -0.2, 2.0], 52, -0.5), K(T.blando + 0.3, [3.4, 1.4, 13.0], [3.8, 0.0, 1.5], 52, 0.5),
     K(T.pones, [2.8, 2.4, 14.0], [3.8, 1.0, 2.0], 54, -0.5), K(T.hunde, [4.6, 1.0, 12.8], [4.0, 0.0, 3.0], 52, 0.5),
     ...hold(C2, [4.8, 0.6, 12.4], [4.0, -0.6, 3.0], 52, 0)]),
@@ -128,10 +134,13 @@ const SHOTS: Shot[] = [
     K(T.cerrada, [2.0, -1.6, 8.2], [3.5, 0.0, 3.0], 50, 2), K(T.cerrada + 0.45, [2.4, -1.2, 8.6], [3.5, 0.1, 3.0], 50, -0.5),
     K(T.noentra, [3.0, -0.7, 9.4], [3.5, 0.2, 3.0], 50, 0.5), K(T.estaIstria, [4.4, 0.9, 9.8], [3.5, 1.0, 3.0], 54, -0.5),
     ...hold(C7, [4.2, 1.3, 10.4], [3.5, 1.3, 3.0], 54, 0)]),
-  shot("hoje, de cima: a cidade inteira, maré alta entrando pelas 3 bocas", C7, [
-    K(C7, [6.0, 70.0, 40.0], [0.0, 0.0, 14.0], 58, 5), K(C7 + 0.5, [1.0, 66.0, 41.0], [0.0, 0.0, 14.5], 58, -3),
-    K(T.giro + 0.3, [-2.0, 63.0, 43.0], [0.0, 0.0, 15.0], 58, 2.5), K(T.hoy + 0.4, [-2.0, 59.0, 47.0], [0.0, 0.0, 16.5], 58, -0.5),
-    K(T.mareas + 0.3, [-1.0, 56.0, 50.0], [0.0, 0.0, 18.0], 58, 0.5), K(T.levanta - 0.05, [0.0, 54.0, 52.0], [0.0, 0.0, 19.0], 58, 0)]),
+  shot("hoje, de cima e descendo: a cidade inteira, a maré entra pelas 3 bocas e sobe até a praça", C7, [
+    K(C7, [10.0, 34.0, 46.0], [0.0, 0.0, 8.0], 58, 5), K(C7 + 0.5, [6.0, 30.0, 44.0], [0.0, 0.0, 8.0], 58, -3),
+    K(T.giro + 0.3, [3.0, 24.0, 40.0], [0.0, 0.0, 6.0], 58, 2.5), K(T.hoy + 0.3, [2.0, 17.0, 32.0], [0.5, 0.0, 3.0], 58, -0.5),
+    K(T.mareas - 0.05, [5.0, 7.0, 15.0], [2.5, 0.4, -1.5], 56, 0)]),
+  shot("inserto «mareas altas»: a praça alagada, água no joelho do operário, uma góndola passa pela praça", T.mareas, [
+    K(T.mareas, [11.8, 2.4, 0.4], [4.0, 1.8, -2.0], 54, -2), K(T.mareas + 0.45, [11.5, 2.5, 0.3], [3.8, 1.8, -2.0], 54, 0.5),
+    K(T.levanta - 0.05, [11.2, 2.6, 0.2], [3.6, 1.8, -2.0], 54, 0)]),
   shot("de dentro da laguna: as comportas amarelas sobem na boca oeste → chicote: as 3 bocas em fila", T.levanta, [
     K(T.levanta, [-12.0, 2.8, 20.0], [-14.0, 0.8, 29.6], 50, -2), K(T.levanta + 0.45, [-12.6, 2.1, 21.6], [-14.0, 0.9, 29.6], 50, 0.5),
     K(T.compuertas + 0.4, [-12.9, 1.8, 22.4], [-14.0, 1.0, 29.6], 50, -0.5), K(T.entradas, [26.0, 12.0, 38.0], [-2.0, 0.0, 28.0], 56, 0.5),
@@ -146,6 +155,8 @@ const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState
 const onRaft = (t: number): V3 => { const r = raftAt(t); return [r.p[0] - 0.3, r.p[1] + 0.22, r.p[2] - 0.4]; };
 const onGondola = (t: number): V3 => { const g = gondolaAt(t), s = gondolaStern(t); return [g[0] + s[0], g[1] + 0.25, g[2] + s[2]]; };
 const toMallet = (t: number): V3 => { const u = ease(t, T.clavan - 0.3, T.clavan + 0.3); return [lerp(0.9, malletAt(t).x - 2.6, u), TOP, -0.6]; };
+// o tronco bate: pula, cai escorregando pela balsa (desliza 0,9 com os braços tentando se segurar) e levanta apontando
+const hop = (t: number): V3 => { const a = onRaft(t), u = ease(t, LOGHIT + 0.4, LOGHIT + 0.75); return [a[0] + 0.25 * u, a[1] + 0.9 * Math.sin(Math.PI * prog(t, LOGHIT, LOGHIT + 0.42)), a[2] + 0.9 * u]; };
 const fall = (t: number): V3 => { const a = onRaft(T.pudre + 0.12), u = ease(t, T.pudre + 0.12, T.pudre + 0.55); return [a[0] - 0.8 * u, a[1] + 0.7 * Math.sin(Math.PI * u) - 2.8 * u * u, a[2] - 0.6 * u]; };
 // no gancho o gondoleiro olha para onde a góndola vai (na abertura b ela cruza o quadro de lado); na c ele leva um susto
 const W0 = S([-9.8, 0.3, -13], 0.4, "present", { follow: onGondola, scale: 1.0 });
@@ -160,7 +171,13 @@ const WORKER: [number, WorkerState][] = [
   [T.siguen, S([-9.8, 0.3, -9], 0.4, "cheer", { follow: onGondola, scale: 1.0 })],
   [C1 - 0.1, S([-0.4, TOP, -0.6], -1.0, "present", { scale: 0 })],
   [C1, S([-0.4, TOP, -0.6], -1.0, "present")],
-  [T.hormigon, S([-0.4, TOP, -0.6], -1.0, "think")],
+  // «no hay motores, ni hormigón, ni acero»: estende a mão para cada um e leva o susto quando some
+  [C1 + 0.12, S([-0.4, TOP, -0.6], -0.9, "point")],
+  [NOPE[0][1], S([-0.4, TOP, -0.6], -1.1, "alarm")],
+  [T.hormigon, S([-0.4, TOP, -0.6], -0.9, "point")],
+  [NOPE[1][1], S([-0.4, TOP, -0.6], -1.1, "alarm")],
+  [T.acero, S([-0.4, TOP, -0.6], -0.9, "point")],
+  [NOPE[2][1], S([-0.4, TOP, -0.6], -1.1, "alarm")],
   [T.madera, S([-0.4, TOP, -0.6], -1.2, "point")],
   [T.brazos, S([-0.4, TOP, -0.6], -1.0, "cheer")],
   [T.p1, S([0.9, TOP, -0.6], 0.6, "think")],
@@ -183,6 +200,11 @@ const WORKER: [number, WorkerState][] = [
   [C4, S([-10.5, 0.4, -24], 0.3, "present", { follow: onRaft })],
   [T.rio, S([-10, 0.3, -21], 0.3, "belly", { follow: onRaft })],
   [T.flotantes, S([-9, 0.3, -18], 0.3, "point", { follow: onRaft })],
+  // o tronco solto bate na balsa: pula, escorrega de costas, levanta apontando
+  [LOGHIT, S([-9, 0.3, -18], 0.3, "alarm", { follow: hop })],
+  [LOGHIT + 0.42, S([-9, 0.3, -18], 0.9, "pull", { follow: hop })],
+  [LOGHIT + 0.8, S([-9, 0.3, -18], -0.4, "alarm", { follow: hop })],
+  [LOGHIT + 1.15, S([-9, 0.3, -18], 0.5, "point", { follow: hop })],
   [T.p3, S([-8.5, 0.3, -17], 0.6, "pull", { follow: onRaft })],
   [T.pudre + 0.12, S([-8.5, 0.3, -17], 0.6, "alarm", { follow: fall })],
   [T.pudre + 0.62, S([7.6, TOP, 0.8], 0, "idle", { follow: fall, scale: 0 })],
@@ -195,7 +217,8 @@ const WORKER: [number, WorkerState][] = [
   [T.blanca, S([6.5, TOP, 1.0], -0.6, "point")],
   [T.estaIstria, S([6.5, TOP, 1.0], -0.4, "cheer")],
   [C7, S([8.6, 0.8, 27.0], 0.3, "present")],
-  [T.mareas, S([8.6, 0.8, 27.0], 0.3, "alarm")],
+  [T.mareas - 0.02, S([4.0, TOP, -1.6], 1.4, "alarm")],     // inserto: na praça alagada
+  [T.levanta, S([8.6, 0.8, 27.0], 0.3, "alarm")],
   [T.compuertas, S([8.6, 0.8, 27.0], -0.6, "point")],
   [T.esas, S([8.6, 0.8, 27.0], 0.6, "think")],
   [T.manda, S([8.6, 0.8, 27.0], 0.3, "cheer")],
@@ -207,7 +230,7 @@ const VENECIANO: Costume = { skin: "#e0aa82", top: "#2f5fa8", bottom: "#a8322a",
 const hud: HudData = {
   pills: [
     { a: T.ciudad + 0.1, b: T.millones - 0.1, label: "UNA CIUDAD", value: () => "SOBRE EL AGUA", y: 300, tone: "gold" },
-    { a: T.millones, b: T.siguen - 0.1, label: "TRONCOS", value: (t) => `+${count(t, T.millones, T.millones + 1.0, 0, 1000000)}`, y: 440 },
+    { a: T.millones, b: T.siguen - 0.1, label: "TRONCOS", value: (t) => (t >= SLAMS[7][1] ? "+1.000.002" : t >= SLAMS[9][1] ? "+1.000.001" : `+${count(t, T.millones, T.millones + 1.0, 0, 1000000)}`), y: 440 },
     { a: T.siguen, b: T.venecia - 0.1, label: "SIGUEN AHÍ", value: () => "SIGLOS", y: 440, tone: "gold" },
     { a: T.venecia, b: T.nohay - 0.1, label: "HACE", value: () => "+1000 AÑOS", y: 440, tone: "gold" },
     { a: T.nohay, b: T.p1 - 0.1, label: "MOTORES", value: () => "0", y: 440, tone: "red" },
@@ -239,16 +262,16 @@ const hud: HudData = {
   ],
   alerts: [T.p1, T.p2, T.p3, T.p4],
   rewinds: [T.venecia, T.b1, T.b2, T.b3, T.b4],
-  crosses: [[T.hunde, T.hunde + 0.95], [T.pudre, T.pudre + 0.8]],
+  crosses: [[T.hunde, T.hunde + 0.95], [T.pudre, T.pudre + 0.8], [BOUNCES[0], BOUNCES[0] + 0.55]],
   stamps: [[T.b1, T.c1, "SIN HORMIGÓN"], [T.b2, T.c2, "SIN CAMIONES"], [T.b4, T.c3, "SIN CEMENTO"]],
   reward: { a: T.manda, len: T.end - T.manda, top: "VENECIA", big: (t) => `+${count(t, T.manda, T.manda + 1.2, 0, 1000)} AÑOS`, sub: "SOBRE PILOTES SIN MOTOR" },
   Extra: ({ t }) => {
-    const ok = win(t, T.cede + 0.1, T.pilotes - 0.05, 0.12), sm = win(t, T.esas, T.manda - 0.1, 0.15), hit = t >= T.motores2;
+    // ✔: «ya no cede» (o contrário do ✖ da casa) e a pedra de Ístria logo depois do ✖ da água que bateu nela
+    const okA = t < T.p2 ? T.cede + 0.1 : BOUNCES[0] + 0.6, ok = Math.max(win(t, T.cede + 0.1, T.pilotes - 0.05, 0.12), win(t, BOUNCES[0] + 0.6, T.estaIstria - 0.1, 0.12)), sm = win(t, T.esas, T.manda - 0.1, 0.15), hit = t >= T.motores2;
     return (
       <>
-        {/* «ya no cede»: o contrário do ✖ da casa que afundou */}
         {ok > 0 ? (
-          <div style={{ position: "absolute", left: 1080 / 2 - 110, top: 120, width: 220, height: 220, opacity: ok, transform: `scale(${pop(t, T.cede + 0.1, 0.3)})` }}>
+          <div style={{ position: "absolute", left: 1080 / 2 - 110, top: 120, width: 220, height: 220, opacity: ok, transform: `scale(${pop(t, okA, 0.3)})` }}>
             <svg viewBox="0 0 100 100" width="220" height="220"><path d="M16 54 L40 78 L86 24" fill="none" stroke="#14202b" strokeWidth="26" strokeLinecap="round" strokeLinejoin="round" /><path d="M16 54 L40 78 L86 24" fill="none" stroke="#3ee06a" strokeWidth="15" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </div>) : null}
         {/* a ironia do giro: o carimbo do canal «SIN MOTORES» leva um tranco do «¡CON MOTORES!» vermelho */}

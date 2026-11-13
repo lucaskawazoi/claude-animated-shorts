@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBack, prog, rnd, sstep } from "../../toy/kit";
 import { Clouds, Puffs, Sky, Trees } from "../../toy/scenery";
 import { CUTS } from "../../toy/cues";
-import { DRIVE, HITS, OPEN_DEFAULT, Open, T } from "./cues";
+import { BOUNCES, DRIVE, FIN, HITS, LOGHIT, MUSH0, NOPE, OPEN_DEFAULT, Open, SLAMS, T } from "./cues";
 
 const PI = Math.PI;
 export const FZ = 3;            // a face do corte
@@ -49,8 +49,9 @@ export const BASE_HIT = IMPACT + (SETTLE - IMPACT) * (1 - Math.sqrt((-FLOOR) / T
 const cityK = (t: number, a = 0) => giro(t) ? 1 : hook(t) ? (openOf() === "a" ? clamp(outBack(prog(t, a, a + 0.3)), 0, 1.15) : 1) : 1 - ease(t, T.venecia, T.venecia + 0.6);
 
 // ---------------------------------------------------------------- níveis de água (o giro: maré alta, comportas)
-export const seaY = (t: number) => (giro(t) ? 0.9 * ease(t, T.mareas - 0.6, T.mareas + 0.6) : 0);
-export const lagoonY = (t: number) => (giro(t) ? 0.5 * ease(t, T.mareas - 0.5, T.mareas + 0.7) * (1 - ease(t, T.compuertas + 0.4, T.entradas + 0.8)) : 0);
+export const seaY = (t: number) => (giro(t) ? 0.9 * ease(t, T.hoy, T.mareas + 0.4) : 0);
+// acqua alta: a laguna passa do topo da ilha (0,15) e alaga a praça até o joelho do operário; as comportas a baixam
+export const lagoonY = (t: number) => (giro(t) ? 0.7 * ease(t, T.hoy + 0.2, T.mareas + 0.3) * (1 - ease(t, T.compuertas + 0.4, T.entradas + 0.8)) : 0);
 const gateAng = (t: number, k: number) => (giro(t) ? ease(t, T.levanta + 0.1 + k * 0.12, T.levanta + 0.75 + k * 0.12) * 0.9 : 0);
 
 // ---------------------------------------------------------------- relevo: barro, face do corte, laguna, terra firme, Alpes, Lido
@@ -211,7 +212,7 @@ const Compressor: React.FC<{ t: number }> = ({ t }) => {
 };
 /** ondas da maré entrando pelas bocas (e batendo nas comportas depois que sobem) */
 const Tide: React.FC<{ t: number }> = ({ t }) => {
-  if (!giro(t) || t < T.mareas - 0.6 || t > T.entradas + 1.2) return null;
+  if (!giro(t) || t < T.hoy - 0.2 || t > T.entradas + 1.2) return null;
   const blocked = ease(t, T.levanta + 0.6, T.levanta + 1.1);
   return (
     <G>
@@ -229,8 +230,11 @@ const RISE = 4.93; // quanto o pilote fica para fora antes de cravado (ponta enc
 const depthOf = (i: number, t: number) => DRIVE[i].hits.reduce((s, h) => s + ease(t, h - 0.03, h + 0.04) / DRIVE[i].hits.length, 0);
 const demoOff = (i: number, t: number) => RISE * (1 - depthOf(i, t)) + 1.2 * (1 - ease(t, DRIVE[i].a, DRIVE[i].a + 0.16));
 export const pilesDriven = (t: number) => DRIVE.filter((_, i) => depthOf(i, t) > 0.99).length;
+/** «millones de troncos»: na parede do plano 2 faltam 2 pilotes, que despencam e se cravam (o contador vira 1.000.001, 1.000.002) */
 const pileState = (j: number, t: number): { vis: boolean; off: number } => {
   if (giro(t)) return { vis: true, off: 0 };
+  const sl = SLAMS[j];
+  if (sl && t >= T.debajo && t < T.siguen) return { vis: true, off: 2.2 * (1 - 0.5 * ease(t, sl[0] - 0.04, sl[0]) - 0.5 * ease(t, sl[1] - 0.04, sl[1])) - 0.1 * Math.sin(PI * prog(t, sl[1], sl[1] + 0.15)) };
   if (hook(t)) { if (openOf() !== "a") return { vis: true, off: 0 }; const s = -0.35 + j * 0.05; return { vis: t >= s - 0.04, off: 6 * (1 - ease(t, s, s + 0.1)) }; }
   if (t < T.venecia + 0.8) { const a = T.venecia + 0.015 * (22 - j), u = ease(t, a, a + 0.3); return { vis: u < 0.98, off: 7 * u }; }
   const i = j - 15;
@@ -258,6 +262,8 @@ const Piles: React.FC<{ t: number }> = ({ t }) => {
           </G>
         );
       })}
+      {/* barro espirrando da ponta a cada batida */}
+      {Object.entries(SLAMS).flatMap(([j, hs]) => hs.map((h, k) => <Puffs key={`${j}${k}`} t={t} p={[PX(+j), -4.7 + 1.1 * (1 - k), FZ + 0.3]} n={5} period={0.3} rise={0.4} size={0.18} c="#6b4a2e" drift={[0, 0.2, 0.4]} on={t > h && t < h + 0.3 && t < T.siguen ? 1 : 0} />))}
     </G>
   );
 };
@@ -431,37 +437,59 @@ const DemoHouse: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
-/** gotas de água salgada subindo pelo barro: antes entram nos tijolos; depois da Ístria batem embaixo dela e voltam */
+/** gotas de água salgada subindo pelo barro: antes entram nos tijolos; depois da Ístria sobem em fila, BATEM na pedra branca
+ *  e voltam (3 tentativas: «casi no entra» 65,9 s com ✖/✔ no painel, 67,0 e 68,0) */
 const SaltDrops: React.FC<{ t: number }> = ({ t }) => {
   const before = t > T.sube - 0.3 && t < T.entre, after = t > T.cerrada - 0.2 && t < CUTS[6];
   if (!before && !after) return null;
-  return (
+  if (before) return (
     <G>
       {Array.from({ length: 14 }, (_, i) => {
         const u = fract(t * 0.75 + i / 14), x = 1.8 + (i % 7) * 0.55 + 0.27;
-        const y = before ? lerp(-2.6, 2.6, u) : Math.min(0.24, lerp(-2.6, 0.6, u));
-        const bounce = after && lerp(-2.6, 0.6, u) > 0.24;
-        return <Sph key={i} rad={0.1} p={[x, y - (bounce ? 0.25 * Math.sin(PI * prog(u, 0.88, 1)) : 0), FZ + 0.32]} sc={[1, 1.3, 1]} c="#4ab0ff" o={{ emissive: "#2f8fd8", ei: 0.5 }} cast={false} ws={8} hs={6} />;
+        return <Sph key={i} rad={0.1} p={[x, lerp(-2.6, 2.6, u), FZ + 0.32]} sc={[1, 1.3, 1]} c="#4ab0ff" o={{ emissive: "#2f8fd8", ei: 0.5 }} cast={false} ws={8} hs={6} />;
       })}
-      {after ? <Box s={[4.0, 0.05, 0.05]} p={[3.5, 0.3, FZ + 0.08]} c="#4ab0ff" o={{ emissive: "#2f8fd8", ei: 0.8 }} cast={false} /> : null}
+    </G>
+  );
+  const flash = Math.max(...BOUNCES.map((h) => (t >= h ? 1 - prog(t, h, h + 0.35) : 0)));
+  return (
+    <G>
+      {BOUNCES.map((h, w) => {
+        const a = w === 0 ? T.cerrada - 0.2 : h - 0.9;
+        if (t < a || t > h + 0.8) return null;
+        return Array.from({ length: 7 }, (_, i) => {
+          const x = 1.8 + i * 0.55 + 0.27, d = t - h - (i % 3) * 0.02;
+          // sobe acelerando até encostar na pedra (y 0,22), achata e volta para baixo espalhando
+          const y = d < 0 ? lerp(-2.6, 0.22, prog(t, a, h) ** 1.6) : 0.22 - 1.6 * d - 4 * d * d, sq = d >= 0 && d < 0.1 ? 1 - Math.sin(PI * d / 0.1) * 0.5 : 1;
+          return <Sph key={`${w}${i}`} rad={0.15} p={[x + (d > 0 ? (i - 3) * 0.3 * d : 0), y, FZ + 0.32]} sc={[2 - sq, 1.3 * sq, 1]} c="#4ab0ff" o={{ emissive: "#2f8fd8", ei: 0.6 }} cast={false} ws={10} hs={8} />;
+        });
+      })}
+      <Box s={[4.0, 0.06, 0.06]} p={[3.5, 0.3, FZ + 0.08]} c={flash > 0.3 ? "#ffffff" : "#4ab0ff"} o={{ emissive: "#8fd0ff", ei: q(0.8 + 1.2 * flash) }} cast={false} />
+      {[2.4, 3.7, 5.0].map((x) => <Puffs key={x} t={t} p={[x, 0.26, FZ + 0.4]} n={4} period={0.3} rise={0.25} size={0.09} c="#bfe6ff" drift={[0, -0.3, 0.3]} on={flash > 0.4 ? 1 : 0} />)}
     </G>
   );
 };
 
 // ---------------------------------------------------------------- o problema: a casa posta direto no barro afunda inclinando
+// já desce pendurada numa corda desde ~14,2 s, balança sobre o barro que treme, a corda arrebenta no «pones», pousa e afunda
+// devagar até o telhado sumir (~19,8 s, a câmera de cima vê a casa ir embora até o chicote)
+const SINK0 = T.p1 + 0.2, SNAP = T.pones;
 const SinkHouse: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T.pones - 0.05 || t > T.hunde + 2.1 || hook(t)) return null;
-  const drop = (1 - ease(t, T.pones, T.encima - 0.05)) * 6, sq = Math.sin(PI * prog(t, T.encima - 0.05, T.encima + 0.25));
-  const s = ease(t, T.hunde - 0.05, T.hunde + 1.9), y = drop - 3.8 * s + 0.08 * Math.sin(t * 18) * (s > 0 && s < 1 ? 1 : 0), rz = 0.5 * ease(t, T.hunde - 0.05, T.hunde + 0.8) + 0.06 * Math.sin(t * 11) * s;
+  if (t < SINK0 || t > T.hunde + 2.9 || hook(t)) return null;
+  const hang = t < SNAP ? lerp(4.6, 1.9, ease(t, SINK0, T.blando - 0.2)) + 0.08 * Math.sin(t * 5) : 1.9 * (1 - prog(t, SNAP, T.encima - 0.05) ** 2);
+  const sq = Math.sin(PI * prog(t, T.encima - 0.05, T.encima + 0.25)), swing = t < SNAP ? 0.12 * Math.sin(t * 3.4) : 0;
+  const s = prog(t, T.hunde - 0.05, CUTS[1] + 1.29) ** 0.9, y = hang - 3.75 * s + 0.08 * Math.sin(t * 18) * (s > 0 && s < 1 ? 1 : 0), rz = swing + 0.5 * ease(t, T.hunde - 0.05, T.hunde + 0.8) + 0.06 * Math.sin(t * 11) * s;
   return (
     <G>
+      {t < SNAP ? <Pipe a={[4.0 - 3.2 * Math.sin(rz), TOP + y + 3.2 * Math.cos(rz), FZ - 1.08]} b={[4.0, TOP + y + 14, FZ - 1.08]} rad={0.04} c="#e8d9a8" cast={false} /> : null}
       <G p={[4.0, TOP + y, FZ + 0.02 - 1.1]} r={[0, 0, rz]} sc={[1 + 0.1 * sq, 1 - 0.14 * sq, 1]}>
         <Box s={[2.6, 2.2, 2.2]} p={[0, 1.1, 0]} c="#c86a4a" />
         {[-0.65, 0.65].map((x) => <Box key={x} s={[0.4, 0.6, 0.06]} p={[x, 1.35, 1.12]} c="#3a2a2a" cast={false} />)}
         <Box s={[0.5, 0.9, 0.06]} p={[0, 0.45, 1.12]} c="#5a3a20" cast={false} />
         <Cone rad={1.9} h={1.0} seg={4} p={[0, 2.7, 0]} r={[0, PI / 4, 0]} sc={[1, 1, 0.85]} c="#b4532a" o={{ flat: true }} />
+        {/* a chaminé é a última coisa a sumir no barro (vista de cima até o chicote) */}
+        <Box s={[0.32, 0.95, 0.32]} p={[0.7, 3.42, 0]} c="#e9d9c0" /><Box s={[0.42, 0.1, 0.42]} p={[0.7, 3.92, 0]} c="#8f3a28" />
       </G>
-      <Puffs t={t} p={[4.0, TOP, 1.9]} n={8} period={0.6} rise={0.7} size={0.35} c="#6b4a2e" on={t > T.hunde && t < T.hunde + 2.0 ? 1 : 0} drift={[0, 0, 0.2]} />
+      <Puffs t={t} p={[4.0, TOP, 1.9]} n={8} period={0.6} rise={0.7} size={0.35} c="#6b4a2e" on={t > T.hunde && t < T.hunde + 2.7 ? 1 : 0} drift={[0, 0, 0.2]} />
     </G>
   );
 };
@@ -480,6 +508,29 @@ const Materials: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+/** «no hay motores, ni hormigón, ni acero»: cada um aparece no barro, treme e some num puf (o operário estende a mão e leva o susto) */
+const Nope: React.FC<{ t: number }> = ({ t }) => {
+  if (t < NOPE[0][0] || t > NOPE[2][1] + 0.4) return null;
+  const items = [
+    <G key="m"><Box s={[1.0, 0.7, 0.75]} p={[0, 0.35, 0]} c="#7d8790" o={{ metal: 0.3 }} /><Cyl rt={0.36} h={0.16} p={[0, 0.8, 0]} c="#e0662b" seg={12} /><Cyl rt={0.08} h={0.7} p={[0.36, 1.0, -0.2]} c="#3a3a3a" seg={8} /></G>,
+    <G key="h"><Box s={[0.9, 0.3, 0.7]} p={[0, 0.15, 0]} c="#6f7a85" /><G p={[0, 0.75, 0]} r={[0, 0, 0.55]}><Cyl rt={0.42} rb={0.26} h={0.95} c="#d9d4ca" seg={12} /><Cyl rt={0.43} h={0.12} p={[0, 0.1, 0]} c="#e0662b" seg={12} cast={false} /></G></G>,
+    <G key="a">{[0, 1].map((k) => <G key={k} p={[0, 0.12 + k * 0.26, 0]} r={[0, k * 0.5, 0]}><Box s={[1.9, 0.05, 0.3]} p={[0, 0.1, 0]} c="#5c7080" o={{ metal: 0.5 }} /><Box s={[1.9, 0.05, 0.3]} p={[0, -0.1, 0]} c="#5c7080" o={{ metal: 0.5 }} /><Box s={[1.9, 0.2, 0.05]} c="#4e606e" o={{ metal: 0.5 }} /></G>)}</G>,
+  ];
+  return (
+    <G p={[-2.9, TOP, 1.5]}>
+      {NOPE.map(([a, b], i) => {
+        const k = clamp(outBack(prog(t, a, a + 0.25)), 0, 1.2) * (1 - ease(t, b, b + 0.12)), wob = 0.14 * Math.sin((t - a) * 32) * ease(t, b - 0.22, b);
+        return (
+          <G key={i}>
+            {k > 0.01 ? <G sc={Math.max(0.01, k)} r={[0, 0, wob]}>{items[i]}</G> : null}
+            <Puffs t={t} p={[0, 0.3, 0]} n={8} period={0.35} rise={0.9} size={0.45} c="#e6e2da" drift={[0, 0, 0.3]} on={t > b && t < b + 0.35 ? 1 : 0} />
+          </G>
+        );
+      })}
+    </G>
+  );
+};
+
 // ---------------------------------------------------------------- Alpes: árvores cortadas → balsa → rio → laguna
 const FELL: V3[] = [[-11.7, 0.35, -46.4], [-11.4, 0.35, -45.1], [-11.2, 0.35, -43.8], [-11.0, 0.35, -42.5], [-10.9, 0.35, -41.2], [-10.7, 0.35, -39.9]];
 const fellAt = (k: number) => T.talan + 0.05 + k * 0.16;
@@ -494,6 +545,7 @@ export const raftAt = (t: number): { p: V3; yaw: number } => {
   const a = along(RAFT_PATH, u), z = a.p[2], y = z < -22.6 ? 0.42 : z > -21.6 ? 0.07 : lerp(0.42, 0.07, prog(z, -22.6, -21.6));
   return { p: [a.p[0], y + 0.04 * Math.sin(t * 2.6), z], yaw: t < T.bajan ? 0 : lerp(0, a.yaw, ease(t, T.bajan, T.bajan + 0.4)) };
 };
+/** «estos son los troncos flotantes»: um tronco solto desce o rio, bate na traseira da balsa e o operário pula e escorrega */
 const Logs: React.FC<{ t: number }> = ({ t }) => {
   const standing = hook(t) || giro(t) || t < T.talan;
   const stumps = <G>{FELL.map((b, k) => <Cyl key={k} rt={0.25} h={0.3} p={[b[0], b[1] + 0.15, b[2]]} c={WOODR} seg={10} />)}</G>;
@@ -504,6 +556,11 @@ const Logs: React.FC<{ t: number }> = ({ t }) => {
       {Array.from({ length: 6 }, (_, k) => <G key={k}><Cyl rt={0.24} h={3.2} p={[(k - 2.5) * 0.5, 0, 0]} r={[PI / 2, 0, 0]} c={WOODF} seg={10} /><Cyl rt={0.245} h={0.03} p={[(k - 2.5) * 0.5, 0, 1.6]} r={[PI / 2, 0, 0]} c={WOODR} seg={10} cast={false} /></G>)}
       {[-1.1, 1.1].map((z) => <Box key={z} s={[3.1, 0.1, 0.14]} p={[0, 0.22, z]} c="#e8d9a8" cast={false} />)}
       <Puffs t={t} p={[0, -0.05, -1.8]} n={6} period={0.6} rise={0.15} size={0.16} c="#ffffff" drift={[0, 0, -0.8]} on={t > T.bajan ? 1 : 0} />
+      {t > LOGHIT - 0.6 && t < T.p3 ? (() => {
+        const z = t < LOGHIT ? lerp(-6.5, -2.75, prog(t, LOGHIT - 0.6, LOGHIT)) : -2.75 - 0.8 * ease(t, LOGHIT, LOGHIT + 0.6), x = 0.4 + 1.8 * ease(t, LOGHIT, LOGHIT + 0.8);
+        return <G p={[x, 0.02, z]} r={[PI / 2, 0, 0.3 * ease(t, LOGHIT, LOGHIT + 0.8)]}><Cyl rt={0.26} h={2.2} c={WOODF} seg={10} /><Cyl rt={0.265} h={0.03} p={[0, 1.1, 0]} c={WOODR} seg={10} cast={false} /></G>;
+      })() : null}
+      <Puffs t={t} p={[0.4, 0.1, -1.7]} n={6} period={0.3} rise={0.6} size={0.3} c="#ffffff" drift={[0, 0, -0.4]} on={t > LOGHIT && t < LOGHIT + 0.3 ? 1 : 0} />
     </G></G>
   );
   return (
@@ -554,7 +611,9 @@ const PoleRiver: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 export const POLE2_X = 9.6;
-const rot2At = (t: number) => (hook(t) || giro(t) ? 0 : ease(t, T.hongos - 0.15, T.abajo));
+const rot2At = (t: number) => (hook(t) || giro(t) ? 0 : ease(t, CUTS[4] + 0.2, T.abajo));
+/** na pausa da voz (46,8–47,9 s) os cogumelos já vão brotando na estaca, de baixo para cima, um a cada 0,2 s */
+const MUSH_RANK = [0, 2, 3, 4, 5, 6, 7, 1];
 const PoleSection: React.FC<{ t: number }> = ({ t }) => {
   const r = rot2At(t), crum = hook(t) || giro(t) ? 0 : ease(t, T.oxigeno + 0.5, T.abajo + 0.4), top = lerp(2.6, -0.5, crum), g = q(glowAt(t)) * 0.45;
   return (
@@ -565,7 +624,7 @@ const PoleSection: React.FC<{ t: number }> = ({ t }) => {
       {/* parte na água e no ar: apodrece */}
       <Cyl rt={0.26 - 0.05 * r} h={top - FLOOR} p={[0, (top + FLOOR) / 2, 0]} c={rotCol(r)} seg={10} />
       {crum < 0.3 ? [1.8, 2.2].map((y) => <Cyl key={y} rt={0.265} h={0.16} p={[0, y, 0]} c={r > 0.5 ? "#7a5a3a" : "#d8323a"} seg={10} cast={false} />) : null}
-      {[-1.2, -0.6, 0.0, 0.6, 1.1, 1.6, 2.0, -0.9].map((y, i) => <G key={i} r={[0, -0.25 - i * 0.33, 0]}><Mush p={[0.24, y, 0]} s={y < top - 0.1 ? 1.3 * ease(t, T.hongos - 0.05 + i * 0.07, T.hongos + 0.25 + i * 0.07) * (r > 0 ? 1 : 0) : 0} c={i % 2 ? "#e8c27a" : "#d98a4a"} /></G>)}
+      {[-1.2, -0.6, 0.0, 0.6, 1.1, 1.6, 2.0, -0.9].map((y, i) => <G key={i} r={[0, -0.25 - i * 0.33, 0]}><Mush p={[0.24, y, 0]} s={y < top - 0.1 ? 1.3 * clamp(outBack(prog(t, MUSH0 + MUSH_RANK[i] * 0.2, MUSH0 + MUSH_RANK[i] * 0.2 + 0.25)), 0, 1.2) * (r > 0 ? 1 : 0) : 0} c={i % 2 ? "#e8c27a" : "#d98a4a"} /></G>)}
       {crum > 0.01 && crum < 1 ? [0, 1, 2, 3, 4].map((i) => { const u = prog(t, T.oxigeno + 0.5 + i * 0.25, T.oxigeno + 1.3 + i * 0.25); return u <= 0 || u >= 1 ? null : <Box key={i} s={[0.32, 0.4, 0.3]} p={[(i % 2 ? 0.3 : -0.3) + u * (i % 2 ? 0.9 : -0.9), 2.4 - i * 0.55 - 1.8 * u * u, 0.3 + u * 0.6]} r={[u * 2, 0, u * 3]} c={rotCol(0.9)} cast={false} />; }) : null}
     </G>
   );
@@ -615,14 +674,16 @@ const Bacteria: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- góndola (gancho e giro); na abertura b ela cruza o quadro na frente da ilha
 const gondolaB = (t: number) => openOf() === "b" && t < T.debajo;
-export const gondolaAt = (t: number): V3 => (giro(t) ? [-10.2, lagoonY(t) + 0.06, -10 + 6 * prog(t, GIRO, GIRO + 10)] : gondolaB(t) ? [lerp(-13, 11, prog(t, 0.2, 2.6)), 0.06, 7.5] : [-9.8, 0.06, -12 + 11 * prog(t, 0, 7.4)]);
+/** acqua alta: no inserto da praça (mareas → levanta) uma góndola vazia passa pela praça alagada */
+const gondolaSq = (t: number) => giro(t) && t > T.mareas - 0.1 && t < T.levanta;
+export const gondolaAt = (t: number): V3 => (gondolaSq(t) ? [lerp(10.5, 1.0, prog(t, T.mareas - 0.1, T.levanta)), lagoonY(t) + 0.06, -2.7] : giro(t) ? [-10.2, lagoonY(t) + 0.06, -10 + 6 * prog(t, GIRO, GIRO + 10)] : gondolaB(t) ? [lerp(-13, 11, prog(t, 0.2, 2.6)), 0.06, 7.5] : [-9.8, 0.06, -12 + 11 * prog(t, 0, 7.4)]);
 /** de que lado da góndola fica o gondoleiro (na popa) */
 export const gondolaStern = (t: number): V3 => (gondolaB(t) ? [-1.2, 0, 0] : [0, 0, -1.2]);
 const Gondola: React.FC<{ t: number }> = ({ t }) => {
   if (!hook(t) && !giro(t) && t > CUTS[0]) return null;
   const p = gondolaAt(t);
   return (
-    <G p={p} r={[0, gondolaB(t) ? PI / 2 : 0, 0]}>
+    <G p={p} r={[0, gondolaB(t) || gondolaSq(t) ? PI / 2 : 0, 0]}>
       <Box s={[0.9, 0.35, 4.2]} p={[0, 0.12, 0]} c="#1c1c22" /><Box s={[0.5, 0.5, 0.3]} p={[0, 0.4, 2.1]} r={[-0.5, 0, 0]} c="#1c1c22" /><Box s={[0.4, 0.6, 0.4]} p={[0, 0.45, -2.1]} r={[0.5, 0, 0]} c="#1c1c22" />
       <Box s={[0.2, 0.5, 0.08]} p={[0, 0.55, 2.3]} c="#d8d8d8" o={{ metal: 0.5, rough: 0.3 }} />
       <Pipe a={[0.4, 0.3, -1.5]} b={[0.9, -0.6, -2.6]} rad={0.04} c="#7a4a2a" />
@@ -632,15 +693,18 @@ const Gondola: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- abertura b: pombos que saem do campanário no 1º quadro
+// e no fim (o último gag): sinos e uma revoada maior saindo do campanário por cima do cartão
 const Pigeons: React.FC<{ t: number }> = ({ t }) => {
-  if (openOf() !== "b" || t > T.debajo) return null;
+  const fin = t > FIN - 0.25;
+  if (!fin && (openOf() !== "b" || t > T.debajo)) return null;
+  const tt = fin ? t - FIN : t, n = fin ? 18 : 11;
   return (
-    <G>
-      {Array.from({ length: 11 }, (_, i) => {
-        const a = (i / 11) * PI * 2 + rnd(i) * 0.5, u = t + 0.25 + rnd(i + 7) * 0.2, r = 1.0 + 4.2 * u, flap = 0.9 * Math.sin(t * 34 + i * 2);
+    <G p={[0, fin ? islandY(t) : 0, 0]}>
+      {Array.from({ length: n }, (_, i) => {
+        const a = (i / n) * PI * 2 + rnd(i) * 0.5, u = tt + 0.25 + rnd(i + 7) * 0.2, r = 1.0 + (fin ? 5.5 : 4.2) * u, flap = 0.9 * Math.sin(t * 34 + i * 2);
         const p: V3 = [5.6 + Math.cos(a) * r, TOP + 10.9 + 1.6 * u + 0.4 * Math.sin(u * 5 + i), -5.6 + Math.sin(a) * r];
         return (
-          <G key={i} p={p} r={[0, -a, 0]}>
+          <G key={i} p={p} r={[0, -a, 0]} sc={fin ? 2.2 : 1}>
             <Sph rad={0.13} sc={[1.6, 0.9, 0.9]} c={i % 3 ? "#c9ced6" : "#8e96a3"} ws={8} hs={6} cast={false} />
             <G r={[flap, 0, 0]}><Box s={[0.2, 0.03, 0.42]} p={[0, 0, 0.22]} c="#e7eaee" cast={false} /></G>
             <G r={[-flap, 0, 0]}><Box s={[0.2, 0.03, 0.42]} p={[0, 0, -0.22]} c="#e7eaee" cast={false} /></G>
@@ -706,7 +770,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     {openOf() === "c" && t < T.debajo ? null : <><Lido t={t} /><Compressor t={t} /><Tide t={t} /></>}<Isles t={t} />
     <Piles t={t} /><PileDriver t={t} /><Squeeze t={t} /><Pigeons t={t} /><Splash t={t} /><StiltForest t={t} /><Sapling t={t} />
     <Sph rad={1} p={BARENA} sc={[1.7, 0.22, 1.3]} c="#a08a5a" ws={14} hs={8} />
-    <CityHouses t={t} /><DemoHouse t={t} /><SaltDrops t={t} /><SinkHouse t={t} /><Materials t={t} />
+    <CityHouses t={t} /><DemoHouse t={t} /><SaltDrops t={t} /><SinkHouse t={t} /><Materials t={t} /><Nope t={t} />
     <Logs t={t} /><PoleRiver t={t} /><PoleSection t={t} /><Oxygen t={t} /><Bacteria t={t} /><Gondola t={t} />
   </>
 );

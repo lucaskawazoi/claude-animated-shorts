@@ -30,7 +30,21 @@ export { CUTS, WINS };
 export type Open = "a" | "b" | "c";
 export const OPEN_DEFAULT = "c" as Open;   // escolhida pelo crítico (13/11)
 /** cortes duros extras (um a cada ~4–5 s), todos a ≥1,5 s dos 7 da régua */
-export const XCUTS = [T.debajo, T.siguen, T.p1, T.golpe, T.b2, T.atan, T.p3, T.abajo, T.p4, T.cerrada, T.levanta, T.esas];
+export const XCUTS = [T.debajo, T.siguen, T.p1, T.golpe, T.b2, T.atan, T.p3, T.abajo, T.p4, T.cerrada, T.mareas, T.levanta, T.esas];
+
+// ---------------------------------------------------------------- gags do conserto de ritmo (pré-crítica 13/11)
+/** plano 2: 2 pilotes da parede (índices 9 e 7) estão com a ponta acima dos outros e entram com 2 batidas cada (a 2ª crava) */
+export const SLAMS: Record<number, [number, number]> = { 9: [4.10, 4.40], 7: [4.68, 4.95] };
+/** «ni motores, ni hormigón, ni acero»: [aparece, some num puf] */
+export const NOPE: [number, number][] = [[CUTS[0] - 0.05, T.hormigon - 0.15], [T.hormigon, T.acero - 0.12], [T.acero, T.acero + 0.55]];
+/** o tronco solto bate na balsa */
+export const LOGHIT = T.flotantes + 0.65;
+/** 1º cogumelo na estaca da face (a voz pausa 46,8–47,9 s) */
+export const MUSH0 = CUTS[4] + 0.35;
+/** a água salgada bate na pedra de Ístria e volta */
+export const BOUNCES = [T.noentra, T.noentra + 1.05, T.noentra + 2.03];
+/** final: sinos e revoada do campanário */
+export const FIN = T.manda + 0.55;
 
 // ---------------------------------------------------------------- cravação dos 7 pilotes da casa de demonstração (plano 3)
 // cada pilote: instante em que aparece (cai de ponta no barro) e as batidas do mazo; cada batida crava 1/n do comprimento.
@@ -64,25 +78,37 @@ if (OPEN_DEFAULT === "b") S.push(["bells", 0.0, -10], ["gulls", 0.25, -13], ["wh
 if (OPEN_DEFAULT === "c") S.push(["whoosh", 0.0, -11], ["splash", 0.38, -6], ["vn-pilehit", 0.46, -10], ["vn-pilehit", 0.66, -12], ["vn-pilehit", 0.92, -13],
   ["thud", 1.22, -9], ["waves", 1.0, -12], ["vn-pilehit", 1.5, -15], ["bells", 1.7, -16], ["gulls", 1.95, -17]);
 S.push(["waves", 0.0, -17], ["whoosh", T.debajo - 0.2, -14], ["vn-pilehit", T.clavados, -11], ["bells", T.siguen + 0.1, -15]);
+// os 2 pilotes que faltavam despencam e se cravam (o contador ganha +1, +1)
+for (const [h1, h2] of Object.values(SLAMS)) S.push(["vn-pilehit", h1, -10], ["vn-pilehit", h2, -8]);
+// «ni motores, ni hormigón, ni acero»: cada um aparece e some num puf riscado
+S.push(["pop", NOPE[0][0] + 0.1, -13]);
+for (const [, b] of NOPE) S.push(["strike", b, -11]);
 // materiais
 S.push(["thud", T.madera, -12], ["clack", T.piedra, -12], ["clack", T.ladrillo, -13], ["pop", T.brazos, -10]);
 // a casa no barro: pousa, afunda, ✖
-S.push(["vn-squish", T.blando, -11], ["thud", T.encima, -10], ["vn-glub", T.hunde - 0.05, -8], ["buzzer", T.hunde + 0.15, -12], ["vn-glub", T.hunde + 1.7, -12]);
+// a casa desce pendurada (rangido), a corda arrebenta no «pones», pousa, afunda até o telhado sumir
+S.push(["creak", T.p1 + 0.6, -15], ["crack", T.pones, -11]);
+S.push(["vn-squish", T.blando, -11], ["thud", T.encima, -10], ["vn-glub", T.hunde - 0.05, -8], ["buzzer", T.hunde + 0.15, -12], ["vn-glub", T.hunde + 2.7, -12]);
 // cravação: cada batida do mazo
 for (const h of HITS) S.push(["vn-pilehit", h.t, h.t > T.mazo + 0.3 ? -13 : -9]);
 S.push(["vn-squish", T.apretado, -12], ["drag", T.cede - 0.35, -15], ["thud", T.cede + 0.2, -9], ["vn-rope", T.clavan + 0.1, -16]);
 // troncos dos Alpes
 S.push(["pop", T.p2 + 0.35, -14], ["buzzer", T.arboles + 0.3, -13], ["axe", T.talan, -11], ["vn-treefall", T.talan + 0.25, -10], ["axe", T.talan + 0.55, -12], ["vn-treefall", T.alpes + 0.2, -11],
   ["vn-rope", T.atan, -10], ["river", T.bajan, -12], ["stream", CUTS[3], -12], ["splash", T.hasta + 0.2, -12], ["river", T.rio, -13], ["gulls", T.flotantes, -17]);
+// o tronco solto bate na balsa, o operário pula e escorrega
+S.push(["clack", LOGHIT, -8], ["splash", LOGHIT + 0.05, -15], ["qe-slip", LOGHIT + 0.38, -10]);
 // a estaca que apodrece e o operário que cai na água
 S.push(["vn-rot", T.pudre - 0.05, -8], ["buzzer", T.pudre + 0.15, -12], ["vn-fallwater", T.pudre + 0.35, -9]);
 // hongos, oxigênio, bactérias
-S.push(["pop", T.hongos + 0.1, -12], ["pop", T.hongos + 0.35, -13], ["vn-bubbles", T.oxigeno, -10], ["strike", T.casiNoHay, -12], ["strike", T.casiNoHay + 0.3, -13],
+for (let k = 0; k < 4; k++) S.push(["pop", MUSH0 + k * 0.4, -14 - (k % 2)]);
+S.push(["vn-bubbles", T.oxigeno, -10], ["strike", T.casiNoHay, -12], ["strike", T.casiNoHay + 0.3, -13],
   ["pop", T.bacterias + 0.2, -15], ["ding", T.duran, -12]);
 // água salgada e pedra de Ístria
 S.push(["drip", T.sube, -11], ["vn-bubbles", T.sube + 0.4, -13], ["crumble", T.deshaciendo - 0.1, -9], ["vn-lift", T.entre, -10], ["stone", T.ponen + 0.05, -10],
-  ["thud", T.ponen + 0.7, -10], ["glass", T.blanca, -12], ["drip", T.cerrada + 0.2, -12], ["pop", T.noentra, -12]);
+  ["thud", T.ponen + 0.7, -10], ["glass", T.blanca, -12], ["drip", T.cerrada + 0.2, -12]);
+// a água bate na pedra e volta: ✖ (a água) e ✔ (a pedra); mais duas tentativas
+S.push(["qe-boing", BOUNCES[0], -8], ["buzzer", BOUNCES[0] + 0.1, -13], ["ding", BOUNCES[0] + 0.6, -10], ["qe-pling", BOUNCES[1], -12], ["qe-pling", BOUNCES[2], -13]);
 // o giro: maré alta, comportas do MOSE, motores
-S.push(["giro", T.giro - 0.05, -8], ["vn-tide", T.mareas - 0.4, -9], ["waves", T.mareas + 0.6, -12], ["vn-gates", T.levanta + 0.1, -8],
-  ["vn-compressor", T.esas, -9], ["stamp", T.motores2 + 0.05, -8], ["fanfare", T.manda - 0.1, -9], ["gulls", T.manda + 0.4, -16]);
+S.push(["giro", T.giro - 0.05, -8], ["vn-tide", T.hoy + 0.1, -9], ["flood", T.mareas, -9], ["waves", T.mareas + 0.6, -12], ["vn-gates", T.levanta + 0.1, -8],
+  ["vn-compressor", T.esas, -9], ["stamp", T.motores2 + 0.05, -8], ["fanfare", T.manda - 0.1, -9], ["bells", FIN, -10], ["ak-birds", FIN + 0.05, -11]);
 export const SFX = S;
