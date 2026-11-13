@@ -28,7 +28,7 @@ export { CUTS, WINS };
 
 /** as três aberturas (0 → «debajo»): PROPS='{"open":"b"}' no render; o som da mixagem segue OPEN_DEFAULT */
 export type Open = "a" | "b" | "c";
-export const OPEN_DEFAULT = "a" as Open;
+export const OPEN_DEFAULT = "c" as Open;   // escolhida pelo crítico (13/11)
 /** cortes duros extras (um a cada ~4–5 s), todos a ≥1,5 s dos 7 da régua */
 export const XCUTS = [T.debajo, T.siguen, T.p1, T.golpe, T.b2, T.atan, T.p3, T.abajo, T.p4, T.cerrada, T.levanta, T.esas];
 
@@ -55,12 +55,14 @@ S.push(["chime", T.noen, -9]);
 for (const a of [T.p1, T.p2, T.p3, T.p4]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.venecia, T.b1, T.b2, T.b3, T.b4]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.pilotes, T.flotantes, T.estaIstria]) S.push(["ding", a + 0.05, -9]);
-for (const a of [0.15, T.millones + 0.3, T.siguen, T.hormigon, T.acero, T.faltan, T.compuertas + 0.4]) S.push(["pop", a, -12]);
+for (const a of [T.millones + 0.3, T.siguen, T.hormigon, T.acero, T.faltan, T.compuertas + 0.4]) S.push(["pop", a, -12]);
 // gancho, por abertura: a) pilotes caindo em rajada e casas pipocando; b) sinos e pombos do campanário, mergulho até a góndola;
 // c) a cidade cai do céu na laguna (splash)
-if (OPEN_DEFAULT === "a") { for (let k = 0; k < 6; k++) S.push(["vn-pilehit", 0.02 + k * 0.21, -13 - (k % 2)]); S.push(["pop", 0.6, -13], ["pop", 0.95, -13], ["gulls", 1.6, -17]); }
+if (OPEN_DEFAULT === "a") { for (let k = 0; k < 6; k++) S.push(["vn-pilehit", 0.02 + k * 0.21, -13 - (k % 2)]); S.push(["pop", 0.15, -12], ["pop", 0.6, -13], ["pop", 0.95, -13], ["gulls", 1.6, -17]); }
 if (OPEN_DEFAULT === "b") S.push(["bells", 0.0, -10], ["gulls", 0.25, -13], ["whoosh", 0.75, -13], ["waves", 1.5, -14], ["whoosh", 1.85, -15]);
-if (OPEN_DEFAULT === "c") S.push(["whoosh", 0.0, -11], ["splash", 0.36, -6], ["thud", 0.4, -8], ["waves", 0.8, -12], ["bells", 1.3, -16], ["gulls", 1.6, -17]);
+// c) a ilha cai (whoosh), os pilotes entram na água (splash) e vão sendo cravados (batidas espaçando), a base encosta (thud)
+if (OPEN_DEFAULT === "c") S.push(["whoosh", 0.0, -11], ["splash", 0.38, -6], ["vn-pilehit", 0.46, -10], ["vn-pilehit", 0.66, -12], ["vn-pilehit", 0.92, -13],
+  ["thud", 1.22, -9], ["waves", 1.0, -12], ["vn-pilehit", 1.5, -15], ["bells", 1.7, -16], ["gulls", 1.95, -17]);
 S.push(["waves", 0.0, -17], ["whoosh", T.debajo - 0.2, -14], ["vn-pilehit", T.clavados, -11], ["bells", T.siguen + 0.1, -15]);
 // materiais
 S.push(["thud", T.madera, -12], ["clack", T.piedra, -12], ["clack", T.ladrillo, -13], ["pop", T.brazos, -10]);

@@ -39,18 +39,25 @@ const OPEN_KEYS: Record<Open, Key[]> = {
   //    a góndola passa raspando a câmera
   b: [K(0, [8.8, 12.4, -3.0], [5.6, 10.9, -5.6], 50, 2), K(0.7, [10.4, 7.0, 0.5], [5.0, 6.0, -2.0], 54, -2),
     K(1.4, [10.6, 2.6, 6.0], [3.0, 1.8, 4.0], 56, 1), K(T.debajo - 0.05, [9.6, 1.6, 10.5], [1.0, 1.2, 4.0], 56, 0)],
-  // c) a cidade cai do céu: a ilha inteira, com os pilotes pendurados, despenca na laguna (splash e tremor)
-  c: [K(0, [10.0, 7.0, 24.0], [0.0, 6.0, -2.0], 58, 1), K(0.5, [9.4, 6.0, 22.5], [0.0, 2.0, -2.0], 58, -1),
-    K(1.6, [6.0, 4.4, 17.0], [0.0, 2.0, -2.0], 56, 1), K(T.debajo - 0.05, [4.4, 3.2, 14.6], [0.0, 1.6, -1.5], 56, 0)],
+  // c) (PADRÃO, escolhida pelo crítico) a cidade cai do céu: no quadro 0 a ilha inteira, sobre um bosque de pilotes, já está
+  //    despencando (linhas de velocidade); em 0,4 s as pontas batem na água e a cidade vai sendo cravada até assentar.
+  //    Câmera de frente, baixa, aberta: ilha e splash entre o rótulo (y≤385 px) e a legenda (y≥1325 px), sem rolar.
+  c: [K(0, [2.0, 3.5, 44.0], [0.0, 7.2, -2.5], 56, 0.6), K(0.2, [2.0, 3.5, 43.0], [0.0, 6.8, -2.5], 56, -0.4),
+    K(IMPACT, [2.0, 3.5, 42.0], [0.0, 6.4, -2.5], 56, 0.5), K(1.0, [2.4, 4.2, 38.0], [0.0, 5.4, -2.5], 56, -0.3),
+    K(1.6, [2.8, 5.0, 34.0], [0.0, 4.6, -2.5], 56, 0.2), K(T.debajo - 0.05, [3.0, 5.2, 31.5], [0.0, 4.1, -2.5], 56, 0)],
 };
 const openCam = (t: number) => {
   const v = openOf(), c = keyed(OPEN_KEYS[v], t);
-  if (v === "c" && t > IMPACT - 0.02) { const k = 1 - prog(t, IMPACT, IMPACT + 0.7); c.pos = [c.pos[0] + 0.3 * k * Math.sin(t * 71), c.pos[1] + 0.25 * k * Math.sin(t * 83), c.pos[2]]; }
+  if (v === "c") {
+    // sem o rolar da câmera na mão (story.ts): o rolar final fica o das chaves (< 1°), a ilha não inclina no quadro
+    const d = dynAt(t); c.roll = (c.roll - d * (0.9 * Math.sin(t * 1.3 + 7) + 0.5 * Math.sin(t * 4.1 + 8))) / (0.5 + 0.5 * d);
+    if (t > IMPACT - 0.02) { const k = 1 - prog(t, IMPACT, IMPACT + 0.6); c.pos = [c.pos[0] + 0.2 * k * Math.sin(t * 71), c.pos[1] + 0.16 * k * Math.sin(t * 83), c.pos[2]]; }
+  }
   return steady(c, t);
 };
 
 const SHOTS: Shot[] = [
-  { name: "abertura a|b|c: «una ciudad entera sobre el agua»", t0: 0, keys: OPEN_KEYS.a, fn: openCam },
+  { name: "abertura a|b|c (padrão c): «una ciudad entera sobre el agua»", t0: 0, keys: OPEN_KEYS.c, fn: openCam },
   shot("debajo: a floresta de pilotes na face do barro, onda de brilho contando «millones»", T.debajo, [
     K(T.debajo, [1.4, -1.0, 12.6], [1.0, -2.0, 3.0], 54, 2), K(T.debajo + 0.45, [0.2, -1.6, 12.2], [0.4, -2.2, 3.0], 54, -0.5),
     K(T.clavados, [-1.6, -2.2, 11.6], [-1.2, -2.6, 3.0], 54, 0.5), K(T.siguen - 0.05, [-3.4, -2.0, 11.4], [-2.6, -2.4, 3.0], 54, 0)]),
@@ -199,7 +206,7 @@ const VENECIANO: Costume = { skin: "#e0aa82", top: "#2f5fa8", bottom: "#a8322a",
 
 const hud: HudData = {
   pills: [
-    { a: T.ciudad + 0.1, b: T.millones - 0.1, label: "UNA CIUDAD", value: () => "SOBRE EL AGUA", y: 440, tone: "gold" },
+    { a: T.ciudad + 0.1, b: T.millones - 0.1, label: "UNA CIUDAD", value: () => "SOBRE EL AGUA", y: 300, tone: "gold" },
     { a: T.millones, b: T.siguen - 0.1, label: "TRONCOS", value: (t) => `+${count(t, T.millones, T.millones + 1.0, 0, 1000000)}`, y: 440 },
     { a: T.siguen, b: T.venecia - 0.1, label: "SIGUEN AHÍ", value: () => "SIGLOS", y: 440, tone: "gold" },
     { a: T.venecia, b: T.nohay - 0.1, label: "HACE", value: () => "+1000 AÑOS", y: 440, tone: "gold" },

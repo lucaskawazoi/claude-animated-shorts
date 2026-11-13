@@ -32,9 +32,18 @@ export const openOf = (): Open => {
 };
 /** aberturas b e c: a cidade já está pronta e o buraco do corte fica tampado de água até «debajo» */
 const covered = (t: number) => giro(t) || (t < T.debajo && openOf() !== "a");
-/** abertura c: a ilha com a cidade e os pilotes cai do céu e bate na laguna em 0,4 s */
+/** abertura c: a ilha com a cidade e os pilotes já está caindo no quadro 0; em 0,4 s as pontas dos pilotes batem na água
+ *  e daí a cidade vai sendo cravada, freando, até assentar pouco antes do corte de «debajo» */
 export const IMPACT = 0.4;
-const islandY = (t: number) => (openOf() !== "c" || t > 1) ? 0 : t < IMPACT ? 9 * (1 - ((t + 0.2) / (IMPACT + 0.2)) ** 2) : 0.35 * Math.sin(PI * prog(t, IMPACT, IMPACT + 0.3)) * (1 - prog(t, IMPACT, 1));
+const TIP = 4.78, SETTLE = 2.3;  // TIP: altura da ilha em que a ponta dos pilotes toca a água
+export const islandY = (t: number) => {
+  if (openOf() !== "c" || t >= SETTLE) return 0;
+  if (t < IMPACT) { const s = IMPACT - t; return TIP + 7 * s - 3 * s * s; }   // queda acelerando: 7,1 → 4,8 (de 4,6 a 7 u/s)
+  const u = prog(t, IMPACT, SETTLE);
+  return TIP * (1 - u) * (1 - u) + 0.05 * Math.sin(t * 45) * (1 - u);
+};
+/** quando a base da ilha (o barro) encosta na água */
+export const BASE_HIT = IMPACT + (SETTLE - IMPACT) * (1 - Math.sqrt((-FLOOR) / TIP));
 
 /** cidade: 1 no gancho (pipoca em a), encolhe no ⏪ (venecia), 0 na demonstração, 1 de novo no giro */
 const cityK = (t: number, a = 0) => giro(t) ? 1 : hook(t) ? (openOf() === "a" ? clamp(outBack(prog(t, a, a + 0.3)), 0, 1.15) : 1) : 1 - ease(t, T.venecia, T.venecia + 0.6);
@@ -92,7 +101,7 @@ const Lagoon: React.FC<{ t: number }> = ({ t }) => {
       <G p={[Math.sin(t * 0.4) * 0.3, ly, 0]}><primitive object={ripples} /></G>
       {covered(t) ? <Box s={[32, 0.04, 17]} p={[0, ly - 0.02, 11.5]} c={WATER} o={{ rough: 0.35 }} cast={false} /> : null}
       {/* o mar além do Lido */}
-      <mesh position={[0, sy - 0.01, 165]} rotation={[-PI / 2, 0, 0]} receiveShadow material={mat(SEA, { rough: 0.35 })}><planeGeometry args={[600, 274]} /></mesh>
+      <mesh position={[0, sy - 0.01, 165]} rotation={[-PI / 2, 0, 0]} receiveShadow material={mat(openOf() === "c" && t < T.debajo ? WATER : SEA, { rough: 0.35 })}><planeGeometry args={[600, 274]} /></mesh>
       <G p={[Math.sin(t * 0.5) * 0.5, sy, 0]}><primitive object={caps} /></G>
     </G>
   );
@@ -641,16 +650,36 @@ const Pigeons: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
-// ---------------------------------------------------------------- abertura c: o splash da ilha batendo na laguna
+// ---------------------------------------------------------------- abertura c: linhas de velocidade, a floresta de pilotes e o splash
+/** os pilotes de baixo da ilha inteira (só na queda da abertura c): a cidade cai sobre um bosque de troncos */
+const StiltForest: React.FC<{ t: number }> = ({ t }) => {
+  const meshes = useMemo(() => {
+    const cyl = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.22, 2.75, 8), mat(WOODF), 210);
+    const tip = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 0.45, 8), mat(WOODF), 210), o = new THREE.Object3D();
+    let k = 0;
+    for (let i = 0; i < 21; i++) for (let j = 0; j < 10; j++) {
+      const x = -6.4 + i * 0.64, z = -7.4 + j * 1.04;
+      // mesma ponta dos pilotes da frente (y −4,78 relativo à ilha)
+      o.rotation.set(0, 0, 0); o.position.set(x, FLOOR - 1.375, z); o.updateMatrix(); cyl.setMatrixAt(k, o.matrix);
+      o.position.set(x, -4.555, z); o.rotation.set(PI, 0, 0); o.updateMatrix(); tip.setMatrixAt(k, o.matrix); k++;
+    }
+    return [cyl, tip];
+  }, []);
+  if (openOf() !== "c" || t >= SETTLE) return null;
+  return <G p={[0, islandY(t), 0]}><primitive object={meshes[0]} /><primitive object={meshes[1]} /></G>;
+};
+const SPEED: V3[] = Array.from({ length: 16 }, (_, i) => [lerp(-6.5, 6.5, rnd(i * 5 + 1)), lerp(7.5, 12.5, rnd(i * 5 + 2)), lerp(-7.5, 2.5, rnd(i * 5 + 3))]);
 const Splash: React.FC<{ t: number }> = ({ t }) => {
-  if (openOf() !== "c" || t < IMPACT - 0.03 || t > T.debajo) return null;
-  const u = prog(t, IMPACT, IMPACT + 1.4);
-  const rim: V3[] = [[-7.4, 0, -8.4], [0, 0, -8.6], [7.4, 0, -8.4], [-7.6, 0, -2.5], [7.6, 0, -2.5], [-7.4, 0, 3.4], [0, 0, 3.6], [7.4, 0, 3.4], [-3.7, 0, 3.6], [3.7, 0, 3.6]];
+  if (openOf() !== "c" || t > T.debajo) return null;
+  const iy = islandY(t), fallK = t < IMPACT ? 1 - prog(t, IMPACT - 0.08, IMPACT) : 0;
+  // borrifo baixo onde os pilotes entram (sobe no máx. ~1,3: a base das casas está a ≥4,9 nessa hora)
+  const spray: V3[] = [[-6.6, 0, 3.4], [-3.3, 0, 3.5], [0, 0, 3.5], [3.3, 0, 3.5], [6.6, 0, 3.4], [-7.4, 0, -2.5], [7.4, 0, -2.5]];
   return (
     <G>
-      {rim.map((p, i) => <Puffs key={i} t={t} p={p} n={6} period={0.55} rise={2.4} size={0.9} c="#ffffff" drift={[Math.sign(p[0]) * 0.8, 0, Math.sign(p[2] + 2.5) * 0.8]} on={t < IMPACT + 0.7 ? 1 : 0} />)}
-      {[0, 0.35].map((d) => { const v = clamp(u - d); return v <= 0 || v >= 1 ? null : (
-        <mesh key={d} position={[0, 0.06, -2.5]} rotation={[-PI / 2, 0, 0]} scale={[1 + 1.6 * v, (1 + 1.6 * v) * 0.8, 1]} material={mat("#ffffff", { emissive: "#ffffff", ei: 0.4, opacity: q(1 - v, 0.1), depthWrite: false })}><ringGeometry args={[8.6, 9.3, 48]} /></mesh>); })}
+      {fallK > 0.01 ? <G p={[0, iy, 0]}>{SPEED.map((p, i) => <Box key={i} s={[0.2, lerp(3, 5.5, rnd(i + 40)), 0.2]} p={p} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.8, opacity: q(0.9 * fallK, 0.25), depthWrite: false }} cast={false} />)}</G> : null}
+      {spray.map((p, i) => <Puffs key={i} t={t} p={p} n={5} period={0.5} rise={1.1} size={0.5} c="#ffffff" drift={[Math.sign(p[0]) * 0.5, 0, 0.6]} on={t > IMPACT - 0.02 && t < IMPACT + 0.35 ? 1 : 0} />)}
+      {[IMPACT, BASE_HIT].map((a, i) => { const v = prog(t, a, a + 1.3); return v <= 0 || v >= 1 ? null : (
+        <mesh key={i} position={[0, 0.05, -2.5]} rotation={[-PI / 2, 0, 0]} scale={[1 + 1.4 * v, (1 + 1.4 * v) * 0.8, 1]} material={mat("#ffffff", { emissive: "#ffffff", ei: 0.4, opacity: q(1 - v, 0.1), depthWrite: false })}><ringGeometry args={[8.4, 9.0, 48]} /></mesh>); })}
     </G>
   );
 };
@@ -672,8 +701,10 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Sky top="#3a8ee0" mid="#8cc6f0" low="#eef6f8" />
     <Clouds t={t} n={8} y={44} />
     <Mainland /><River t={t} /><Trees spots={FOREST} c={["#2f7a3a", "#3a8f44"]} />
-    <Lagoon t={t} /><Section t={t} /><Lido t={t} /><Compressor t={t} /><Tide t={t} /><Isles t={t} />
-    <Piles t={t} /><PileDriver t={t} /><Squeeze t={t} /><Pigeons t={t} /><Splash t={t} /><Sapling t={t} />
+    <Lagoon t={t} /><Section t={t} />
+    {/* na abertura c a câmera fica além do Lido (de longe, para caber a ilha inteira): Lido e compressores saem do quadro */}
+    {openOf() === "c" && t < T.debajo ? null : <><Lido t={t} /><Compressor t={t} /><Tide t={t} /></>}<Isles t={t} />
+    <Piles t={t} /><PileDriver t={t} /><Squeeze t={t} /><Pigeons t={t} /><Splash t={t} /><StiltForest t={t} /><Sapling t={t} />
     <Sph rad={1} p={BARENA} sc={[1.7, 0.22, 1.3]} c="#a08a5a" ws={14} hs={8} />
     <CityHouses t={t} /><DemoHouse t={t} /><SaltDrops t={t} /><SinkHouse t={t} /><Materials t={t} />
     <Logs t={t} /><PoleRiver t={t} /><PoleSection t={t} /><Oxygen t={t} /><Bacteria t={t} /><Gondola t={t} />
