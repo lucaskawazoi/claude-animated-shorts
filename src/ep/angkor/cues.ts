@@ -52,20 +52,22 @@ export const FILL0 = T.foso0 + 0.25, FILL1 = T.alrededor + 0.45;
 export const LIFT0 = T.subirlos + 0.05, LIFT1 = CUTS[6] + 0.35;
 
 // a abertura escolhida (a mixagem roda no bun: OPEN=b ./cues-json.sh …); no navegador o som não é usado
-const OPEN = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPEN ?? "a";
+const OPEN = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPEN ?? "c";
+/** abertura c: o operário cai sentado (som do baque, poeira no mundo) */
+export const SIT_T = 1.3;
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const c of XC) S.push(["whoosh", c - 0.2, -15]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
 if (OPEN === "a") { S.push(["ss-rise", 0.0, -9], ["quake", 0.05, -14]); for (let k = 0; k < 8; k++) S.push(["clack", 0.25 + k * 0.26, -12 - (k % 2) * 2]); }
 else if (OPEN === "b") S.push(["stream", 0.0, -11], ["ak-pole", 0.25, -10], ["splash", 0.75, -12], ["whoosh", 1.05, -11], ["gong", 1.75, -10]);
-else S.push(["ak-birds", 0.15, -10], ["whoosh", 0.4, -13], ["qe-boing", 1.32, -9], ["thud", 1.72, -9], ["ak-birds", 1.0, -14]);
+else S.push(["ak-birds", 0.15, -10], ["whoosh", 0.4, -13], ["qe-boing", 0.95, -9], ["thud", SIT_T, -8], ["whoosh", SIT_T + 0.15, -12], ["ak-birds", 1.0, -14]);
 for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
 S.push(["chime", T.sol + 0.05, -8], ["chime", T.prob + 0.05, -11]);
 for (const a of [T.p1, T.p2, T.p3, T.p4]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.camboya, T.b2, T.asi]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.estosCanales, T.esteFoso, T.esteRelleno, T.estosAg]) S.push(["ding", a + 0.05, -9]);
-for (const a of [T.grande, T.millones0 + 0.05, T.nohay + 0.05, T.gruas + 0.05, T.camiones + 0.05, T.treinta, T.doscientos, T.tonelada, T.kulen]) S.push(["pop", a, -11]);
+for (const a of [OPEN === "c" ? 1.75 : T.grande, T.millones0 + 0.05, T.nohay + 0.05, T.gruas + 0.05, T.camiones + 0.05, T.treinta, T.doscientos, T.tonelada, T.kulen]) S.push(["pop", a, -11]);
 S.push(
   ["wind", 0.0, -17], ["sandfall", T.arena0, -11], ["crumble", T.camboya + 0.25, -12],
   ["crowd", T.nohay, -17], ["drag", CUTS[0] + 0.15, -11], ["sh-log", CUTS[0] + 0.9, -13],

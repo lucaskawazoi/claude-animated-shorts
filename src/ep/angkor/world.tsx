@@ -9,7 +9,7 @@ import { Box, Cone, Cyl, G, MatOpts, Pipe, Sph, V3, clamp, ease, fract, lerp, ma
 import { Clouds, Palms, Puffs, Sky, Trees } from "../../toy/scenery";
 import { Costume, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { FILL0, FILL1, LIFT0, LIFT1, SINK0, SINK1, T, XC } from "./cues";
+import { FILL0, FILL1, LIFT0, LIFT1, SINK0, SINK1, SIT_T, T, XC } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI;
@@ -372,10 +372,10 @@ const Polers: React.FC<{ p: V3; yaw: number; t: number; ph?: number }> = ({ p, y
     </G>
   );
 };
-const Birds: React.FC<{ t: number; c: V3; n?: number; r?: number; t0?: number }> = ({ t, c, n = 7, r = 7, t0 = 0 }) => (
+const Birds: React.FC<{ t: number; c: V3; n?: number; r?: number; t0?: number; climb?: number; spread?: number }> = ({ t, c, n = 7, r = 7, t0 = 0, climb = 1.6, spread = 1.5 }) => (
   <G>
     {Array.from({ length: n }, (_, i) => {
-      const u = t - t0, a = i * 0.9 + u * (0.9 + 0.15 * i), rr = r * (0.6 + 0.4 * rnd(i)) + u * 1.5, y = c[1] + i * 0.4 + u * 1.6;
+      const u = t - t0, a = i * 0.9 + u * (0.9 + 0.15 * i), rr = r * (0.6 + 0.4 * rnd(i)) + u * spread, y = c[1] + i * 0.4 + u * climb;
       const f = Math.sin(t * 18 + i) * 0.7;
       return (
         <G key={i} p={[c[0] + rr * Math.cos(a), y, c[2] + rr * Math.sin(a)]} r={[0, -a, 0]}>
@@ -413,7 +413,12 @@ const OpenMoat: React.FC<{ t: number }> = ({ t }) => {
     <Puffs t={t} p={[p[0] - 2.6, WL, p[2]]} n={6} period={0.5} rise={0.4} size={0.5} c="#eaf7ff" drift={[-1.5, 0, 0]} /></G>;
 };
 /** c) a escala: pássaros saindo da torre central enquanto a câmera recua do operário */
-const OpenScale: React.FC<{ t: number }> = ({ t }) => (OPEN !== "c" || t >= X1 ? null : <Birds t={t} c={[0, H3 + 6, 0]} n={8} r={5} />);
+/** onde e quando o operário cai sentado na abertura c */
+export const SIT_P: V3 = [0, 0, 15.8];
+const OpenScale: React.FC<{ t: number }> = ({ t }) => (OPEN !== "c" || t >= X1 ? null : <G>
+  <Birds t={t} c={[0, H3 + 3, 0]} n={8} r={5} climb={0} spread={3} />
+  {[[1.2, 0, 0.4], [-1.2, 0, 0.4], [0, 0, 1.2]].map((d, i) => <Puffs key={i} t={t} p={[SIT_P[0], 0.15, SIT_P[2]]} n={5} period={0.55} rise={0.5} size={0.42} c="#e8d3a0" drift={d as V3} on={t > SIT_T - 0.03 && t < SIT_T + 0.5 ? 1 : 0} />)}
+</G>);
 
 // ---------------------------------------------------------------- a obra (plano C1), o rei (X3)
 const Pile: React.FC<{ p: V3; c?: string; lit?: number; n?: [number, number, number] }> = ({ p, c = NEW.s1, lit = 0, n = [3, 2, 2] }) => (

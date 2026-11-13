@@ -8,9 +8,9 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { LIFT0, SFX, SINK0, SINK1, T, XC } from "./cues";
+import { LIFT0, SFX, SINK0, SINK1, SIT_T, T, XC } from "./cues";
 import { Open, OPEN } from "./open";
-import { BASIN, CORE0, H2, H3, KHMER, LAT0, MC, SEC0, WALL0, World, raftB, raftX4 } from "./world";
+import { BASIN, CORE0, H2, H3, KHMER, LAT0, MC, SEC0, SIT_P, WALL0, World, raftB, raftX4 } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const PI = Math.PI;
@@ -41,16 +41,17 @@ const OPENING: Record<Open, Shot> = {
     K(0, [-24.0, 0.5, 31.6], [-8.0, 0.6, 29.0], 62, 5), K(0.9, [-12.0, 0.7, 31.6], [0.0, 1.6, 26.0], 62, -3),
     K(1.6, [-4.0, 4.5, 31.8], [0.0, 7.0, 10.0], 60, 3), K(X1 - 0.04, [-1.2, 8.0, 32.4], [0.0, 9.5, 0.0], 58, 0)] },
   c: { name: "abertura c: do rosto do operário a câmera recua e o templo cresce; ele cai sentado", t0: 0, keys: [
-    K(0, [0.6, 2.35, 19.2], [0.0, 2.3, 16.6], 50, 3), K(0.7, [1.4, 3.0, 21.5], [0.0, 3.6, 14.0], 54, -2),
-    K(1.5, [3.6, 7.5, 29.0], [0.0, 8.0, 4.0], 58, 2), K(X1 - 0.04, [2.4, 8.4, 33.0], [0.0, 9.5, 0.0], 58, 0)] },
+    K(0, [0.8, 1.7, 20.8], [0.0, 1.6, 16.6], 54, 3), K(0.6, [1.6, 3.2, 22.0], [0.0, 2.2, 15.6], 55, -2),
+    K(1.05, [5.6, 4.6, 25.6], [1.0, 3.0, 14.0], 57, 1), K(SIT_T + 0.15, [6.4, 4.8, 26.6], [1.0, 2.6, 14.2], 57, 0),
+    K(1.75, [13.0, 8.6, 42.0], [0.0, 10.2, 0.0], 58, -1), K(X1 - 0.04, [14.2, 9.0, 44.5], [0.0, 10.5, 0.0], 58, 0)] },
 };
 
 const SHOTS: Shot[] = [
   OPENING[OPEN],
   { name: "de lado, perto das torres: milhões de blocos → desce até a base na areia", t0: X1, keys: [
     K(X1, [17.5, 13.5, 13.0], [2.0, 11.5, 2.0], 56, -3), K(X1 + 0.45, [17.0, 12.0, 13.5], [2.0, 10.0, 2.0], 56, 0.5),
-    K(T.todo0, [18.5, 5.5, 18.5], [10.0, 2.0, 10.0], 56, -0.5), K(T.arena0, [17.4, 1.3, 18.4], [13.2, 0.5, 12.8], 56, 1),
-    K(X2 - 0.05, [17.0, 1.0, 18.0], [13.2, 0.4, 12.8], 56, 0)] },
+    K(T.todo0, [18.5, 5.5, 18.5], [10.0, 2.0, 10.0], 56, -0.5), K(T.arena0, [18.5, 2.6, 19.5], [13.0, 0.3, 12.5], 58, 1),
+    K(X2 - 0.05, [18.2, 2.4, 19.2], [13.0, 0.2, 12.5], 58, 0)] },
   { name: "do alto, de frente: ⏪ 900 anos — o templo se desmonta e o fosso escoa", t0: X2, keys: [
     K(X2, [24.0, 26.0, 52.0], [0.0, 5.0, 0.0], 58, 3), K(X2 + 0.45, [22.0, 25.0, 50.0], [0.0, 4.5, 0.0], 58, -0.5),
     K(T.nohay, [14.0, 22.0, 50.0], [0.0, 1.0, 4.0], 58, 0.5), ...hold(C1, [11.0, 20.5, 48.5], [0.0, 0.5, 6.0], 58, 0)] },
@@ -130,7 +131,9 @@ const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState
 const OPEN_W: Record<Open, [number, WorkerState][]> = {
   a: [[0, S([-2.4, 0.4, 30.2], 0.5, "cheer")]],
   b: [[0, S([0, 0, 0], PI / 2, "point", { follow: (t) => { const r = raftB(t); return [r[0] + 1.6, -0.35 + 0.4, r[2]]; } })]],
-  c: [[0, S([0, 0, 16.6], 0, "alarm")], [1.25, S([0, 0, 16.0], 0, "alarm", { follow: (t) => [0, 0.7 * Math.sin(PI * prog(t, 1.25, 1.65)), lerp(16.6, 16.0, ease(t, 1.25, 1.65))] })], [1.66, S([0, 0, 16.0], 0, "belly")]],
+  // pula de susto (0,95) e cai sentado na areia (SIT_T): quadril no chão = pernas enterradas + poeira
+  c: [[0, S([0, 0, 16.6], 0, "alarm")], [0.95, S([0, 0, SIT_P[2]], 0, "alarm", { follow: (t) => { const u = prog(t, 0.95, SIT_T); return [0, 0.8 * Math.sin(PI * u) - 0.62 * ease(t, SIT_T - 0.12, SIT_T), lerp(16.6, SIT_P[2], ease(t, 0.95, SIT_T))]; } })],
+    [SIT_T, S([0, -0.62, SIT_P[2]], 0, "belly")]],
 };
 const r4 = (t: number): V3 => { const r = raftX4(t), D: V3 = [Math.sin(r.yaw), 0, Math.cos(r.yaw)]; return [r.p[0] + D[0] * 1.7, 0.36, r.p[2] + D[2] * 1.7]; };
 const secHop = (t: number): V3 => { const u = ease(t, SINK0 + 0.05, SINK0 + 0.45); return SEC(lerp(6.0, 7.0, u), 6 + 0.9 * Math.sin(PI * prog(t, SINK0 + 0.05, SINK0 + 0.45)), lerp(0.9, 1.4, u)); };
@@ -168,7 +171,7 @@ const SIGLOS = ["XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX",
 const hyp = (t: number) => Math.max(win(t, T.segun1, C3 - 0.1, 0.2), win(t, T.segun2, T.esteFoso - 0.1, 0.2), win(t, T.prob, T.todavia - 0.1, 0.2));
 const hud: HudData = {
   pills: [
-    { a: T.grande, b: X1 - 0.05, label: "RÉCORD", value: () => "Nº 1 DEL MUNDO", tone: "gold" },
+    { a: OPEN === "c" ? 1.75 : T.grande, b: X1 - 0.05, label: "RÉCORD", value: () => "Nº 1 DEL MUNDO", tone: "gold" },
     { a: T.millones0, b: T.todo0 - 0.1, label: "BLOQUES", value: (t) => `+${count(t, T.millones0, T.millones0 + 1.1, 0, 5000000)}` },
     { a: T.todo0, b: X2 - 0.05, label: "APOYADO SOBRE", value: () => "ARENA", tone: "red" },
     { a: T.camboya, b: T.nohay - 0.1, label: "CAMBOYA", value: (t) => `HACE CASI ${count(t, T.camboya, T.novecientos + 0.5, 0, 900)} AÑOS`, tone: "gold" },
