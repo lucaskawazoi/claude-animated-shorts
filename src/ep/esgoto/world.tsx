@@ -73,7 +73,7 @@ const Flange: React.FC<{ p: V3; r?: V3; rad?: number; lit?: number }> = ({ p, r,
 const Toilet: React.FC<{ p: V3; sc?: number; f: number; t: number; duck?: boolean }> = ({ p, sc = 1, f, t, duck = false }) => {
   const u = t - f, on = u > 0, down = on ? ease(u, 0.3, 1.0) * (1 - ease(u, 1.9, 2.8)) : 0, swirl = on && u < 2.4 ? 16 * (1 - Math.exp(-u * 1.5)) * Math.exp(-u * 0.8) + u * 3 : 0, hb = on ? 1 - Math.exp(-u * 5) : 0;
   const press = on && u < 0.5 ? Math.sin(prog(u, 0, 0.5) * PI) : 0, tank = spr(t, f, 0.05, 6, 30);
-  const du = duck ? prog(u, 0.05, 0.62) : 1, dx = (1 - du) * 0, dy = lerp(5.2, 2.0, du) + Math.sin(du * PI) * 1.6, dz = lerp(-1.4, 0.2, du);
+  const du = duck ? prog(u, 0.05, 0.62) : 1, dx = (1 - du) * 0, dy = lerp(5.2, 2.0, du) + Math.sin(du * PI) * 4.2, dz = lerp(-1.4, 0.2, du);
   return (
     <G p={p} sc={sc}>
       <Cyl rt={1.0} rb={1.3} h={1.0} p={[0, 0.5, 0]} c={WHITE} seg={14} />
@@ -85,7 +85,7 @@ const Toilet: React.FC<{ p: V3; sc?: number; f: number; t: number; duck?: boolea
       <Box s={[3.2, 0.2, 1.3]} p={[0, 4.4 + tank, -1.55]} c="#e3ecf4" />
       <Box s={[0.5, 0.18, 0.3]} p={[-1.0, 3.4, -0.95]} r={[0, 0, -press * 0.7]} c={STEEL} />
       <G p={[0, 2.4, -0.75]} r={[-1.75, 0, 0]}><Cyl rt={1.45} h={0.12} c="#9fd4ff" seg={16} /></G>
-      {duck ? <G p={[dx, dy, dz]} r={[0, du * 9, 0]} sc={Math.max(0.001, 1 - ease(u, 0.55, 0.68))}>
+      {duck ? <G p={[dx, dy, dz]} r={[du * 6, du * 14, du * 5]} sc={Math.max(0.001, 1 - ease(u, 0.55, 0.68))}>
         <Sph rad={0.55} c="#ffd400" sc={[1.1, 0.8, 1]} ws={10} hs={8} cast={false} /><Sph rad={0.34} c="#ffd400" p={[0, 0.5, 0.35]} ws={8} hs={6} cast={false} /><Box s={[0.34, 0.12, 0.3]} p={[0, 0.5, 0.7]} c="#ff8a10" cast={false} />
       </G> : null}
       {duck === false && sc > 3 && on && u > 0.1 && u < 1.6 ? <Cyl rt={1.2} rb={1.6} h={14 * Math.sin(prog(u, 0.1, 1.6) * PI)} p={[0, 2.4 + 7 * Math.sin(prog(u, 0.1, 1.6) * PI), 0.1]} c="#9fe4ff" seg={14} o={{ opacity: 0.55, depthWrite: false, emissive: "#9fe4ff", ei: 0.4 }} cast={false} /> : null}
@@ -120,7 +120,7 @@ const RK: number[] = new Array(100); ORD.forEach((idx, r) => (RK[idx] = r));
 const DIST = Array.from({ length: 100 }, (_, i) => Math.hypot(hp(i)[0] - CX, hp(i)[2] - CZ)), MAXD = Math.max(...DIST);
 
 const BigHouse: React.FC<{ t: number }> = ({ t }) => {
-  const f = t < 8 && openId() === "B" ? 0.12 : T.descarga + 0.55, sh = spr(t, f, 0.06, 6, 32);
+  const f = t < 8 && openId() === "B" ? -0.35 : T.descarga + 0.55, sh = spr(t, f, 0.06, 6, 32);
   return (
     <G p={[-62, 0, 2]}>
       <Box s={[17, 0.6, 13]} p={[0, 0.3, 4]} c="#e8d9bd" />
@@ -164,14 +164,14 @@ const Network: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- vale e elevatória
 const VY = -26, PX = 75, RISER: V3[] = [[79, -15.5, 3], [110, 14.6, 3]];
 const Valley: React.FC<{ t: number }> = ({ t }) => {
-  const fill = ease(t, T.vale - 0.4, T.z1 - 0.3), drain = ease(t, T.empurra, T.pracima + 0.3), L = Math.max(0.15, 13 * fill * (1 - 0.8 * drain) * (0.3 + 0.7 * fill) + 0.2);
+  const fill = ease(t, T.vale - 0.4, T.z1 - 0.3), drain = ease(t, T.empurra, T.pracima + 0.3), L = Math.max(0.15, 10 * fill * (1 - 0.8 * drain) * (0.3 + 0.7 * fill) + 0.2);
   const xl = 56 - L * 0.857, xr = 69.6, W = xr - xl;
   const slosh = Math.sin(t * 5) * 0.12 * (fill > 0.05 ? 1 : 0);
   const climb = t > T.morro && t < T.z1 + 0.5 ? 1 : 0;
   return (
     <G>
-      <Box s={[W, L, 54]} p={[(xl + xr) / 2, VY + L / 2 + slosh * 0.3, -17.5]} c={BROWN} o={{ opacity: 0.93 }} cast={false} />
-      <Box s={[W, 0.14, 54]} p={[(xl + xr) / 2, VY + L + slosh * 0.3, -17.5]} c="#b87a3a" cast={false} />
+      <Box s={[W, L, 54]} p={[(xl + xr) / 2, VY + L / 2 + slosh * 0.3, -17.5]} c={BROWN} o={{ opacity: 0.8 }} cast={false} />
+      <Box s={[W, 0.14, 54]} p={[(xl + xr) / 2, VY + L + slosh * 0.3, -17.5]} c="#d9a05a" cast={false} />
       {/* tenta subir o morro e escorrega de volta */}
       {climb ? Array.from({ length: 6 }, (_, i) => { const ph = fract((t - T.morro) * 0.9 + i / 6), x = 86 + ph * 20, up = Math.sin(ph * PI); return <Sph key={i} rad={0.8} p={[x, surf(x) + 0.7 + up * 0.5, 3 + (i % 3)]} sc={Math.sin(ph * PI) + 0.01} c={BROWN} ws={8} hs={6} cast={false} />; }) : null}
       {t > T.morro && t < T.z1 + 1 ? <G p={[95, surf(95) + 3.5 + 0.4 * Math.sin(t * 7), 4]} sc={pk(t, T.morro + 0.15, 0.3) * 1.4}>
@@ -229,7 +229,7 @@ const PoolJunk: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- grade e canal de areia
 const Grade: React.FC<{ t: number }> = ({ t }) => {
-  const GX = 156, rake = ease(t, T.segura + 0.4, T.segura + 1.5), dump = ease(t, T.segura + 1.5, T.segura + 2.2), catchU = (i: number) => ease(t, 28.5 + i * 0.5, 32.4 + i * 0.12);
+  const GX = 156, rake = ease(t, T.gradeT + 0.2, T.gradeT + 1.4), dump = ease(t, T.gradeT + 1.4, T.gradeT + 2.1), catchU = (i: number) => ease(t, 28.5 + i * 0.5, 32.4 + i * 0.12);
   const piled = Array.from({ length: 6 }, (_, i) => i);
   const rakeY = lerp(0.8, 5.2, rake) * (1 - dump) + dump * 5.2, rakeX = lerp(GX - 0.6, GX + 1.6, dump);
   return (
@@ -253,8 +253,10 @@ const Grade: React.FC<{ t: number }> = ({ t }) => {
         {Array.from({ length: 8 }, (_, k) => <Box key={k} s={[0.2, 1.1, 0.14]} p={[0, -0.8, -3.2 + k * 0.92]} r={[0, 0, 0.3]} c="#d0d6dc" cast={false} />)}
       </G>
       <Box s={[5, 2.4, 4]} p={[GX + 5, 1.2, 4.5]} c="#3d9a4d" /><Box s={[5.2, 0.3, 4.2]} p={[GX + 5, 2.5, 4.5]} c="#2d7a3b" cast={false} />
-      {Array.from({ length: 6 }, (_, i) => { const u = pk(t, T.segura + 2.0 + i * 0.12, 0.3); return u > 0 ? <Sph key={i} rad={0.8} p={[GX + 3.8 + (i % 3) * 1.2, 2.9 + Math.floor(i / 3) * 0.4, 4.0 + (i % 2)]} sc={[u, u * 0.7, u]} c={["#e0262b", "#3d7be0", "#f4f4f4"][i % 3]} cast={false} ws={8} hs={6} /> : null; })}
-      {t > T.segura + 2.0 && t < T.segura + 2.8 ? <Sph rad={1} p={[GX + 5, 3.3 + 1.4 * (t - T.segura - 2.0) * 3, 4.5]} sc={0.9} c="#ffffff" o={{ opacity: 0.6 }} cast={false} ws={8} hs={6} /> : null}
+      {Array.from({ length: 6 }, (_, i) => { const u = pk(t, T.gradeT + 1.9 + i * 0.12, 0.3); return u > 0 ? <Sph key={i} rad={0.8} p={[GX + 3.8 + (i % 3) * 1.2, 2.9 + Math.floor(i / 3) * 0.4, 4.0 + (i % 2)]} sc={[u, u * 0.7, u]} c={["#e0262b", "#3d7be0", "#f4f4f4"][i % 3]} cast={false} ws={8} hs={6} /> : null; })}
+      {t > T.gradeT + 1.9 && t < T.gradeT + 2.7 ? <Sph rad={1} p={[GX + 5, 3.3 + 1.4 * (t - T.gradeT - 1.9) * 3, 4.5]} sc={0.9} c="#ffffff" o={{ opacity: 0.6 }} cast={false} ws={8} hs={6} /> : null}
+      {/* a sujeira miúda passa pelas barras */}
+      {t > T.mas3 - 0.5 && t < T.tanque ? Array.from({ length: 30 }, (_, i) => <Sph key={i} rad={0.3} p={[GX + 3 + (((t - T.mas3) * 8 + i * 1.9) % 50), 1.5 + 0.35 * Math.sin(t * 5 + i), -2 + (rnd(i) - 0.5) * 6]} c={BROWN2} cast={false} ws={5} hs={4} />) : null}
       {/* canal de areia: parede de vidro e grãos afundando */}
       <Box s={[26, 4.4, 8]} p={[188, 2.2, -2]} c={GLASS} o={{ opacity: 0.16, depthWrite: false }} cast={false} />
       <Box s={[25, 3.2, 7.4]} p={[188, 1.9, -2]} c="#b88a55" o={{ opacity: 0.7 }} cast={false} />
@@ -275,7 +277,7 @@ const RoundTank: React.FC<{ x: number; t: number; z?: number; kind: "prim" | "se
   const prim = kind === "prim", R = 13;
   const clear = prim ? ease(t, T.tanque + 0.5, T.prim + 0.5) : ease(t, T.afundam, T.limpa + 0.8);
   const water = prim ? mixc("#9a6430", "#d9b27a", clear) : mixc("#c7b07a", "#9fe4ff", clear);
-  const sink0 = prim ? T.pesado - 0.6 : T.afundam, mount = prim ? ease(t, T.lodo, T.prim + 1.5) : ease(t, T.montanha - 0.2, T.montanha + 1.1);
+  const sink0 = prim ? T.pesado - 0.6 : T.afundam, mount = prim ? 0.3 + 0.7 * ease(t, T.lodo, T.prim + 1.5) : ease(t, T.montanha - 0.2, T.montanha + 1.1);
   const ang = t * 0.5;
   return (
     <G p={[x, PY, z]}>
@@ -291,6 +293,7 @@ const RoundTank: React.FC<{ x: number; t: number; z?: number; kind: "prim" | "se
       <Cyl rt={0.9} h={1.1} p={[0, 4.6, 0]} c={STEEL} seg={10} cast={false} />
       {prim ? Array.from({ length: 34 }, (_, i) => { const t0 = T.tanque + 0.5 + rnd(i) * 3.0, d = prog(t, t0, t0 + 1.5 + rnd(i + 3)), r = rnd(i + 1) * (R - 3), a = rnd(i + 2) * 6.28; if (t < T.tanque) return null; const y = d <= 0 ? 3.0 : lerp(3.0, 1.2 + 0.9 * mount * (1 - r / R), ease(d, 0, 1)); return <Box key={i} s={[0.7, 0.7, 0.7]} p={[Math.cos(a + ang * 0.15) * r, y, Math.sin(a) * r]} r={[i, i * 2, 0]} sc={d >= 1 ? 0.01 : 1} c={BROWN2} cast={false} />; }) : null}
       {!prim ? Array.from({ length: 26 }, (_, i) => { const t0 = T.afundam - 0.2 + rnd(i) * 1.4, d = prog(t, t0, t0 + 1.6), r = rnd(i + 1) * (R - 3), a = rnd(i + 2) * 6.28; if (t < T.outro) return null; const y = lerp(3.2, 1.1 + 0.6 * mount, ease(d, 0, 1)); return <Sph key={i} rad={0.55} p={[Math.cos(a) * r, y, Math.sin(a) * r]} sc={[1, 0.8, 1]} c="#5fc760" ws={7} hs={5} cast={false} />; }) : null}
+      {!prim && t > T.outro - 0.5 && t < T.sec + 1 ? Array.from({ length: 18 }, (_, i) => { const u = fract(t * 0.8 + i / 18), r = rnd(i + 4) * (R - 4), a = rnd(i + 9) * 6.28; return <Sph key={i} rad={0.4 + 0.25 * rnd(i)} p={[Math.cos(a) * r, 0.8 + u * 3.0, Math.sin(a) * r]} c="#ffffff" o={{ opacity: 0.75, depthWrite: false }} cast={false} ws={6} hs={5} />; }) : null}
       {/* rim de saída: a água sobe pela borda */}
       {!prim ? <Box s={[3, 0.3, 2]} p={[R + 0.4, 3.8, 0]} c={mixc("#c7b07a", "#9fe4ff", clear)} cast={false} /> : null}
     </G>
@@ -338,6 +341,19 @@ const Aeration: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- rio e peixe
+const EndDuck: React.FC<{ t: number }> = ({ t }) => {
+  const t0 = T.vaso + 2.15, tIn = T.vaso + 0.5;
+  if (t < tIn) return null;
+  let p: V3, rot = 0;
+  if (t < t0) { const u = ease(t, tIn, t0); p = [lerp(351.5, 357, u), lerp(3.0, 0.9, u), lerp(-8, 3, u)]; }
+  else if (t < t0 + 1.0) { const u = prog(t, t0, t0 + 1.0); p = [lerp(357, 363, u), 0.9 + 5 * Math.sin(u * PI), lerp(3, 6, u)]; rot = u * 12; }
+  else { const h1 = Math.max(0, 3 * Math.exp(-3 * 0) * 0), j = (b: number) => (t > b && t < b + 0.7 ? 3.2 * Math.sin(prog(t, b, b + 0.7) * PI) : 0); p = [363 + 0.4 * Math.sin(t * 1.5), 0.8 + 0.12 * Math.sin(t * 4) + j(T.manda + 0.3) + j(T.manda + 1.8) + h1, 6]; rot = j(T.manda + 0.3) > 0 || j(T.manda + 1.8) > 0 ? t * 9 : 0; }
+  return (
+    <G p={[p[0], p[1], p[2]]} r={[0, rot, 0]} sc={2.2}>
+      <Sph rad={0.55} c="#ffd400" sc={[1.1, 0.8, 1]} ws={10} hs={8} cast={false} /><Sph rad={0.34} c="#ffd400" p={[0.3, 0.5, 0.2]} ws={8} hs={6} cast={false} /><Box s={[0.34, 0.12, 0.3]} p={[0.62, 0.5, 0.2]} c="#ff8a10" cast={false} />
+    </G>
+  );
+};
 const River: React.FC<{ t: number }> = ({ t }) => {
   const clean = ease(t, T.limpa, T.limpa + 1.5);
   const jump = (t0: number, x0: number, h: number) => { const u = prog(t, t0, t0 + 1.1); if (u <= 0 || u >= 1) return null; const x = x0 + u * 9, y = 0.4 + h * Math.sin(u * PI), pitch = -Math.cos(u * PI) * 1.0; return <G p={[x, y, 6.5]} r={[0, 0, pitch]}><Sph rad={1.1} sc={[1.7, 0.85, 0.8]} c="#ff8a10" ws={10} hs={8} cast={false} /><Cone rad={0.7} h={1.3} p={[-1.9, 0, 0]} r={[0, 0, PI / 2]} seg={4} c="#ff6a00" cast={false} /><Sph rad={0.18} p={[1.0, 0.25, 0.65]} c="#1c1208" cast={false} ws={6} hs={4} /></G>; };
@@ -350,6 +366,8 @@ const River: React.FC<{ t: number }> = ({ t }) => {
       <Duct a={[351.5, 3.0, -8]} b={[357, 0.9, 3]} rad={0.9} />
       <Flow pts={[[351.5, 3.0, -8], [353, 2.6, -8], [357, 1.0, 3], [358, 0.6, 5]]} t={t} t0={T.limpa} spd={6} gap={2.4} c="#8fdcff" rad={0.7} />
       {t > T.rio ? <Cyl rt={2 + 3 * clean} h={0.06} p={[360, 0.75, 5.5]} c="#a8e4ff" seg={16} o={{ opacity: 0.4 }} cast={false} /> : null}
+      {t > T.limpa + 0.55 && t < T.limpa + 1.9 ? Array.from({ length: 14 }, (_, i) => { const d = t - T.limpa - 0.55, a = i * 0.45; return <Sph key={`s${i}`} rad={0.34} p={[358 + Math.cos(a) * d * 4, 0.9 + 6 * d - 7 * d * d, 4.5 + Math.sin(a) * d * 3]} c="#cdeeff" cast={false} ws={5} hs={4} sc={d < 1.1 ? 1 : 0.01} />; }) : null}
+      <EndDuck t={t} />
       {jump(T.rio + 0.55, 364, 5.2)}{jump(T.rio + 1.6, 370, 3.6)}
       {/* respingos */}
       {[T.rio + 0.55, T.rio + 1.6].map((t0, k) => t > t0 && t < t0 + 1.4 ? Array.from({ length: 8 }, (_, i) => { const d = t - t0, ang = i * 0.8; return <Sph key={`${k}${i}`} rad={0.28} p={[(k ? 370 : 364) + Math.cos(ang) * d * 4, 0.7 + 3 * d - 5 * d * d, 6.5 + Math.sin(ang) * d * 2]} c="#bfeaff" cast={false} ws={5} hs={4} sc={d < 1.1 ? 1 : 0.01} />; }) : null)}
@@ -373,8 +391,8 @@ const Digester: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G p={[0, PY, 0]}>
       {/* tubo de lodo vindo do decantador secundário */}
-      <Duct a={[338, 1.4, 4.6]} b={[386, 1.4, 4.6]} rad={0.95} />
-      <Flow pts={[[338, 1.4, 4.6], [386, 1.4, 4.6], [390, 3, 2]]} t={t} t0={T.dig} t1={T.dig + 9} spd={16} gap={3.0} c="#5a3a1c" rad={0.7} />
+      <Duct a={[338, 1.4, -3]} b={[386, 1.4, -3]} rad={0.95} />
+      <Flow pts={[[338, 1.4, -3], [386, 1.4, -3], [390, 3, -4]]} t={t} t0={T.dig} t1={T.dig + 9} spd={16} gap={3.0} c="#5a3a1c" rad={0.7} />
       <G p={[X0, 0, Z0]}>
         <Cyl rt={9} h={0.6} p={[0, 0.3, 0]} c={CONC} seg={20} />
         {[0, 1, 2, 3, 4].map((k) => <Box key={k} s={[0.8, 4, 0.8]} p={[Math.cos(k * 1.26) * 5.6, 2.2, Math.sin(k * 1.26) * 5.6]} c={STEEL} cast={false} />)}
@@ -411,10 +429,12 @@ const Digester: React.FC<{ t: number }> = ({ t }) => {
       </G>
       {/* postes que acendem em onda, do gerador para trás */}
       {Array.from({ length: 14 }, (_, i) => { const x = 428 - i * 22, on = ease(t, T.energia + 0.9 + i * 0.1, T.energia + 1.15 + i * 0.1); return t > T.energia - 0.2 ? <Lamp key={i} p={[x, 0, 8.5]} on={on} /> : null; })}
+      {/* prédios da estação: as janelas acendem em onda */}
+      {[150, 205, 262, 318, 372, 428, 462].map((x, i) => { const on = ease(t, T.energia + 0.9 + i * 0.12, T.energia + 1.2 + i * 0.12); return <G key={i} p={[x, 0, -30]}><Box s={[16, 10, 8]} p={[0, 5, 0]} c={PASTEL[i % PASTEL.length]} /><Box s={[17, 1, 9]} p={[0, 10.4, 0]} c="#e0262b" />{[-5, 0, 5].map((wx) => [3, 7].map((wy) => <Box key={`${wx}${wy}`} s={[2.2, 2.2, 0.2]} p={[wx, wy, 4.1]} c={on > 0.4 ? "#fff1a0" : "#566170"} o={on > 0.4 ? { emissive: "#ffd84a", ei: 1.4 } : undefined} cast={false} />))}</G>; })}
       {/* adubo: esteira e sacos */}
-      <Box s={[26, 0.5, 3.4]} p={[432, 1.3, 4.2]} c={DARK} />
-      {Array.from({ length: 8 }, (_, i) => <Box key={i} s={[0.2, 0.06, 3.2]} p={[419.5 + ((i * 3.2 + t * 4) % 25), 1.6, 4.2]} c="#4a515c" cast={false} />)}
-      {bags.map((i) => { const a = T.adubo + 0.1 + i * 0.16, u = pk(t, a, 0.3); if (u <= 0.01) return null; const col = i % 5, row = Math.floor(i / 5); return <G key={i} p={[437 + col * 2.4, 2.4 + row * 1.9 + Math.max(0, 5 * (1 - prog(t, a, a + 0.5)) ** 2), 4.2 + (row ? 0.4 : 0)]} sc={[u, u, u]}><Box s={[2.1, 1.7, 1.4]} c="#e8d6a8" /><Box s={[0.9, 0.9, 0.12]} p={[0, 0, 0.75]} c="#2fa84a" cast={false} /></G>; })}
+      <Box s={[24, 0.5, 3.4]} p={[440, 1.3, -1]} c="#7a8591" />
+      {Array.from({ length: 8 }, (_, i) => <Box key={i} s={[0.2, 0.06, 3.2]} p={[428.5 + ((i * 3.2 + t * 4) % 23), 1.6, -1]} c="#c3ccd4" cast={false} />)}
+      {bags.map((i) => { const a = T.adubo + 0.1 + i * 0.16, u = pk(t, a, 0.3); if (u <= 0.01) return null; const col = i % 5, row = Math.floor(i / 5); return <G key={i} p={[436 + col * 2.8, 2.6 + row * 2.3 + Math.max(0, 5 * (1 - prog(t, a, a + 0.5)) ** 2), -1 + (row ? 0.4 : 0)]} sc={[u * 1.4, u * 1.4, u * 1.4]}><Box s={[2.1, 1.7, 1.4]} c="#f4e2b0" /><Box s={[1.2, 1.2, 0.12]} p={[0, 0, 0.75]} c="#2fa84a" cast={false} /><Box s={[2.2, 0.25, 1.5]} p={[0, 0.9, 0]} c="#c9a45a" cast={false} /></G>; })}
       <Pipe a={[403, 2, -2]} b={[420, 3, 4]} rad={0.7} c={STEEL} cast={false} />
     </G>
   );
@@ -423,15 +443,15 @@ const Digester: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- abertura B: mergulho pelo cano (só nos primeiros segundos)
 /** o patinho, sugado pela descarga, viaja pela rede (abertura B): posição por instante */
 export const duckPos = (t: number): V3 => {
-  if (t < 0.7) return [-65.4, 2.6, 8.4];
-  if (t < 1.25) { const u = ease(t, 0.7, 1.25); return [-65.4, lerp(0.2, YM, u), ZP]; }
-  if (t < 2.35) { const u = ease(t, 1.25, 2.35); return [lerp(-65.4, -8.4, u), YM, ZP]; }
-  if (t < 2.7) { const u = ease(t, 2.35, 2.7); return [-8.4, lerp(YM, 0.4, u), ZP]; }
-  const d = t - 2.7; return [-8.4 + 3 * d, 0.4 + 26 * d - 30 * d * d, ZP + 4 * d];
+  if (t < 0.35) return [-65.4, 2.6, 8.4];
+  if (t < 0.9) { const u = ease(t, 0.35, 0.9); return [-65.4, lerp(0.2, YM, u), ZP]; }
+  if (t < 2.1) { const u = ease(t, 0.9, 2.1); return [lerp(-65.4, -8.4, u), YM, ZP]; }
+  if (t < 2.5) { const u = ease(t, 2.1, 2.5); return [-8.4, lerp(YM, 0.4, u), ZP]; }
+  const d = t - 2.5; return [-8.4 + 3 * d, 0.4 + 26 * d - 30 * d * d, ZP + 4 * d];
 };
 const Dive: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 0.7 || t > OPEN_END + 0.8) return null;
-  const p = duckPos(t), vert = (t >= 0.7 && t < 1.25) || (t >= 2.35 && t < 2.7), fly = Math.max(0, t - 2.7);
+  if (t < 0.3 || t > OPEN_END + 0.8) return null;
+  const p = duckPos(t), vert = (t >= 0.35 && t < 0.9) || (t >= 2.1 && t < 2.5), fly = Math.max(0, t - 2.5);
   return (
     <G>
       <G p={p} r={[0, 0, vert ? 0 : -0.2]} sc={1.9}>
@@ -440,9 +460,9 @@ const Dive: React.FC<{ t: number }> = ({ t }) => {
       {/* estelas de água atrás do patinho */}
       {Array.from({ length: 6 }, (_, i) => { const q = duckPos(t - 0.06 * (i + 1)); return <Sph key={i} rad={0.55 - i * 0.06} p={[q[0], q[1] + 0.1, q[2]]} c="#8fdcff" o={{ opacity: 0.7 }} cast={false} ws={6} hs={4} />; })}
       {/* tampa do bueiro voa */}
-      <G p={[-8.4 + 2 * fly, 0.3 + 18 * fly - 22 * fly * fly, ZP]} r={[fly * 7, 0, fly * 3]} vis={t > 2.6}><Cyl rt={1.9} h={0.3} c="#59626b" seg={14} /></G>
+      <G p={[-8.4 + 2 * fly, 0.3 + 18 * fly - 22 * fly * fly, ZP]} r={[fly * 7, 0, fly * 3]} vis={t > 2.4}><Cyl rt={1.9} h={0.3} c="#59626b" seg={14} /></G>
       {/* boca do bueiro acende */}
-      {t > 2.3 ? <Cyl rt={1.3} h={0.1} p={[-8.4, 0.2, ZP]} c="#ffd400" seg={12} o={{ emissive: "#ffd400", ei: 1 }} cast={false} /> : null}
+      {t > 2.05 ? <Cyl rt={1.3} h={0.1} p={[-8.4, 0.2, ZP]} c="#ffd400" seg={12} o={{ emissive: "#ffd400", ei: 1 }} cast={false} /> : null}
     </G>
   );
 };

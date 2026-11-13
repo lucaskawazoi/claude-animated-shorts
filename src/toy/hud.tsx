@@ -12,9 +12,9 @@ export const stroke = (px: number, c = "#1c1208") => ({ WebkitTextStroke: `${px}
 export const pop = (t: number, t0: number, dur = 0.28) => { const u = prog(t, t0, t0 + dur); return u <= 0 ? 0 : outBack(u); };
 export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.min((t - a) / fade, (b - t) / fade));
 
-export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold" };
+export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold"; hi?: boolean };
 export type Title = { a: number; text: string; len?: number };
-export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string };
+export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string; bounces?: number[] };
 export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }> };
 
 /** contador que sobe de a até b entre t0 e t1, com separador de milhar em português */
@@ -23,15 +23,16 @@ export const count = (t: number, t0: number, t1: number, a: number, b: number, d
   return dec ? v.toFixed(dec).replace(".", ",") : Math.round(v).toLocaleString("pt-BR").replace(/ /g, ".").replace(/,/g, ".");
 };
 
+const TONE_HI = { dark: "#0b1620", red: "#b01818", green: "#0b7a35", gold: "#a86f00" } as const;
 const TONE = { dark: "#15202bd9", red: "#7a1414e6", green: "#0f4a2ae6", gold: "#6a4a00e6" } as const;
 const PillEl: React.FC<{ p: Pill; t: number }> = ({ p, t }) => {
   const k = win(t, p.a, p.b, 0.22); if (k <= 0) return null;
   const s = pop(t, p.a, 0.3);
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: p.y ?? 440, display: "flex", justifyContent: "center", opacity: k, transform: `scale(${s})` }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 18, padding: "10px 34px 14px", borderRadius: 60, background: TONE[p.tone ?? "dark"], border: "4px solid #ffffff33", boxShadow: "0 8px 0 #00000055" }}>
-        <span style={{ fontFamily: FONT, fontSize: 38, color: "#cfe6ff", letterSpacing: 2 }}>{p.label}</span>
-        <span style={{ fontFamily: FONT, fontSize: 64, color: "#fff", lineHeight: 1 }}>{p.value ? p.value(t) : ""}</span>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 18, padding: "10px 34px 14px", borderRadius: 60, background: p.hi ? TONE_HI[p.tone ?? "dark"] : TONE[p.tone ?? "dark"], border: p.hi ? "6px solid #ffffff" : "4px solid #ffffff33", boxShadow: "0 8px 0 #00000077" }}>
+        <span style={{ fontFamily: FONT, fontSize: p.hi ? 42 : 38, color: p.hi ? "#ffffff" : "#cfe6ff", letterSpacing: 2 }}>{p.label}</span>
+        <span style={{ fontFamily: FONT, fontSize: p.hi ? 70 : 64, color: "#fff", lineHeight: 1, ...(p.hi ? stroke(5, "#000000") : {}) }}>{p.value ? p.value(t) : ""}</span>
       </div>
     </div>
   );
@@ -94,7 +95,7 @@ const Stamp: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
 
 const RewardEl: React.FC<{ t: number; r: Reward }> = ({ t, r }) => {
   const k = win(t, r.a, r.a + r.len, 0.25); if (k <= 0) return null;
-  const s = pop(t, r.a, 0.45);
+  const bz = (r.bounces ?? []).reduce((a, b0) => a + (t > b0 ? 0.16 * Math.exp(-5 * (t - b0)) * Math.sin(18 * (t - b0)) : 0), 0), s = pop(t, r.a, 0.45) * (1 + bz);
   const cols = ["#ffd400", "#5cff7a", "#4ab8ff", "#ff6bb5", "#ffffff"];
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 300, display: "flex", flexDirection: "column", alignItems: "center", opacity: k, transform: `scale(${s})` }}>

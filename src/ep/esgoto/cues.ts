@@ -3,7 +3,7 @@ import { DURATION_S, WINS, find, words } from "../../toy/cues";
 
 const z = (n: number) => find("zerou ainda", n, 0.05), an = (n: number) => find("ainda nao", n, 0.03);
 export const T = {
-  cem: find("de cada cem"), metade: find("so metade"), sua: find("a sua descarga"), viagem: find("faz uma viagem"),
+  cem: find("de cada cem"), metade: find("so metade"), pais: find("do pais"), sua: find("a sua descarga"), viagem: find("faz uma viagem"),
   descarga: find("voce da a descarga"), desce: find("o esgoto desce"), rede: find("essa e a rede"),
   soque1: find("so que chega", 0, 0.1), vale: find("num vale"), morro: find("esgoto nao sobe morro"),
   z1: z(0), a1: an(0),
@@ -26,8 +26,8 @@ export const T = {
 /** cortes secos: um onde a HISTÓRIA vira (cada estação, cada problema, cada «Zerou?», cada surpresa), em segundos, quantizados ao quadro */
 const q = (x: number) => Math.round(x * 30) / 30;
 export const CUTS10: number[] = [
-  T.sua, T.descarga, T.desce, T.rede, T.soque1, T.morro, T.bomba, T.pracima, T.eleva - 0.07, T.mas2, T.z2, T.grade, T.segura, T.canal, T.gradeT, T.z3, T.tanque, T.lodo, T.prim, T.z4,
-  T.bact, T.adoram, T.sopra, T.comem, T.aer, T.demais, T.z5, T.outro, T.limpa, T.rio, T.sec, T.montanha, T.z6, T.dig, T.semar, T.outras, T.biogas, T.energia, T.digT, T.adubo, T.agoraSim, T.vaso, T.manda,
+  3.0, T.metade, T.pais, T.sua, T.descarga, T.desce, T.rede, T.soque1, T.morro, T.z1, T.bomba, T.pracima, T.eleva - 0.07, T.mas2, T.z2, T.grade, T.segura, T.canal, T.gradeT, T.mas3, T.z3, T.tanque, T.lodo, T.prim, T.z4,
+  T.bact, T.adoram, T.sopra, T.comem, T.aer, T.demais, T.z5, T.outro, T.limpa, T.rio, T.sec, T.montanha, T.z6, T.dig, T.semar, T.outras, T.biogas, T.energia, T.digT, T.adubo, T.agoraSim, T.vaso, T.vaso + 1.9, T.manda, T.manda + 1.75,
 ].map(q);
 export { WINS };
 
@@ -42,7 +42,7 @@ S.push(["pop", T.cem + 0.2, -12], ["pop", T.cem + 1.0, -12], ["thud", T.metade, 
   ["spring", T.bomba + 0.4, -10], ["gush", T.empurra, -10], ["pop", T.pracima, -11],
   ["squelch", T.pano, -12], ["splash", T.plastico, -12], ["gravel", T.areia, -12],
   ["clank", T.segura + 0.4, -11], ["drag", T.canal, -13], ["sink", T.afundaA, -12],
-  ["slide", T.pesado, -12], ["sink", T.lodo, -12],
+  ["slide", T.pesado, -12], ["splash", T.limpa + 0.6, -9], ["splash", T.vaso + 3.0, -9], ["pop", T.manda + 0.3, -9], ["pop", T.manda + 1.8, -9], ["squelch", T.dig + 0.6, -12], ["sink", T.lodo, -12],
   ["pop", T.bact + 0.3, -11], ["pop", T.bact + 0.8, -11], ["gush", T.sopra, -12], ["squelch", T.comem, -12], ["pop", T.demais + 0.4, -10], ["pop", T.demais + 0.8, -10],
   ["sink", T.afundam, -12], ["stream", T.limpa, -12], ["splash", T.rio + 0.7, -9],
   ["mud", T.dig, -12], ["creak", T.semar, -13], ["fire", T.biogas + 0.6, -11], ["chime", T.energia + 0.9, -9], ["pop", T.energia + 1.4, -11],
