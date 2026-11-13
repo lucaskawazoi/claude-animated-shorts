@@ -219,6 +219,25 @@ const Party: React.FC<{ t: number }> = ({ t }) => {
   return <G>{Array.from({ length: 40 }, (_, i) => { const u = fract(t * 0.4 + rnd(i)); return <Box key={i} s={[0.25, 0.04, 0.25]} p={[(rnd(i + 1) - 0.5) * 2 * A, TOP + 6 - u * 10, (rnd(i + 2) - 0.5) * 2 * B]} r={[u * 9, u * 7, 0]} c={cols[i % 5]} cast={false} o={{ emissive: cols[i % 5], ei: 0.3 }} />; })}</G>;
 };
 
+// ---------------------------------------------------------------- demonstração: o arco leva o peso aos pilares (roteiro v2)
+// ponytail: um arco de brinquedo na frente da obra, só durante a frase «el arco desvía el peso hacia los pilares»
+const LOAD_P: V3 = [11, 0, 16.5], LOAD_YAW = 0.588;
+const LoadDemo: React.FC<{ t: number }> = ({ t }) => {
+  const k = ease(t, T.arcos, T.arcos + 0.8) * (1 - ease(t, T.p3 - 0.6, T.p3)); if (k <= 0.01) return null;
+  const w = ease(t, T.reparten - 0.5, T.reparten + 0.1), f = ease(t, T.reparten + 0.1, T.reparten + 1.4), g = ease(t, T.reparten + 1.2, T.reparten + 2.3);
+  const R = 2.6, th = 0.9, H = 3.6, rm = R + th / 2;
+  const red = { emissive: "#ff2a1a", ei: 0.8 }, green = { emissive: "#1fa84a", ei: 0.7 };
+  return (
+    <G p={LOAD_P} r={[0, LOAD_YAW, 0]} sc={[1, Math.max(0.01, k), 1]}>
+      {[-1, 1].map((s) => <Box key={s} s={[th + 0.1, H, 1.0]} p={[s * rm, H / 2, 0]} c={TRAV2} />)}
+      {Array.from({ length: 9 }, (_, i) => { const a = (PI * (i + 0.5)) / 9; return <Box key={i} s={[th, 0.95, 1.0]} p={[rm * Math.cos(a), H + rm * Math.sin(a), 0]} r={[0, 0, a - PI / 2]} c={i === 4 ? "#f3e6c4" : TRAV} />; })}
+      <Box s={[1.8, 1.1, 1.1]} p={[0, H + R + th + 0.55 + (1 - w) * 5, 0]} c="#6d6a64" vis={w > 0.01} />
+      {[1, -1].map((s) => [0.42, 0.27, 0.12].map((u, j) => { const a = PI * u, on = f > j / 3; return on ? <Cone key={`${s}${j}`} rad={0.38} h={1.1} seg={8} p={[s * (rm + 0.75) * Math.cos(a), H + (rm + 0.75) * Math.sin(a), 0.7]} r={[0, 0, s > 0 ? PI + a : PI - a]} c="#ff3b30" o={red} cast={false} /> : null; }))}
+      {[-1, 1].map((s) => [0.7, 0.3].map((u, j) => g > j / 2 ? <Cone key={`g${s}${j}`} rad={0.42} h={1.1} seg={8} p={[s * (rm + 0.9), H * u, 0.7]} r={[PI, 0, 0]} c="#3fcf6a" o={green} cast={false} /> : null))}
+    </G>
+  );
+};
+
 export const World: React.FC<{ t: number }> = ({ t }) => (
   <>
     <Sky top="#2f86e8" mid="#86c4f5" low="#f2f0e6" />
@@ -227,7 +246,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Clouds t={t} n={7} />
     <Rome t={t} /><Lake t={t} />
     <Amphi t={t} /><Arena t={t} /><Spectators t={t} /><Arrivals t={t} /><Velarium t={t} />
-    <Debris t={t} /><Party t={t} />
+    <Debris t={t} /><Party t={t} /><LoadDemo t={t} />
   </>
 );
 export { clamp };

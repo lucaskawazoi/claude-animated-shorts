@@ -1,1 +1,1 @@
-export { T } from "./petra/cues";
+export { T } from "./coliseo/cues";
