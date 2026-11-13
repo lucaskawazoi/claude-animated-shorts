@@ -1,0 +1,1520 @@
+[
+ {
+  "id": "w0",
+  "text": "Un",
+  "start": 0.0,
+  "end": 0.116
+ },
+ {
+  "id": "w1",
+  "text": "puente",
+  "start": 0.151,
+  "end": 0.372
+ },
+ {
+  "id": "w2",
+  "text": "colgante",
+  "start": 0.406,
+  "end": 0.766
+ },
+ {
+  "id": "w3",
+  "text": "de",
+  "start": 0.813,
+  "end": 0.871
+ },
+ {
+  "id": "w4",
+  "text": "unos",
+  "start": 0.917,
+  "end": 1.091
+ },
+ {
+  "id": "w5",
+  "text": "treinta",
+  "start": 1.126,
+  "end": 1.393
+ },
+ {
+  "id": "w6",
+  "text": "metros.",
+  "start": 1.44,
+  "end": 1.904
+ },
+ {
+  "id": "w7",
+  "text": "Hecho",
+  "start": 2.02,
+  "end": 2.287
+ },
+ {
+  "id": "w8",
+  "text": "de",
+  "start": 2.334,
+  "end": 2.403
+ },
+ {
+  "id": "w9",
+  "text": "hierba",
+  "start": 2.45,
+  "end": 2.682
+ },
+ {
+  "id": "w10",
+  "text": "trenzada.",
+  "start": 2.717,
+  "end": 3.286
+ },
+ {
+  "id": "w11",
+  "text": "Y",
+  "start": 3.39,
+  "end": 3.448
+ },
+ {
+  "id": "w12",
+  "text": "lo",
+  "start": 3.518,
+  "end": 3.587
+ },
+ {
+  "id": "w13",
+  "text": "vuelven",
+  "start": 3.622,
+  "end": 3.878
+ },
+ {
+  "id": "w14",
+  "text": "a",
+  "start": 3.913,
+  "end": 3.936
+ },
+ {
+  "id": "w15",
+  "text": "tejer",
+  "start": 3.971,
+  "end": 4.226
+ },
+ {
+  "id": "w16",
+  "text": "cada",
+  "start": 4.284,
+  "end": 4.505
+ },
+ {
+  "id": "w17",
+  "text": "año,",
+  "start": 4.54,
+  "end": 4.841
+ },
+ {
+  "id": "w18",
+  "text": "como",
+  "start": 4.876,
+  "end": 5.062
+ },
+ {
+  "id": "w19",
+  "text": "hace",
+  "start": 5.097,
+  "end": 5.259
+ },
+ {
+  "id": "w20",
+  "text": "más",
+  "start": 5.306,
+  "end": 5.457
+ },
+ {
+  "id": "w21",
+  "text": "de",
+  "start": 5.48,
+  "end": 5.538
+ },
+ {
+  "id": "w22",
+  "text": "quinientos",
+  "start": 5.584,
+  "end": 6.026
+ },
+ {
+  "id": "w23",
+  "text": "años.",
+  "start": 6.06,
+  "end": 6.432
+ },
+ {
+  "id": "w24",
+  "text": "Los",
+  "start": 6.536,
+  "end": 6.699
+ },
+ {
+  "id": "w25",
+  "text": "Andes,",
+  "start": 6.769,
+  "end": 7.036
+ },
+ {
+  "id": "w26",
+  "text": "en",
+  "start": 7.07,
+  "end": 7.175
+ },
+ {
+  "id": "w27",
+  "text": "tiempos",
+  "start": 7.221,
+  "end": 7.558
+ },
+ {
+  "id": "w28",
+  "text": "de",
+  "start": 7.581,
+  "end": 7.628
+ },
+ {
+  "id": "w29",
+  "text": "los",
+  "start": 7.663,
+  "end": 7.779
+ },
+ {
+  "id": "w30",
+  "text": "incas.",
+  "start": 7.883,
+  "end": 8.255
+ },
+ {
+  "id": "w31",
+  "text": "No",
+  "start": 8.371,
+  "end": 8.499
+ },
+ {
+  "id": "w32",
+  "text": "hay",
+  "start": 8.533,
+  "end": 8.638
+ },
+ {
+  "id": "w33",
+  "text": "acero,",
+  "start": 8.684,
+  "end": 9.079
+ },
+ {
+  "id": "w34",
+  "text": "ni",
+  "start": 9.125,
+  "end": 9.23
+ },
+ {
+  "id": "w35",
+  "text": "cables,",
+  "start": 9.288,
+  "end": 9.671
+ },
+ {
+  "id": "w36",
+  "text": "ni",
+  "start": 9.729,
+  "end": 9.81
+ },
+ {
+  "id": "w37",
+  "text": "motores:",
+  "start": 9.845,
+  "end": 10.333
+ },
+ {
+  "id": "w38",
+  "text": "solo",
+  "start": 10.414,
+  "end": 10.635
+ },
+ {
+  "id": "w39",
+  "text": "hierba,",
+  "start": 10.67,
+  "end": 11.018
+ },
+ {
+  "id": "w40",
+  "text": "manos",
+  "start": 11.076,
+  "end": 11.447
+ },
+ {
+  "id": "w41",
+  "text": "y",
+  "start": 11.529,
+  "end": 11.564
+ },
+ {
+  "id": "w42",
+  "text": "mucha",
+  "start": 11.645,
+  "end": 11.924
+ },
+ {
+  "id": "w43",
+  "text": "gente.",
+  "start": 11.959,
+  "end": 12.388
+ },
+ {
+  "id": "w44",
+  "text": "Y",
+  "start": 12.539,
+  "end": 12.597
+ },
+ {
+  "id": "w45",
+  "text": "el",
+  "start": 12.667,
+  "end": 12.737
+ },
+ {
+  "id": "w46",
+  "text": "camino",
+  "start": 12.783,
+  "end": 13.097
+ },
+ {
+  "id": "w47",
+  "text": "tiene",
+  "start": 13.166,
+  "end": 13.352
+ },
+ {
+  "id": "w48",
+  "text": "que",
+  "start": 13.387,
+  "end": 13.456
+ },
+ {
+  "id": "w49",
+  "text": "cruzar",
+  "start": 13.491,
+  "end": 13.758
+ },
+ {
+  "id": "w50",
+  "text": "el",
+  "start": 13.793,
+  "end": 13.84
+ },
+ {
+  "id": "w51",
+  "text": "río",
+  "start": 13.886,
+  "end": 14.037
+ },
+ {
+  "id": "w52",
+  "text": "Apurímac,",
+  "start": 14.072,
+  "end": 14.536
+ },
+ {
+  "id": "w53",
+  "text": "en",
+  "start": 14.571,
+  "end": 14.664
+ },
+ {
+  "id": "w54",
+  "text": "el",
+  "start": 14.722,
+  "end": 14.792
+ },
+ {
+  "id": "w55",
+  "text": "fondo",
+  "start": 14.85,
+  "end": 15.059
+ },
+ {
+  "id": "w56",
+  "text": "de",
+  "start": 15.093,
+  "end": 15.151
+ },
+ {
+  "id": "w57",
+  "text": "un",
+  "start": 15.186,
+  "end": 15.233
+ },
+ {
+  "id": "w58",
+  "text": "cañón.",
+  "start": 15.268,
+  "end": 15.686
+ },
+ {
+  "id": "w59",
+  "text": "¿Cómo",
+  "start": 15.836,
+  "end": 16.057
+ },
+ {
+  "id": "w60",
+  "text": "cruzas",
+  "start": 16.092,
+  "end": 16.405
+ },
+ {
+  "id": "w61",
+  "text": "un",
+  "start": 16.475,
+  "end": 16.521
+ },
+ {
+  "id": "w62",
+  "text": "cañón",
+  "start": 16.556,
+  "end": 16.788
+ },
+ {
+  "id": "w63",
+  "text": "sin",
+  "start": 16.823,
+  "end": 16.963
+ },
+ {
+  "id": "w64",
+  "text": "cables",
+  "start": 16.997,
+  "end": 17.323
+ },
+ {
+  "id": "w65",
+  "text": "de",
+  "start": 17.346,
+  "end": 17.392
+ },
+ {
+  "id": "w66",
+  "text": "acero?",
+  "start": 17.439,
+  "end": 17.799
+ },
+ {
+  "id": "w67",
+  "text": "Con",
+  "start": 17.845,
+  "end": 17.996
+ },
+ {
+  "id": "w68",
+  "text": "ingenio:",
+  "start": 18.054,
+  "end": 18.542
+ },
+ {
+  "id": "w69",
+  "text": "hierba",
+  "start": 18.785,
+  "end": 19.052
+ },
+ {
+  "id": "w70",
+  "text": "de",
+  "start": 19.087,
+  "end": 19.145
+ },
+ {
+  "id": "w71",
+  "text": "la",
+  "start": 19.18,
+  "end": 19.25
+ },
+ {
+  "id": "w72",
+  "text": "puna,",
+  "start": 19.285,
+  "end": 19.621
+ },
+ {
+  "id": "w73",
+  "text": "la",
+  "start": 19.668,
+  "end": 19.784
+ },
+ {
+  "id": "w74",
+  "text": "q'oya,",
+  "start": 19.854,
+  "end": 20.271
+ },
+ {
+  "id": "w75",
+  "text": "torcida",
+  "start": 20.306,
+  "end": 20.713
+ },
+ {
+  "id": "w76",
+  "text": "en",
+  "start": 20.747,
+  "end": 20.806
+ },
+ {
+  "id": "w77",
+  "text": "cordones",
+  "start": 20.84,
+  "end": 21.212
+ },
+ {
+  "id": "w78",
+  "text": "finos,",
+  "start": 21.258,
+  "end": 21.63
+ },
+ {
+  "id": "w79",
+  "text": "y",
+  "start": 21.7,
+  "end": 21.758
+ },
+ {
+  "id": "w80",
+  "text": "casi",
+  "start": 21.862,
+  "end": 22.117
+ },
+ {
+  "id": "w81",
+  "text": "cien",
+  "start": 22.164,
+  "end": 22.35
+ },
+ {
+  "id": "w82",
+  "text": "cordones",
+  "start": 22.396,
+  "end": 22.733
+ },
+ {
+  "id": "w83",
+  "text": "trenzados",
+  "start": 22.768,
+  "end": 23.174
+ },
+ {
+  "id": "w84",
+  "text": "en",
+  "start": 23.232,
+  "end": 23.278
+ },
+ {
+  "id": "w85",
+  "text": "cada",
+  "start": 23.325,
+  "end": 23.499
+ },
+ {
+  "id": "w86",
+  "text": "soga,",
+  "start": 23.546,
+  "end": 23.871
+ },
+ {
+  "id": "w87",
+  "text": "gruesa",
+  "start": 23.917,
+  "end": 24.231
+ },
+ {
+  "id": "w88",
+  "text": "como",
+  "start": 24.265,
+  "end": 24.451
+ },
+ {
+  "id": "w89",
+  "text": "una",
+  "start": 24.486,
+  "end": 24.602
+ },
+ {
+  "id": "w90",
+  "text": "pierna.",
+  "start": 24.648,
+  "end": 25.032
+ },
+ {
+  "id": "w91",
+  "text": "Un",
+  "start": 25.136,
+  "end": 25.229
+ },
+ {
+  "id": "w92",
+  "text": "cordón",
+  "start": 25.275,
+  "end": 25.531
+ },
+ {
+  "id": "w93",
+  "text": "solo",
+  "start": 25.566,
+  "end": 25.728
+ },
+ {
+  "id": "w94",
+  "text": "se",
+  "start": 25.763,
+  "end": 25.833
+ },
+ {
+  "id": "w95",
+  "text": "rompe;",
+  "start": 25.879,
+  "end": 26.274
+ },
+ {
+  "id": "w96",
+  "text": "cien",
+  "start": 26.425,
+  "end": 26.645
+ },
+ {
+  "id": "w97",
+  "text": "juntos,",
+  "start": 26.68,
+  "end": 27.098
+ },
+ {
+  "id": "w98",
+  "text": "no.",
+  "start": 27.145,
+  "end": 27.446
+ },
+ {
+  "id": "w99",
+  "text": "Estas",
+  "start": 27.725,
+  "end": 28.085
+ },
+ {
+  "id": "w100",
+  "text": "son",
+  "start": 28.143,
+  "end": 28.329
+ },
+ {
+  "id": "w101",
+  "text": "las",
+  "start": 28.375,
+  "end": 28.491
+ },
+ {
+  "id": "w102",
+  "text": "sogas.",
+  "start": 28.515,
+  "end": 29.002
+ },
+ {
+  "id": "w103",
+  "text": "Pero",
+  "start": 29.13,
+  "end": 29.292
+ },
+ {
+  "id": "w104",
+  "text": "las",
+  "start": 29.327,
+  "end": 29.432
+ },
+ {
+  "id": "w105",
+  "text": "sogas",
+  "start": 29.455,
+  "end": 29.757
+ },
+ {
+  "id": "w106",
+  "text": "tienen",
+  "start": 29.78,
+  "end": 29.954
+ },
+ {
+  "id": "w107",
+  "text": "que",
+  "start": 29.989,
+  "end": 30.059
+ },
+ {
+  "id": "w108",
+  "text": "quedar",
+  "start": 30.105,
+  "end": 30.326
+ },
+ {
+  "id": "w109",
+  "text": "tensas",
+  "start": 30.384,
+  "end": 30.709
+ },
+ {
+  "id": "w110",
+  "text": "de",
+  "start": 30.755,
+  "end": 30.813
+ },
+ {
+  "id": "w111",
+  "text": "una",
+  "start": 30.86,
+  "end": 30.976
+ },
+ {
+  "id": "w112",
+  "text": "orilla",
+  "start": 31.011,
+  "end": 31.313
+ },
+ {
+  "id": "w113",
+  "text": "a",
+  "start": 31.394,
+  "end": 31.44
+ },
+ {
+  "id": "w114",
+  "text": "la",
+  "start": 31.51,
+  "end": 31.58
+ },
+ {
+  "id": "w115",
+  "text": "otra.",
+  "start": 31.661,
+  "end": 32.056
+ },
+ {
+  "id": "w116",
+  "text": "Solución:",
+  "start": 32.183,
+  "end": 32.775
+ },
+ {
+  "id": "w117",
+  "text": "las",
+  "start": 32.984,
+  "end": 33.112
+ },
+ {
+  "id": "w118",
+  "text": "amarran",
+  "start": 33.159,
+  "end": 33.437
+ },
+ {
+  "id": "w119",
+  "text": "a",
+  "start": 33.484,
+  "end": 33.507
+ },
+ {
+  "id": "w120",
+  "text": "grandes",
+  "start": 33.542,
+  "end": 33.855
+ },
+ {
+  "id": "w121",
+  "text": "piedras",
+  "start": 33.902,
+  "end": 34.215
+ },
+ {
+  "id": "w122",
+  "text": "en",
+  "start": 34.262,
+  "end": 34.32
+ },
+ {
+  "id": "w123",
+  "text": "cada",
+  "start": 34.378,
+  "end": 34.587
+ },
+ {
+  "id": "w124",
+  "text": "orilla,",
+  "start": 34.621,
+  "end": 34.97
+ },
+ {
+  "id": "w125",
+  "text": "y",
+  "start": 35.039,
+  "end": 35.097
+ },
+ {
+  "id": "w126",
+  "text": "decenas",
+  "start": 35.178,
+  "end": 35.48
+ },
+ {
+  "id": "w127",
+  "text": "de",
+  "start": 35.515,
+  "end": 35.561
+ },
+ {
+  "id": "w128",
+  "text": "personas",
+  "start": 35.608,
+  "end": 35.979
+ },
+ {
+  "id": "w129",
+  "text": "tiran",
+  "start": 36.026,
+  "end": 36.223
+ },
+ {
+  "id": "w130",
+  "text": "a",
+  "start": 36.258,
+  "end": 36.281
+ },
+ {
+  "id": "w131",
+  "text": "la",
+  "start": 36.316,
+  "end": 36.386
+ },
+ {
+  "id": "w132",
+  "text": "vez",
+  "start": 36.432,
+  "end": 36.56
+ },
+ {
+  "id": "w133",
+  "text": "hasta",
+  "start": 36.606,
+  "end": 36.757
+ },
+ {
+  "id": "w134",
+  "text": "tensarlas.",
+  "start": 36.792,
+  "end": 37.419
+ },
+ {
+  "id": "w135",
+  "text": "Estos",
+  "start": 37.941,
+  "end": 38.278
+ },
+ {
+  "id": "w136",
+  "text": "son",
+  "start": 38.313,
+  "end": 38.452
+ },
+ {
+  "id": "w137",
+  "text": "los",
+  "start": 38.487,
+  "end": 38.603
+ },
+ {
+  "id": "w138",
+  "text": "anclajes.",
+  "start": 38.65,
+  "end": 39.277
+ },
+ {
+  "id": "w139",
+  "text": "Pero",
+  "start": 39.88,
+  "end": 40.055
+ },
+ {
+  "id": "w140",
+  "text": "sobre",
+  "start": 40.089,
+  "end": 40.31
+ },
+ {
+  "id": "w141",
+  "text": "sogas",
+  "start": 40.345,
+  "end": 40.67
+ },
+ {
+  "id": "w142",
+  "text": "redondas",
+  "start": 40.774,
+  "end": 41.192
+ },
+ {
+  "id": "w143",
+  "text": "no",
+  "start": 41.274,
+  "end": 41.39
+ },
+ {
+  "id": "w144",
+  "text": "se",
+  "start": 41.424,
+  "end": 41.494
+ },
+ {
+  "id": "w145",
+  "text": "puede",
+  "start": 41.552,
+  "end": 41.761
+ },
+ {
+  "id": "w146",
+  "text": "caminar.",
+  "start": 41.808,
+  "end": 42.318
+ },
+ {
+  "id": "w147",
+  "text": "Solución:",
+  "start": 42.562,
+  "end": 43.154
+ },
+ {
+  "id": "w148",
+  "text": "sobre",
+  "start": 43.282,
+  "end": 43.503
+ },
+ {
+  "id": "w149",
+  "text": "las",
+  "start": 43.538,
+  "end": 43.63
+ },
+ {
+  "id": "w150",
+  "text": "sogas",
+  "start": 43.654,
+  "end": 43.909
+ },
+ {
+  "id": "w151",
+  "text": "de",
+  "start": 43.932,
+  "end": 43.979
+ },
+ {
+  "id": "w152",
+  "text": "abajo",
+  "start": 44.014,
+  "end": 44.281
+ },
+ {
+  "id": "w153",
+  "text": "tejen",
+  "start": 44.362,
+  "end": 44.571
+ },
+ {
+  "id": "w154",
+  "text": "un",
+  "start": 44.629,
+  "end": 44.675
+ },
+ {
+  "id": "w155",
+  "text": "piso",
+  "start": 44.722,
+  "end": 44.907
+ },
+ {
+  "id": "w156",
+  "text": "de",
+  "start": 44.954,
+  "end": 45.012
+ },
+ {
+  "id": "w157",
+  "text": "ramas",
+  "start": 45.07,
+  "end": 45.383
+ },
+ {
+  "id": "w158",
+  "text": "y",
+  "start": 45.442,
+  "end": 45.476
+ },
+ {
+  "id": "w159",
+  "text": "esteras,",
+  "start": 45.523,
+  "end": 46.034
+ },
+ {
+  "id": "w160",
+  "text": "y",
+  "start": 46.185,
+  "end": 46.254
+ },
+ {
+  "id": "w161",
+  "text": "dos",
+  "start": 46.312,
+  "end": 46.44
+ },
+ {
+  "id": "w162",
+  "text": "sogas",
+  "start": 46.463,
+  "end": 46.73
+ },
+ {
+  "id": "w163",
+  "text": "más",
+  "start": 46.788,
+  "end": 46.916
+ },
+ {
+  "id": "w164",
+  "text": "arriba",
+  "start": 46.951,
+  "end": 47.264
+ },
+ {
+  "id": "w165",
+  "text": "hacen",
+  "start": 47.322,
+  "end": 47.601
+ },
+ {
+  "id": "w166",
+  "text": "de",
+  "start": 47.647,
+  "end": 47.706
+ },
+ {
+  "id": "w167",
+  "text": "barandas.",
+  "start": 47.752,
+  "end": 48.333
+ },
+ {
+  "id": "w168",
+  "text": "Este",
+  "start": 48.577,
+  "end": 48.96
+ },
+ {
+  "id": "w169",
+  "text": "es",
+  "start": 49.041,
+  "end": 49.192
+ },
+ {
+  "id": "w170",
+  "text": "el",
+  "start": 49.238,
+  "end": 49.308
+ },
+ {
+  "id": "w171",
+  "text": "piso.",
+  "start": 49.366,
+  "end": 49.842
+ },
+ {
+  "id": "w172",
+  "text": "Pero",
+  "start": 50.283,
+  "end": 50.457
+ },
+ {
+  "id": "w173",
+  "text": "la",
+  "start": 50.492,
+  "end": 50.55
+ },
+ {
+  "id": "w174",
+  "text": "hierba",
+  "start": 50.585,
+  "end": 50.817
+ },
+ {
+  "id": "w175",
+  "text": "se",
+  "start": 50.852,
+  "end": 50.922
+ },
+ {
+  "id": "w176",
+  "text": "pudre",
+  "start": 50.968,
+  "end": 51.212
+ },
+ {
+  "id": "w177",
+  "text": "con",
+  "start": 51.247,
+  "end": 51.363
+ },
+ {
+  "id": "w178",
+  "text": "la",
+  "start": 51.398,
+  "end": 51.456
+ },
+ {
+  "id": "w179",
+  "text": "lluvia",
+  "start": 51.491,
+  "end": 51.769
+ },
+ {
+  "id": "w180",
+  "text": "y",
+  "start": 51.839,
+  "end": 51.862
+ },
+ {
+  "id": "w181",
+  "text": "el",
+  "start": 51.897,
+  "end": 51.967
+ },
+ {
+  "id": "w182",
+  "text": "sol.",
+  "start": 52.013,
+  "end": 52.408
+ },
+ {
+  "id": "w183",
+  "text": "¿Cómo",
+  "start": 52.791,
+  "end": 53.128
+ },
+ {
+  "id": "w184",
+  "text": "mantienes",
+  "start": 53.163,
+  "end": 53.522
+ },
+ {
+  "id": "w185",
+  "text": "un",
+  "start": 53.592,
+  "end": 53.639
+ },
+ {
+  "id": "w186",
+  "text": "puente",
+  "start": 53.685,
+  "end": 53.94
+ },
+ {
+  "id": "w187",
+  "text": "que",
+  "start": 53.975,
+  "end": 54.045
+ },
+ {
+  "id": "w188",
+  "text": "se",
+  "start": 54.08,
+  "end": 54.149
+ },
+ {
+  "id": "w189",
+  "text": "pudre?",
+  "start": 54.196,
+  "end": 54.66
+ },
+ {
+  "id": "w190",
+  "text": "Con",
+  "start": 54.997,
+  "end": 55.148
+ },
+ {
+  "id": "w191",
+  "text": "ingenio:",
+  "start": 55.206,
+  "end": 55.728
+ },
+ {
+  "id": "w192",
+  "text": "no",
+  "start": 56.007,
+  "end": 56.088
+ },
+ {
+  "id": "w193",
+  "text": "lo",
+  "start": 56.123,
+  "end": 56.181
+ },
+ {
+  "id": "w194",
+  "text": "mantienes,",
+  "start": 56.216,
+  "end": 56.692
+ },
+ {
+  "id": "w195",
+  "text": "lo",
+  "start": 56.75,
+  "end": 56.843
+ },
+ {
+  "id": "w196",
+  "text": "rehaces.",
+  "start": 56.913,
+  "end": 57.47
+ },
+ {
+  "id": "w197",
+  "text": "Cada",
+  "start": 57.679,
+  "end": 57.899
+ },
+ {
+  "id": "w198",
+  "text": "año,",
+  "start": 57.934,
+  "end": 58.19
+ },
+ {
+  "id": "w199",
+  "text": "cuatro",
+  "start": 58.224,
+  "end": 58.48
+ },
+ {
+  "id": "w200",
+  "text": "comunidades",
+  "start": 58.515,
+  "end": 59.014
+ },
+ {
+  "id": "w201",
+  "text": "tejen",
+  "start": 59.06,
+  "end": 59.246
+ },
+ {
+  "id": "w202",
+  "text": "uno",
+  "start": 59.293,
+  "end": 59.397
+ },
+ {
+  "id": "w203",
+  "text": "nuevo",
+  "start": 59.432,
+  "end": 59.652
+ },
+ {
+  "id": "w204",
+  "text": "en",
+  "start": 59.687,
+  "end": 59.734
+ },
+ {
+  "id": "w205",
+  "text": "unos",
+  "start": 59.769,
+  "end": 59.92
+ },
+ {
+  "id": "w206",
+  "text": "tres",
+  "start": 59.954,
+  "end": 60.163
+ },
+ {
+  "id": "w207",
+  "text": "días,",
+  "start": 60.198,
+  "end": 60.5
+ },
+ {
+  "id": "w208",
+  "text": "y",
+  "start": 60.546,
+  "end": 60.581
+ },
+ {
+  "id": "w209",
+  "text": "el",
+  "start": 60.628,
+  "end": 60.697
+ },
+ {
+  "id": "w210",
+  "text": "viejo",
+  "start": 60.743,
+  "end": 60.952
+ },
+ {
+  "id": "w211",
+  "text": "lo",
+  "start": 60.987,
+  "end": 61.057
+ },
+ {
+  "id": "w212",
+  "text": "sueltan",
+  "start": 61.092,
+  "end": 61.37
+ },
+ {
+  "id": "w213",
+  "text": "al",
+  "start": 61.405,
+  "end": 61.463
+ },
+ {
+  "id": "w214",
+  "text": "río.",
+  "start": 61.51,
+  "end": 61.812
+ },
+ {
+  "id": "w215",
+  "text": "Esta",
+  "start": 61.916,
+  "end": 62.218
+ },
+ {
+  "id": "w216",
+  "text": "es",
+  "start": 62.288,
+  "end": 62.357
+ },
+ {
+  "id": "w217",
+  "text": "la",
+  "start": 62.392,
+  "end": 62.438
+ },
+ {
+  "id": "w218",
+  "text": "renovación.",
+  "start": 62.473,
+  "end": 63.019
+ },
+ {
+  "id": "w219",
+  "text": "Y",
+  "start": 63.17,
+  "end": 63.216
+ },
+ {
+  "id": "w220",
+  "text": "aquí",
+  "start": 63.263,
+  "end": 63.402
+ },
+ {
+  "id": "w221",
+  "text": "viene",
+  "start": 63.437,
+  "end": 63.634
+ },
+ {
+  "id": "w222",
+  "text": "el",
+  "start": 63.658,
+  "end": 63.727
+ },
+ {
+  "id": "w223",
+  "text": "giro:",
+  "start": 63.774,
+  "end": 64.099
+ },
+ {
+  "id": "w224",
+  "text": "en",
+  "start": 64.157,
+  "end": 64.261
+ },
+ {
+  "id": "w225",
+  "text": "dos",
+  "start": 64.296,
+  "end": 64.412
+ },
+ {
+  "id": "w226",
+  "text": "mil",
+  "start": 64.459,
+  "end": 64.586
+ },
+ {
+  "id": "w227",
+  "text": "trece,",
+  "start": 64.633,
+  "end": 64.946
+ },
+ {
+  "id": "w228",
+  "text": "la",
+  "start": 65.028,
+  "end": 65.097
+ },
+ {
+  "id": "w229",
+  "text": "UNESCO",
+  "start": 65.132,
+  "end": 65.399
+ },
+ {
+  "id": "w230",
+  "text": "declaró",
+  "start": 65.434,
+  "end": 65.689
+ },
+ {
+  "id": "w231",
+  "text": "patrimonio",
+  "start": 65.724,
+  "end": 66.13
+ },
+ {
+  "id": "w232",
+  "text": "de",
+  "start": 66.165,
+  "end": 66.223
+ },
+ {
+  "id": "w233",
+  "text": "la",
+  "start": 66.258,
+  "end": 66.316
+ },
+ {
+  "id": "w234",
+  "text": "humanidad",
+  "start": 66.339,
+  "end": 66.734
+ },
+ {
+  "id": "w235",
+  "text": "algo",
+  "start": 66.792,
+  "end": 66.978
+ },
+ {
+  "id": "w236",
+  "text": "que",
+  "start": 67.013,
+  "end": 67.082
+ },
+ {
+  "id": "w237",
+  "text": "no",
+  "start": 67.129,
+  "end": 67.199
+ },
+ {
+  "id": "w238",
+  "text": "se",
+  "start": 67.233,
+  "end": 67.303
+ },
+ {
+  "id": "w239",
+  "text": "puede",
+  "start": 67.338,
+  "end": 67.524
+ },
+ {
+  "id": "w240",
+  "text": "tocar:",
+  "start": 67.558,
+  "end": 68.0
+ },
+ {
+  "id": "w241",
+  "text": "la",
+  "start": 68.185,
+  "end": 68.255
+ },
+ {
+  "id": "w242",
+  "text": "costumbre",
+  "start": 68.302,
+  "end": 68.673
+ },
+ {
+  "id": "w243",
+  "text": "de",
+  "start": 68.708,
+  "end": 68.766
+ },
+ {
+  "id": "w244",
+  "text": "rehacerlo.",
+  "start": 68.812,
+  "end": 69.335
+ },
+ {
+  "id": "w245",
+  "text": "Mándaselo",
+  "start": 69.416,
+  "end": 69.834
+ },
+ {
+  "id": "w246",
+  "text": "a",
+  "start": 69.869,
+  "end": 69.892
+ },
+ {
+  "id": "w247",
+  "text": "quien",
+  "start": 69.927,
+  "end": 70.078
+ },
+ {
+  "id": "w248",
+  "text": "nunca",
+  "start": 70.113,
+  "end": 70.345
+ },
+ {
+  "id": "w249",
+  "text": "termina",
+  "start": 70.38,
+  "end": 70.682
+ },
+ {
+  "id": "w250",
+  "text": "lo",
+  "start": 70.716,
+  "end": 70.786
+ },
+ {
+  "id": "w251",
+  "text": "que",
+  "start": 70.821,
+  "end": 70.891
+ },
+ {
+  "id": "w252",
+  "text": "empieza.",
+  "start": 70.914,
+  "end": 71.564
+ }
+]

@@ -12,7 +12,7 @@ import { renderMedia, renderStill, selectComposition } from "@remotion/renderer"
 const [mode, out, a3, a4, a5] = process.argv.slice(2);
 const browserExecutable = process.env.CHROME || "/usr/bin/google-chrome";
 const chromiumOptions = { gl: process.env.GL || "swangle", disableWebSecurity: false };
-const concurrency = Number(process.env.CONC || 8);
+const concurrency = Number(process.env.CONC || 2); // ponytail: 2 por padrão desde 13/11 (máquina dividida; vez.sh controla)
 const inputProps = JSON.parse(process.env.PROPS || "{}");
 // EP=<slug>: renderiza aquele episódio sem depender de src/ep/current.ts (vários renders em paralelo, cada um no seu)
 const EPN = process.env.EP;
