@@ -10,7 +10,7 @@ import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, prog, rnd, s
 import { Clouds, Ground, GroundPal, Puffs, Sky, Trees } from "../../toy/scenery";
 import { COSTUMES, Costume, Pose, Worker, poseOf } from "../../toy/worker";
 import { Horse } from "../../toy/horse";
-import { CUTS, FAST0, HOP, HOP0, NIGHT, RAM1, RAM2, T, WINS, XC } from "./cues";
+import { COURSE0, COURSE_DT, CUTS, FAST0, FLARE, FLY, HIT, HOP, HOP0, LAY, NIGHT, PEEL_IN, PEEL_OUT, RAM1, RAM2, T, WATER, WINS, XC } from "./cues";
 
 const PI = Math.PI;
 export const built = (t: number) => t < T.china - 0.12;
@@ -159,7 +159,7 @@ const Night: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- planície: taipa na fôrma, chuva que desmancha, revestimento de tijolo
 export const EW = { x0: -26, x1: -8, z: 16 };
-const NL = 6, LH = 0.42, LOOSE = 0.85, FORM_H = 0.95;
+const NL = 6, LH = 0.42, LOOSE = 0.85, FORM_H = 0.95, CLAD_H = NL * LH + 0.3;
 type Layer = { p0: number; p1: number; hits: number[] };
 /** cada camada: carga de terra solta (p0..p1) e os golpes que a compactam de 0,85 para 0,42 */
 const LAYERS: Layer[] = [
@@ -188,7 +188,8 @@ const RAMMERS: [number, number][] = [[EW.x1 - 1.15, EW.z - 0.5], [EW.x1 - 1.15, 
 const BASKETS = [EW.x1 - 2.7, EW.x1 - 6.0];
 const pourK = (t: number) => Math.max(...[0, 1].map((k) => ease(t, LAYERS[k].p0 - 0.35, LAYERS[k].p0) * (1 - ease(t, LAYERS[k].p1, LAYERS[k].p1 + 0.3))));
 const erode = (t: number) => (t < T.p1 ? 0 : ease(t, T.p1 + 0.4, T.siglo + 1.2)) * (1 - ease(t, T.ming, T.hornos));
-const cladK = (t: number) => (t < T.ming ? 0 : ease(t, T.ming + 0.2, T.hornos + 0.4));
+/** casca Ming em 7 fiadas que batem no lugar uma a uma (v4: antes subia lisa e devagar, «laje cinza crescendo») */
+const cladK = (t: number) => { if (t < COURSE0) return 0; let k = 0; for (let i = 0; i < 7; i++) { const s = COURSE0 + i * COURSE_DT; k += ease(t, s, s + 0.09); } return k / 7; };
 const EarthWall: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.cajon - 0.15) return null;
   const L = EW.x1 - EW.x0, cx = (EW.x0 + EW.x1) / 2, e = erode(t), cl = cladK(t), building = t < CUTS[2];
@@ -196,7 +197,7 @@ const EarthWall: React.FC<{ t: number }> = ({ t }) => {
   let top = 0; for (const h of hs) { ys.push(top); top += h; }
   const cur = hs.reduce((m, h, k) => (h > 0.005 ? k : m), -1), pk = cur >= 0 ? packed(LAYERS[cur], t) : 1;
   const base = formBase(t), drop = ease(t, T.cajon - 0.1, T.cajon + 0.35), l = lift(t), pour = pourK(t);
-  const hole = t > T.cae - 0.3 && t < T.b3 + 0.6, fall = ease(t, T.cae - 0.4, T.cae + 0.6);
+  const hole = (t > T.cae - 0.3 && t < T.b3 + 0.6) || (t > XC.falla - 0.05 && t < CUTS[4]), fall = ease(t, T.cae - 0.4, T.cae + 0.6);
   return (
     <G>
       {hs.map((h, k) => { if (h <= 0.005) return null; const pc = t >= T.b2 ? 1 : packed(LAYERS[k], t), hh = h * (1 - (k >= NL - 2 ? e * 0.35 : 0));
@@ -233,10 +234,51 @@ const EarthWall: React.FC<{ t: number }> = ({ t }) => {
         <Box s={[L + 0.4, (NL * LH + 0.3) * cl, 2.7]} p={[cx, ((NL * LH + 0.3) * cl) / 2, EW.z]} c={BRICK} />
         {Array.from({ length: Math.floor(L / 1.3) }, (_, i) => <Box key={i} s={[0.7, 0.55, 0.35]} p={[EW.x0 + 0.7 + i * 1.3, NL * LH + 0.55, EW.z - 1.15]} c={BRICK} vis={cl > 0.95} />)}
         {Array.from({ length: 7 }, (_, r) => <Box key={r} s={[L + 0.42, 0.04, 2.72]} p={[cx, 0.35 + r * 0.38, EW.z]} c="#a5a6a8" cast={false} vis={(0.35 + r * 0.38) < (NL * LH + 0.3) * cl} />)}
+        {/* poeira de cada fiada que bate no lugar */}
+        {Array.from({ length: 7 }, (_, r) => { const u = prog(t, COURSE0 + r * COURSE_DT + 0.05, COURSE0 + r * COURSE_DT + 0.45); if (u <= 0 || u >= 1 || t > XC.tramos) return null;
+          return <G key={"d" + r}>{Array.from({ length: 8 }, (_, q) => <Sph key={q} rad={0.3} p={[EW.x0 + 1.2 + q * 2.2 + rnd(q + r) * 0.6, (CLAD_H * (r + 1)) / 7 + u * 0.6, EW.z + 1.45 + u * 0.7]} sc={Math.max(0.01, 1.2 * (1 - u))} c="#e8e2d2" cast={false} ws={7} hs={5} />)}</G>; })}
       </G> : null}
       {/* tijolos ruins: o trecho cai */}
       {hole ? <Box s={[3.2, 1.6, 0.1]} p={[EW.x1 - 5, 1.5, EW.z + 1.37]} c="#4a3a2a" cast={false} /> : null}
       {hole ? Array.from({ length: 14 }, (_, i) => { const u = clamp(fall * 1.3 - rnd(i) * 0.3); return <Box key={i} s={[0.55, 0.25, 0.3]} p={[EW.x1 - 6.4 + (i % 5) * 0.65 + u * (rnd(i + 2) - 0.3) * 1.5, lerp(1.0 + Math.floor(i / 5) * 0.5, 0.13 + (i % 3) * 0.2, u), EW.z + 1.4 + u * (0.6 + rnd(i + 5) * 1.6)]} r={[u * rnd(i) * 2, u * rnd(i + 1), u * rnd(i + 3) * 2]} c={i % 2 ? "#9a8f86" : "#b0a69a"} />; }) : null}
+    </G>
+  );
+};
+/** v4 «tramos»: o operário em cima da casca assenta a fiada da frente, um tijolo a cada 0,4 s (pega, põe, bate) */
+const LAY_X = LAY.map((_, k) => EW.x1 - 0.55 - k * 0.66);
+const BZ = EW.z + 1.0, BRK: V3 = [0.62, 0.28, 0.42];
+const layPose = (t: number): Pose => {
+  const A = (rx: number, rz: number, el: number) => ({ rx, rz, el });
+  const k = LAY.findIndex((L) => t > L - 0.3 && t <= L + 0.1);
+  if (k < 0) return poseOf(t > LAY[3] ? "cheer" : "present", t);
+  const v = (t - (LAY[k] - 0.3)) / 0.4;
+  if (v < 0.75) { const w = sstep(v / 0.75), rx = lerp(-1.9, -0.95, w); return { l: A(rx, -0.25, -0.45), r: A(rx, 0.25, -0.45), hx: 0.3, hy: 0, hz: 0, lean: lerp(0.05, 0.35, w), hop: 0 }; }
+  const w = (v - 0.75) / 0.25;
+  return { l: A(-0.95, -0.25, -0.45), r: A(-0.95 - 1.3 * Math.sin(PI * w), 0.3, -0.5), hx: 0.35, hy: 0, hz: 0, lean: 0.35, hop: 0 };
+};
+const Bricklayer: React.FC<{ t: number }> = ({ t }) => {
+  if (t < XC.tramos - 0.05 || t > XC.fuegoH + 0.05) return null;
+  const y0 = CLAD_H, wx = EW.x1 - 0.4 - 0.66 * [0, 1, 2].reduce((s, k) => s + ease(t, LAY[k] + 0.1, LAY[k] + 0.3), 0);
+  const hand: V3 = [wx + 0.05, y0 + 1.35, BZ - 0.55];
+  return (
+    <G>
+      {/* fiada já assentada (para o oeste) e os 4 que ele pousa agora */}
+      {Array.from({ length: 22 }, (_, j) => <Box key={j} s={BRK} p={[LAY_X[3] - 0.66 * (j + 1), y0 + 0.16, BZ]} c={j % 2 ? BRICK : BRICK2} />)}
+      {LAY.map((L, k) => {
+        const u = prog(t, L - 0.3, L); if (u <= 0) return null;
+        const rest: V3 = [LAY_X[k], y0 + 0.16, BZ], q = sstep(u), sq = t > L ? 1 - 0.18 * Math.sin(PI * prog(t, L, L + 0.12)) : 1;
+        const p: V3 = [lerp(hand[0], rest[0], q), lerp(hand[1], rest[1], q) + 0.35 * Math.sin(PI * u), lerp(hand[2], rest[2], q)];
+        const d = prog(t, L, L + 0.35);
+        return (
+          <G key={k}>
+            <Box s={[0.64, 0.04, 0.44]} p={[rest[0], y0 + 0.02, BZ]} c={MORT} cast={false} vis={t > L - 0.12} />
+            <Box s={BRK} p={p} sc={[1, sq, 1]} r={[0, 0.4 * (1 - q), 0]} c={k % 2 ? BRICK2 : BRICK} />
+            {d > 0 && d < 1 ? [0, 1, 2, 3, 4, 5].map((i) => { const a = i * 1.05; return <Sph key={i} rad={0.09} p={[rest[0] + Math.cos(a) * (0.3 + 0.35 * d), y0 + 0.08 + 0.25 * d, BZ + Math.sin(a) * (0.2 + 0.3 * d)]} sc={Math.max(0.01, 1.4 * (1 - d))} c="#ece6d6" cast={false} ws={6} hs={4} />; }) : null}
+          </G>);
+      })}
+      {/* pilha de onde ele tira os tijolos (atrás, à direita dele) */}
+      {[0, 1, 2].map((r) => <Box key={r} s={BRK} p={[EW.x1 - 0.2, y0 + 0.16 + r * 0.29, EW.z - 0.6]} r={[0, r % 2 ? 0.2 : -0.1, 0]} c={r % 2 ? BRICK : BRICK2} />)}
+      <Worker p={[wx + 0.15, y0, BZ - 0.95]} yaw={0.25} pose={layPose(t)} t={t} c={COSTUMES.ming} scale={1.15} prop="hammer" />
     </G>
   );
 };
@@ -246,6 +288,20 @@ const Rain: React.FC<{ t: number }> = ({ t }) => {
 };
 /** a equipe que chega à planície com as ferramentas («solo manos, herramientas y cabeza») */
 export const crewX = (t: number) => 3.2 - 2.1 * (t - CUTS[0]);
+/** v4: no «China… no hay motores» a câmera desce da serra para dois ajudantes que chegam com ferramentas ao operário */
+const Helpers: React.FC<{ t: number }> = ({ t }) => {
+  if (t < XC.china || t > CUTS[0] - 0.02) return null;
+  return <G>{[[3.9, 9.0, 2.0], [3.3, 11.6, 1.5]].map(([x0, z, x1], i) => {
+    const x = lerp(x0, x1, ease(t, T.china + 0.6 + i * 0.2, CUTS[0] - 0.4)), moving = t < CUTS[0] - 0.45;
+    return (
+      <G key={i}>
+        <Worker p={[x, 0, z]} yaw={moving ? -PI / 2 + 0.3 : 0.4} pose={poseOf(moving ? "walk" : "present", t + i * 0.3)} t={t + i * 0.3} c={COSTUMES.ming} scale={1.0} mustache={i === 0} />
+        {i === 0
+          ? <G p={[x + 0.1, 1.45, z - 0.32]} r={[0, 0, -0.75]}><Cyl rt={0.045} h={2.0} p={[0, 0.75, 0]} c={WOOD} seg={6} /><Box s={[0.5, 0.08, 0.3]} p={[0.18, 1.72, 0]} c="#8f8f94" /></G>
+          : <G p={[x, 2.2, z]}><Cyl rt={0.42} rb={0.3} h={0.42} c="#9a7040" seg={10} /><Cyl rt={0.36} h={0.05} p={[0, 0.2, 0]} c={LOOSE_C} seg={10} /></G>}
+      </G>);
+  })}</G>;
+};
 const Crew: React.FC<{ t: number }> = ({ t }) => {
   if (t < CUTS[0] - 0.05 || t > XC.jinetes) return null;
   const x0 = crewX(t);
@@ -265,29 +321,98 @@ const Diggers: React.FC<{ t: number }> = ({ t }) => {
   if (t < XC.b1 - 0.02 || t > CUTS[1] - 0.02) return null;
   return (
     <G>
-      <Cone rad={1.5} h={1.2} seg={8} p={[-8.4, 0.55, 20.2]} c={EARTH2} o={{ flat: true }} />
-      {[[-7.0, 21.0, -1.3], [-9.7, 21.5, 1.7]].map(([x, z, yaw], i) => <Worker key={i} p={[x, 0, z]} yaw={yaw} pose={poseOf("chisel", t + i * 0.45)} t={t + i * 0.45} c={COSTUMES.ming} scale={1.0} prop="hammer" mustache={i === 1} />)}
+      {/* v4: atrás do canteiro (antes ficavam entre a câmera e as tábuas, chapéu enchendo o quadro) */}
+      <Cone rad={1.5} h={1.2} seg={8} p={[-14.9, 0.55, 11.9]} c={EARTH2} o={{ flat: true }} />
+      {[[-13.5, 12.6, -1.0], [-16.2, 13.0, 0.9]].map(([x, z, yaw], i) => <Worker key={i} p={[x, 0, z]} yaw={yaw} pose={poseOf("chisel", t + i * 0.45)} t={t + i * 0.45} c={COSTUMES.ming} scale={1.0} prop="hammer" mustache={i === 1} />)}
     </G>
   );
 };
-/** os fornos ao pé da serra, pilhas de tijolo */
+/** os fornos ao pé da serra, pilhas de tijolo.
+ *  v4: o forno da direita (x 4) mostra o mecanismo de perto — a pá enfia o barro, o fogo sobe, sai tijolo cinza ainda em brasa;
+ *  água no barro cru (desmancha) e no tijolo cozido (aguenta); depois os tijolos voam do forno para as pilhas e dois
+ *  carregadores levam para a obra ali do lado; a pilha da frente ganha os 3 últimos e um tijolo ruim racha no «Pero». */
+const STACKS: [number, number][] = Array.from({ length: 6 }, (_, i) => [-2.5 + (i % 3) * 1.6, 14.2 + Math.floor(i / 3) * 1.4]);
+const MOUTH: V3 = [4, 0.55, 12.0];
+const stackN = (i: number, t: number) => 3 + FLY.filter(([a, s]) => s === i && t >= a).length;
+const CLAY = "#9a5534", CLAY_WET = "#6e3a22";
+/** a pá: sai a 45° para a direita até o operário, que fica fora do quadro (a 0,49/0,87 ele ficava em cima da câmera) */
+const PEEL_D: V3 = [0.7, 0, 0.71];
+const peelS = (t: number) => lerp(lerp(1.15, -0.6, ease(t, PEEL_IN, PEEL_IN + 0.4)), 1.25, ease(t, PEEL_OUT, PEEL_OUT + 0.4));
+const peelAt = (t: number): V3 => { const s = peelS(t); return [MOUTH[0] + PEEL_D[0] * s, 0.3, 12.15 + PEEL_D[2] * s]; };
+export const peelBody = (t: number): V3 => { const b = peelAt(t); return [b[0] + PEEL_D[0] * 3.1, 0, b[2] + PEEL_D[2] * 3.1]; };
+const RAW: V3 = [3.3, 0.15, 13.4];
 const Kilns: React.FC<{ t: number }> = ({ t }) => {
-  const k = built(t) ? 0 : ease(t, T.ming - 0.4, T.hornos + 0.2); if (k <= 0.01) return null;
-  const bad = t > T.p2 - 0.1 && t < T.b3;
+  const k = built(t) ? 0 : ease(t, T.ming - 0.4, T.ming + 1.2); if (k <= 0.01) return null;
+  const bad = t > T.p2 - 0.1 && t < T.b3, chip = ease(t, T.p2 + 0.35, T.p2 + 0.8);
+  const flare = ease(t, FLARE, FLARE + 0.15) * (1 - ease(t, PEEL_OUT - 0.05, PEEL_OUT + 0.35));
+  const showPeel = t > XC.fuegoH - 0.05 && t < XC.hornos, inK = t > PEEL_IN + 0.3 && t < PEEL_OUT + 0.05, fired = t > PEEL_OUT;
+  const pb = peelAt(t), hot = 1 - ease(t, PEEL_OUT + 0.2, PEEL_OUT + 1.1), yaw = Math.atan2(PEEL_D[0], PEEL_D[2]);
+  const wet = ease(t, WATER + 0.1, WATER + 0.7), slump = ease(t, WATER + 0.2, WATER + 0.85), pourW = t > WATER - 0.15 && t < WATER + 0.75;
   return (
-    <G sc={[1, Math.max(0.01, k), 1]}>
-      {[[-1, 10.5], [4, 10.0]].map(([x, z], i) => (
-        <G key={i} p={[x, 0, z]}>
-          <Sph rad={1.9} ps={0} pl={PI / 2} c={KILN} ws={14} hs={8} />
-          <Box s={[0.9, 1.1, 0.4]} p={[0, 0.55, 1.75]} c="#2a1a12" cast={false} />
-          <Box s={[0.6, 0.5, 0.1]} p={[0, 0.35, 1.96]} c="#ff7a1a" o={{ emissive: "#ff5a00", ei: 1.4 }} cast={false} />
-          <Cyl rt={0.35} h={1.4} p={[0.6, 2.2, -0.4]} c={KILN} seg={8} />
-          <Puffs t={t} p={[0.6, 2.9, -0.4]} n={7} period={3} rise={7} size={0.9} c="#d8d8d8" o={i * 0.3} />
-        </G>))}
-      {Array.from({ length: 6 }, (_, i) => <G key={i} p={[-2.5 + (i % 3) * 1.6, 0, 14.2 + Math.floor(i / 3) * 1.4]}>{[0, 1, 2].map((r) => <Box key={r} s={[1.2, 0.3, 0.6]} p={[0, 0.16 + r * 0.31, 0]} r={[0, r % 2 ? 0.08 : 0, 0]} c={i === 4 && bad ? "#c26a4a" : BRICK} />)}</G>)}
-      {bad ? <G p={[-0.9, 1.25, 15.6]}>{[0, 1].map((j) => <Box key={j} s={[0.06, 0.06, 0.9]} p={[0, 0.02, 0]} r={[0, j ? 0.8 : -0.8, 0]} c="#ff3b30" o={{ emissive: "#ff2a1a", ei: 1.2 }} cast={false} />)}</G> : null}
+    <G>
+      <G sc={[1, Math.max(0.01, k), 1]}>
+        {[[-1, 10.5], [4, 10.0]].map(([x, z], i) => (
+          <G key={i} p={[x, 0, z]}>
+            <Sph rad={1.9} ps={0} pl={PI / 2} c={KILN} ws={14} hs={8} />
+            <Box s={[0.9, 1.1, 0.4]} p={[0, 0.55, 1.75]} c="#2a1a12" cast={false} />
+            <Box s={[0.6, 0.5, 0.1]} p={[0, 0.35, 1.96]} c="#ff7a1a" o={{ emissive: "#ff5a00", ei: 1.4 + (i ? 2.2 * flare : 0) }} cast={false} />
+            <Cyl rt={0.35} h={1.4} p={[0.6, 2.2, -0.4]} c={KILN} seg={8} />
+            <Puffs t={t} p={[0.6, 2.9, -0.4]} n={7} period={i && flare > 0.1 ? 1.2 : 3} rise={7} size={0.9 + (i ? 0.5 * flare : 0)} c="#d8d8d8" o={i * 0.3} />
+          </G>))}
+      </G>
+      {/* o fogo sobe na boca do forno da direita quando o barro entra */}
+      {flare > 0.01 ? [-0.25, 0, 0.25].map((dx, j) => <Cone key={j} rad={0.2 * flare} h={(0.9 + 0.35 * Math.sin(t * 19 + j * 2)) * flare} seg={6} p={[MOUTH[0] + dx, 1.05 + 0.4 * flare, 12.02]} c={j === 1 ? "#ffd84a" : "#ff8a1a"} o={{ emissive: j === 1 ? "#ffcc00" : "#ff6a00", ei: 2 }} cast={false} />) : null}
+      {/* a pá com o barro (entra) e com o tijolo cozido (sai ainda em brasa) */}
+      {showPeel ? <G>
+        <G p={pb} r={[0, yaw, 0]}>
+          <Box s={[0.62, 0.04, 0.7]} c={WOOD} />
+          <Cyl rt={0.045} h={2.4} p={[0, 0.08, 1.55]} r={[PI / 2 - 0.06, 0, 0]} c="#6b4423" seg={6} />
+          {!inK ? <Box s={[0.5, 0.24, 0.34]} p={[0, 0.14, 0]} c={fired ? lerpC(BRICK, "#6f7276", wet) : CLAY} o={fired ? { emissive: "#ff5a10", ei: 0.9 * hot } : { rough: 0.5 }} /> : null}
+          {fired && pourW ? [0, 1, 2, 3].map((j) => { const u = fract(t * 3 + j / 4); return <Sph key={j} rad={0.05} p={[(rnd(j) - 0.5) * 0.4, 0.3 + 0.35 * Math.sin(PI * u), (rnd(j + 2) - 0.5) * 0.25 + u * 0.3]} c="#cfeaff" cast={false} ws={5} hs={4} />; }) : null}
+        </G>
+        {fired && t > WATER ? <Puffs t={t} p={[pb[0], 0.5, pb[2]]} n={5} period={0.9} rise={1.6} size={0.25} c="#ffffff" on={1 - ease(t, WATER + 0.8, XC.hornos)} drift={[0.2, 0, 0.1]} /> : null}
+        {/* barro cru do lado: a água o desmancha em lama */}
+        <G p={[RAW[0], 0, RAW[2]]}>
+          <Box s={[0.5, 0.24, 0.34]} p={[0, 0.12 * (1 - 0.65 * slump), 0]} sc={[1 + 0.5 * slump, 1 - 0.65 * slump, 1 + 0.5 * slump]} c={lerpC(CLAY, CLAY_WET, wet)} o={{ rough: 0.4 }} />
+          {slump > 0.02 ? <Sph rad={1} p={[0, 0.01, 0]} sc={[0.55 * slump + 0.2, 0.03, 0.4 * slump + 0.15]} c={CLAY_WET} cast={false} ws={12} hs={4} /> : null}
+        </G>
+        {/* o balde que joga água nos dois */}
+        {t > WATER - 0.45 && t < WATER + 0.95 ? <G p={[(RAW[0] + 4.6) / 2, 2.25 - 0.45 * ease(t, WATER - 0.45, WATER - 0.15), 13.25]} r={[0, 0, 1.7 * ease(t, WATER - 0.2, WATER)]}>
+          <Cyl rt={0.38} rb={0.3} h={0.5} c="#7a5a3a" seg={10} /><Cyl rt={0.34} h={0.04} p={[0, 0.22, 0]} c="#6fb6ff" seg={10} vis={t < WATER} />
+        </G> : null}
+        {pourW ? Array.from({ length: 22 }, (_, j) => { const u = fract(t * 2.6 + rnd(j)), x0 = lerp(RAW[0] - 0.2, 4.95, rnd(j + 5)); return <Box key={j} s={[0.04, 0.26, 0.04]} p={[x0, lerp(2.0, 0.1, u), 13.25 + (rnd(j + 9) - 0.5) * 0.4]} c="#bfe4ff" cast={false} recv={false} o={{ emissive: "#9fd4ff", ei: 0.5, opacity: 0.9, depthWrite: false }} />; }) : null}
+      </G> : null}
+      {/* tijolos que voam do forno para as pilhas */}
+      {FLY.map(([a, si], j) => { const u = prog(t, a - 0.45, a); if (u <= 0 || u >= 1) return null;
+        const [sx, sz] = STACKS[si], n = stackN(si, a - 0.01), to: V3 = [sx, 0.16 + n * 0.31, sz];
+        return <Box key={j} s={[1.2, 0.3, 0.6]} p={[lerp(MOUTH[0], to[0], u), lerp(0.7, to[1], u) + 2.2 * Math.sin(PI * u), lerp(MOUTH[2] + 0.2, to[2], u)]} r={[u * 2.5, u * 1.5, 0]} c={BRICK} />; })}
+      {STACKS.map(([x, z], i) => { const n = stackN(i, t); if (k < 0.5) return null;
+        return <G key={i} p={[x, 0, z]}>{Array.from({ length: n }, (_, r) => <Box key={r} s={[1.2, 0.3, 0.6]} p={[0, 0.16 + r * 0.31, 0]} r={[0, r % 2 ? 0.08 : 0, 0]} sc={[1, Math.max(0.01, k), 1]}
+          c={i === 4 && r === 1 && bad ? "#c26a4a" : r % 3 === 2 ? BRICK2 : BRICK} />)}</G>; })}
+      {/* o tijolo ruim: racha em X vermelho e solta um canto */}
+      {bad ? <G p={[STACKS[4][0], 0.47, STACKS[4][1] + 0.31]}>
+        {[0, 1].map((j) => <Box key={j} s={[0.74, 0.05, 0.03]} p={[0, 0, 0.01]} r={[0, 0, j ? 0.33 : -0.33]} c="#ff3b30" o={{ emissive: "#ff2a1a", ei: 1.4 }} cast={false} />)}
+        <Box s={[0.26, 0.14, 0.2]} p={[0.48 + 0.2 * chip, 0.05 - 0.45 * chip * chip, 0.02 + 0.3 * chip]} r={[chip * 2, chip, 0]} c="#c26a4a" />
+      </G> : null}
     </G>
   );
+};
+/** dois carregadores levam tijolos da pilha à ponta da muralha, ali do lado (plano «hornos» e fundo do «lejos») */
+const CARRY_A: V3 = [-3.5, 0, 16.5], CARRY_B: V3 = [-7.0, 0, 18.7];
+const Carriers: React.FC<{ t: number }> = ({ t }) => {
+  if (t < XC.hornos - 0.05 || t > CUTS[3]) return null;
+  return <G>{[0, 1].map((i) => {
+    const ph = fract((t - XC.hornos) / 2.2 + i * 0.5), go = ph < 0.5, u = sstep(go ? ph * 2 : 2 - ph * 2);
+    const p: V3 = [lerp(CARRY_A[0], CARRY_B[0], u), 0, lerp(CARRY_A[2], CARRY_B[2], u)], yaw = go ? Math.atan2(-3.5, 2.2) : Math.atan2(3.5, -2.2);
+    return (
+      <G key={i}>
+        <Worker p={p} yaw={yaw} pose={poseOf("walk", t + i * 0.4)} t={t + i} c={COSTUMES.ming} scale={1.0} mustache={i === 1} />
+        {go ? <G p={[p[0], 1.85, p[2]]} r={[0, yaw, 0]}>{[0, 1, 2].map((r) => <Box key={r} s={[0.5, 0.2, 0.32]} p={[0, r * 0.21, 0]} r={[0, r % 2 ? 0.15 : 0, 0]} c={r % 2 ? BRICK2 : BRICK} />)}</G> : null}
+      </G>);
+  })}
+    {/* o que eles já levaram, junto da obra */}
+    {[0, 1, 2, 3, 4].map((r) => <Box key={"o" + r} s={[0.5, 0.2, 0.32]} p={[CARRY_B[0] - 0.4 + (r % 2) * 0.55, 0.1 + Math.floor(r / 2) * 0.21, CARRY_B[2] + 0.6]} c={r % 2 ? BRICK2 : BRICK} />)}
+  </G>;
 };
 // caracteres gravados no tijolo, feitos de traços (não dependem de fonte): 六 年 山 工 — «ano seis», oficina da serra
 type Stroke = [number, number, number, number, number?];
@@ -297,19 +422,69 @@ const GLYPHS: Stroke[][] = [
   [[0, 0.02, 0.12, 0.9], [-0.38, -0.12, 0.12, 0.52], [0.38, -0.12, 0.12, 0.52], [0, -0.4, 0.88, 0.12]],
   [[0, 0.38, 0.72, 0.11], [0, 0, 0.12, 0.76], [0, -0.4, 0.95, 0.11]],
 ];
-export const STAMP = { x: 11.5, z: 18.5, y: 1.25 };
+export const STAMP = { x: 11.0, z: 18.3, y: 1.6 };
+/** inscrição 六年山工 numa face: ano (年) e unidade (山工); `sc` = escala dos caracteres, `gap` = passo entre eles */
+const Glyphs: React.FC<{ k: number; gap: number; sc: number; plate: [number, number] }> = ({ k, gap, sc, plate }) => (
+  <G vis={k > 0.01} sc={[k, k, 1]}>
+    <Box s={[plate[0], plate[1], 0.02]} c="#5a5c60" cast={false} /><Box s={[plate[0] - 0.08, plate[1] - 0.07, 0.025]} c="#c4c6ca" cast={false} />
+    {GLYPHS.map((g, i) => <G key={i} p={[(i - 1.5) * gap, 0, 0.02]} sc={[sc, sc * 1.05, 1]}>{g.map(([x, y, w, h, r], j) => <Box key={j} s={[w, h, 0.03]} p={[x, y, 0]} r={[0, 0, r ?? 0]} c="#2a2c30" cast={false} />)}</G>)}
+  </G>
+);
+/** anel que circunda caracteres (o ano, a unidade) */
+const Ring: React.FC<{ p: V3; r: number; sx: number; k: number; c: string }> = ({ p, r, sx, k, c }) => (k <= 0.01 ? null : (
+  <mesh position={p} rotation={[-PI / 2, 0, 0]} scale={[sx * k, k, k]} material={mat(c, { emissive: c, ei: 1.1 })}><torusGeometry args={[r, 0.035, 8, 32]} /></mesh>));
+/** v4: o carimbo sobe devagar, BATE no tijolo no «llevan grabados» (poeira, tranco) e a inscrição aparece na face de cima;
+ *  anel no 年 («el año») e no 山工 («la unidad»); ao lado, a pilha dos já carimbados («muchos ladrillos») */
+const BR: V3 = [1.5, 0.5, 0.8];
 const Stamp: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.ming || t > T.p4) return null;
-  const press = ease(t, T.grabado - 0.5, T.grabado - 0.1) * (1 - ease(t, T.grabado, T.grabado + 0.4)), mark = ease(t, T.grabado - 0.05, T.grabado + 0.3);
+  const top = 1.075 + BR[1];
+  const up = ease(t, XC.b3 + 0.1, HIT - 0.12), fall = prog(t, HIT - 0.12, HIT), lift = ease(t, HIT + 0.22, HIT + 0.6);
+  const yb = t < HIT - 0.12 ? lerp(2.3, 3.0, up) : t < HIT + 0.22 ? lerp(3.0, top, fall * fall) : lerp(top, 3.6, lift);
+  const mark = ease(t, HIT, HIT + 0.08), dust = prog(t, HIT, HIT + 0.45), flash = 1 - prog(t, HIT, HIT + 0.15);
+  const rY = ease(t, T.anio + 0.12, T.anio + 0.32), rU = ease(t, T.unidad + 0.12, T.unidad + 0.32);
   return (
     <G p={[STAMP.x, 0, STAMP.z]}>
-      <Box s={[3.6, 0.15, 2.2]} p={[0, 1.0, 0]} c={WOOD} />{[[-1.6, -0.9], [-1.6, 0.9], [1.6, -0.9], [1.6, 0.9]].map(([a, b], i) => <Box key={i} s={[0.15, 1.0, 0.15]} p={[a, 0.5, b]} c="#6b4423" />)}
-      <Box s={[2.4, 0.7, 1.2]} p={[0, 1.43, 0]} c={BRICK} />
-      <G p={[0, 1.43, 0.61]} vis={mark > 0.01}>
-        <Box s={[1.9 * mark, 0.6 * mark, 0.03]} c="#5a5c60" cast={false} /><Box s={[1.8 * mark, 0.52 * mark, 0.035]} c="#c4c6ca" cast={false} />
-        {GLYPHS.map((g, i) => <G key={i} p={[-0.66 + i * 0.44, 0, 0.025]} sc={[0.4, 0.42, 1]} vis={mark > 0.6}>{g.map(([x, y, w, h, r], j) => <Box key={j} s={[w, h, 0.03]} p={[x, y, 0]} r={[0, 0, r ?? 0]} c="#2a2c30" cast={false} />)}</G>)}
+      <Box s={[4.4, 0.15, 2.2]} p={[0.8, 1.0, 0]} c={WOOD} />{[[-1.3, -0.95], [-1.3, 0.95], [2.9, -0.95], [2.9, 0.95]].map(([a, b], i) => <Box key={i} s={[0.15, 1.0, 0.15]} p={[a, 0.5, b]} c="#6b4423" />)}
+      {/* o tijolo do carimbo e a inscrição na face de cima */}
+      <Box s={BR} p={[0, 1.075 + BR[1] / 2, 0]} c={BRICK} />
+      <G p={[0, top + 0.005, 0]} r={[-PI / 2, 0, 0]}><Glyphs k={mark} gap={0.33} sc={0.3} plate={[1.38, 0.46]} /></G>
+      {flash > 0 && t > HIT ? <Box s={[1.4, 0.02, 0.6]} p={[0, top + 0.03, 0]} c="#ffffff" o={{ emissive: "#ffffff", ei: 1.5 * flash, opacity: flash, depthWrite: false }} cast={false} /> : null}
+      <Ring p={[-0.165, top + 0.04, 0]} r={0.2} sx={1} k={rY} c="#ffd400" />
+      <Ring p={[0.33, top + 0.04, 0]} r={0.2} sx={1.9} k={rU} c="#ffd400" />
+      {/* poeira do golpe */}
+      {dust > 0 && dust < 1 ? Array.from({ length: 10 }, (_, i) => { const a = (i / 10) * PI * 2; return <Sph key={i} rad={0.12} p={[Math.cos(a) * (0.75 + 0.6 * dust), top + 0.05 + 0.3 * dust, Math.sin(a) * (0.42 + 0.4 * dust)]} sc={Math.max(0.01, 1.5 * (1 - dust))} c="#e9e2cf" cast={false} ws={6} hs={4} />; }) : null}
+      {/* o carimbo: bloco com cabo em T */}
+      <G p={[0, yb, 0]}>
+        <Box s={[1.3, 0.32, 0.7]} p={[0, 0.16, 0]} c="#9a6a3a" /><Box s={[1.2, 0.05, 0.6]} p={[0, 0.0, 0]} c="#3a2a1a" cast={false} />
+        <Cyl rt={0.08} h={0.75} p={[0, 0.7, 0]} c={WOOD} seg={8} /><Cyl rt={0.07} h={1.0} p={[0, 1.08, 0]} r={[0, 0, PI / 2]} c={WOOD} seg={8} />
       </G>
-      <G p={[0, 2.6 - press * 0.9, 0.62]}><Box s={[2.0, 0.4, 0.5]} c="#9a6a3a" /><Cyl rt={0.12} h={0.9} p={[0, 0.65, 0]} c={WOOD} seg={8} /></G>
+      {/* a pilha dos já carimbados */}
+      {[0, 1, 2].map((r) => <G key={r} p={[2.15, 1.075 + BR[1] / 2 + r * 0.51, 0.1]} r={[0, r % 2 ? 0.08 : -0.05, 0]}>
+        <Box s={BR} c={r % 2 ? BRICK2 : BRICK} />
+        {r === 2 ? <G p={[0, BR[1] / 2 + 0.005, 0]} r={[-PI / 2, 0, 0]}><Glyphs k={1} gap={0.33} sc={0.3} plate={[1.38, 0.46]} /></G> : null}
+        <G p={[0, 0, BR[2] / 2 + 0.005]}><Glyphs k={1} gap={0.33} sc={0.26} plate={[1.38, 0.4]} /></G>
+      </G>)}
+    </G>
+  );
+};
+/** v4 «si uno falla»: no entulho do muro que caiu, um tijolo rachado vira e mostra o selo; anel vermelho na unidade */
+const EV: V3 = [-12.1, 0.21, 21.1]; // à frente do entulho (que vai até z≈19,6), para o close não ter pedra na frente
+const Evidence: React.FC<{ t: number }> = ({ t }) => {
+  if (t < XC.falla - 0.05 || t > CUTS[4]) return null;
+  const crack = ease(t, T.falla + 0.25, T.falla + 0.4), wob = t > T.falla + 0.25 && t < T.sabe ? Math.sin((t - T.falla) * 40) * 0.06 * (1 - prog(t, T.falla + 0.25, T.sabe)) : 0;
+  const flip = ease(t, T.sabe, T.sabe + 0.35), rR = ease(t, T.responde + 0.08, T.responde + 0.28), pulse = 1 + 0.08 * Math.sin((t - T.responde) * 14);
+  const E: V3 = [1.2, 0.42, 0.65];
+  const Crack = () => <G>{[[-0.2, 0.06, 0.5], [0.05, -0.05, -0.7], [0.27, 0.05, 0.6]].map(([x, z, r], i) => <Box key={i} s={[0.32 * crack, 0.012, 0.035]} p={[x, 0, z]} r={[0, r, 0]} c="#ff2a1a" o={{ emissive: "#ff2a1a", ei: 1.6 }} cast={false} />)}</G>;
+  return (
+    <G>
+      <G p={[EV[0], EV[1] + 0.5 * Math.sin(PI * flip), EV[2]]} r={[PI * flip, 0, wob]}>
+        <Box s={E} c={BRICK2} />
+        <G p={[0, E[1] / 2 + 0.008, 0]}><Crack /></G>
+        <G p={[0, -E[1] / 2 - 0.008, 0]}><Crack /></G>
+        <G p={[0, -E[1] / 2 - 0.006, 0]} r={[PI / 2, 0, 0]}><Glyphs k={1} gap={0.28} sc={0.25} plate={[1.12, 0.4]} /></G>
+      </G>
+      <Ring p={[EV[0] + 0.28, EV[1] + E[1] / 2 + 0.04, EV[2]]} r={0.19} sx={1.75} k={rR * pulse} c="#ff3b30" />
     </G>
   );
 };
@@ -393,7 +568,7 @@ const Riders: React.FC<{ t: number }> = ({ t }) => {
   if (msg) { const x = msgX(t); out.push(<Horse key="m" p={[x, 0, MSG_Z]} yaw={PI} t={t} c="#a87a4a" rider="#2f5d8a" speed={16} />, <Puffs key="md" t={t} p={[x + 1.2, 0.1, MSG_Z - 0.3]} n={5} period={0.7} rise={0.5} size={0.32} c="#d9c69a" drift={[2.0, 0, -0.4]} />); }
   // os manchus: esperando ao norte do portão, galopam até ele no «los manchúes» e passam em fila quando a porta abre
   if (t > T.giro - 0.1) for (let j = 0; j < 9; j++) {
-    const row = (j % 3) - 1, z0 = -44 - Math.floor(j / 3) * 3.2, mill = Math.sin(t * 1.6 + j * 1.9);
+    const row = (j % 3) - 1, z0 = -44 - Math.floor(j / 3) * 3.2 - 9 * (1 - ease(t, T.giro + 0.2, T.manchues)), mill = Math.sin(t * 1.6 + j * 1.9);
     const app = ease(t, T.manchues - 0.1, T.manchues + 1.7), q = j * 2.3;
     let x = GATE_X + row * 3.0 * (1 - app) + mill * 0.6 * (1 - app), z = lerp(z0 + mill * 0.8, -12.5 - q, app), yaw = -PI / 2 + mill * 0.35 * (1 - app);
     const go = T.abrio + 0.2 + j * 0.04;
@@ -423,6 +598,17 @@ const Gate: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
+/** v4 «un muro tan largo no se puede vigilar entero»: um vigia no adarve a leste do portão olha a muralha que some na serra,
+ *  vira para o outro lado (não dá para ver tudo) e acena chamando o mensageiro */
+export const SENTRY: V3 = [52.2, 4.55, -9.35]; // adarve a oeste do portão (a leste a torre do portão tapava tudo), longe da câmera
+const lookout = (t: number): Pose => { const s = Math.sin(t * 3.1);
+  return { l: { rx: 0.05, rz: -0.12, el: 0 }, r: { rx: -2.55, rz: 0.75, el: -1.75 }, hx: -0.12, hy: 0.25 * s, hz: 0, lean: 0.06, hop: 0 }; };
+const Sentry: React.FC<{ t: number }> = ({ t }) => {
+  if (t < XC.p4 - 0.05 || t > CUTS[5]) return null;
+  const turn = ease(t, T.vigilar + 0.05, T.vigilar + 0.3) - ease(t, T.entero - 0.15, T.entero + 0.1);
+  const call = t > T.entero + 0.15, yaw = call ? lerp(-PI / 2, 0.2, ease(t, T.entero + 0.15, T.entero + 0.4)) : -PI / 2 + PI * turn;
+  return <Worker p={SENTRY} yaw={yaw} pose={call ? poseOf("alarm", t) : turn > 0.5 ? poseOf("think", t) : lookout(t)} t={t} c={SOLDIER} scale={1.1} />;
+};
 /** o general Ming, sozinho no portão: espera, vira, puxa a porta e se afasta para os cavaleiros passarem */
 const General: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.giro) return null;
@@ -443,8 +629,8 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <GreatWall t={t} /><Patrol t={t} />
     {TOWERS.map((p, i) => <Tower key={i} p={p} k={towerK(t, p[0])} t={t} i={i} />)}
     <Sparks t={t} />
-    <Cannon t={t} /><Gate t={t} /><General t={t} />
-    <EarthWall t={t} /><Rain t={t} /><Crew t={t} /><Diggers t={t} /><Kilns t={t} /><Stamp t={t} /><Joints t={t} /><RicePot t={t} />
+    <Cannon t={t} /><Gate t={t} /><General t={t} /><Sentry t={t} />
+    <EarthWall t={t} /><Rain t={t} /><Helpers t={t} /><Crew t={t} /><Diggers t={t} /><Kilns t={t} /><Carriers t={t} /><Bricklayer t={t} /><Stamp t={t} /><Evidence t={t} /><Joints t={t} /><RicePot t={t} />
     <Riders t={t} />
   </>
 );
