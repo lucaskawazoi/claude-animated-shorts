@@ -7,7 +7,7 @@ import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { COSTUMES } from "../../toy/worker";
-import { HOIST, IMPACT, SFX, T } from "./cues";
+import { HOIST, IMPACT, SFX, T, XCUT } from "./cues";
 import { H1, H2, H3, RIDE0, TOP, TW, World, hoistFrac, night, rampH, rideTh } from "./world";
 import { EXPOSURE } from "./exposure";
 
@@ -41,8 +41,12 @@ const SHOTS: Shot[] = [
     K(0, [44, 20, 18], [20, 16, -21], 55, 2), K(T.construido, [42, 16, 16], [18, 14, -21], 55, -1), K(T.nombre, [34, 12, 20], [16, 12, -21], 56, 0),
     K(T.alejandria, [24, 16, 36], [0, 2, -8], 58, 0), K(C1 - 0.05, [18, 13, 38], [-2, 1, -6], 58, 1)] },
   { name: "rente ao mar: rochas escondidas, o navio bate de lado (para, racha, aderna) → a torre sobe", t0: C1, keys: [
-    K(C1, [-42, 4, 0], [-10, 1, -2], 56, 2), K(T.rocas, [-36, 5, -2], [-14, 0, -8], 54, 0), K(T.barcos, [-22.5, 4.2, 6.5], [-18.4, 1.0, -8], 56, -1),
-    K(IMPACT + 0.55, [-22.0, 4.0, 5.8], [-18.0, 0.9, -8], 55, 0), K(T.b1 + 0.35, [-28, 8, 0], [4, 5, -18], 56, 0), K(T.torre, [-22, 11, 4], [14, 12, -21], 56, 0), K(C2 - 0.05, [-20, 12, 5], [14, 13, -21], 56, 0)] },
+    // atrás do navio que ainda navega (já em quadro no corte), as rochas furam a água uma a uma à frente dele
+    K(C1, [-52, 4.5, -10], [-18, 0.5, -9], 56, 2), K(T.rocas, [-40, 4.8, -3], [-18, 0.3, -9], 54, 0), K(T.barcos, [-22.5, 4.2, 6.5], [-18.4, 1.0, -8], 56, -1),
+    K(IMPACT + 0.55, [-22.0, 4.0, 5.8], [-18.0, 0.9, -8], 55, 0),
+    // o naufrágio afundando no canto e a torre começando a subir no «¡con ingenio!»
+    K(T.b1 + 0.35, [-32, 9, 2], [0, 8, -16], 58, 0), K(T.c1 + 0.2, [-30, 9.5, 2.5], [2, 9, -17], 58, 0),
+    K(T.torre + 0.5, [-22, 11, 4], [14, 12, -21], 56, 0), K(C2 - 0.05, [-20, 12, 5], [14, 13, -21], 56, 0)] },
   { name: "a torre do mar → atrás de um navio ao longe (a costa ainda não aparece) → sobe: a ilha separada da cidade", t0: C2, keys: [
     K(C2, [42, 10, -58], [16, 14, -21], 54, -2), K(W3, [41.5, 10.3, -57], [16, 14, -21], 54, -1),
     K(W3 + 0.6, [38, 4, -88], [17, 20, -22], 48, 1), K(T.torreT, [36.1, 4, -82.3], [17, 20, -22], 48, 0),
@@ -51,13 +55,19 @@ const SHOTS: Shot[] = [
   { name: "o dique sai da cidade → dois portos → vento na torre", t0: C3, keys: [
     K(C3, [4, 6, 27], [-8, 0.6, 4], 54, 2), K(T.kilometro, [1, 7, 24], [-8, 0.6, -2], 54, 0), K(T.une, [8, 14, 30], [-8, 0, -6], 56, 0),
     K(T.puertos, [-8, 32, 32], [-8, 0, -4], 58, 0), K(T.hepta + 0.4, [-6, 31, 30], [-8, 0, -4], 58, 0),
-    K(T.p3 + 0.6, [44, 13, 6], [16, 17, -21], 56, 0), K(T.peso, [42, 12, 4], [16, 18, -21], 56, -1), K(C4 - 0.05, [42, 12, 4], [16, 18, -21], 56, 0)] },
+    // «SIN ACERO» (43–45 s) não fica parado: a câmera contorna a torre (sempre com céu antes do corte 4)
+    K(T.p3 + 0.6, [44, 13, 6], [16, 17, -21], 56, 0), K(T.peso, [42, 12, 4], [16, 18, -21], 56, -1), K(T.b3, [41, 12.2, 5], [16, 18, -21], 56, 0),
+    K(C4 - 0.05, [30, 13, 10], [16, 15, -21], 56, 0)] },
   // corte 4 invisível à régua em 13/11 (céu dos dois lados): abre de cima, mar e ilha sem céu, e desce enquanto os pisos sobem
   { name: "pegadas dos três pisos vistas de cima → os pisos sobem um a um → gira em volta do tambor com o vento", t0: C4, keys: [], fn: pisosCam },
-  { name: "três pisos → noite (rampa de 3,4 s, câmera andando) → fogo → de longe no mar → a lenha sobe 100 m pela corda", t0: C5, keys: [
+  { name: "três pisos → noite (rampa de 3,4 s, câmera andando) → fogo aceso, o facho começa a girar", t0: C5, keys: [
     K(C5, [26, 28, -9], [16, 27, -21], 50, -2), K(T.p4, [40, 14, 0], [16, 19, -21], 54, 0), K(T.fuego, [48, 15, 8], [16, 22, -21], 56, 0),
-    K(T.lejos, [76, 16, 44], [16, 20, -21], 46, 0), K(T.fuegoT, [74, 16, 42], [16, 21, -21], 46, 0),
-    K(T.p5 + 0.9, [36, 7, 4], [16, 4, -15], 52, 0), K(HOIST[1] + 0.13, [33, 3.0, 1], [16, 31.5, -16], 58, 0), K(C6 - 0.05, [33, 3.0, 1], [16, 31.5, -16], 58, 0)] },
+    K(XCUT[0] - 0.05, [53, 17, 13], [16, 24, -21], 55, 0)] },
+  // CORTE EXTRA (pré-crítica de ritmo: 54,8–72,7 s era um plano só): do mar, à noite, o facho varre a água e cada barquinho acende e vira para a torre
+  { name: "EXTRA: de longe no mar — o facho passa e os barcos acendem um a um", t0: XCUT[0], keys: [
+    K(XCUT[0], [66, 10, -86], [18, 17, -21], 48, 1), K(XCUT[1] - 0.05, [62, 9.8, -80.5], [18, 17, -21], 48, 0)] },
+  { name: "EXTRA: «pero hay que subir» — a lenha sobe 100 m pela corda", t0: XCUT[1], keys: [
+    K(XCUT[1], [38, 7.5, 6], [16, 4, -15], 52, 1), K(T.p5 + 0.9, [36, 7, 4], [16, 4, -15], 52, 0), K(HOIST[1] + 0.13, [33, 3.0, 1], [16, 31.5, -16], 58, 0), K(C6 - 0.05, [33, 3.0, 1], [16, 31.5, -16], 58, 0)] },
   { name: "corte da torre: a rampa lisa cresce em espiral; dois cavaleiros com lenha sobem lado a lado, câmera junto", t0: C6, keys: [], fn: rampaCam },
   { name: "terremoto → ruínas → fortaleza → faros pelo mundo (dolly lento até o fim, fachos girando)", t0: C7, keys: [
     K(C7, [34, 14, 20], [16, 12, -21], 56, -2), K(T.ruinas, [30, 12, 18], [16, 6, -21], 56, 0), K(T.fortaleza, [26, 10, 8], [16, 3, -21], 54, 0),
@@ -70,6 +80,8 @@ const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState
 const WORKER: [number, WorkerState][] = [
   [0, S([11, TOP, -15.5], 0.6, "present")],
   [T.alejandria, S([2, TOP, 14.4], 0.6, "present")],
+  [T.hace - 0.15, S([3.6, TOP, 14.4], 2.75, "point")],
+  [T.nohay, S([3.6, TOP, 14.4], 0.7, "present")],
   [C1, S([-14, TOP, 14.6], -1.0, "point")],
   [T.barcos, S([-14, TOP, 14.6], -0.6, "alarm")],
   [T.b1, S([-14, TOP, 14.6], -0.6, "cheer")],

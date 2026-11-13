@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, prog, rnd, sstep } from "../../toy/kit";
 import { Clouds, Palms, Puffs, Sky } from "../../toy/scenery";
 import { Horse } from "../../toy/horse";
-import { CUTS, HOIST, IMPACT, T, WINS } from "./cues";
+import { BEAM0, BEAM_W, CUTS, HOIST, IMPACT, LOST, T, WINS } from "./cues";
 
 const PI = Math.PI;
 export const built = (t: number) => t < T.alejandria - 0.12;
@@ -45,9 +45,17 @@ const City: React.FC = () => {
 };
 /** rochas escondidas: quase na flor d'água; brilham de vermelho quando o narrador fala delas */
 const ROCKS: [number, number][] = [[-16, -8], [-26, -12], [-4, -11], [26, -8], [30, -32], [-40, -30], [6, -33], [-50, -6]];
+// pré-crítica de ritmo: 11,2–14,3 s era mar vazio → as rochas furam a água UMA A UMA (as do quadro primeiro), com respingo
+const ROCK_T = [12.55, 12.0, 13.1, 13.65, 14.2, 14.2, 14.2, 14.2].map((x) => x - 12.2 + T.costa);
 const Rocks: React.FC<{ t: number }> = ({ t }) => {
+  if (built(t)) return null;
   const g = ease(t, T.rocas - 0.1, T.rocas + 0.3) * (1 - ease(t, T.b1, T.b1 + 0.6));
-  return <G>{ROCKS.map(([x, z], i) => <Sph key={i} rad={1.3} p={[x, -0.55, z]} sc={[1.4, 0.55, 1]} c="#4a5560" o={{ emissive: "#ff2a1a", ei: g * 1.3 }} ws={8} hs={6} />)}</G>;
+  return <G>{ROCKS.map(([x, z], i) => { const u = t - ROCK_T[i], up = ease(u, 0, 0.35), y = lerp(-1.6, -0.55, up) + 0.18 * Math.sin(PI * clamp(u / 0.5));
+    return <G key={i}>
+      <Sph rad={1.3} p={[x, y, z]} sc={[1.4, 0.55, 1]} c="#4a5560" o={{ emissive: "#ff2a1a", ei: g * 1.3 }} ws={8} hs={6} vis={up > 0.01} />
+      {u > 0 && u < 0.9 ? <mesh position={[x, 0.06, z]} rotation={[-PI / 2, 0, 0]} scale={[1 + 3.5 * u, 1 + 3.5 * u, 1]} material={mat("#ffffff", { opacity: Math.round(10 * 0.9 * (1 - u / 0.9)) / 10, depthWrite: false, emissive: "#ffffff", ei: 0.4 })}><ringGeometry args={[1.5, 2.0, 24]} /></mesh> : null}
+      <Burst t={t} t0={ROCK_T[i]} o={[x, 0.2, z]} n={8} life={0.8} c="#ffffff" size={0.3} speed={1.6} up={4} seed={i * 5} />
+    </G>; })}</G>;
 };
 /** galera de brinquedo; frente = +x local. tilt = proa para cima, roll = adernar, crack = rachadura no casco, pilot = braço do piloto (0 baixo → 1 apontando) */
 const Ship: React.FC<{ p: V3; yaw: number; t: number; tilt?: number; roll?: number; sink?: number; sail?: string; crack?: number; pilot?: number }> = ({ p, yaw, t, tilt = 0, roll = 0, sink = 0, sail = "#f5efe0", crack = 0, pilot }) => (
@@ -90,17 +98,37 @@ const CrashShip: React.FC<{ t: number }> = ({ t }) => {
   const tilt = u <= 0 ? 0 : u < 0.1 ? 0.34 * sstep(u / 0.1) : 0.34 * (1 - 0.45 * ease(u, 0.1, 0.8));
   return (
     <G>
-      <Ship p={p} yaw={HIT_YAW} t={t} tilt={tilt} roll={-0.42 * ease(u, 0.25, 1.5)} sink={0.55 * ease(u, 0.3, 2.0)} crack={ease(u, 0, 0.12)} />
+      <Ship p={p} yaw={HIT_YAW} t={t} tilt={tilt} roll={-0.42 * ease(u, 0.25, 1.5) - 0.3 * ease(u, 1.8, 4.6)} sink={0.55 * ease(u, 0.3, 2.0) + 0.8 * ease(u, 1.8, 4.6)} crack={ease(u, 0, 0.12)} />
       <Burst t={t} t0={IMPACT} o={BOW} n={14} life={1.1} c="#ffffff" size={0.42} speed={2.2} up={5.5} />
       <Burst t={t} t0={IMPACT} o={BOW} n={7} life={1.3} c="#8a5a32" size={1} speed={3.2} up={5} box seed={11} />
     </G>
   );
 };
-/** o navio dos pilotos (plano 4): ao longe no mar, vai direto para a torre; a costa ainda não aparece */
-const PS: [V3, V3] = [[27.6, 0, -67.0], [21.2, 0, -41.8]];
-const PS_YAW = Math.atan2(-(PS[1][2] - PS[0][2]), PS[1][0] - PS[0][0]);
-const PilotShip: React.FC<{ t: number }> = ({ t }) => (t > WINS[3] - 0.05 && t < CUTS[2]
-  ? <Ship p={sail(t, WINS[3], CUTS[2], PS[0], PS[1])} yaw={PS_YAW} t={t} sail="#f2e2b0" pilot={ease(t, T.pilotos - 0.1, T.pilotos + 0.35)} /> : null);
+/** o navio dos pilotos (plano 4): cruza NA FRENTE da torre (esq.→dir. na tela) e, quando «los pilotos saben», vira e vai
+ *  direto para ela (pré-crítica de ritmo: 24–28,5 s era a torre parada atrás de um navio que só se afastava) */
+const PX: V3 = [29.6, 0, -64.1], PR: V3 = [-0.952, 0, -0.305], PC = T.pilotos - 0.5; // cruzamento diante da base; PR = direita da tela
+const PA: V3 = [PX[0] - 8 * PR[0], 0, PX[2] - 8 * PR[2]], PB: V3 = [PX[0] + 4 * PR[0], 0, PX[2] + 4 * PR[2]], PD: V3 = [20, 0, -46];
+const pilotPath = (t: number): [V3, number] => {
+  if (t < PC) return [sail(t, WINS[3] - 0.05, PC, PA, PX), Math.atan2(-PR[2], PR[0])];
+  const u = clamp((t - PC) / (CUTS[2] - PC)), a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u;
+  const p: V3 = [a * PX[0] + b * PB[0] + c * PD[0], 0, a * PX[2] + b * PB[2] + c * PD[2]];
+  const d = [2 * (1 - u) * (PB[0] - PX[0]) + 2 * u * (PD[0] - PB[0]), 2 * (1 - u) * (PB[2] - PX[2]) + 2 * u * (PD[2] - PB[2])];
+  return [p, Math.atan2(-d[1], d[0])];
+};
+const PilotShip: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t > WINS[3] - 0.05 && t < CUTS[2])) return null;
+  const [p, yaw] = pilotPath(t);
+  return <Ship p={p} yaw={yaw} t={t} sail="#f2e2b0" pilot={ease(t, T.pilotos - 0.1, T.pilotos + 0.35)} />;
+};
+/** o alto da torre ingênua pisca como sinal de jogo desde «se ve antes que la costa» (antes do marcador dos pilotos) */
+const Ping: React.FC<{ t: number }> = ({ t }) => {
+  const t0 = T.pilotos - 1.1, k = ease(t, t0, t0 + 0.3) * (1 - ease(t, T.torreT + 0.3, T.torreT + 0.8)); if (k <= 0.01) return null;
+  const ph = fract((t - t0) / 0.7), blink = fract((t - t0) / 0.35) < 0.5 ? 1 : 0.35;
+  return <G p={[TW.x, TOP + 34 + 1.2, TW.z]}>
+    <Sph rad={1.3 * k} c="#ffd34a" cast={false} recv={false} o={{ emissive: "#ffb000", ei: 2 * blink }} ws={12} hs={8} />
+    <Sph rad={1.5 + 6 * ph} c="#ffe08a" cast={false} recv={false} o={{ emissive: "#ffd34a", ei: 1, opacity: Math.round(10 * 0.6 * (1 - ph) * k) / 10, depthWrite: false }} ws={14} hs={10} />
+  </G>;
+};
 /** marcador de destino de jogo sobre a torre, quando «los pilotos saben hacia dónde ir» */
 const Waypoint: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, T.pilotos + 0.1, T.pilotos + 0.45) * (1 - ease(t, T.torreT + 0.3, T.torreT + 0.8)); if (k <= 0.01) return null;
@@ -111,13 +139,47 @@ const Haze: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, WINS[3] + 0.05, WINS[3] + 0.6) * (1 - ease(t, T.torreT + 0.05, T.torreT + 0.55)); if (k <= 0.01) return null;
   return <Box s={[460, 9, 12]} p={[0, 4.5, 6]} c="#e4eff3" cast={false} recv={false} o={{ opacity: 0.94 * k, depthWrite: false, emissive: "#e4eff3", ei: 0.35 }} />;
 };
+/** «de noche»: o facho do fogo gira; cada barquinho ao longe acende a lanterna quando o facho passa e vira para a torre */
+export const beamPhi = (t: number) => 0.915 + BEAM_W * (t - BEAM0);
+const NB: [number, number, number][] = [[0.62, 28, 2.4], [0.74, 40, -1.9], [0.86, 46, 0.6], [0.98, 34, 3.4], [1.10, 24, -0.4]]; // azimute, distância, proa antes
+const NightBoats: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t > T.fuego && t < T.p5 + 0.6)) return null;
+  return <G>{NB.map(([ph, d, y0], i) => {
+    const tl = BEAM0 + (ph - 0.915) / BEAM_W, lit = ease(t, tl, tl + 0.2), turn = ease(t, tl + 0.1, tl + 0.8), go = Math.max(0, t - tl - 0.5);
+    const r = d - 3.2 * go * ease(t, tl + 0.5, tl + 1.2), yawTo = ph + PI, yaw = lerp(y0 + 0.25 * Math.sin(t * 0.9 + i), yawTo, turn);
+    const p: V3 = [TW.x + r * Math.cos(ph), 0, TW.z - r * Math.sin(ph)];
+    return <G key={i}>
+      <Ship p={p} yaw={yaw} t={t + i} />
+      <G p={[p[0], 4.9, p[2]]} vis={lit > 0.01}>
+        <Sph rad={0.45} c="#ffd34a" cast={false} recv={false} o={{ emissive: "#ffb000", ei: 2.2 }} ws={10} hs={8} />
+        <Sph rad={1.6 * lit} c="#ffe08a" cast={false} recv={false} o={{ emissive: "#ffd34a", ei: 1, opacity: 0.4, depthWrite: false }} ws={12} hs={8} />
+      </G>
+    </G>; })}</G>;
+};
+/** gag final: o barquinho perdido roda sem rumo; o marcador de jogo acende sobre a ilha e ele vai direto (callback dos pilotos) */
+const LC: V3 = [-3.5, 0, -4.5], LD: V3 = [7, 0, -14.8];
+const LostBoat: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.faros) return null;
+  const spin = t < LOST[0] ? 0.6 * (t - T.faros) : 0.6 * (LOST[0] - T.faros) + 6.5 * (Math.min(t, LOST[1]) - LOST[0]);
+  const a = spin, cp: V3 = [LC[0] + 1.6 * Math.cos(a), 0, LC[2] - 1.6 * Math.sin(a)], cy = a + PI / 2;
+  const go = ease(t, LOST[1] + 0.05, LOST[1] + 1.1), dirY = Math.atan2(-(LD[2] - LC[2]), LD[0] - LC[0]);
+  const p: V3 = t < LOST[1] ? cp : [lerp(cp[0], LD[0], go), 0, lerp(cp[2], LD[2], go)];
+  const yaw = t < LOST[1] ? cy : lerp(cy, cy + (((dirY - cy) % (2 * PI)) + 3 * PI) % (2 * PI) - PI, ease(t, LOST[1], LOST[1] + 0.25));
+  const arm = t < LOST[1] ? 0.5 + 0.5 * Math.sin(t * 11) : 1;
+  const mk = ease(t, LOST[1] - 0.05, LOST[1] + 0.25);
+  return <G>
+    <Ship p={p} yaw={yaw} t={t} sail="#f2e2b0" pilot={arm} tilt={0.06 * Math.sin(t * 9) * (t < LOST[1] ? 1 : 0)} />
+    {mk > 0.01 ? <G p={[LD[0], 6.5 + 0.5 * Math.sin(t * 4), LD[2] - 0.7]} r={[PI, t * 2.2, 0]} sc={mk}><Cone rad={1.6} h={2.6} seg={4} c="#ffd34a" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} /></G> : null}
+  </G>;
+};
 const Ships: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G>
       {built(t) ? <Ship p={[4, 0, -10]} yaw={0.4} t={t} /> : null}
-      <CrashShip t={t} /><PilotShip t={t} />
+      {/* pré-crítica de ritmo: 7–10,8 s casas paradas → um navio cruza a baía enquanto o operário aponta o mar */}
+      {t > T.alejandria && t < CUTS[0] + 0.1 ? <Ship p={sail(t, T.alejandria + 0.2, CUTS[0], [24, 0, 2.6], [-16, 0, -2.2])} yaw={Math.atan2(4.8, -40)} t={t} sail="#e8d27a" /> : null}
+      <CrashShip t={t} /><PilotShip t={t} /><NightBoats t={t} /><LostBoat t={t} />
       {t > T.une && t < T.p3 + 0.5 ? <><Ship p={sail(t, T.une, T.hepta + 0.6, [34, 0, -8], [2, 0, 4])} yaw={PI + 0.3} t={t} /><Ship p={sail(t, T.une, T.hepta + 0.6, [-54, 0, -8], [-20, 0, 4])} yaw={-0.3} t={t} sail="#e8d27a" /></> : null}
-      {t > T.nadie - 0.5 && t < T.p5 + 1 ? <Ship p={t < T.fuego ? sail(t, T.nadie - 0.5, T.fuego, [66, 0, 30], [64, 0, 28]) : sail(t, T.fuego, T.p5 + 1, [64, 0, 28], [46, 0, 13])} yaw={t < T.fuego ? 2.0 + 0.6 * Math.sin(t * 2) : 2.47} t={t} /> : null}
       {t > T.pie ? <Ship p={sail(t, T.pie, T.end, [40, 0, -14], [26, 0, -10])} yaw={PI} t={t} /> : null}
     </G>
   );
@@ -140,7 +202,8 @@ const Dike: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- a torre: primeiro um bloco ingênuo; depois três pisos que afinam
 export const H1 = 16, H2 = 10, H3 = 6;
 const tierK = (t: number, a: number) => (built(t) ? 1 : t < T.b3 ? 0 : ease(t, a - 0.3, a + 0.4));
-const naiveK = (t: number) => (built(t) ? 0 : ease(t, T.torre, T.torre + 1.3) * (1 - ease(t, T.b3, T.tres)));
+// pré-crítica: 18–21 s era o banco de areia vazio → a torre começa a subir já no «¡con ingenio!»
+const naiveK = (t: number) => (built(t) ? 0 : ease(t, T.c1 - 0.2, T.torre + 1.0) * (1 - ease(t, T.b3, T.tres)));
 export const cutK = (t: number) => (t > T.b5 - 0.2 && t < T.terremotos + 0.6 ? 1 : 0);
 export const fireK = (t: number) => (built(t) ? 1 : ease(t, T.fuego, T.cima)) * (1 - ease(t, T.terremotos + 0.3, T.ruinas - 0.4));
 const Tower: React.FC<{ t: number }> = ({ t }) => {
@@ -148,6 +211,8 @@ const Tower: React.FC<{ t: number }> = ({ t }) => {
   const k1 = tierK(t, T.abajo), k2 = tierK(t, T.medio), k3 = tierK(t, T.arriba), cut = cutK(t), q = quake(t);
   const fall = ease(t, T.peor - 0.2, T.ruinas), rubble = ease(t, T.ruinas - 0.3, T.ruinas + 0.3) * (1 - ease(t, T.piedras, T.fortaleza + 0.4));
   const fk = fireK(t), y1 = TOP + H1, y2 = y1 + H2, y3 = y2 + H3;
+  // pré-crítica: a ruína (85–87 s) lia como bola de pedra → fica um TOCO do piso 1 com topo quebrado e rachaduras, até a fortaleza
+  const stump = 1 - fall * 0.6, fortK = ease(t, T.fortaleza - 0.4, T.pie), broken = ease(t, T.peor, T.ruinas - 0.2) * (1 - fortK);
   const sh: V3 = [q * 0.25 * Math.sin(t * 41), 0, q * 0.2 * Math.sin(t * 33)];
   return (
     <G p={[TW.x + sh[0], 0, TW.z + sh[2]]}>
@@ -156,13 +221,21 @@ const Tower: React.FC<{ t: number }> = ({ t }) => {
         {sway > 0.3 ? [[-1.2, 10, 0.5], [0.8, 18, -0.4], [-0.4, 25, 0.7]].map(([x, y, r], i) => <Box key={i} s={[3.2, 0.12, 0.08]} p={[x, y, 3.53]} r={[0, 0, r]} c="#3a2a1a" cast={false} />) : null}
       </G> : null}
       {/* piso 1 quadrado (paredes separadas: a da frente some no corte da rampa) */}
-      {k1 > 0.01 && fall < 0.999 ? <G sc={[1, Math.max(0.01, k1 * (1 - fall * 0.85)), 1]}>
+      {k1 > 0.01 && fortK < 0.999 ? <G sc={[1, Math.max(0.01, k1 * stump * (1 - fortK)), 1]}>
         <Box s={[10, H1, 0.8]} p={[0, TOP + H1 / 2, -4.6]} c={cut > 0.5 ? "#a99a7c" : STONE} /><Box s={[0.8, H1, 10]} p={[-4.6, TOP + H1 / 2, 0]} c={STONE} /><Box s={[0.8, H1, 10]} p={[4.6, TOP + H1 / 2, 0]} c={STONE} />
         <Box s={[10, H1, 0.8]} p={[0, TOP + H1 / 2, 4.6]} c={STONE} vis={cut < 0.5} />
         {cut < 0.5 ? [4, 8, 12].map((y) => <Box key={y} s={[0.6, 1.0, 0.1]} p={[0, TOP + y, 5.02]} c="#3a3020" cast={false} />) : null}
-        <Box s={[10.6, 0.6, 10.6]} p={[0, TOP + H1, 0]} c={STONE2} />
-        {Array.from({ length: 8 }, (_, i) => { const a = (i / 8) * PI * 2; return <Box key={i} s={[1, 0.9, 1]} p={[Math.round(Math.cos(a)) * 4.8, TOP + H1 + 0.7, Math.round(Math.sin(a)) * 4.8]} c={STONE2} />; })}
+        <Box s={[10.6, 0.6, 10.6]} p={[0, TOP + H1, 0]} c={STONE2} vis={broken < 0.5} />
+        {broken >= 0.5 ? null : Array.from({ length: 8 }, (_, i) => { const a = (i / 8) * PI * 2; return <Box key={i} s={[1, 0.9, 1]} p={[Math.round(Math.cos(a)) * 4.8, TOP + H1 + 0.7, Math.round(Math.sin(a)) * 4.8]} c={STONE2} />; })}
         <Ramp t={t} on={cut} />
+        {broken > 0.01 ? [[0, 5.0, 0], [5.0, 0, PI / 2]].map(([x, z, ry], j) => <G key={j} p={[x, 0, z]} r={[0, ry, 0]}>
+          {[[-2.6, 5, 0.9], [-1.9, 7.6, -0.7], [-2.2, 10.3, 0.8], [2.1, 3.6, -0.8], [2.7, 6.4, 0.7], [2.2, 9.6, -0.6], [0.4, 12.6, 0.5]].map(([cx, cy, cr], i) =>
+            <Box key={i} s={[2.4 * broken, 0.22, 0.12]} p={[cx, TOP + cy, 0.04]} r={[0, 0, cr]} c="#3a2a1a" cast={false} />)}
+        </G>) : null}
+      </G> : null}
+      {broken > 0.01 ? <G p={[0, (TOP + H1) * stump * (1 - fortK) * k1, 0]}>
+        {[[-4.6, -4.6, 3.2], [-1.5, -4.6, 1.4], [1.8, -4.6, 2.4], [4.6, -4.6, 1.0], [4.6, -1.2, 2.8], [4.6, 2.2, 0.8], [4.6, 4.6, 2.0], [1.4, 4.6, 0.6], [-2.0, 4.6, 1.8], [-4.6, 4.6, 1.1], [-4.6, 1.2, 2.5], [-4.6, -1.8, 0.7]].map(([x, z, h], i) =>
+          <Box key={i} s={[x === 4.6 || x === -4.6 ? 0.8 : 2.6, h * broken, z === 4.6 || z === -4.6 ? 0.8 : 2.6]} p={[x, (h * broken) / 2, z]} r={[0, 0, (rnd(i + 21) - 0.5) * 0.25]} c={i % 2 ? STONE : STONE2} />)}
       </G> : null}
       {/* pisos 2 e 3 */}
       <G p={[fall * 9, -fall * 22, fall * 3]} r={[0, 0, -fall * 1.3]} vis={fall < 0.98}>
@@ -179,7 +252,7 @@ const Tower: React.FC<{ t: number }> = ({ t }) => {
         </G> : null}
       </G>
       {rubble > 0.01 ? Array.from({ length: 18 }, (_, i) => <Box key={i} s={[1.6, 1.0, 1.2]} p={[(rnd(i) - 0.5) * 12, TOP + 0.4 + (i % 3) * 0.7 * rubble, (rnd(i + 5) - 0.5) * 10]} r={[rnd(i + 1), rnd(i + 2) * 2, rnd(i + 3)]} sc={Math.max(0.01, rubble)} c={i % 2 ? STONE : STONE2} />) : null}
-      <Puffs t={t} p={[0, TOP, 0]} n={10} period={1.8} rise={8} size={3} c="#e8dcc0" on={ease(t, T.peor, T.ruinas) * (1 - ease(t, T.piedras, T.fortaleza))} drift={[0, 0, 2]} />
+      <Puffs t={t} p={[0, TOP + 4, 0]} n={6} period={1.4} rise={9} size={0.8} c="#f7f2e8" on={ease(t, T.peor, T.ruinas) * (1 - ease(t, T.piedras, T.fortaleza))} drift={[2.4, 0, 1.6]} />
     </G>
   );
 };
@@ -314,6 +387,18 @@ const Fuel: React.FC<{ t: number }> = ({ t }) => {
   if (!(t > T.p5 - 0.2 && t < CUTS[5])) return null;
   return <G>{[0, 1, 2].map((i) => <G key={i} p={[TW.x - 3 + i * 1.6, TOP, TW.z + 6.4 + (i % 2) * 0.6]}><Cyl rt={0.35} h={1.4} p={[0, 0.7, 0]} r={[PI / 2, 0, 0.2 * i]} c="#7a5a2a" seg={8} /><Cyl rt={0.36} h={0.12} p={[0, 0.7, 0.4]} r={[PI / 2, 0, 0]} c="#c9a24a" seg={8} /></G>)}</G>;
 };
+/** o facho: do fogo até o mar (~50 m adiante), girando; uma mancha de luz corre na água (pré-crítica: 62–67 s parado) */
+const BEAM_D = 50, BEAM_Y = TOP + H1 + H2 + H3 + 1.2, BEAM_TILT = Math.atan(BEAM_Y / BEAM_D), BEAM_L = Math.hypot(BEAM_D, BEAM_Y);
+const Beam: React.FC<{ t: number }> = ({ t }) => {
+  const k = Math.round(10 * fireK(t) * night(t)) / 10; if (k <= 0.01 || built(t)) return null;
+  const ph = beamPhi(t);
+  return <G>
+    <G p={[TW.x, BEAM_Y, TW.z]} r={[0, ph, -BEAM_TILT]}>
+      <Cone rad={8} h={BEAM_L} seg={20} p={[BEAM_L / 2, 0, 0]} r={[0, 0, PI / 2]} c="#fff4b0" cast={false} recv={false} o={{ emissive: "#ffe680", ei: 1.2, opacity: 0.26 * k, depthWrite: false }} />
+    </G>
+    <mesh position={[TW.x + BEAM_D * Math.cos(ph), 0.08, TW.z - BEAM_D * Math.sin(ph)]} rotation={[-PI / 2, 0, ph]} material={mat("#fff2b0", { emissive: "#ffe680", ei: 1, opacity: 0.45 * k, depthWrite: false })}><circleGeometry args={[8, 28]} /></mesh>
+  </G>;
+};
 const Night: React.FC<{ t: number }> = ({ t }) => {
   const n = night(t); if (n <= 0.01) return null;
   return (
@@ -337,6 +422,6 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Night t={t} />
     <Clouds t={t} n={7} y={36} />
     <Land /><City /><Rocks t={t} /><Ships t={t} /><Dike t={t} /><Haze t={t} /><Waypoint t={t} />
-    <Tower t={t} /><Footprints t={t} /><Fort t={t} /><Modern t={t} /><Building t={t} /><Fuel t={t} /><Hoist t={t} /><Gulls t={t} /><Wind t={t} /><WindAround t={t} />
+    <Tower t={t} /><Beam t={t} /><Ping t={t} /><Footprints t={t} /><Fort t={t} /><Modern t={t} /><Building t={t} /><Fuel t={t} /><Hoist t={t} /><Gulls t={t} /><Wind t={t} /><WindAround t={t} />
   </>
 );

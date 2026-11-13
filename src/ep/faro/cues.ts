@@ -23,6 +23,12 @@ export { CUTS, WINS };
 export const IMPACT = T.barcos + 0.4;
 /** o feixe de lenha sobe pela corda até o alto (crítico da v2: «hay que subir combustible» só mostrava toras no chão) */
 export const HOIST: [number, number] = [T.p5 + 0.65, T.b5 - 0.2];
+/** cortes EXTRA (fora da régua) dentro do plano 55,0–72,9 s: «a esa altura» → o mar de noite; o alerta «pero hay que subir» → a base do guincho */
+export const XCUT = [find("a esa altura") - 0.08, T.p5];
+/** o facho do fogo gira (rad/s) e aponta para a câmera do mar em BEAM0 */
+export const BEAM0 = find("desde muy lejos") + 0.15, BEAM_W = 0.35;
+/** gag final: «a quien siempre se pierde» o barquinho roda; «llegando a un sitio» o marcador acende e ele vai direto */
+export const LOST: [number, number] = [find("a quien siempre"), find("llegando a un sitio")];
 
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
@@ -39,4 +45,9 @@ S.push(["waves", 0.0, -14], ["gulls", 1.0, -16], ["waves", T.costa, -12], ["buzz
   ["buzzer", T.nadie + 0.3, -14], ["fireup", T.fuego, -8], ["fire", T.cima, -11], ["waves", T.lejos, -13], ["hooves", T.jinetes - 0.3, -11],
   ["quake", T.terremotos, -7], ["crumble", T.ruinas - 0.4, -8], ["stone", T.fortaleza, -10], ["fanfare", T.faros - 0.2, -9], ["gulls", T.manda, -15],
   ["splash", IMPACT + 0.04, -11], ["sail", WINS[3] + 0.3, -15], ["wind", T.rodea - 0.3, -11], ["vn-rope", HOIST[0], -12], ["creak", HOIST[0] + 1.2, -13]);
+// pré-crítica de ritmo (13/11): rochas furando a água, cortes extras, barcos acendendo, o gag final
+for (const x of [12.0, 12.55, 13.1, 13.65]) S.push(["splash", x - 12.2 + T.costa, -18]);
+for (const x of XCUT) S.push(["whoosh", x - 0.22, -15]);
+for (const ph of [0.62, 0.74, 0.86, 0.98, 1.1]) S.push(["pop", BEAM0 + (ph - 0.915) / BEAM_W, -17]);
+S.push(["sail", T.alejandria + 0.4, -17], ["ding", LOST[1], -11], ["whoosh", LOST[1] + 0.1, -16]);
 export const SFX = S;
