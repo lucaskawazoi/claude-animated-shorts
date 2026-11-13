@@ -72,6 +72,7 @@ const WORKER: [number, WorkerState][] = [
   [T.ton, S([470, 0, 22], 0.1, "cheer")],
   [T.ano, S([232, 0, -30], 0.1, "cheer")],
   [T.mostra, S([-10, 0, 40], 0.0, "present", { prop: "scroll" })],
+  [T.pensar, S([-6, 0, 30], 0.0, "cheer")],
 ];
 
 const hud: HudData = {
@@ -102,8 +103,8 @@ const hud: HudData = {
     // cartões que entram e saem, trocando de texto a cada ~2 s (13/11, crítico: o cartão parado por 8 s)
     const cards: { a: number; b: number; top: string; big: string; sub: string; tone: string }[] = [
       { a: T.brasil - 0.05, b: T.ano - 0.2, top: "CELULOSE · BRASIL · 2025", big: `~${count(t, T.brasil + 0.2, T.ton + 1.0, 20, 30)} MILHÕES`, sub: "DE TONELADAS", tone: "#0b7a35" },
-      { a: T.ano, b: T.mostra - 0.15, top: "CADA ESTAÇÃO", big: "ZEROU!", sub: "ACENDE O SEU FAROL", tone: "#0b7a35" },
-      { a: T.mostra, b: T.end, top: "DO EUCALIPTO AO PAPEL", big: "ZEROU!", sub: "SEM JOGAR NADA FORA", tone: "#0b7a35" },
+      { a: T.ano, b: T.mostra - 0.15, top: "ESTAÇÃO POR ESTAÇÃO", big: "ZEROU!", sub: "ATÉ O LICOR PRETO", tone: "#0b7a35" },
+      { a: T.mostra, b: T.end, top: "DO EUCALIPTO AO PAPEL", big: "ZEROU!", sub: "CASCA E LICOR VIRAM ENERGIA", tone: "#0b7a35" },
     ];
     return (
       <>

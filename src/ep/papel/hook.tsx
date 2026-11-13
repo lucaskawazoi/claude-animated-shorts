@@ -5,6 +5,7 @@ import { Puffs } from "../../toy/scenery";
 import { OPEN_END, openId } from "./opening";
 import { COLX, Euca, ROWZ } from "./stations1";
 import { PI, Spray, mixc, pk } from "./parts";
+import { Log } from "./stations1";
 
 export const DESK: V3 = [0, 0, 34];
 export const OpenA: React.FC<{ t: number }> = ({ t }) => {
@@ -38,6 +39,9 @@ export const OpenC: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[96, 0.3, 66]} p={[0, 0.15, -26]} c="#fffef8" />
       {ROWZ.map((z, r) => <Box key={r} s={[96, 0.12, 0.45]} p={[0, 0.35, z]} c={mixc("#4a9be0", "#2fe06a", clamp(prog(t, 0.0 + r * 0.25, 0.3 + r * 0.25)))} cast={false} o={{ emissive: "#2fe06a", ei: 0.5 * (1 - prog(t, 0.3 + r * 0.42, 0.9 + r * 0.42)) }} />)}
       {Array.from({ length: 5 }, (_, r) => <Box key={r} s={[96, 0.1, 0.25]} p={[0, 0.34, -12.5 - r * 9]} c="#a8c8ee" cast={false} />)}
+      {/* uma tora cai na página no segundo 1 e quica */}
+      {(() => { const f = prog(t, 0.75, 1.2), y = 1.3 + 26 * (1 - f * f) + (t > 1.2 ? 1.6 * Math.abs(Math.sin((t - 1.2) * 11)) * Math.exp(-(t - 1.2) * 4) : 0); return t > 0.7 ? <Log p={[-5, y, -19]} len={9} rad={1.1} r={[0.3 * (1 - f), 0.5 * (1 - f), PI / 2]} /> : null; })()}
+      <Spray t={t} t0={1.2} t1={1.3} p={[-5, 1.0, -19]} dir={[0, 1, 0.3]} spread={1.0} n={22} spd={9} g={-16} life={0.9} size={0.55} cols={["#ffffff", "#e8e0d0", "#6b4a2a"]} shape="sph" floor={0.4} />
       <Box s={[0.5, 0.12, 66]} p={[-44, 0.36, -26]} c="#e0262b" cast={false} />
       {Array.from({ length: 12 }, (_, i) => <G key={i} p={[-47.5, 0.8, -52 + i * 5.4]}><Cyl rt={0.9} h={3.4} r={[PI / 2, 0, 0]} c="#59626b" seg={8} cast={false} /></G>)}
       <Box s={[3.2, 0.1, 5]} p={[30, 0.4, -50]} c="#ffd400" r={[0, 0.4, 0]} cast={false} />

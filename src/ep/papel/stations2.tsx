@@ -68,6 +68,9 @@ export const PaperMachine: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[16, 0.12, 9]} p={[PMX + 107, 7.6, 0]} r={[0, 0, 0.2]} c="#ffffff" cast={false} />
       {/* bobinas prontas, em pé, chegando uma a uma */}
       {Array.from({ length: 5 }, (_, i) => { const k = pk(t, T.ton + 0.2 + i * 0.28, 0.4); return k > 0.01 ? <G key={i} p={[PMX + 116 + i * 9.5, 4.3, 12]} sc={k}><Cyl rt={4.2} h={8.6} c="#ffffff" seg={18} o={{ rough: 0.9 }} /><Cyl rt={1.0} h={8.8} c="#b9c3cc" seg={8} cast={false} /><Cyl rt={4.25} h={0.5} p={[0, 2.5, 0]} c="#d8dee6" seg={18} cast={false} /></G> : null; })}
+      {/* bobinas que rolam para dentro do quadro e param com poeira */}
+      {Array.from({ length: 3 }, (_, i) => { const a = T.ton - 0.1 + i * 0.75, u = ease(t, a, a + 1.0), x = lerp(PMX + 190, PMX + 112 - i * 9.5, u); return t > a - 0.05 && t < T.end ? <G key={i} p={[x, 4.2, 21]} r={[0, 0, -(x - PMX) / 4.2]}><G r={[PI / 2, 0, 0]}><Cyl rt={4.2} h={8.6} c="#ffffff" seg={18} o={{ rough: 0.9 }} /><Cyl rt={4.25} h={0.5} p={[0, 3, 0]} c="#cfd6de" seg={18} cast={false} /></G></G> : null; })}
+      <Spray t={t} t0={T.ton + 0.9} t1={T.ton + 1.0} p={[PMX + 112, 0.5, 21]} dir={[0, 1, 0.5]} spread={0.8} n={14} spd={6} g={-10} life={0.8} size={0.7} cols={["#e8e0d0", "#ffffff"]} shape="sph" floor={0.3} />
       {/* a bobina gigante */}
       <G p={[PMX + 112, 0, 0]}>
         <Box s={[1.8, 13, 1.8]} p={[0, 6.5, 6.8]} c={DARK} /><Box s={[1.8, 13, 1.8]} p={[0, 6.5, -6.8]} c={DARK} />
@@ -116,7 +119,7 @@ export const BoilerPipes: React.FC<{ t: number }> = ({ t }) => (
 
 // ---------------------------------------------------------------- turbina e gerador
 export const Turbine: React.FC<{ t: number }> = ({ t }) => {
-  const spin = ease(t, T.turb - 0.3, T.turb + 0.9), ang = t * 15 * spin, on = lit(t, T.energia - 0.1, 0.4);
+  const spin = ease(t, T.turb - 0.3, T.turb + 0.9), ang = t * 15 * spin, on = lit(t, T.turb + 1.2, 0.4);
   return (
     <G p={[TUX, 0, BOZ]}>
       <Box s={[26, 0.8, 16]} p={[0, 0.4, 0]} c={CONC0} />
@@ -129,7 +132,7 @@ export const Turbine: React.FC<{ t: number }> = ({ t }) => {
       </G>
       <Box s={[8, 6.4, 6.4]} p={[8, 3.6, -2]} c={YEL} /><Box s={[8.4, 0.9, 6.8]} p={[8, 7.1, -2]} c={RED} />
       <Cyl rt={0.5} h={3} p={[3.2, 5.2, -2]} r={[0, 0, PI / 2]} c={STEEL} seg={8} cast={false} />
-      {[-1, 1].map((s) => <Sph key={s} rad={0.8} p={[s * 6, 15.8, 1]} c={on > 0.4 ? "#fff1a0" : "#8a929a"} ws={8} hs={6} cast={false} o={on > 0.4 ? { emissive: "#ffd84a", ei: 1.6 } : undefined} />)}
+      {[-1, 1].map((s) => <Sph key={s} rad={1.4} p={[s * 6, 15.2, 4]} c={on > 0.4 ? "#fff1a0" : "#8a929a"} ws={8} hs={6} cast={false} o={on > 0.4 ? { emissive: "#ffd84a", ei: 1.6 } : undefined} />)}
       <Puffs t={t} p={[-8, 10, 2]} n={4} period={1.4} rise={4} size={1.2} c="#ffffff" on={spin} drift={[-1, 0, 1.4]} />
     </G>
   );

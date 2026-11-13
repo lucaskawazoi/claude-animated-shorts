@@ -43,7 +43,7 @@ export const Forest: React.FC<{ t: number }> = ({ t }) => (
 );
 
 // ---------------------------------------------------------------- tora suja (casca marrom com lama) e caminhão
-const Log: React.FC<{ p: V3; len?: number; rad?: number; r?: V3; dirty?: number }> = ({ p, len = 12, rad = 0.9, r = [0, 0, PI / 2], dirty = 1 }) => (
+export const Log: React.FC<{ p: V3; len?: number; rad?: number; r?: V3; dirty?: number }> = ({ p, len = 12, rad = 0.9, r = [0, 0, PI / 2], dirty = 1 }) => (
   <G p={p} r={r}>
     <Cyl rt={rad} h={len} c={mixc(WOOD, BARK, dirty)} seg={9} />
     {dirty > 0.4 ? <>
@@ -297,6 +297,8 @@ export const Bleach: React.FC<{ t: number }> = ({ t }) => {
         {Array.from({ length: 15 }, (_, i) => { const h = i / 14, w = clamp((front - h) / 0.35); return <Box key={i} s={[3.8, 2.0, 0.4]} p={[0, 5.2 + i * 2.0, 5.35]} c={mixc("#8a5a2c", "#ffffff", w)} cast={false} o={{ emissive: "#ffffff", ei: 0.25 * w }} />; })}
         {/* bolhas de cloro subindo */}
         {Array.from({ length: 8 }, (_, i) => { const u = fract(t * 0.5 + i / 8); return <Sph key={i} rad={0.3} p={[-1.4 + (i % 4) * 0.9, 5 + u * 28, 5.7]} sc={on * (1 - 0.3 * u) + 0.001} c="#dff3ff" ws={6} hs={4} cast={false} />; })}
+        {Array.from({ length: 16 }, (_, i) => { const u = fract(t * 0.55 + i / 16), k = clamp(prog(t, T.clar - 0.3, T.clar + 0.3)) * (1 - clamp(prog(t, T.mas4 + 0.5, T.mas4 + 1.0))); return <Box key={i} s={[0.9, 0.22, 0.22]} p={[-1.4 + (i % 4) * 0.95, 5 + u * 29, 5.8]} r={[0, 0, t * 3 + i]} sc={k * (1 - 0.2 * u) + 0.001} c="#ffffff" cast={false} o={{ emissive: "#ffffff", ei: 0.6 }} />; })}
+        {Array.from({ length: 10 }, (_, i) => { const u = fract(t * 0.4 + i / 10 + 0.3); return <Sph key={i} rad={0.55} p={[-1.3 + (i % 3) * 1.3, 5 + u * 29, 5.9]} sc={on * (1 - 0.3 * u) + 0.001} c="#dff3ff" ws={6} hs={4} cast={false} o={{ emissive: "#cfeaff", ei: 0.5 }} />; })}
         <Puffs t={t} p={[0, 43, 0]} n={7} period={2} rise={8} size={1.8} c="#ffffff" on={on} drift={[1.4, 0, 0.4]} />
         <Cyl rt={2.0} h={4.4} p={[-10, 2.2, 8]} c="#7fd0ff" seg={12} /><Pipe a={[-10, 4.4, 8]} b={[-5.0, 10, 4]} rad={0.5} c={STEEL} cast={false} />
       </G>
