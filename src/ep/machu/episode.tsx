@@ -4,7 +4,7 @@ import { K, Shot } from "../../toy/cam";
 import { CUTS, WINS } from "../../toy/cues";
 import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
-import { V3 } from "../../toy/kit";
+import { V3, ease } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { COSTUMES } from "../../toy/worker";
 import { SFX, T } from "./cues";
@@ -38,9 +38,9 @@ const SHOTS: Shot[] = [
     K(T.muros, [8.6, 11.6, 9.6], [1.0, 11.4, 8.4], 46, 0), K(T.muros + 1.2, [8.4, 11.7, 10.4], [1.0, 11.4, 8.4], 46, 0),
     K(T.trapecio, [3.4, 11.6, 14.6], [1.0, 11.0, 8.6], 48, 1), K(T.aguanta, [5.4, 12.4, 17.0], [1.0, 11.2, 8.6], 52, 1),
     K(T.silleria, [7.0, 13.0, 17.0], [1.0, 11.2, 8.6], 56, 0), K(T.p4, [4.0, 14.0, 14.0], [-2.0, 10.0, 2.0], 58, 1),
-    K(T.manantial, [-2.4, 15.6, 21.0], [-3.8, 12.0, 10.0], 50, -1), K(T.canal + 0.2, [-0.6, 15.0, 19.6], [-3.8, 12.0, 8.6], 52, 1), K(C6 - 0.05, [-0.7, 14.9, 19.4], [-3.8, 12.0, 8.6], 52, 0)] },
+    K(T.manantial, [-0.6, H + 3.6, 4.6], [-3.8, H + 4.8, 12.6], 52, -1), K(T.canal + 0.2, [0.8, H + 6.2, 5.4], [-3.8, H + 4.3, 10.8], 52, 1), K(C6 - 0.05, [0.7, H + 6.1, 5.6], [-3.8, H + 4.3, 10.8], 52, 0)] },
   { name: "fontes de perto → pedreira", t0: C6, keys: [
-    K(C6, [4.5, 17.0, 13.0], [-3.8, 10.8, 0.5], 56, 2), K(T.dieciseis, [3.5, 16.0, 11.5], [-3.8, 10.6, 0.0], 56, 0), K(T.fuentes + 0.5, [3.0, 15.5, 10.5], [-3.8, 10.6, 0.0], 56, 0), K(T.p5 + 0.4, [8.5, 14.5, 4.0], [3.4, 10.8, -12.0], 56, -1),
+    K(C6, [6.5, H + 15.5, -9.5], [-3.8, H + 1.8, 0.4], 56, 2), K(T.dieciseis, [6.0, H + 14.8, -8.8], [-3.8, H + 1.8, 0.6], 56, 0), K(T.fuentes + 0.5, [5.6, H + 14.4, -8.2], [-3.8, H + 1.8, 0.8], 56, 0), K(T.p5 + 0.4, [6.0, H + 8.5, -4.0], [3.4, 10.8, -12.0], 56, -1),
     K(T.b5, [8.0, 13.0, -7.5], [3.4, 11.0, -14.2], 54, 1), K(C7 - 0.05, [8.0, 12.6, -8.0], [3.4, 11.0, -14.2], 54, 0)] },
   { name: "a rocha se parte → cidade vazia → intacta", t0: C7, keys: [
     K(C7, [0.4, 11.6, -10.6], [3.6, 11.4, -13.4], 46, -2), K(T.labra, [0.2, 12.2, -8.6], [2.6, 11.0, -13.4], 50, 1),
@@ -64,8 +64,8 @@ const WORKER: [number, WorkerState][] = [
   [C5, S([-3.4, H, 10.6], 0.6, "point")],
   [T.trapecio, S([6.4, H, 7.6], -0.6, "present")],
   [T.silleria, S([6.4, H, 7.6], -0.6, "cheer")],
-  [T.p4, S([-1.6, H, 4.6], 0.4, "think")],
-  [T.manantial, S([-1.6, H, 4.6], 0.9, "point")],
+  [T.p4, S([2.5, H, 8.0], -1.0, "think")],
+  [T.manantial, S([2.5, H, 8.0], -1.0, "point")],
   [C6 - 0.1, S([40, H, -40], 0, "idle", { scale: 0 })],
   [C6, S([3.0, H, -4.0], 0.6, "cheer")],
   [T.p5, S([2.2, H, -6.0], 0.2, "think")],
@@ -88,8 +88,9 @@ const hud: HudData = {
     { a: T.tierra, b: T.escurre, label: "CAPA", value: (t) => LAYERS.filter(([a]) => t >= a - 0.1).slice(-1)[0]?.[1] ?? "", y: 440 },
     { a: T.sesenta, b: T.drenaje + 0.6, label: "BAJO TIERRA", value: (t) => `~${count(t, T.sesenta, T.sesenta + 0.8, 0, 60)}%`, y: 440, tone: "green" },
     { a: T.talladas, b: T.silleria, label: "MORTERO", value: () => "0", y: 440, tone: "green" },
-    { a: T.canal, b: T.fuentes, label: "CANAL", value: () => "~750 m", y: 440 },
-    { a: T.dieciseis, b: T.fuentes + 0.8, label: "FUENTES", value: (t) => count(t, T.dieciseis, T.dieciseis + 0.8, 0, 16), y: 550, tone: "green" },
+    { a: T.canal, b: T.dieciseis - 0.1, label: "CANAL", value: () => "~750 m", y: 440 },
+    // conta as fontes que já têm água (o mesmo «flow» do mundo): o número sobe junto com a escada enchendo
+    { a: T.canal + 0.3, b: T.fuentes + 0.8, label: "FUENTES", value: (t) => `${Math.min(16, Math.floor(16 * ease(t, T.canal, T.dieciseis + 0.4)) + 1)}`, y: 550, tone: "green" },
     { a: T.carreta, b: T.b5 - 0.1, label: "CARRETAS", value: () => "0", y: 440, tone: "red" },
     { a: T.vacia, b: T.espanoles - 0.1, label: "CIUDAD", value: () => "VACÍA", y: 440 },
   ],

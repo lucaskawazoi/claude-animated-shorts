@@ -158,18 +158,21 @@ const Fountains: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.p4) return null; // ponytail: o manancial (pedra que borbulha) já está lá antes de ser nomeado
   return (
     <G>
-      {/* canal da encosta da montanha (sul) até a primeira fonte */}
-      {/* manancial: rocha com água borbulhando na borda sul do selado, e o canal até a primeira fonte */}
-      {/* manancial no alto (a água sai a ~2,4 m) → canal sobre pilares → 16 fontes em escada: «siempre en bajada» */}
-      <Sph rad={1.0} p={[-3.8, H + 1.0, 12.0]} sc={[1.1, 1.7, 1]} c={STONE2} ws={8} hs={6} />
-      <Puffs t={t} p={[-3.8, H + 2.4, 11.0]} n={9} period={1.0} rise={0.8} size={0.26} c="#7cc8ff" on={t > T.manantial - 0.4 ? 1 : 0} />
-      {Array.from({ length: 6 }, (_, j) => <Sph key={j} rad={0.11} p={[-3.8, H + 2.33, 11.2 - fract(t * 0.9 + j / 6) * 2.2]} c="#9fdcff" o={{ emissive: "#4ab0ff", ei: 0.5 }} vis={flow > 0.2} cast={false} ws={6} hs={4} />)}
-      <Box s={[0.6, 0.3, 2.2 * k]} p={[-3.8, H + 2.1, 10.1]} c={STONE2} />
-      {[10.8, 9.4].map((z) => <Box key={z} s={[0.4, 2.0, 0.4]} p={[-3.8, H + 1.0, z]} c={STONE2} />)}
-      <Box s={[0.35, 0.05, 2.2 * flow]} p={[-3.8, H + 2.27, 10.1]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.3 }} />
+      {/* manancial = paredão no alto com a água saindo a ~5 m → canal inclinado sobre pilares → 16 fontes em escada:
+          «siempre en bajada» precisa SE VER (crítico da v3/v4: canal plano, pedra-ovo na frente, 2–3 fontes) */}
+      <Box s={[3.0, 5.6, 2.2]} p={[-3.8, H + 2.8, 13.8]} c={STONE2} /><Sph rad={1.6} p={[-3.8, H + 5.6, 13.8]} sc={[1, 0.6, 0.9]} c={STONE} ws={8} hs={6} />
+      <Box s={[0.7, 0.5, 0.2]} p={[-3.8, H + 5.3, 12.68]} c="#3a3a3a" cast={false} />
+      <Cyl rt={0.14} h={0.8} p={[-3.8, H + 4.9, 12.5]} c="#6fc4ff" o={{ emissive: "#3fa0ff", ei: 0.6 }} vis={t > T.manantial - 0.3} cast={false} seg={8} />
+      <Puffs t={t} p={[-3.8, H + 4.6, 12.3]} n={6} period={0.8} rise={0.4} size={0.2} c="#9fdcff" on={t > T.manantial - 0.3 ? 1 : 0} />
+      <G p={[-3.8, H + 4.35, 10.9]} r={[-0.067, 0, 0]}>
+        <Box s={[0.6, 0.3, 3.0 * k]} c={STONE2} />
+        <Box s={[0.35, 0.05, 3.0 * flow + 0.001]} p={[0, 0.17, 1.5 * (1 - flow)]} c="#4aa8ff" cast={false} vis={flow > 0.01} o={{ emissive: "#2f8fd8", ei: 0.4 }} />
+        {Array.from({ length: 6 }, (_, j) => <Sph key={j} rad={0.11} p={[0, 0.25, 1.5 - fract(t * 0.9 + j / 6) * 3.0]} c="#9fdcff" o={{ emissive: "#4ab0ff", ei: 0.5 }} vis={flow > 0.2} cast={false} ws={6} hs={4} />)}
+      </G>
+      {[11.8, 10.0].map((z) => <Box key={z} s={[0.4, 4.2, 0.4]} p={[-3.8, H + 2.1, z]} c={STONE2} />)}
       {Array.from({ length: 16 }, (_, i) => {
         const u = clamp(k * 1.5 - (i / 16) * 0.5); if (u <= 0.01) return null;
-        const z = 9 - i * 1.15, y = H + 0.05 + (15 - i) * 0.12;
+        const z = 9 - i * 1.15, y = H + 0.05 + (15 - i) * 0.25;
         return (
           <G key={i} p={[-3.8, y, z]} sc={[1, u, 1]}>
             <Box s={[0.9, y - H + 0.01, 0.8]} p={[0, -(y - H) / 2, 0]} c={STONE2} /><Box s={[0.9, 0.4, 0.8]} p={[0, 0.2, 0]} c={STONE} /><Box s={[0.7, 0.05, 0.6]} p={[0, 0.38, 0]} c="#4aa8ff" vis={flow > (i / 16)} cast={false} />
