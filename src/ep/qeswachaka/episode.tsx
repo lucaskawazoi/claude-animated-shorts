@@ -34,7 +34,7 @@ const hold = (c: number, pos: V3, look: V3, fov = 56, roll = 0) => [K(c - 0.42, 
 /** qual abertura (os 2,5 s do começo): PROPS='{"open":"a"}' no render; padrão "b" (escolhida pelo crítico em 13/11; o render final não passa PROPS) */
 const openV = () => { try { return ((getInputProps() as { open?: string }).open ?? "b") as "a" | "b" | "c"; } catch { return "b"; } };
 const OPEN_END = 3.15;
-// as três aberturas terminam no mesmo close da baranda trançada («hecho de hierba trenzada»), daí seguem juntas
+// a e c terminam no mesmo close da baranda trançada («hecho de hierba trenzada»), daí seguem juntas (b tem o próprio fim)
 const HOOK_TAIL: Key[] = [K(OPEN_END, [-1.2, H + 0.8, 2.6], [2.2, H + 0.0, 0.7], 48, -1), K(X1, [0.4, H + 1.6, 4.4], [3.0, H - 0.2, 0.4], 52, 2)];
 const OPENINGS: Record<"a" | "c", Key[]> = {
   // a) «cruzando»: câmera de lado e atrás do operário que atravessa a ponte balançando
@@ -50,12 +50,12 @@ const B_UP = 2.15, TRZ = find("trenzada");
 const bCam = (t: number): CamState => {
   const w = walkMain(-8.5, 3.5, 0, X1)(t);
   const k = ease(t, TRZ - 0.3, TRZ + 0.25), back = ease(t, TRZ + 0.6, X1);
-  const zc = lerp(3.0, 2.5, k) + back, a = lerp(5.4, 4.5, k) + back * 2.2; // a/zc ≥ 1,8 sempre
-  const fp: V3 = [w[0] + 0.1, w[1] + a, w[2] + zc], fl: V3 = [w[0] + 0.35, w[1] + lerp(0.9, 0.55, k), w[2] + lerp(0.1, 0.35, k)];
-  const fov = lerp(54, 50, k) + back * 4, roll = lerp(-2, 1.5, k);
+  const zc = lerp(2.9, 2.0, k) + back * 1.2, a = lerp(6.1, 4.2, k) + back * 2.5; // a/zc ≥ 2,1 sempre
+  const fp: V3 = [w[0] + 0.05, w[1] + a, w[2] + zc], fl: V3 = [w[0] + 0.1, w[1] + lerp(1.0, 0.8, k), w[2]];
+  const fov = 54, roll = lerp(-2, 1.5, k);
   if (t >= B_UP) return { pos: fp, look: fl, fov, roll };
   const u = t / B_UP, uz = 1 - (1 - u) ** 2, uy = sstep(u), ux = sstep(Math.min(1, u * 1.4));
-  const aim: V3 = [lerp(-1.5, w[0] + 0.35, ux), lerp(7.0, w[1] + 0.6, ease(t, 0, 1.0)), 0.3];
+  const aim: V3 = [lerp(-1.5, w[0] + 0.1, ux), lerp(7.0, w[1] + 1.15, ease(t, 0, 1.0)), 0.2];
   return { pos: [lerp(-0.6, fp[0], ux), lerp(1.2, fp[1], uy), lerp(16, fp[2], uz)], look: vlerp(aim, fl, sstep(prog(t, 1.0, B_UP))), fov: lerp(64, fov, uy), roll: lerp(5, roll, uy) };
 };
 /** tira parte do tremor rápido de lado (story.ts): no quadro vertical, de perto, ele jogava o operário para fora da borda */
@@ -89,7 +89,7 @@ const SHOTS: Shot[] = [
     K(W3 - 0.05, [-27.6, H + 1.3, 11.0], [-25.8, H + 0.9, 5.0], 52, 0), K(W3 + 0.45, [-22.4, H + 2.9, 9.8], [-26.0, H + 1.1, 2.8], 54, 4),
     K(T.puna + 0.3, [-22.8, H + 2.6, 9.2], [-26.0, H + 1.0, 2.8], 52, -1), K(X3, [-23.4, H + 2.3, 8.6], [-26.0, H + 1.1, 2.6], 50, 1)]),
   shot("de cima: torce um cordão → ~90 cordões → de ponta: o feixe gira e vira soga", X3, [
-    K(X3, [-25.8, H + 6.4, 7.6], [-26.9, H + 1.3, 3.4], 54, -3), K(T.finos + 0.3, [-22.8, H + 4.6, 7.8], [-25.4, H + 1.4, 3.7], 54, 1),
+    K(X3, [-26.7, H + 6.4, 7.8], [-27.5, H + 1.3, 3.3], 54, -3), K(T.finos + 0.3, [-22.8, H + 4.6, 7.8], [-25.4, H + 1.4, 3.7], 54, 1),
     K(T.casi + 0.2, [-18.6, H + 2.5, 6.8], [-24.2, H + 1.5, 4.0], 54, -1), K(T.trenzados, [-18.9, H + 2.2, 6.2], [-24.4, H + 1.5, 4.0], 52, 0),
     ...hold(C3, [-19.0, H + 2.15, 6.1], [-24.4, H + 1.5, 4.0], 52, 0)]),
   shot("soga da grossura de uma perna → 1 cordão arrebenta ✖ → a soga aguenta → 6 rolos", C3, [

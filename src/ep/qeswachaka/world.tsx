@@ -189,15 +189,16 @@ const Bridge: React.FC<{ b: BS; t: number }> = ({ b, t }) => {
     const dt = t - b.land, k = 1 - prog(dt, 5, 9); if (k <= 0) return null;
     return <G p={[0, 0.25 - prog(dt, 0, 9) * 0.5, b.z + dt * 3.2]} r={[0, 0.25 * Math.sin(dt * 0.8), 0]}>{Array.from({ length: 5 }, (_, i) => <Box key={i} s={[8 - i * 0.8, 0.32, 0.6]} p={[(rnd(i) - 0.5) * 1.5, 0.05 * i, -1.2 + i * 0.6]} r={[0, (rnd(i + 3) - 0.5) * 0.6, 0]} c={i % 2 ? ROTC : "#9a8f76"} sc={[k, 1, 1]} cast={false} />)}</G>;
   }
-  const rc = hexLerp(STRAW, ROTC, b.rot), wood = hexLerp(WOOD, "#5e5244", b.rot), m1 = hexLerp(MATC, "#9a917a", b.rot), m2 = hexLerp(MATC2, "#8c836d", b.rot);
+  const fresh = b.z === NZ, rc = fresh ? "#f2d272" : hexLerp(STRAW, ROTC, b.rot), // a nova: palha fresca, mais clara e grossa (lia fraca em «lo rehaces»)
+    wood = hexLerp(WOOD, "#5e5244", b.rot), m1 = hexLerp(MATC, "#9a917a", b.rot), m2 = hexLerp(MATC2, "#8c836d", b.rot);
   const U = (k: number, n: number) => (k / n) * Math.min(1, b.base);
   const line = (dz: number, yo = 0) => Array.from({ length: NSEG + 1 }, (_, k) => ropeP(b, t, U(k, NSEG), dz, yo));
   const slope = (u: number) => { const a = ropeP(b, t, Math.max(0, u - 0.01), 0), c = ropeP(b, t, Math.min(1, u + 0.01), 0); return Math.atan2(c[1] - a[1], c[0] - a[0]); };
   const railY = 0.14 + b.rails * 1.05;
   return (
     <G>
-      {BASE_DZ.map((dz) => <Braid key={dz} pts={line(dz)} R={0.13} c={rc} />)}
-      {b.rails > 0.01 ? RAIL_DZ.map((dz) => <Braid key={dz} pts={line(dz, railY)} R={0.11} c={rc} />) : null}
+      {BASE_DZ.map((dz) => <Braid key={dz} pts={line(dz)} R={fresh ? 0.17 : 0.13} c={rc} />)}
+      {b.rails > 0.01 ? RAIL_DZ.map((dz) => <Braid key={dz} pts={line(dz, railY)} R={fresh ? 0.13 : 0.11} c={rc} />) : null}
       {/* piso de ramos atravessados: aparecem da margem esquerda para a direita com a frente */}
       {Array.from({ length: NSTICK }, (_, i) => {
         const u = (i + 0.5) / NSTICK; if (u > b.floor) return null;
