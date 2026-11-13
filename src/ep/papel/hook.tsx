@@ -3,7 +3,7 @@ import React from "react";
 import { Box, Cyl, G, Sph, V3, clamp, ease, lerp, prog, rnd } from "../../toy/kit";
 import { Puffs } from "../../toy/scenery";
 import { OPEN_END, openId } from "./opening";
-import { Euca, ROWZ } from "./stations1";
+import { COLX, Euca, ROWZ } from "./stations1";
 import { PI, Spray, mixc, pk } from "./parts";
 
 export const DESK: V3 = [0, 0, 34];
@@ -41,6 +41,8 @@ export const OpenC: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[0.5, 0.12, 66]} p={[-44, 0.36, -26]} c="#e0262b" cast={false} />
       {Array.from({ length: 12 }, (_, i) => <G key={i} p={[-47.5, 0.8, -52 + i * 5.4]}><Cyl rt={0.9} h={3.4} r={[PI / 2, 0, 0]} c="#59626b" seg={8} cast={false} /></G>)}
       <Box s={[3.2, 0.1, 5]} p={[30, 0.4, -50]} c="#ffd400" r={[0, 0.4, 0]} cast={false} />
+      {/* a floresta corre para cima da câmera: mais duas fileiras nascem na página, perto */}
+      {[-1, 5].map((z, r) => COLX.map((x, c) => <Euca key={`${r}${c}`} p={[x, 0.3, z]} g={pk(t, 1.9 + r * 0.4 + Math.abs(c - 4) * 0.04, 0.5)} i={c + r} />))}
     </G>
   );
 };

@@ -5,6 +5,7 @@ import { Box, Cone, Cyl, G, Sph, ease, rnd, lerp } from "../../toy/kit";
 import { Clouds, Ground, Hills, Sky } from "../../toy/scenery";
 import { T } from "./anchors";
 import { OpenA, OpenC } from "./hook";
+import { Reactions } from "./reactions";
 import { openId } from "./opening";
 import { PI, SplitLogGate } from "./world-gate";
 import { BlackPipe, BlackTank, Bleach, Bucket, Chipper, Debarker, Digester, DirtPuffs, Forest, Macro, Truck, WaterTank } from "./stations1";
@@ -55,5 +56,6 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <BarkBoiler t={t} />
     <ChemLoop t={t} />
     <Beacons t={t} />
+    <Reactions t={t} />
   </>
 );

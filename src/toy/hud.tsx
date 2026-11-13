@@ -13,7 +13,7 @@ export const pop = (t: number, t0: number, dur = 0.28) => { const u = prog(t, t0
 export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.min((t - a) / fade, (b - t) / fade));
 
 export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold"; hi?: boolean };
-export type Title = { a: number; text: string; len?: number };
+export type Title = { a: number; text: string; len?: number; size?: number };
 export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string; bounces?: number[] };
 export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }> };
 
@@ -27,12 +27,14 @@ const TONE_HI = { dark: "#0b1620", red: "#b01818", green: "#0b7a35", gold: "#a86
 const TONE = { dark: "#15202bd9", red: "#7a1414e6", green: "#0f4a2ae6", gold: "#6a4a00e6" } as const;
 const PillEl: React.FC<{ p: Pill; t: number }> = ({ p, t }) => {
   const k = win(t, p.a, p.b, 0.22); if (k <= 0) return null;
-  const s = pop(t, p.a, 0.3);
+  const s = pop(t, p.a, 0.3), val = p.value ? p.value(t) : "";
+  // 13/11 (crítico): rótulo pequeno demais no celular; ficou 56 px (hi) e o conjunto encolhe se passar da largura segura
+  const lf0 = p.hi ? 56 : 42, vf0 = p.hi ? 70 : 64, est = p.label.length * 0.66 * lf0 + val.length * 0.6 * vf0 + 120, fit = Math.min(1, 980 / est), lf = lf0 * fit, vf = vf0 * fit;
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: p.y ?? 440, display: "flex", justifyContent: "center", opacity: k, transform: `scale(${s})` }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 18, padding: "10px 34px 14px", borderRadius: 60, background: p.hi ? TONE_HI[p.tone ?? "dark"] : TONE[p.tone ?? "dark"], border: p.hi ? "6px solid #ffffff" : "4px solid #ffffff33", boxShadow: "0 8px 0 #00000077" }}>
-        <span style={{ fontFamily: FONT, fontSize: p.hi ? 42 : 38, color: p.hi ? "#ffffff" : "#cfe6ff", letterSpacing: 2 }}>{p.label}</span>
-        <span style={{ fontFamily: FONT, fontSize: p.hi ? 70 : 64, color: "#fff", lineHeight: 1, ...(p.hi ? stroke(5, "#000000") : {}) }}>{p.value ? p.value(t) : ""}</span>
+        <span style={{ fontFamily: FONT, fontSize: lf, color: p.hi ? "#ffffff" : "#cfe6ff", letterSpacing: 2 }}>{p.label}</span>
+        <span style={{ fontFamily: FONT, fontSize: vf, color: "#fff", lineHeight: 1, ...(p.hi ? stroke(5, "#000000") : {}) }}>{val}</span>
       </div>
     </div>
   );
@@ -43,7 +45,7 @@ const TitleEl: React.FC<{ ti: Title; t: number; next: number }> = ({ ti, t, next
   const s = pop(t, ti.a, 0.34), bob = Math.sin((t - ti.a) * 3) * 6;
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 175 + bob, display: "flex", justifyContent: "center", opacity: k, transform: `rotate(-3.5deg) scale(${s})` }}>
-      <span style={{ fontFamily: FONT, fontSize: ti.text.length > 16 ? 76 : ti.text.length > 12 ? 94 : 124, color: "#ffd400", textAlign: "center", lineHeight: 1, whiteSpace: "nowrap", ...stroke(14, "#3a2300") }}>{ti.text}</span>
+      <span style={{ fontFamily: FONT, fontSize: ti.size ?? (ti.text.length > 16 ? 76 : ti.text.length > 12 ? 94 : 124), color: "#ffd400", textAlign: "center", lineHeight: 1, whiteSpace: "nowrap", ...stroke(14, "#3a2300") }}>{ti.text}</span>
     </div>
   );
 };

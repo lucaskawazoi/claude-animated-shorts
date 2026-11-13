@@ -29,7 +29,7 @@ export const PaperMachine: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G>
       {/* o prédio da outra fábrica */}
-      <Box s={[140, 18, 14]} p={[PMX + 62, 9, -22]} c="#9ec8e8" /><Box s={[142, 1.2, 15]} p={[PMX + 62, 18.6, -22]} c="#2f6fb0" />
+      <Box s={[140, 18, 14]} p={[PMX + 62, 9, -22]} c="#ffd04a" /><Box s={[140, 4.5, 0.4]} p={[PMX + 62, 4.5, -14.8]} c="#2f6fb0" cast={false} />{Array.from({ length: 12 }, (_, i) => <Box key={i} s={[5, 4, 0.3]} p={[PMX + 4 + i * 11.5, 12.5, -14.8]} c="#9fd8ff" cast={false} o={{ emissive: "#9fd8ff", ei: 0.35 }} />)}<Box s={[142, 1.2, 15]} p={[PMX + 62, 18.6, -22]} c="#2f6fb0" />
       {Array.from({ length: 7 }, (_, i) => <Cone key={i} rad={9} h={5} seg={4} p={[PMX - 2 + i * 20, 21.4, -22]} r={[0, PI / 4, 0]} c={RED} o={{ flat: true }} />)}
       <Box s={[14, 22, 10]} p={[PMX - 14, 11, -22]} c="#f6f8fa" /><Box s={[14.8, 1, 10.8]} p={[PMX - 14, 22.4, -22]} c={RED} />
       <Box s={[150, 0.4, 24]} p={[PMX + 62, 0.2, 2]} c="#c4c9cc" cast={false} />
@@ -43,8 +43,9 @@ export const PaperMachine: React.FC<{ t: number }> = ({ t }) => {
       {Array.from({ length: 22 }, (_, i) => <Box key={i} s={[0.28, 0.08, 9.2]} p={[PMX + 5.5 + ((i * 1.2 + sp * 3.5) % 26.4), 3.4, 0]} c="#9aa4ad" cast={false} />)}
       <Box s={[27, 0.3, 8.8]} p={[PMX + 18, 3.65, 0]} c="#f2f0e6" o={{ opacity: 0.35 + 0.65 * ease(t, T.tela + 0.4, T.rolos) }} cast={false} />
       {[0, 27].map((x) => <Cyl key={x} rt={1.4} h={10} p={[PMX + 5 + x, 2.6, 0]} r={[PI / 2, 0, 0]} c={STEEL2} seg={12} />)}
-      <Box s={[27, 0.4, 10]} p={[PMX + 18, 0.9, 0]} c="#7fc8f0" o={{ opacity: 0.8 }} cast={false} />
-      <Spray t={t} t0={T.tela} t1={T.end} p={[PMX + 18, 3.0, 5.2]} dir={[0, -1, 0.1]} spread={0.55} n={34} spd={3} g={-22} life={0.7} size={0.32} cols={["#7fc8f0", "#bfe6ff", "#ffffff"]} shape="sph" floor={1.0} seed={2} />
+      <Box s={[27, 0.4, 10]} p={[PMX + 18, 0.9, 0]} c="#2f9bf0" o={{ opacity: 0.9 }} cast={false} />
+      {Array.from({ length: 9 }, (_, i) => <Box key={i} s={[0.9, 2.6, 0.3]} p={[PMX + 8 + i * 2.6, 1.9 + 0.25 * Math.sin(t * 14 + i * 1.7), 5.3]} sc={[1, on * (0.8 + 0.3 * Math.sin(t * 11 + i)), 1]} c="#4fb4ff" cast={false} o={{ emissive: "#2f9bf0", ei: 0.5 }} />)}
+      <Spray t={t} t0={T.tela} t1={T.end} p={[PMX + 18, 3.0, 5.2]} dir={[0, -1, 0.1]} spread={0.55} n={34} spd={3} g={-22} life={0.7} size={0.55} cols={["#2f9bf0", "#7fc8f0", "#ffffff"]} shape="sph" floor={1.0} seed={2} />
       <Spray t={t} t0={T.tela} t1={T.end} p={[PMX + 10, 3.0, 5.2]} dir={[0, -1, 0.1]} spread={0.55} n={20} spd={3} g={-22} life={0.7} size={0.32} cols={["#7fc8f0", "#bfe6ff", "#ffffff"]} shape="sph" floor={1.0} seed={7} />
       {/* rolos de prensa: espremem a água para os lados */}
       {[PMX + 38, PMX + 47].map((x, k) => <G key={x} p={[x, 0, 0]}>
@@ -139,7 +140,7 @@ const CONC0 = "#c4c9cc";
 export const PlantLights: React.FC<{ t: number }> = ({ t }) => (
   <G>
     {Array.from({ length: 9 }, (_, i) => <Lamp key={i} p={[177 + i * 18, 0, -11]} on={lit(t, T.energia + 0.2 + i * 0.12, 0.25)} />)}
-    {[196, 282, 326, 74].map((x, i) => { const on = lit(t, T.energia + 0.4 + i * 0.2, 0.3); return <G key={i} p={[x, 0, -30]}><Box s={[16, 10, 8]} p={[0, 5, 0]} c={PASTEL[i % PASTEL.length]} /><Box s={[17, 1, 9]} p={[0, 10.4, 0]} c={RED} />{[-5, 0, 5].map((wx) => [3, 7].map((wy) => <Win key={`${wx}${wy}`} p={[wx, wy, 4.1]} on={on} />))}</G>; })}
+    {[196, 74].map((x, i) => { const on = lit(t, T.energia + 0.4 + i * 0.2, 0.3); return <G key={i} p={[x, 0, -30]}><Box s={[16, 10, 8]} p={[0, 5, 0]} c={PASTEL[i % PASTEL.length]} /><Box s={[17, 1, 9]} p={[0, 10.4, 0]} c={RED} />{[-5, 0, 5].map((wx) => [3, 7].map((wy) => <Win key={`${wx}${wy}`} p={[wx, wy, 4.1]} on={on} />))}</G>; })}
   </G>
 );
 export const Pylons: React.FC<{ t: number }> = ({ t }) => {

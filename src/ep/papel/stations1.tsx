@@ -27,7 +27,7 @@ export const treeGrow = (t: number, row: number, col: number): number => {
   if (t >= T.agoraSim) return lerp(0.22, 1, pk(t, T.agoraSim + 0.1 + row * 0.22 + Math.abs(col - 4) * 0.03, 1.4));
   if (t >= OPEN_END + 0.2) return 1;
   const o = openId();
-  return o === "A" ? pk(t, 1.9 + row * 0.1 + Math.abs(col - 4) * 0.02, 0.5) : o === "C" ? pk(t, 0.2 + row * 0.42 + col * 0.012, 0.55) : 1;
+  return o === "A" ? pk(t, 1.9 + row * 0.1 + Math.abs(col - 4) * 0.02, 0.5) : o === "C" ? pk(t, [1.2, 0.3, -0.25, 0.55, 1.75][row] + col * 0.012, 0.55) : 1;
 };
 export const Forest: React.FC<{ t: number }> = ({ t }) => (
   <G>
@@ -181,6 +181,7 @@ export const Macro: React.FC<{ t: number }> = ({ t }) => {
       <Cyl rt={24} h={1.2} p={[0, 0, -5]} r={[PI / 2, 0, 0]} c="#10303f" seg={28} cast={false} />
       <Torus p={[0, 0, -4.2]} rad={24} tube={1.1} c="#ffd400" />
       <Cyl rt={2.2} h={16} p={[19, -26, -4.2]} r={[0, 0, 0.78]} c="#ffd400" seg={8} cast={false} />
+      <G p={[-14, -15, -1]} r={[0.2, 0.3, 0.35]}><Box s={[11, 4.4, 3.4]} c={WOOD2} /><Box s={[11.2, 0.5, 3.6]} p={[0, 2.2, 0]} c={WOOD} cast={false} /><Box s={[11.2, 0.5, 3.6]} p={[0, -1.0, 0]} c={BARK2} cast={false} /></G>
       {Array.from({ length: FIB }, (_, i) => {
         const x0 = -9 + i * 1.8 + (rnd(i) - 0.5) * 0.8, z0 = (i % 3) * 1.6 - 2.4, wob = free * (3 * Math.sin(t * 1.3 + i * 1.7)), dy = free * 6 * Math.sin(t * 0.9 + i * 2.1), tilt = 0.12 * Math.sin(i * 2.7) + free * 0.5 * Math.sin(t * 0.8 + i);
         return <Cyl key={i} rt={0.62} h={30} p={[x0 + wob, dy, z0 + free * 2 * Math.sin(i)]} r={[0, 0, tilt]} c={fc(i)} seg={8} o={{ rough: 0.5 }} cast={false} />;
