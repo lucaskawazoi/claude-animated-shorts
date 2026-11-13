@@ -6,9 +6,9 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { FALL0, FALL1, NSTEP, RUN0, RUN1, SFX, SLIDE0, T, TS, XCUTS, stepAt } from "./cues";
+import { FALL0, FALL1, JUMP0, JUMPD, JUMPN, NSTEP, RUN0, RUN1, SFX, SLIDE0, T, TS, XCUTS, stepAt } from "./cues";
 import { Open, OPEN } from "./open";
-import { CX, HERO_RY, HL as H, HL1, NEO, PEBBLE, RUN_B, SOFA, TS_OP, World, dawn, dragZ, pushX, pushY, runP, toeX } from "./world";
+import { CX, HERO_RY, HL as H, HL1, NEO, PEBBLE, RB, RUN_B, SOFA, TS_OP, World, dawn, dragZ, jumpP, pushX, pushY, runP, toeX } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
@@ -74,14 +74,14 @@ const SHOTS: Shot[] = [
     K(T.punta - 0.2, H(-12.0, 4.0, 1.4), H(-2.0, -0.3, -0.2), 58, 0.5),
     // chicote para o lado (3/4 de cima, de fora): a ponta passa a borda e tomba na rampa — de trás, a própria pedra escondia isso
     K(T.punta + 0.12, H(-5.6, 4.9, 5.8), H(-1.6, -0.4, 0.0), 58, 2.5), K(T.cae + 0.3, H(-4.8, 4.5, 5.4), H(-1.2, -0.6, 0.0), 58, -0.5),
-    K(C4 - 0.05, H(-4.4, 4.6, 5.6), H(-1.0, -0.5, 0.0), 58, 0)] },
+    K(C4 - 0.05, H(-3.4, 3.6, 4.2), H(-1.0, -0.7, 0.0), 56, 1.5)] },
   { name: "de fora: endireitam com cordas → enchem o buraco com pedras e terra", t0: C4, keys: [
     K(C4, H(-4.4, 7.0, 13.4), H(2.4, 1.8, 0.8), 58, 3), K(C4 + 0.45, H(-3.5, 7.6, 12.5), H(2.4, 1.8, 0.8), 58, -0.5),
     K(T.tirando + 0.8, H(-3.0, 7.8, 12.8), H(2.2, 1.9, 0.8), 58, 0.5), K(T.rellenan + 0.2, H(-4.2, 5.2, 4.8), H(-1.2, -0.3, 0.0), 54, -0.5),
     K(T.apretadas + 0.3, H(-3.8, 4.8, 4.2), H(-1.3, -0.2, 0.0), 54, 0.5), K(X7 - 0.05, H(-3.5, 4.6, 4.0), H(-1.3, -0.2, 0.0), 54, 0)] },
   { name: "baixo e largo: o hoyo → dois pilares e o dintel deitado", t0: X7, keys: [
     K(X7, H(-7.0, 1.8, 9.4), H(0.5, 1.8, 0.0), 60, -3), K(X7 + 0.45, H(-6.2, 2.3, 8.8), H(0.5, 1.9, 0.0), 60, 0.5),
-    K(T.p2 + 0.4, [0.0, 3.0, 19.5], [0.0, 2.6, 10.0], 58, -0.5), K(W6, [0.2, 3.2, 19.0], [0.0, 2.6, 10.0], 58, 0),
+    K(T.p2 + 0.4, [-1.0, 3.0, 19.5], [-0.8, 2.6, 10.0], 58, -0.5), K(W6, [-0.9, 3.0, 17.8], [-0.7, 2.5, 10.0], 58, 1),
     K(W6 + 0.4, [1.6, 7.0, 15.2], [0.0, 0.4, 11.4], 56, 3), K(C5 - 0.02, [1.4, 7.0, 15.0], [0.0, 0.4, 11.4], 56, 2)] },
   { name: "a altura: +4 m → ⏪ «lo más probable» (HIPÓTESIS)", t0: C5, keys: [
     K(C5, [-6.6, 2.0, 19.4], [-0.6, 2.2, 10.8], 58, -3), K(C5 + 0.45, [-5.8, 2.4, 18.6], [-0.6, 2.2, 10.8], 58, 0.5),
@@ -131,6 +131,7 @@ const OPEN_W: Record<Open, [number, WorkerState][]> = {
     [0.93, S([CX - 1.1, 0, 27], Math.PI / 2, "alarm", { follow: (t) => [pushX(t), pushY(t), 27] })],
     [PEBBLE, S([CX - 1.1, 0, 27], 0.6, "think", { follow: (t) => [pushX(t), 0, 27] })]],
 };
+const stoneTop = H(-31.8, 1.3, 0), hopOn = (t: number): V3 => { const u = prog(t, T.piedra - 0.2, T.piedra + 0.15), a = H(-29.0, 0, -0.9); return [lerp(a[0], stoneTop[0], u), 1.3 * u + 1.0 * Math.sin(Math.PI * u), lerp(a[2], stoneTop[2], u)]; };
 const dodge = (t: number): V3 => { const u = ease(t, T.caer - 0.1, T.caer + 0.3); return [lerp(1.8, 3.4, u), 0.6 * Math.sin(Math.PI * prog(t, T.caer - 0.1, T.caer + 0.3)), lerp(7.2, 7.6, u)]; };
 const WORKER: [number, WorkerState][] = [
   ...OPEN_W[OPEN],
@@ -141,8 +142,10 @@ const WORKER: [number, WorkerState][] = [
   [RUN1, S(RUN_B, -2.43, "present")],
   [C1, S(camp, -1.13, "present")],
   [T.madera, S(camp, 0.35, "point")],
-  [T.piedra, S(camp, -1.6, "point")],
-  [T.gente, S(camp, -1.13, "cheer")],
+  [T.cuerda, S(camp, 0.95, "point")],
+  [T.piedra - 0.2, S(stoneTop, -1.25, "cheer", { follow: hopOn })], // pula para cima da pedra
+  [T.piedra + 0.15, S(stoneTop, -1.4, "present")],
+  [T.gente, S(stoneTop, -1.25, "cheer")],
   [T.levantar, S(camp, 1.77, "point")],
   [T.b1, S(camp, -1.13, "think")],
   [C2, S(H(-30.0, 0, 2.6), HERO_RY - 0.4, "cheer")],
@@ -156,8 +159,9 @@ const WORKER: [number, WorkerState][] = [
   [T.cae, S(sec, HERO_RY, "cheer")],
   [C4, S(rope, HERO_RY + Math.PI / 2, "pull")],
   [T.tirando + 0.9, S(rope, HERO_RY - 0.6, "cheer")],
-  [T.esteHoyo, S(rope, HERO_RY - 0.6, "present")],
-  [T.p2, S(rope, HERO_RY - 0.6, "alarm")],
+  [X7, S(RB, 0.25, "present", { follow: () => RB })], // (no corte: já ao lado da régua)
+  [JUMP0, S(RB, 0.1, "cheer", { follow: jumpP })], // pula três vezes e não alcança os 4 m (✖)
+  [JUMP0 + JUMPN * JUMPD, S(RB, 0.1, "alarm")],
   [C5, S([-2.7, 0, 11.0], -0.43, "present")],
   [T.altura, S([-2.7, 0, 11.0], -0.43, "point")],
   [T.b3, S([-2.7, 0, 11.0], 0.9, "alarm")],
@@ -217,7 +221,7 @@ const hud: HudData = {
     { a: T.nohay, b: T.madera - 0.15, label: "MOTORES", value: () => "0", y: 250, tone: "red" },
     { a: T.ruedas, b: T.madera - 0.15, label: "RUEDAS", value: () => "0", y: 345, tone: "red" },
     { a: T.gruas, b: T.madera - 0.15, label: "GRÚAS", value: () => "0", y: 440, tone: "red" },
-    { a: T.madera, b: T.levantar - 0.1, label: "TIENEN", value: (t) => HAVE.filter(([a]) => t >= a - 0.1).slice(-1)[0]?.[1] ?? "", y: 440, tone: "green" },
+    { a: T.madera, b: T.levantar - 0.1, label: "TIENEN", value: (t) => HAVE.filter(([a]) => t >= a - 0.1).slice(-1)[0]?.[1] ?? "", y: 290, tone: "green" }, // (alto: o operário sobe na pedra)
     { a: T.circulo, b: T.b1 - 0.1, label: "MISIÓN", value: () => "CÍRCULO", y: 440, tone: "gold" },
     { a: T.cientos, b: T.esteTrineo - 0.1, label: "PERSONAS", value: () => "~10 POR TONELADA", y: 440 },
     { a: T.rampa, b: T.empujan + 0.5, label: "PARED", value: () => "EN RAMPA", y: 440 },

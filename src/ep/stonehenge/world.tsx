@@ -8,7 +8,7 @@ import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBac
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { FALL0, FALL1, FLY_AT, NOGO, NSTEP, PULL0, RUL0, RUN0, RUN1, SLIDE0, SLIP, T, TS, XCUTS, stepAt } from "./cues";
+import { FALL0, FALL1, FLY_AT, JUMP0, JUMPD, JUMPN, NOGO, NSTEP, PULL0, RUL0, RUN0, RUN1, SLIDE0, SLIP, T, TS, XCUTS, stepAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI, D2R = PI / 180;
@@ -437,6 +437,7 @@ const Pit: React.FC<{ t: number }> = ({ t }) => {
         return <Sph key={i} rad={0.2 + rnd(i) * 0.1} p={[x, lerp(1.6, yl, u * u), z]} c={i % 2 ? "#8a867d" : "#77746c"} ws={7} hs={5} />;
       })}
       <Puffs t={t} p={[-1.6, 0.0, 0]} n={7} period={0.5} rise={0.9} size={0.28} c="#d8c8a8" on={t > T.apretadas - 0.1 && t < T.esteHoyo + 0.2 ? 1 : 0} />
+      <Puffs t={t} p={[-1.3, -0.9, 0]} n={8} period={0.45} rise={1.4} size={0.4} c="#e2d6bc" drift={[0.6, 0, 0.4]} on={t > T.cae + 0.25 && t < T.cae + 0.85 ? 1 : 0} />
     </G>
   );
 };
@@ -695,6 +696,10 @@ const GhostLintel: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, RUL0 - 0.05, RUL0 + 0.3); if (k <= 0.01 || t > T.b3 + 0.3) return null;
   return <Box s={[2.1, LH, UD]} p={[0, UH + LH / 2 + 1.2 * (1 - k), LZ0]} c="#ffd84a" o={{ ...GHOST, opacity: 0.62 * (0.8 + 0.2 * Math.sin(t * 9)), ei: 0.8 }} cast={false} />;
 };
+/** «a más de cuatro metros»: o operário pula três vezes ao lado da régua e não alcança o topo (✖) */
+export const RB: V3 = [-1.45, 0, 11.15];
+export const jumpP = (t: number): V3 => { const k = Math.floor((t - JUMP0) / JUMPD), u = prog(t, JUMP0 + k * JUMPD, JUMP0 + k * JUMPD + JUMPD - 0.03); return [RB[0], k >= 0 && k < JUMPN ? (0.55 + 0.25 * k) * Math.sin(PI * u) : 0, RB[2]]; };
+const JumpX: React.FC<{ t: number }> = ({ t }) => { const a = JUMP0 + JUMPN * JUMPD + 0.03; return <XMark t={t} a={a} b={a + 0.72} p={[RB[0], 2.9, RB[2] + 0.5]} cam={[-1.0, 3.0, 19.0]} size={1.3} />; };
 /** pó no chão onde o dintel cai */
 const FallDust: React.FC<{ t: number }> = ({ t }) => <Puffs t={t} p={[0, 0.05, LZ0 - 2.4]} n={8} period={0.5} rise={0.9} size={0.55} c="#e8e2d2" drift={[0.9, 0, -0.4]} on={t > FALL1 - 0.02 && t < FALL1 + 0.6 && t < T.b4 ? 1 : 0} />;
 /** «la tallan como si fuera madera»: lascas e pó saindo dos topos; dois canteiros na plataforma da torre */
@@ -799,6 +804,6 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     </G>
     <Lintel t={t} /><GhostLintel t={t} /><Tower t={t} /><Levers t={t} /><Ruler t={t} /><FallDust t={t} /><Carving t={t} /><JointFx t={t} />
     <Glow t={t} /><Axis t={t} />
-    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} /><HandCrew t={t} /><Sofa t={t} /><Confetti t={t} /><RunDust t={t} /><TowerSlip t={t} />
+    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} /><HandCrew t={t} /><Sofa t={t} /><Confetti t={t} /><RunDust t={t} /><TowerSlip t={t} /><JumpX t={t} />
   </>
 );

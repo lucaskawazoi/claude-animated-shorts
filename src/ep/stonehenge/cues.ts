@@ -43,6 +43,8 @@ export const FLY_AT = [T.trineo + 0.98, T.rieles, T.cientos + 0.3]; // pouso dos
 export const SLIP = T.cientos + 0.3; // um dos que puxam escorrega e é arrastado de costas (✖)
 export const RUL0 = T.esteHoyo - 0.15; // régua de 4 m e dintel-fantasma já no «este es el hoyo»
 export const TS = T.sube + 0.12; // um tronco escapa do topo da torre, bate na cabeça do operário e volta (✖)
+/** reconferência da v3: o operário pula três vezes para alcançar o topo da régua de 4 m e não chega (✖) */
+export const JUMP0 = T.esteHoyo + 0.7, JUMPN = 3, JUMPD = 0.35;
 /** a queda cômica: o dintel solto escorrega dos pilares, cai e quica no chão; no «solución» volta de ré */
 export const FALL0 = T.caer - 0.12, FALL1 = T.caer + 0.5;
 
@@ -98,5 +100,9 @@ S.push(["whoosh", RUN0, -14], ["qe-slip", RUN1 - 0.1, -12],
   ["qe-slip", SLIP, -11], ["thud", SLIP + 0.25, -9], ["qe-boing", SLIP + 0.3, -12], ["stamp", SLIP + 0.3, -10], ["buzzer", SLIP + 0.33, -15],
   ["chime", RUL0, -14], ["pop", RUL0 + 0.05, -13],
   ["qe-slip", TS, -12], ["whoosh", TS + 0.05, -15], ["thud", TS + 0.35, -8], ["qe-boing", TS + 0.38, -10], ["stamp", TS + 0.4, -10], ["buzzer", TS + 0.42, -14],
-  ["thud", TS + 0.6, -12], ["rewind", TS + 1.2, -14], ["sh-log", TS + 1.55, -12]);
+  ["thud", TS + 0.6, -12], ["rewind", TS + 1.2, -14], ["sh-log", TS + 1.55, -12],
+  // reconferência: pula para a régua (✖), a pedra assenta no buraco com pó, o operário sobe na pedra no «piedra»
+  ...Array.from({ length: JUMPN }, (_, k): [string, number, number] => ["qe-heave", JUMP0 + k * JUMPD, -13 + k]),
+  ["thud", JUMP0 + JUMPN * JUMPD - 0.03, -11], ["stamp", JUMP0 + JUMPN * JUMPD + 0.03, -10], ["buzzer", JUMP0 + JUMPN * JUMPD + 0.06, -14],
+  ["thud", T.cae + 0.3, -9], ["qe-boing", T.piedra - 0.2, -12], ["thud", T.piedra + 0.15, -11]);
 export const SFX = S;
