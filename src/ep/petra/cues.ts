@@ -16,6 +16,11 @@ export const T = {
   b5: find("solucion tallarla", 0, 0.1), c5: find("tallarla"), tallar: find("tallarla"), arriba: find("de arriba hacia abajo"), roca: find("la roca que todavia"), piso: find("sirve de piso"), tesoro: find("nacio el tesoro"), cuarenta: find("casi cuarenta metros"), fachadaT: find("esta es la fachada"),
   y363: find("trescientos sesenta y tres"), terremoto: find("un terremoto"), rompio: find("rompio cisternas"), suagua: find("sin su agua"), comercio: find("el comercio"), vaciando: find("se fue vaciando"), siglo: find("siglo tras siglo"),
   mandaselo: find("mandaselo"),
+  // verbos de cada mecanismo (pré-crítica 13/11: a imagem faz o verbo na palavra) — só tempo, não mexem nos efeitos
+  choca: find("choca"), porTunel: find("por el tunel"), lejos: find("lejos del"), siempre: find("siempre un poco"), manant: find("manantiales"),
+  pesada: find("la arena mas pesada"), porArriba: find("por arriba"), verano: find("en verano"), cavadas: find("cavadas"), recogen: find("recogen la lluvia"),
+  sombra: find("a la sombra"), paraVerano: find("para el verano"), gigante: find("gigante"), bajando: find("van bajando"), canalesR: find("y canales"),
+  otras: find("otras rutas"), roca0: find("la roca", 0),
   end: DURATION_S,
 };
 export { CUTS, WINS };
@@ -33,7 +38,8 @@ S.push(["wind", 0.0, -13], ["camel", T.nabateos + 0.3, -11], ["flood", T.agua1, 
   ["stone", T.presa, -10], ["dig", T.tunel, -11], ["flood", T.manda, -10], ["sink", T.pierde, -11],
   ["chisel", T.canales, -12], ["clack", T.tubos, -12], ["stream", T.llevan, -11], ["sandfall", T.arena, -11],
   ["splash", T.detiene, -12], ["sandfall", T.fondo, -12], ["drip", T.limpia, -12], ["wind", T.meses, -11],
-  ["dig", T.cisternas, -12], ["rain", T.guardan, -12], ["splash", T.invierno, -12], ["buzzer", T.suelo + 0.2, -13],
+  ["dig", T.cisternas, -12], ["rain", T.recogen - 0.35, -12], ["splash", T.invierno, -12], ["buzzer", T.suelo + 0.2, -13],
   ["chisel", T.arriba, -10], ["chisel", T.piso, -11], ["fanfare", T.cuarenta, -10],
-  ["quake", T.terremoto, -7], ["crack", T.rompio, -9], ["camel", T.comercio, -13], ["wind", T.vaciando, -11], ["sad", T.siglo, -13]);
+  ["quake", T.terremoto, -7], ["crack", T.rompio, -9], ["camel", T.comercio, -13], ["wind", T.vaciando, -11], ["sad", T.siglo, -13],
+  ["stone", T.sombra, -14], ["splash", T.canalesR + 0.15, -12]); // tampa da cisterna; o canal partido derrama
 export const SFX = S;
