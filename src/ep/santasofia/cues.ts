@@ -45,7 +45,8 @@ export { CUTS, WINS };
 const fr = (x: number) => Math.round(x * 30) / 30;
 /** cortes duros EXTRA (ritmo do lote 3: um corte a cada ~4–5 s; os 7 da régua continuam), nas viradas de frase, ≥1,5 s dos cortes da régua */
 export const XC = [T.una - 0.02, T.yfue - 0.02, T.emperador - 0.02, T.b1 + 0.03, T.p2 + 0.03, T.dosLados - 0.02, T.p3 + 0.03,
-  T.cuarenta - 0.02, T.entra - 0.02, T.p4 + 0.03, T.levantan - 0.05, T.giro - 0.02, T.museo - 0.04, T.su - 0.02].map(fr);
+  T.cuarenta - 0.02, T.entra - 0.02, T.p4 + 0.03, T.levantan - 0.05, T.giro - 0.02, T.museo - 0.04, T.su - 0.02,
+  T.anillo + 0.62].map(fr); // o 15º (fora de ordem, para não deslocar X1..X14): «luz.» → o operário olha tanto para cima que cai de costas
 
 // tempos derivados que o mundo e o painel compartilham
 export const NWIN = 40;
@@ -55,6 +56,13 @@ export const winAt = (k: number) => T.cuarenta + 0.1 + (k * (T.otra + 0.25 - T.c
 /** abertura a: a cúpula do céu bate no tambor (estouro, operário quica, câmera treme) */
 export const DROP_A = 1.25;
 export const LAND = T.apoya + 0.05, TIP0 = T.huecos + 0.05, CRASH = T.huecos + 0.55;
+/** pré-crítica de ritmo: os objetos que «no hay» caem na praça vazia; a vela que apaga no escuro; o tombo de costas sob a cúpula */
+export const NOHAY_DROP = [9.45, 9.62, 9.79];
+export const CANDLE_ON = T.p3 + 0.55, CANDLE_OUT = T.dentro + 0.2;
+export const TRIP0 = fr(T.anillo + 0.62) + 0.62, TRIP1 = TRIP0 + 0.26;
+/** a cúpula «quica» (squash) em «cúpula nueva» e no fim; o prédio gira em «el giro» */
+export const BOING = [T.nueva + 0.7, T.manda + 1.25];
+export const SPIN0 = T.giro + 0.25;
 /** o colapso de 558 */
 export const FALL0 = T.cae + 0.05, FALL1 = T.cae + 0.75;
 
@@ -98,5 +106,15 @@ S.push(
   ["paper", T.museo, -10], ["pop", T.museo + 0.05, -10], ["chime", T.hoy + 0.3, -11],
   ["chisel", T.reparada, -11], ["chisel", T.varias + 0.2, -12], ["gulls", T.sigue, -15],
   ["fanfare", T.manda - 0.15, -8], ["confetti", T.manda + 0.3, -12],
+);
+S.push(
+  ...NOHAY_DROP.map((d) => ["thud", d, -10] as [string, number, number]),
+  ["clack", T.c1 + 0.12, -13], ["clack", T.c1 + 0.38, -14], ["clack", T.c1 + 0.64, -13], ["creak", T.b1 + 0.7, -16],
+  ["pop", CANDLE_ON, -12], ["sizzle", CANDLE_ON + 0.05, -18], ["smoke", CANDLE_OUT, -11], ["buzzer", CANDLE_OUT + 0.12, -14],
+  ["qe-slip", TRIP0, -11], ["thud", TRIP1, -6], ["qe-boing", TRIP1 + 0.05, -10], ["buzzer", TRIP1 + 0.08, -14],
+  ["quake", T.p4 + 0.12, -10], ["crumble", T.ano558, -14],
+  ["ss-rise", T.b3 + 0.5, -12], ["clack", T.caer, -13], ["clack", T.caer + 0.35, -13],
+  ["qe-boing", BOING[0], -9], ["ding", SPIN0 + 0.9, -12], ["ss-shimmer", T.mezquita0 + 0.45, -11],
+  ["bells", BOING[1] - 0.05, -10], ["qe-boing", BOING[1], -10], ["gulls", BOING[1] + 0.1, -12], ["chime", BOING[1] + 0.5, -12],
 );
 export const SFX = S;

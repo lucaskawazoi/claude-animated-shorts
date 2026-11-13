@@ -6,17 +6,20 @@ import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { CRASH, DROP_A, NWIN, SFX, T, TIP0, XC, winAt } from "./cues";
+import { BOING, CANDLE_OUT, CRASH, DROP_A, NWIN, SFX, T, TIP0, TRIP1, XC, winAt } from "./cues";
 import { Open, OPEN } from "./open";
-import { BYZ, DB, H_NEW, World, fgA, hopA, nLit, runX } from "./world";
+import { BYZ, DB, H_NEW, World, fgA, hopA, nLit, quake, runX } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const PI = Math.PI;
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
-const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14] = XC;
+const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14, XN] = XC;
 
 /** as três aberturas (0 → «una cúpula»), cada uma já em ação no quadro 0 e ligada a «construida en menos de seis años» */
+const X10_KEYS = [
+  K(X10, [-31.0, 8.0, 33.0], [0.0, 7.5, 0.0], 56, -3), K(X10 + 0.45, [-30.4, 8.3, 32.4], [0.0, 7.6, 0.0], 56, 0.5),
+  K(T.ano558, [-29.6, 8.8, 31.6], [0.0, 8.0, 0.0], 56, -0.5), K(C6 - 0.05, [-28.8, 9.4, 30.8], [0.0, 8.4, 0.0], 56, 0)];
 const OPEN_A_KEYS = [
   K(0, [-14.0, 3.0, 30.0], [0.0, 9.5, 0.0], 60, 3), K(0.45, [-14.8, 3.3, 29.6], [0.0, 9.6, 0.0], 60, -2),
   K(1.1, [-16.0, 3.9, 28.9], [0.0, 9.8, 0.0], 60, 1.5), K(X1 - 0.04, [-17.0, 4.4, 28.3], [0.0, 10.0, 0.0], 60, -1)];
@@ -39,7 +42,11 @@ const SHOTS: Shot[] = [
   OPENING[OPEN],
   { name: "por dentro, do chão: a cúpula de +30 m sobre o anel de luz", t0: X1, keys: [
     K(X1, [0.9, 1.3, 4.5], [-0.6, 9.0, -4.5], 64, -3), K(X1 + 0.45, [0.7, 1.4, 4.3], [-0.5, 9.4, -4.4], 64, 0.5),
-    K(T.flotar0, [0.3, 1.5, 4.0], [-0.3, 10.0, -4.2], 64, -0.5), K(X2 - 0.04, [0.0, 1.6, 3.8], [-0.2, 10.4, -4.0], 64, 0)] },
+    // sobe girando em volta do centro até perto da cúpula (o pré-crítico: o interior parado)
+    K(X1 + 0.45 + 0.25 * (X2 - 0.49 - X1), [2.49, 2.65, 3.21], [-0.25, 12.9, -0.32], 64, 6.5),
+    K(X1 + 0.45 + 0.50 * (X2 - 0.49 - X1), [3.45, 3.90, 1.50], [-0.37, 13.3, -0.16], 64, 12.5),
+    K(X1 + 0.45 + 0.75 * (X2 - 0.49 - X1), [3.45, 5.15, -0.31], [-0.40, 13.7, 0.04], 64, 18.5),
+    K(X1 + 0.45 + 1.00 * (X2 - 0.49 - X1), [2.63, 6.40, -1.76], [-0.33, 14.1, 0.22], 64, 24.5)] },
   { name: "de fora, a igreja inteira → ⏪ Constantinopla 532: tudo afunda e a praça fica vazia", t0: X2, keys: [
     K(X2, [-21.0, 7.0, 27.0], [0.0, 9.0, 0.0], 56, 3), K(X2 + 0.45, [-22.0, 7.6, 28.0], [0.0, 9.0, 0.0], 56, -0.5),
     K(T.constantinopla, [-24.0, 9.5, 30.0], [0.0, 8.5, 0.0], 56, 0.5), K(T.ano532, [-26.0, 14.0, 32.0], [0.0, 4.0, 0.0], 56, -0.5),
@@ -60,7 +67,7 @@ const SHOTS: Shot[] = [
     K(X4 - 0.05, [0.2, 32.0, 11.6], [0.0, 6.0, 4.0], 56, 0)] },
   { name: "de baixo, entre os pilares: ⏪ a cúpula volta e flutua → arco e arco → nascem as pechinas", t0: X4, keys: [
     K(X4, [2.8, 1.2, 2.8], [-3.6, 8.0, -3.6], 64, -3), K(X4 + 0.45, [2.6, 1.2, 2.6], [-3.6, 8.3, -3.6], 64, 0.5),
-    K(T.cuatroPilares, [2.3, 1.2, 2.4], [-3.6, 8.6, -3.4], 64, -0.5), K(T.entre, [2.0, 1.2, 2.2], [-3.4, 8.6, -3.6], 64, 0.5),
+    K(T.cuatroPilares, [3.3, 1.6, 1.2], [-3.6, 7.4, -3.0], 64, -2), K(T.c1, [3.0, 2.0, -0.4], [-3.6, 6.8, -3.4], 64, 1.5), K(T.entre, [2.0, 1.4, 2.2], [-3.4, 8.6, -3.6], 64, 0.5),
     K(C3 - 0.05, [1.8, 1.2, 2.0], [-3.4, 8.8, -3.4], 64, 0)] },
   { name: "do alto, de fora: as pechinas fecham o círculo → a cúpula assenta no anel", t0: C3, keys: [
     K(C3, [17.5, 16.6, 18.5], [0.0, 8.6, 0.0], 56, 3), K(C3 + 0.45, [17.0, 17.0, 18.0], [0.0, 8.7, 0.0], 56, -0.5),
@@ -79,8 +86,9 @@ const SHOTS: Shot[] = [
     K(T.suelo, [-7.8, 3.6, 35.0], [0.0, 6.0, 0.0], 58, -0.5), K(T.semicupulas + 0.4, [-7.0, 4.0, 34.0], [0.0, 6.8, 0.0], 58, 0.5),
     K(X7 - 0.05, [-6.8, 4.2, 33.6], [0.0, 7.0, 0.0], 58, 0)] },
   { name: "por dentro, da abside oeste: a cúpula de tijolo escurece → chicote", t0: X7, keys: [
-    K(X7, [-8.6, 1.4, 0.9], [3.0, 6.8, -0.3], 62, -3), K(X7 + 0.45, [-8.2, 1.4, 0.8], [3.0, 7.1, -0.3], 62, 0.5),
-    K(T.oscura, [-7.6, 1.5, 0.6], [2.6, 7.8, -0.2], 62, -0.5), K(W6, [-7.0, 1.6, 0.5], [2.2, 8.3, -0.1], 62, 0),
+    K(X7, [-8.6, 1.4, 0.9], [3.0, 3.8, 0.7], 62, -3), K(X7 + 0.45, [-8.3, 1.4, 0.85], [3.0, 3.9, 0.7], 62, 0.5),
+    K(T.oscura, [-7.9, 1.45, 0.8], [3.0, 4.3, 0.6], 62, -0.5), K(CANDLE_OUT + 0.3, [-7.6, 1.5, 0.75], [3.0, 4.6, 0.5], 62, 1.5),
+    K(W6, [-7.2, 1.6, 0.6], [2.4, 7.0, 0.2], 62, 0),
     K(W6 + 0.5, [-3.0, 2.2, -1.2], [0.5, 11.0, 2.5], 62, 3), K(C5 - 0.05, [-2.8, 2.3, -1.4], [0.5, 11.2, 2.5], 62, 2)] },
   { name: "o operário olha para cima no escuro: ¿cómo la llenas de luz?", t0: C5, keys: [
     K(C5, [2.6, 1.6, 3.6], [-0.8, 3.8, -2.4], 60, 3), K(C5 + 0.45, [2.4, 1.6, 3.4], [-0.7, 4.1, -2.4], 60, -0.5),
@@ -92,31 +100,36 @@ const SHOTS: Shot[] = [
   { name: "do centro, olhando para cima: a luz entra por baixo e a cúpula flutua num anel de luz", t0: X9, keys: [
     K(X9, [0.3, 1.0, 0.9], [0.0, 14.0, -1.4], 70, -6), K(X9 + 0.45, [0.3, 1.1, 0.8], [0.0, 14.0, -1.3], 70, 0),
     K(T.flotar1, [0.2, 1.3, 0.7], [0.0, 14.0, -1.2], 66, 8), K(T.ventanas, [0.1, 1.6, 0.6], [0.0, 14.0, -1.0], 64, 16),
-    K(X10 - 0.05, [0.1, 1.8, 0.6], [0.0, 14.0, -1.0], 64, 20)] },
-  { name: "da rua da cidade: Constantinopla treme (558)", t0: X10, keys: [
-    K(X10, [-31.0, 8.0, 33.0], [0.0, 7.5, 0.0], 56, -3), K(X10 + 0.45, [-30.4, 8.3, 32.4], [0.0, 7.6, 0.0], 56, 0.5),
-    K(T.ano558, [-29.6, 8.8, 31.6], [0.0, 8.0, 0.0], 56, -0.5), K(C6 - 0.05, [-28.8, 9.4, 30.8], [0.0, 8.4, 0.0], 56, 0)] },
+    K(XN - 0.05, [0.1, 1.7, 0.6], [0.0, 14.0, -1.0], 64, 18)] },
+  { name: "rente ao chão: o operário olha tanto para cima que cai de costas (✖); a câmera segue o olhar até o anel de janelas", t0: XN, keys: [
+    K(XN, [2.9, 1.3, 3.9], [-0.8, 2.3, -2.4], 64, 3), K(XN + 0.45, [2.6, 1.4, 3.6], [-0.8, 2.4, -2.4], 64, -0.5),
+    K(TRIP1 + 0.3, [2.4, 1.4, 3.4], [-0.7, 2.5, -2.3], 64, 0.5), K(T.ventanas + 0.15, [2.2, 1.5, 3.2], [-0.6, 5.5, -2.2], 64, 0),
+    K(X10 - 0.05, [2.0, 1.6, 3.0], [-0.4, 9.5, -1.8], 64, -1)] },
+  { name: "da rua da cidade: Constantinopla treme (558) — a câmera treme junto, telhas caem", t0: X10, keys: X10_KEYS,
+    fn: (t) => { const c = keyed(X10_KEYS, t), q = quake(t) * (1 - ease(t, C6 - 0.6, C6 - 0.3)), f = Math.floor(t * 30), j = (n: number) => (((f * 7919 + n * 104729) % 1000) / 500 - 1) * q;
+      return { ...c, pos: [c.pos[0] + 2.0 * j(1), c.pos[1] + 1.5 * j(2), c.pos[2] + 1.2 * j(3)], look: [c.look[0] + 1.2 * j(4), c.look[1] + 1.2 * j(5), c.look[2]], roll: c.roll + 10 * j(6) }; } },
   { name: "do alto, de sudeste: a cúpula cai dentro (poeira) → andaimes no tambor", t0: C6, keys: [
     K(C6, [16.0, 21.0, 17.0], [0.0, 11.0, 0.0], 56, 3), K(C6 + 0.45, [15.4, 21.6, 16.4], [0.0, 11.2, 0.0], 56, -0.5),
-    K(T.b3, [14.6, 22.4, 15.6], [0.0, 11.5, 0.0], 56, 0.5), K(T.c3, [13.8, 22.8, 15.0], [0.0, 11.8, 0.0], 56, -0.5),
-    K(X11 - 0.05, [13.4, 23.0, 14.6], [0.0, 12.0, 0.0], 56, 0)] },
+    K(T.b3, [17.1, 22.4, 14.7], [0.0, 11.5, 0.0], 56, 0.5), K(T.caer, [19.1, 22.8, 10.9], [0.0, 11.8, 0.0], 56, -1),
+    K(T.c3, [20.1, 23.0, 7.8], [0.0, 12.0, 0.0], 56, 0.5), K(X11 - 0.05, [20.7, 23.2, 5.3], [0.0, 12.0, 0.0], 56, 0)] },
   { name: "de lado, na altura da cúpula: a nova sobe ~6 m acima do perfil velho; o peso desce mais reto", t0: X11, keys: [
     K(X11, [1.0, 14.6, 29.0], [0.0, 13.6, 0.0], 54, -3), K(X11 + 0.45, [0.6, 14.5, 28.4], [0.0, 13.6, 0.0], 54, 0.5),
     K(T.curva, [0.2, 14.3, 28.0], [0.0, 13.8, 0.0], 54, -0.5), K(T.menos, [-0.2, 14.1, 27.6], [0.0, 13.8, 0.0], 54, 0.5),
     K(C7 - 0.05, [-0.4, 14.0, 27.4], [0.0, 13.8, 0.0], 54, 0)] },
   { name: "baixo, de sudoeste: a cúpula nova inteira", t0: C7, keys: [
     K(C7, [-16.0, 1.6, 33.0], [0.0, 9.0, 0.0], 58, 3), K(C7 + 0.45, [-15.4, 1.8, 32.4], [0.0, 9.2, 0.0], 58, -0.5),
-    K(T.nueva, [-14.6, 2.2, 31.4], [0.0, 9.6, 0.0], 58, 0.5), K(X12 - 0.05, [-14.0, 2.6, 30.8], [0.0, 9.8, 0.0], 58, 0)] },
+    K(T.nueva, [-11.5, 4.6, 33.0], [0.0, 10.0, 0.0], 58, 1.5), K(X12 - 0.05, [-8.0, 6.6, 33.6], [0.0, 10.4, 0.0], 58, -0.5)] },
   { name: "do mar: igreja → sobem os minaretes, a cruz vira crescente (mesquita)", t0: X12, keys: [
     K(X12, [10.0, 22.0, 60.0], [0.0, 8.0, 0.0], 52, -3), K(X12 + 0.45, [9.4, 21.0, 58.0], [0.0, 8.0, 0.0], 52, 0.5),
-    K(T.mezquita0, [6.0, 19.0, 52.0], [0.0, 9.0, 0.0], 52, -0.5), K(X13 - 0.05, [4.0, 18.0, 48.0], [0.0, 9.5, 0.0], 52, 0)] },
+    K(T.novecientos, [8.0, 19.0, 50.0], [0.0, 9.0, 0.0], 52, -0.5), K(T.mezquita0 + 0.25, [15.0, 17.0, 35.0], [6.0, 13.5, 6.0], 52, 1),
+    K(X13 - 0.05, [16.5, 17.0, 30.5], [6.5, 15.0, 5.5], 52, 0)] },
   { name: "na praça: a placa do museu e os turistas → a placa sai: mesquita de novo", t0: X13, keys: [
     K(X13, [6.0, 3.0, 27.0], [0.0, 5.0, 8.0], 56, 3), K(X13 + 0.45, [5.6, 3.1, 26.4], [0.0, 5.2, 8.0], 56, -0.5),
     K(T.hoy + 0.1, [5.2, 4.0, 27.6], [0.0, 9.5, 2.0], 56, 0.5), K(X14 - 0.05, [5.0, 5.2, 30.0], [0.0, 11.5, 0.0], 56, 0)] },
   { name: "em cima da cúpula: reparada várias vezes → chicote para o alto, a cidade e o mar", t0: X14, keys: [
     K(X14, [8.6, 22.6, 13.4], [0.0, 15.0, 0.0], 56, -3), K(X14 + 0.45, [8.2, 23.0, 13.0], [0.0, 15.0, 0.0], 56, 0.5),
     K(T.varias, [7.0, 23.4, 12.0], [0.0, 15.0, 0.5], 56, -0.5), K(W10, [6.6, 23.6, 11.6], [0.0, 15.0, 0.5], 56, 0),
-    K(W10 + 0.5, [16.0, 30.0, 36.0], [0.0, 8.0, 0.0], 58, 2), K(T.end, [18.0, 33.0, 40.0], [0.0, 8.0, 0.0], 58, 0)] },
+    K(W10 + 0.5, [16.0, 30.0, 36.0], [0.0, 8.0, 0.0], 58, 2), K(BOING[1], [21.0, 31.0, 34.0], [0.0, 9.0, 0.0], 58, -1), K(T.end, [28.0, 32.0, 27.0], [0.0, 10.0, 0.0], 58, 1)] },
 ];
 // câmera na mão por janela da régua: as de dentro ficam baixas (paredes perto); W2 e W6 as mais agitadas, o fim a mais calma
 const DYN = [0.8, 1.6, 3.6, 2.0, 0.5, 1.2, 3.0, 1.0, 2.2, 1.0, 0.3];
@@ -132,6 +145,7 @@ const OPEN_W: Record<Open, [number, WorkerState][]> = {
     [0.95, S([-1.6, 0, 15.4], PI / 2, "alarm", { follow: (t) => [runX(t), t < 1.3 ? 0.5 * Math.sin(PI * prog(t, 0.95, 1.3)) : 0, 15.4] })]],
 };
 const dome: V3 = [1.95, DB + 3.84, 3.0];
+const W7: V3 = [-4.0, 0, 1.4]; // ao lado da vela
 const WORKER: [number, WorkerState][] = [
   ...OPEN_W[OPEN],
   [X1, S([-1.6, 0, 1.4], 0.6, "present", IN)],
@@ -163,13 +177,14 @@ const WORKER: [number, WorkerState][] = [
   [T.contrafuertes, S([9.5, 0, 9.5], 0.8, "cheer")],
   [C4, S([-10.5, 0, 12.5], -0.8, "point")],
   [T.suelo, S([-10.5, 0, 12.5], -0.8, "cheer")],
-  [X7, S([-3.0, 0, 2.6], -1.87, "present", IN)],
-  [T.oscura, S([-3.0, 0, 2.6], -1.87, "alarm", IN)],
-  [T.b2, S([-3.0, 0, 2.6], -1.87, "think", IN)],
+  [X7, S(W7, -1.9, "present", IN)],
+  [CANDLE_OUT - 1.15, S(W7, -1.9, "cheer", IN)],
+  [CANDLE_OUT + 0.05, S(W7, -1.9, "alarm", IN)],
+  [T.b2, S(W7, -1.9, "think", IN)],
   [C5, S([-0.4, 0, 0.2], 0.68, "think", IN)],
   [T.c2, S([-0.4, 0, 0.2], 0.68, "cheer", IN)],
   [X8, S([0, 0, 0], 0, "idle", { scale: 0 })],
-  [X10, S([-12.5, 0, 18.5], -0.95, "alarm")],
+  [X10, S([-12.5, 0, 18.5], -0.95, "alarm", { follow: (t) => [-12.5 + 0.3 * Math.sin(t * 9), 0.7 * quake(t) * Math.abs(Math.sin(t * 12)), 18.5] })],
   [C6, S([5.5, 0, 13.0], -0.6, "alarm")],
   [T.c3, S([5.5, 0, 13.0], -0.6, "point")],
   [X11, S([0, 0, 0], 0, "idle", { scale: 0 })],
@@ -179,6 +194,8 @@ const WORKER: [number, WorkerState][] = [
   [T.hoy, S([4.0, 0, 15.0], 0.4, "cheer")],
   [X14, S(dome, 0.58, "chisel", { prop: "hammer" })],
   [T.sigue, S(dome, 0.58, "cheer")],
+  [BOING[1], S(dome, 0.58, "cheer", { follow: (t) => [dome[0], dome[1] + 1.3 * Math.sin(PI * prog(t, BOING[1] + 0.02, BOING[1] + 0.5)), dome[2]] })],
+  [BOING[1] + 0.5, S(dome, 0.58, "cheer")],
 ];
 
 const HAVE: [number, string][] = [[T.ladrillo, "LADRILLO"], [T.piedra, "PIEDRA"], [T.mortero, "MORTERO"], [T.miles, "OBREROS"]];
@@ -213,6 +230,7 @@ const hud: HudData = {
     { a: T.seis1, b: T.asi - 0.1, label: "ALTURA", value: (t) => `+${count(t, T.seis1, T.seis1 + 0.7, 0, 6)} m`, y: 440, tone: "green" },
     { a: T.curva, b: T.asi - 0.1, label: "PERFIL", value: () => "MÁS CURVO", y: 550, tone: "green" },
     { a: T.menos, b: T.nueva - 0.1, label: "EMPUJE LATERAL", value: () => "MENOS", y: 440, tone: "green" },
+    { a: T.novecientos - 0.15, b: T.mezquita0 - 0.1, label: "IGLESIA", value: (t) => `+${count(t, T.novecientos - 0.15, T.novecientos + 0.45, 0, 900)} AÑOS`, y: 600, tone: "gold" },
     { a: T.reparada, b: T.manda - 0.1, label: "REPARADA", value: () => "VARIAS VECES", y: 440, tone: "gold" },
   ],
   titles: [
@@ -220,7 +238,7 @@ const hud: HudData = {
   ],
   alerts: [T.p1, T.p2, T.p3, T.p4],
   rewinds: [T.constantinopla, T.b1, T.s2, T.b3],
-  crosses: [...(OPEN === "c" ? [[1.0, X1 - 0.05] as [number, number]] : []), [TIP0 + 0.25, X4 - 0.05], [T.cae + 0.25, T.b3 - 0.1]],
+  crosses: [...(OPEN === "c" ? [[1.0, X1 - 0.05] as [number, number]] : []), [TIP0 + 0.25, X4 - 0.05], [CANDLE_OUT + 0.1, T.b2 - 0.12], [TRIP1 + 0.03, T.ventanas - 0.02], [T.cae + 0.25, T.b3 - 0.1]],
   stamps: [[T.b1, T.c1, "SIN ACERO"], [T.b2, T.c2, "SIN ELECTRICIDAD"], [T.b3, T.c3, "SIN HORMIGÓN"]],
   reward: { a: T.manda - 0.1, len: T.end - T.manda + 0.1, top: "EN PIE DESDE EL AÑO", big: (t) => `${count(t, T.manda - 0.1, T.manda + 1.1, 0, 537)}`, sub: "SIN UN SOLO MOTOR" },
   Extra: ({ t }) => {

@@ -10,14 +10,14 @@ import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, outBack, pip
 import { Clouds, Hills, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { CRASH, DROP_A, FALL0, FALL1, LAND, NWIN, T, TIP0, XC, winAt } from "./cues";
+import { BOING, CANDLE_ON, CANDLE_OUT, CRASH, DROP_A, FALL0, FALL1, LAND, NOHAY_DROP, NWIN, SPIN0, T, TIP0, TRIP0, TRIP1, XC, winAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI;
 export const S = 5, PH = 6, RING = PH + S, DRH = 0.9, DB = RING + DRH, AO = 5.6, AI = 4.4, AD = 1.2, CREST = PH + AO;
 export const H_OLD = 3, H_NEW = 5;
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
-const [X1, , X3, X4, X5, , X7, X8, X9, X10, X11, , , X14] = XC;
+const [X1, , X3, X4, X5, , X7, X8, X9, X10, X11, X12, X13, X14, XN] = XC;
 const BRICK = "#c9683d", BRICK2 = "#b0552f", BRICK3 = "#dd8752", STONE = "#e9dfcb", STONE2 = "#d2c6ae", WALL = "#eaa77b", WALL2 = "#d98f65";
 const LEAD = "#8d9fb3", LEAD2 = "#7a8ca2", GOLD = "#e7c063", GOLD2 = "#c99a3a", INWALL = "#f3dfb6", MARBLE = "#efe6d6", PAVE = "#e7dcc4";
 const GRASS = "#7dba4a", SEA = "#2f8ad0", ROOFS = ["#c8553d", "#d2683f", "#b84a36"], HOUSES = ["#f3e3c3", "#ead2a8", "#f6ecd8", "#e2c79c"];
@@ -87,7 +87,7 @@ export const nLit = (t: number) => { let n = 0; for (let k = 0; k < NWIN; k++) i
 /** altura da cúpula: nova no gancho; baixa (537) do canteiro ao terremoto; a nova aparece baixa e sobe ~6 m */
 const domeH = (t: number) => (hookOn(t) ? H_NEW : t < T.levantan ? H_OLD : lerp(H_OLD, H_NEW, ease(t, T.seis1 - 0.1, T.alta + 0.45)));
 /** o terremoto: tremor do mundo (amplitude) */
-export const quake = (t: number) => (t < T.p4 || t > FALL1 + 0.4 ? 0 : 0.13 * ease(t, T.tiembla - 0.5, T.tiembla + 0.1) * (1 - 0.6 * ease(t, T.ano558, T.terremoto)) + 0.12 * ease(t, T.terremoto, T.terremoto + 0.3) * (1 - ease(t, FALL1, FALL1 + 0.4)));
+export const quake = (t: number) => (t < T.p4 || t > FALL1 + 0.4 ? 0 : 0.3 * ease(t, T.p4 + 0.1, T.tiembla + 0.15) * (1 - 0.4 * ease(t, T.ano558, T.terremoto)) + 0.12 * ease(t, T.terremoto, T.terremoto + 0.3) * (1 - ease(t, FALL1, FALL1 + 0.4))) * (1 - 0.75 * ease(t, C6 - 0.55, C6 - 0.25) * (1 - ease(t, C6 + 0.3, C6 + 0.6)));
 const shakeOf = (t: number, k = 1): V3 => { const a = quake(t) * k; return [a * Math.sin(t * 37), a * 0.3 * Math.sin(t * 53), a * Math.sin(t * 41 + 1)]; };
 /** interior: o anel de luz (0..1) — no gancho e depois das janelas */
 export const ringLight = (t: number) => (hookOn(t) ? 1 : t < T.cuarenta ? 0 : nLit(t) / NWIN);
@@ -234,14 +234,19 @@ const Drum: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 /** cruz (igreja) ou crescente (mesquita) no alto da cúpula */
-const Finial: React.FC<{ kind: "cross" | "crescent"; y: number; s?: number }> = ({ kind, y, s = 1 }) => (
+const Finial: React.FC<{ kind: "cross" | "crescent"; y: number; s?: number; glow?: number }> = ({ kind, y, s = 1, glow = 0 }) => (
   <G p={[0, y, 0]} sc={s}>
+    {glow > 0.02 ? <Sph rad={1.1} p={[0, 1.35, 0]} c="#ffe08a" o={{ emissive: "#ffc020", ei: 1.5, opacity: q(0.45 * glow), depthWrite: false }} cast={false} /> : null}
     <Cyl rt={0.08} h={0.9} p={[0, 0.45, 0]} c={GOLD2} seg={8} />
     <Sph rad={0.22} p={[0, 0.25, 0]} c={GOLD} ws={10} hs={8} o={{ metal: 0.4, rough: 0.35 }} />
     {kind === "cross" ? <><Box s={[0.14, 1.1, 0.14]} p={[0, 1.4, 0]} c={GOLD} o={{ metal: 0.4, rough: 0.35, emissive: "#a07010", ei: 0.4 }} /><Box s={[0.7, 0.14, 0.14]} p={[0, 1.6, 0]} c={GOLD} o={{ metal: 0.4, rough: 0.35, emissive: "#a07010", ei: 0.4 }} /></>
-      : <mesh position={[0, 1.35, 0]} rotation={[0, 0, PI * 0.62]} material={mat(GOLD, { metal: 0.4, rough: 0.35, emissive: "#a07010", ei: 0.4 })}><torusGeometry args={[0.42, 0.1, 8, 20, PI * 1.35]} /></mesh>}
+      : <mesh position={[0, 1.35, 0]} rotation={[0, 0, PI * 0.62]} material={mat(GOLD, { metal: 0.4, rough: 0.35, emissive: glow > 0.02 ? "#ffb000" : "#a07010", ei: 0.4 + 2.6 * glow })}><torusGeometry args={[0.42, 0.1, 8, 20, PI * 1.35]} /></mesh>}
   </G>
 );
+/** «quica»: estica e achata a calota por ~0,7 s em cada BOING */
+const boing = (t: number) => BOING.reduce((a, b) => { const u = prog(t, b, b + 0.7); return u <= 0 || u >= 1 ? a : a + 0.22 * Math.sin(u * PI * 3) * Math.exp(-u * 3.5); }, 0);
+/** o crescente acende quando troca a cruz (mesquita) */
+const crescentGlow = (t: number) => (t >= X12 && t < X13 ? 1 - prog(t, T.mezquita0 + 0.5, T.mezquita0 + 1.5) : 0) * (t >= T.mezquita0 + 0.45 ? 1 : 0);
 const finialKind = (t: number): "cross" | "crescent" | null => (hookOn(t) ? "cross" : t < C7 - 0.02 ? null : t < T.mezquita0 + 0.45 ? "cross" : "crescent");
 
 /** o conjunto tambor + cúpula em cima do anel; no colapso a calota cai dentro e some */
@@ -257,11 +262,11 @@ const DomeAssembly: React.FC<{ t: number; dy: number; ddy: number }> = ({ t, dy,
     <G p={[x.p[0] + sh[0], x.p[1] + dy + sh[1], x.pz + x.p[2] + sh[2]]} r={[x.rx, 0, 0]}><G p={[0, 0, -x.pz]}>
       <Drum t={t} />
       {!gone && fall < 1 ? (
-        <G p={[0, DRH + sdy + ddy, 0]} r={[fall * 0.5, 0, fall * 0.3]} sc={[1, Math.max(0.001, appear), 1]}>
+        <G p={[0, DRH + sdy + ddy, 0]} r={[fall * 0.5, 0, fall * 0.3]} sc={[1 - 0.5 * boing(t), Math.max(0.001, appear * (1 + boing(t))), 1 - 0.5 * boing(t)]}>
           <CapShell a={5.2} h={h + 0.2} c={LEAD} f={build} />
           <CapShell a={5.0} h={h} c={GOLD} f={build} back />
           {build >= 1 ? <Cyl rt={1.1} h={0.05} p={[0, h - 0.06, 0]} c={GOLD2} seg={20} cast={false} /> : null}
-          {fin ? <Finial kind={kind!} y={h + 0.15} s={hookOn(t) && OPEN === "a" ? outBack(prog(t, DROP_A + 0.28, DROP_A + 0.45)) : 1} /> : null}
+          {fin ? <Finial kind={kind!} y={h + 0.15} glow={crescentGlow(t)} s={hookOn(t) && OPEN === "a" ? outBack(prog(t, DROP_A + 0.28, DROP_A + 0.45)) : kind === "crescent" && t < X13 ? Math.max(0.001, outBack(prog(t, T.mezquita0 + 0.45, T.mezquita0 + 0.8))) : 1} /> : null}
         </G>) : null}
     </G></G>
   );
@@ -446,14 +451,15 @@ const BrickStack: React.FC<{ p: V3; s: number }> = ({ p, s }) => (
 /** «No hay motores, ni acero, ni hormigón armado»: o que NÃO existe surge, leva um ✖ e some no «solo» */
 const XMark: React.FC<{ t: number; a: number; y: number }> = ({ t, a, y }) => {
   const u = pp(t, a + 0.22); if (u <= 0.002) return null;
-  return <G p={[0, y, 1.1]} sc={0.7 * u}>{[0.8, -0.8].map((r) => <Box key={r} s={[2.4, 0.42, 0.25]} r={[0, 0, r]} c="#ff2d2d" o={{ emissive: "#ff2d2d", ei: 0.4 }} cast={false} />)}</G>;
+  return <G p={[0, y, 1.4]} sc={1.1 * u}>{[0.8, -0.8].map((r) => <Box key={r} s={[2.4, 0.42, 0.25]} r={[0, 0, r]} c="#ff2d2d" o={{ emissive: "#ff2d2d", ei: 0.4 }} cast={false} />)}</G>;
 };
 const NoHay: React.FC<{ t: number }> = ({ t }) => {
-  if (!(t >= T.nohay - 0.05 && t < T.ladrillo)) return null;
-  const gone = 1 - ease(t, T.solo - 0.1, T.solo + 0.2), sc = (a: number) => Math.max(0.001, pp(t, a) * gone);
+  if (!(t >= NOHAY_DROP[0] - 0.33 && t < T.ladrillo)) return null;
+  const gone = 1 - ease(t, T.solo - 0.1, T.solo + 0.2), sc = (i: number) => (t < NOHAY_DROP[i] - 0.32 ? 0.001 : Math.max(0.001, gone));
+  const dy = (i: number) => 9 * (1 - prog(t, NOHAY_DROP[i] - 0.32, NOHAY_DROP[i]) ** 2); // cai do céu
   return (
     <G>
-      <G p={[-9.6, 0, 8.4]} sc={sc(T.nohay)}>
+      <G p={[-9.6, dy(0), 8.4]} sc={sc(0)}>
         <G p={[0, 1.35, 0]} r={[0, 0.5, t * 3]}>
           <Cyl rt={0.95} h={0.4} r={[PI / 2, 0, 0]} c="#8a96a2" o={{ metal: 0.5, rough: 0.4 }} seg={16} />
           {Array.from({ length: 8 }, (_, i) => <Box key={i} s={[0.35, 0.4, 0.36]} p={[1.1 * Math.cos((i * PI) / 4), 1.1 * Math.sin((i * PI) / 4), 0]} r={[0, 0, (i * PI) / 4]} c="#8a96a2" o={{ metal: 0.5, rough: 0.4 }} />)}
@@ -461,19 +467,20 @@ const NoHay: React.FC<{ t: number }> = ({ t }) => {
         </G>
         <XMark t={t} a={T.nohay} y={1.35} />
       </G>
-      <G p={[-6.6, 0, 7.6]} sc={sc(T.acero)}>
+      <G p={[-6.6, dy(1), 7.6]} sc={sc(1)}>
         <G p={[0, 0.6, 0]} r={[0, 0.4, 0]}>
           <Box s={[3.0, 0.14, 0.9]} p={[0, 0.5, 0]} c="#5f7ea0" o={{ metal: 0.5, rough: 0.35 }} /><Box s={[3.0, 0.14, 0.9]} p={[0, -0.5, 0]} c="#5f7ea0" o={{ metal: 0.5, rough: 0.35 }} />
           <Box s={[3.0, 0.9, 0.14]} c="#5f7ea0" o={{ metal: 0.5, rough: 0.35 }} />
         </G>
         <XMark t={t} a={T.acero} y={0.8} />
       </G>
-      <G p={[-3.8, 0, 7.0]} sc={sc(T.hormigon)}>
+      <G p={[-3.8, dy(2), 7.0]} sc={sc(2)}>
         <Box s={[1.6, 0.5, 1.0]} p={[0, 0.25, 0]} c="#3a4450" />
         <G p={[0, 1.25, 0]} r={[0, 0, 0.5]}><G r={[0, t * 4, 0]}><Cyl rt={0.55} rb={0.8} h={1.4} c="#ff8a1a" seg={10} /><Cyl rt={0.3} rb={0.55} h={0.5} p={[0, 0.95, 0]} c="#ff8a1a" seg={10} /></G></G>
         <XMark t={t} a={T.hormigon} y={1.2} />
       </G>
       <Puffs t={t} p={[-6.6, 0.1, 7.8]} n={9} period={0.5} rise={1.4} size={1.0} c="#eadfc8" on={t > T.solo - 0.1 && t < T.solo + 0.45 ? 1 : 0} drift={[3, 0, 0.5]} />
+      {([[-9.6, 8.4], [-6.6, 7.6], [-3.8, 7.0]] as [number, number][]).map(([x, z], i) => <Puffs key={i} t={t} p={[x, 0.1, z]} n={6} period={0.4} rise={0.8} size={0.8} c="#eadfc8" on={t > NOHAY_DROP[i] && t < NOHAY_DROP[i] + 0.35 ? 1 : 0} />)}
     </G>
   );
 };
@@ -646,7 +653,7 @@ const Profiles: React.FC<{ t: number }> = ({ t }) => {
 /** C6: a calota cai dentro — tijolos voando e a nuvem de pó saindo pelo tambor */
 const Collapse: React.FC<{ t: number }> = ({ t }) => {
   if (!(t >= FALL0 - 0.02 && t < T.levantan + 0.4)) return null;
-  const dust = ease(t, FALL0, FALL0 + 0.4) * (1 - ease(t, T.c3, T.levantan + 0.3));
+  const dust = ease(t, FALL0, FALL0 + 0.4) * (1 - ease(t, T.b3 + 0.2, T.caer + 0.2)); // assenta: os andaimes ficam à vista
   return (
     <G>
       {Array.from({ length: 16 }, (_, i) => {
@@ -662,12 +669,12 @@ const Collapse: React.FC<{ t: number }> = ({ t }) => {
 /** a reconstrução (b3 → levantan): andaimes no tambor e operários andando em volta */
 const Rebuild: React.FC<{ t: number }> = ({ t }) => {
   if (!(t >= T.b3 - 0.1 && t < X11)) return null;
-  const k = ease(t, T.b3, T.b3 + 0.6);
-  const ring = Array.from({ length: 10 }, (_, i) => { const a = (i / 10) * PI * 2 + (t - T.b3) * 0.35; return { p: [5.0 * Math.cos(a), DB, 5.0 * Math.sin(a)] as V3, yaw: -a, pose: (i % 2 ? "walk" : "chisel") as PoseName, ph: i * 0.4 }; });
+  const kp = (i: number) => ease(t, T.b3 + 0.5 + i * 0.11, T.b3 + 0.85 + i * 0.11), k = ease(t, T.b3 + 1.75, T.b3 + 2.05); // poste a poste, depois o anel
+  const ring = Array.from({ length: 10 }, (_, i) => { const a = (i / 10) * PI * 2 + (t - T.b3) * 0.35; return { p: [5.0 * Math.cos(a), DB - 3 * (1 - ease(t, T.b3 + 0.9 + i * 0.08, T.b3 + 1.5 + i * 0.08)), 5.0 * Math.sin(a)] as V3, yaw: -a, pose: (i % 2 ? "walk" : "chisel") as PoseName, ph: i * 0.4 }; });
   return (
     <G>
-      {Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * PI * 2; return <Cyl key={i} rt={0.07} h={4.2 * k} p={[4.4 * Math.cos(a), DB + 2.1 * k, 4.4 * Math.sin(a)]} c="#9a6a3a" seg={6} />; })}
-      <mesh position={[0, DB + 4.2 * k, 0]} rotation={[PI / 2, 0, 0]} material={mat("#8a5a32")}><torusGeometry args={[4.4, 0.08, 6, 36]} /></mesh>
+      {Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * PI * 2, u = Math.max(0.001, kp(i)); return <Cyl key={i} rt={0.07} h={4.2 * u} p={[4.4 * Math.cos(a), DB + 2.1 * u, 4.4 * Math.sin(a)]} c="#9a6a3a" seg={6} />; })}
+      {k > 0.01 ? <mesh position={[0, DB + 4.2 * k, 0]} rotation={[PI / 2, 0, 0]} material={mat("#8a5a32")}><torusGeometry args={[4.4, 0.08, 6, 36]} /></mesh> : null}
       <Crowd list={ring} t={t} c={BYZ2} scale={0.9} />
     </G>
   );
@@ -816,6 +823,106 @@ const OpenC: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+
+// ---------------------------------------------------------------- pré-crítica de ritmo: gags e movimento nos trechos parados
+/** X4 «¿Cómo pones…?»: pedreiros sobem escadas nas 4 quinas e, em «Con ingenio», começam a assentar tijolo ali */
+const Masons: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t >= X4 && t < C3)) return null;
+  return (
+    <G>
+      {PIER_C.map(([x, z], i) => {
+        const sx = Math.sign(x), sz = Math.sign(z), base: V3 = [sx * 2.9, 0, sz * 2.9], top: V3 = [sx * 3.85, 6.0, sz * 3.85];
+        const u = ease(t, T.b1 + 0.55 + i * 0.13, T.c1 - 0.15 + i * 0.08), up = u < 1, lad = pipeXf(base, top);
+        const p: V3 = up ? vlerp([sx * 2.7, 0, sz * 2.7], [sx * 3.7, 5.6, sz * 3.7], u) : [sx * 4.55, 6.0, sz * 4.55];
+        const yaw = Math.atan2(-sx, -sz) + (up ? PI : 0), pose = up ? poseOf("pull", t * 1.4 + i) : poseOf("chisel", t + i * 0.3);
+        return (
+          <G key={i}>
+            <G p={lad.p} r={lad.r}>
+              {[-0.32, 0.32].map((o) => <Box key={o} s={[0.09, lad.len, 0.09]} p={[o, 0, 0]} c="#8a5a32" />)}
+              {Array.from({ length: 11 }, (_, k) => <Box key={k} s={[0.64, 0.07, 0.07]} p={[0, -lad.len / 2 + 0.3 + k * 0.58, 0]} c="#9a6a3a" cast={false} />)}
+            </G>
+            <Worker p={[p[0], p[1] + (up ? 0.12 * Math.abs(Math.sin(t * 9 + i)) : 0), p[2]]} yaw={yaw} pose={pose} t={t} c={i % 2 ? BYZ2 : BYZ3} scale={0.95} prop={up ? "none" : "hammer"} />
+            {[0, 1, 2].map((k) => { const v = pp(t, T.c1 + 0.12 + k * 0.26 + i * 0.05); return v <= 0.002 ? null : <Box key={k} s={[0.5, 0.24, 0.3]} p={[sx * (4.0 - k * 0.22), 6.18 + k * 0.25, sz * (4.0 - k * 0.22)]} r={[0, Math.atan2(sx, sz) + PI / 4, 0]} sc={v} c={k % 2 ? BRICK : BRICK3} />; })}
+            <Puffs t={t} p={[sx * 4.0, 6.2, sz * 4.0]} n={5} period={0.45} rise={0.8} size={0.35} c="#eadfc8" on={t > T.c1 && t < T.c1 + 0.9 ? 1 : 0} />
+          </G>
+        );
+      })}
+    </G>
+  );
+};
+/** X7 «es oscura»: o operário acende uma vela no escuro; em «por dentro» ela apaga com um sopro (✖) */
+export const CANDLE_P: V3 = [-5.6, 0, 0.1];
+const Candle: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t >= X7 && t < C5)) return null;
+  const f = ease(t, CANDLE_ON, CANDLE_ON + 0.15) * (1 - ease(t, CANDLE_OUT, CANDLE_OUT + 0.08)), fl = 1 + 0.18 * Math.sin(t * 23) + (t > CANDLE_OUT - 0.35 ? 0.35 * Math.sin(t * 61) : 0);
+  return (
+    <G p={CANDLE_P}>
+      <Cyl rt={0.32} rb={0.4} h={0.12} p={[0, 0.06, 0]} c={GOLD2} seg={10} />
+      <Cyl rt={0.05} h={1.15} p={[0, 0.65, 0]} c={GOLD2} seg={8} />
+      <Cyl rt={0.2} rb={0.12} h={0.1} p={[0, 1.27, 0]} c={GOLD} seg={10} />
+      <Cyl rt={0.07} h={0.3} p={[0, 1.47, 0]} c="#f6efe0" seg={8} />
+      {f > 0.02 ? <><Cone rad={0.09} h={0.26} p={[0, 1.76, 0]} sc={[1, Math.max(0.05, f * fl), 1]} c="#ffd060" o={{ emissive: "#ffb020", ei: 2.4 }} cast={false} />
+        <pointLight position={[0, 1.9, 0]} intensity={5 * f} distance={7} decay={1.3} color="#ffb860" /></> : null}
+      <Puffs t={t} p={[0, 1.7, 0]} n={7} period={0.6} rise={1.1} size={0.12} c="#b8b4ac" on={t > CANDLE_OUT && t < CANDLE_OUT + 0.7 ? 1 : 0} drift={[0.3, 0, 0.15]} />
+    </G>
+  );
+};
+/** XN «…anillo de luz.»: o operário olha tanto para cima que se inclina e cai de costas (✖); deitado, segue olhando */
+const Trip: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t >= XN && t < X10)) return null;
+  const s = prog(t, TRIP0, TRIP1), land = t - TRIP1;
+  const lean = t < TRIP0 ? -0.06 - 0.3 * ease(t, XN + 0.1, TRIP0) - 0.05 * Math.sin(t * 13) * ease(t, XN + 0.3, TRIP0) : t < TRIP1 ? -0.36 - 1.16 * s * s : -1.52 + 0.1 * Math.sin(land * 30) * Math.exp(-land * 9);
+  const pose = { ...poseOf(t < TRIP1 ? "cheer" : "alarm", t), lean, hop: 0 };
+  return (
+    <G>
+      <Worker p={[-0.4, t < TRIP0 ? 0 : 0.36 * Math.min(1, s), 0.2]} yaw={0.9} pose={pose} t={t} c={BYZ} scale={1.05} />
+      <Puffs t={t} p={[-1.8, 0.05, -1.0]} n={7} period={0.5} rise={0.6} size={0.5} c="#e8dcc4" on={land > 0 && land < 0.4 ? 1 : 0} drift={[-0.8, 0, 0.3]} />
+    </G>
+  );
+};
+/** X10 «tiembla»: telhas caem das casas perto da câmera; poeira sobe da base da igreja */
+const TILE_HOUSES = HOUSES_L.filter((h) => h.p[0] < -19 && h.p[0] > -34 && h.p[2] > 8 && h.p[2] < 32).slice(0, 9);
+const Tiles: React.FC<{ t: number }> = ({ t }) => {
+  if (!(t >= X10 && t < C6)) return null;
+  const on = ease(t, T.p4 + 0.2, T.tiembla + 0.2);
+  return (
+    <G>
+      {TILE_HOUSES.flatMap((h, i) => [0, 1].map((j) => {
+        const t0 = T.p4 + 0.35 + rnd(i * 3 + j) * 2.6, u = t - t0; if (u <= 0) return null;
+        const y0 = h.s[1] + 0.9, y = Math.max(0.06, y0 + 1.2 * u - 9.8 * u * u), d = Math.min(u, Math.sqrt((y0 + 0.1) / 6)) * 1.6;
+        return <Box key={`${i}-${j}`} s={[0.55, 0.1, 0.4]} p={[h.p[0] + d * (j ? 1 : -0.6), y, h.p[2] + h.s[2] * 0.45 + d]} r={[u * 7 * (y > 0.07 ? 1 : 0), 0, u * 4 * (y > 0.07 ? 1 : 0)]} c={h.r} />;
+      }))}
+      {Array.from({ length: 14 }, (_, i) => {
+        const t0 = T.p4 + 0.4 + (i / 14) * (T.terremoto + 0.6 - T.p4 - 0.4) + rnd(i + 21) * 0.15, u = t - t0; if (u <= 0) return null;
+        const a = 1.7 + rnd(i + 5) * 1.6, top = i % 2 === 0, x0 = top ? 6.1 * Math.cos(a) : -11 + rnd(i + 9) * 22, z0 = top ? 6.1 * Math.sin(a) : 9.6, y0 = top ? DB + 0.6 : 10.6;
+        const y = Math.max(0.12, y0 - 9.8 * u * u), out = Math.min(u, Math.sqrt((y0 - 0.12) / 9.8)) * 1.2;
+        return <Box key={i} s={[0.55, 0.28, 0.34]} p={[x0 + (top ? Math.cos(a) : 0) * out, y, z0 + (top ? Math.sin(a) : 1) * out]} r={y > 0.13 ? [u * 9, u * 5, 0] : [0, i, 0]} c={i % 3 ? BRICK : STONE2} />;
+      })}
+      {([[-11.5, 9.5], [11.5, 9.5], [-11.5, -9.5], [0, 12.5]] as [number, number][]).map(([x, z], i) => <Puffs key={i} t={t} p={[x, 0.1, z]} n={7} period={0.9} rise={2.2} size={1.1 * on} c="#e0d4bc" on={on} drift={[0.6, 0, 0.4]} o={i * 0.25} />)}
+    </G>
+  );
+};
+/** o fim: a cúpula quica, o sino toca e um bando de pombos sai voando dela */
+const Flock: React.FC<{ t: number }> = ({ t }) => {
+  const u0 = t - BOING[1]; if (u0 <= 0) return null;
+  return (
+    <G>
+      {Array.from({ length: 16 }, (_, i) => {
+        const u = u0 - rnd(i) * 0.25; if (u <= 0) return null;
+        const a = (i / 16) * PI * 2 + rnd(i + 2), r = 2 + u * (5 + 4 * rnd(i + 3)), fl = 0.7 * Math.sin(t * 22 + i * 1.7);
+        return (
+          <G key={i} p={[r * Math.cos(a), DB + H_NEW + 0.6 + u * (4 + 3 * rnd(i + 4)), r * Math.sin(a)]} r={[0, -a + PI / 2, 0]} sc={2.2}>
+            <Box s={[0.26, 0.2, 0.5]} c={i % 3 ? "#9aa4b0" : "#e8ecef"} cast={false} />
+            <Box s={[0.6, 0.05, 0.28]} p={[0.36, 0.05, 0]} r={[0, 0, fl]} c="#b8c0ca" cast={false} /><Box s={[0.6, 0.05, 0.28]} p={[-0.36, 0.05, 0]} r={[0, 0, -fl]} c="#b8c0ca" cast={false} />
+          </G>
+        );
+      })}
+    </G>
+  );
+};
+/** «el giro»: o prédio inteiro dá uma volta no lugar */
+const spinY = (t: number) => (t >= X12 && t < X13 ? 2 * PI * ease(t, SPIN0, SPIN0 + 0.85) : 0);
+
 // ---------------------------------------------------------------- o mundo
 export const World: React.FC<{ t: number }> = ({ t }) => {
   const H = hookOn(t), sh = shakeOf(t, 1.4);
@@ -830,7 +937,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Hills c={["#86b660", "#77a654"]} z={-95} n={16} x0={-130} flat={0.45} />
       <Land t={t} /><City t={t} /><Gulls t={t} />
       <Site t={t} /><NoHay t={t} /><Emperor t={t} />
-      <G p={sh}>
+      <G r={[0, spinY(t), 0]}><G p={sh}>
         {site && vis("piers") ? <Piers t={t} dy={d("piers")} /> : null}
         {site && vis("arches") ? <Arches t={t} dy={d("arches")} /> : null}
         {site && vis("pend") && pendU(t) > 0.003 ? (
@@ -843,10 +950,11 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
         {vis("butt") ? <Buttresses t={t} dy={d("butt")} /> : null}
         {vis("body") ? <Body t={t} dy={d("body")} /> : null}
         <Minarets t={t} />
-      </G>
+      </G></G>
       <Voids t={t} /><RingGlow t={t} /><ThrustArrows t={t} /><FlowDown t={t} /><Profiles t={t} />
       <Collapse t={t} /><Rebuild t={t} /><Museum t={t} /><Repairs t={t} /><Interior t={t} />
       <OpenA t={t} /><OpenB t={t} /><OpenC t={t} />
+      <Masons t={t} /><Candle t={t} /><Trip t={t} /><Tiles t={t} /><Flock t={t} />
     </>
   );
 };
