@@ -123,7 +123,7 @@ const Caption: React.FC<{ t: number }> = ({ t }) => {
 /** em cada corte duro o painel dá um pulo (encolhe e volta): é estilo de jogo e faz o corte ser visto pela régua
  *  (a dissect só aceita o corte se pouca coisa da imagem persiste; um painel parado dos dois lados segurava 3 cortes do E2) */
 const cutKick = (t: number) => {
-  for (const c of CUTS) if (t >= c && t < c + 0.22) return 0.72 + 0.28 * outBack(prog(t, c, c + 0.22));
+  for (const c of EP.CUTS ?? CUTS) if (t >= c && t < c + 0.22) return 0.72 + 0.28 * outBack(prog(t, c, c + 0.22));
   return 1;
 };
 

@@ -15,5 +15,6 @@ export type Episode = {
   World: React.FC<{ t: number }>;
   ENV: Env;
   EXPOSURE: number[]; // curva de exposição por 0,25 s (scripts/exposure_fit.py); vazia = 1
+  CUTS?: number[]; // cortes secos próprios do episódio (o painel dá um pulo em cada um); omitido = os 7 da régua
   SFX: [string, number, number][]; // efeito, instante (s), ganho (dB) — lido pela mixagem
 };
