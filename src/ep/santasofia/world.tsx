@@ -10,7 +10,7 @@ import { Box, Cone, Cyl, G, Sph, V3, clamp, ease, fract, lerp, mat, outBack, pip
 import { Clouds, Hills, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName, Worker, poseOf } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { CRASH, FALL0, FALL1, LAND, NWIN, T, TIP0, XC, winAt } from "./cues";
+import { CRASH, DROP_A, FALL0, FALL1, LAND, NWIN, T, TIP0, XC, winAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI;
@@ -65,9 +65,12 @@ const TOP: Record<Part, number> = { piers: 6.4, arches: 11.8, pend: 11.2, body: 
 const HOOK_END = T.ano532 + 1.0;
 const sinkAt = (p: Part) => T.constantinopla + 0.06 + (PARTS.length - 1 - PARTS.indexOf(p)) * 0.12;
 /** abertura a: tudo sobe do chão em sequência (montagem relâmpago); c: o mesmo, mais lento, atrás da multidão */
-const riseAt = (p: Part) => (OPEN === "a" ? 0.0 + PARTS.indexOf(p) * 0.11 : 0.0 + PARTS.indexOf(p) * 0.15);
+// a: pilares, arcos e muros já subindo no quadro 0 (início negativo), tudo de pé em ~0,65 s
+const RISE_A: Record<Part, number> = { piers: -0.16, arches: -0.06, body: -0.04, pend: 0.12, semi: 0.2, butt: 0.28, drum: 0.42, dome: 0, fin: 0 };
+const riseAt = (p: Part) => (OPEN === "a" ? RISE_A[p] : 0.0 + PARTS.indexOf(p) * 0.15);
 const hookDy = (p: Part, t: number) => {
-  if (t < X1 && (OPEN === "c" || (OPEN === "a" && p !== "dome" && p !== "fin"))) { const a = riseAt(p); return -(TOP[p] + 0.3) * (1 - ease(t, a - 0.12, a + 0.3)); }
+  if (t < X1 && OPEN === "a" && p !== "dome" && p !== "fin") { const a = riseAt(p); return -(TOP[p] + 0.3) * (1 - ease(t, a - 0.1, a + 0.22)); }
+  if (t < X1 && OPEN === "c") { const a = riseAt(p); return -(TOP[p] + 0.3) * (1 - ease(t, a - 0.12, a + 0.3)); }
   return -(TOP[p] + 0.4) * ease(t, sinkAt(p), sinkAt(p) + 0.42);
 };
 export const hookOn = (t: number) => t < HOOK_END;
@@ -258,7 +261,7 @@ const DomeAssembly: React.FC<{ t: number; dy: number; ddy: number }> = ({ t, dy,
           <CapShell a={5.2} h={h + 0.2} c={LEAD} f={build} />
           <CapShell a={5.0} h={h} c={GOLD} f={build} back />
           {build >= 1 ? <Cyl rt={1.1} h={0.05} p={[0, h - 0.06, 0]} c={GOLD2} seg={20} cast={false} /> : null}
-          {fin ? <Finial kind={kind!} y={h + 0.15} s={hookOn(t) && OPEN === "a" ? outBack(prog(t, 1.4, 1.65)) : 1} /> : null}
+          {fin ? <Finial kind={kind!} y={h + 0.15} s={hookOn(t) && OPEN === "a" ? outBack(prog(t, DROP_A + 0.28, DROP_A + 0.45)) : 1} /> : null}
         </G>) : null}
     </G></G>
   );
@@ -731,20 +734,40 @@ const Interior: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- as três aberturas (0 → «una cúpula», corte duro)
 /** a: montagem relâmpago (tudo sobe do chão e a cúpula cai do céu); c: multidão em ritmo acelerado; b: o operário fecha a cúpula */
-const DOME_DROP = 1.12;
+const H0 = 6, FALL_A = 0.36;
+/** a cúpula paira inteira no céu (desce devagar), cai em FALL_A s e quica no tambor */
 const openDomeDy = (t: number) => {
   if (OPEN !== "a" || t >= X1) return 0;
-  const s = prog(t, DOME_DROP - 0.4, DOME_DROP), land = t - DOME_DROP;
-  return t < DOME_DROP ? 12 * (1 - s * s) : 0.5 * Math.abs(Math.sin(land * PI / 0.18)) * Math.exp(-land * 8);
+  const t0 = DROP_A - FALL_A, land = t - DROP_A;
+  if (t < t0) { const k = 1 - t / t0; return H0 + k * (0.7 + 0.15 * Math.sin(t * 9)); }
+  if (t < DROP_A) { const s = prog(t, t0, DROP_A); return H0 * (1 - s * s); }
+  return 0.35 * Math.abs(Math.sin(land * PI / 0.16)) * Math.exp(-land * 10);
 };
+/** quica para cima no impacto da cúpula */
+export const hopA = (t: number, k = 1) => (OPEN === "a" && t >= DROP_A && t < X1 ? k * 1.0 * Math.sin(PI * prog(t, DROP_A + 0.02, DROP_A + 0.38)) : 0);
+/** posição de primeiro plano da abertura a: d = distância da câmera inicial, l = lateral (+ = direita) */
+export const fgA = (d: number, l: number): V3 => [-14 + 0.42 * d + 0.9 * l, 0, 30 - 0.9 * d + 0.42 * l];
 const OpenA: React.FC<{ t: number }> = ({ t }) => {
   if (OPEN !== "a" || t >= X1) return null;
-  const crew = Array.from({ length: 10 }, (_, j) => ({ p: [lerp(-12, 12, fract(j * 0.137 + t * 0.9 * (j % 2 ? 1 : -1) + 0.5)), 0, 11 + (j % 3) * 1.3] as V3, yaw: j % 2 ? PI / 2 : -PI / 2, pose: "walk" as PoseName, ph: j * 0.3 }));
+  const crew = Array.from({ length: 10 }, (_, j) => ({ p: [lerp(-12, 12, fract(j * 0.137 + t * 0.9 * (j % 2 ? 1 : -1) + 0.5)), hopA(t, 0.5 + 0.1 * (j % 3)), 11 + (j % 3) * 1.3] as V3, yaw: j % 2 ? PI / 2 : -PI / 2, pose: "walk" as PoseName, ph: j * 0.3 }));
+  // primeiro plano: três obreiros com tijolos na cabeça cruzando perto da câmera
+  const fg = [0, 1, 2].map((j) => { const dir = j === 1 ? -1 : 1, l = -4.6 + 9.2 * fract(j * 0.37 + 0.12 + dir * t * 0.42), p = fgA(7.6 + j * 0.9, l); p[1] = hopA(t, 0.7); return { p, yaw: dir > 0 ? 1.13 : 1.13 - PI, pose: "walk" as PoseName, ph: j * 0.27 }; });
+  const ib = t - DROP_A, rim = 5.7, yb = DB + 0.6;
   return (
     <G>
       <Crowd list={crew.map((m) => ({ ...m, ph: m.ph + t * 3 }))} t={t * 3} c={BYZ2} />
-      <Puffs t={t} p={[0, RING + 0.3, 0]} n={10} period={0.55} rise={1.6} size={1.6} c="#eadfc8" on={t > DOME_DROP && t < DOME_DROP + 0.5 ? 1 : 0} drift={[3, 0, 2]} />
-      {PIER_C.map(([x, z], i) => <Puffs key={i} t={t} p={[x, 0.1, z]} n={5} period={0.45} rise={1.0} size={0.8} c="#e8dcc4" on={t < 0.5 ? 1 : 0} />)}
+      <Crowd list={fg} t={t * 2.4} c={BYZ3} />
+      {fg.map((m, i) => <Box key={i} s={[0.5, 0.42, 0.36]} p={[m.p[0], m.p[1] + 2.32, m.p[2]]} r={[0, m.yaw, 0]} c={i % 2 ? BRICK : BRICK3} />)}
+      {PIER_C.map(([x, z], i) => <Puffs key={i} t={t} p={[x, 0.1, z]} n={5} period={0.45} rise={1.0} size={0.8} c="#e8dcc4" on={t < 0.7 ? 1 : 0} />)}
+      {/* o impacto: anel de poeira que estoura em volta do tambor + tijolos voando */}
+      {ib > 0 ? Array.from({ length: 30 }, (_, i) => { // nuvem irregular: raios, alturas e tamanhos sorteados, dois tons
+        const u = prog(ib, 0.03 * rnd(i + 11), 0.5), k = 1 - (1 - u) ** 3, a = (i / 30) * PI * 2 + rnd(i) * 0.5, r = rim - 0.8 + k * (1.2 + 3.4 * rnd(i + 1));
+        return <Sph key={i} rad={1} p={[Math.cos(a) * r, yb - 0.4 + k * (0.3 + 2.4 * rnd(i + 2) ** 2), Math.sin(a) * r]} sc={Math.max(0.001, (0.5 + 1.3 * rnd(i + 3)) * (0.6 + 0.9 * k) * (1 - 0.7 * u * u))} c={i % 3 ? "#eadfc8" : "#d8c6a4"} cast={false} ws={8} hs={6} o={{ rough: 1 }} />;
+      }) : null}
+      {ib > 0 ? Array.from({ length: 14 }, (_, i) => {
+        const a = (i / 14) * PI * 2 + rnd(i + 7), vh = 4 + 3 * rnd(i + 8), vy = 4 + 4 * rnd(i + 9), y = yb + vy * ib - 14 * ib * ib;
+        return <Box key={i} s={[0.5, 0.26, 0.32]} p={[Math.cos(a) * (rim + vh * ib), y, Math.sin(a) * (rim + vh * ib)]} r={[ib * 11, ib * 7, ib * 5]} c={i % 2 ? BRICK : BRICK3} />;
+      }) : null}
     </G>
   );
 };

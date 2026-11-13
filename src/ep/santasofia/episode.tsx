@@ -1,14 +1,14 @@
 // E14 — Santa Sofía (ecos-del-tiempo, Shorts). Câmera, operário, painel e luz deste episódio.
 import React from "react";
-import { K, Shot } from "../../toy/cam";
+import { K, Shot, keyed } from "../../toy/cam";
 import { CUTS, WINS } from "../../toy/cues";
 import type { Episode } from "../../toy/episode";
 import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
 import { V3, ease, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { CRASH, NWIN, SFX, T, TIP0, XC, winAt } from "./cues";
+import { CRASH, DROP_A, NWIN, SFX, T, TIP0, XC, winAt } from "./cues";
 import { Open, OPEN } from "./open";
-import { BYZ, DB, H_NEW, World, nLit, runX } from "./world";
+import { BYZ, DB, H_NEW, World, fgA, hopA, nLit, runX } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const PI = Math.PI;
@@ -17,10 +17,15 @@ const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
 const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14] = XC;
 
 /** as três aberturas (0 → «una cúpula»), cada uma já em ação no quadro 0 e ligada a «construida en menos de seis años» */
+const OPEN_A_KEYS = [
+  K(0, [-14.0, 3.0, 30.0], [0.0, 9.5, 0.0], 60, 3), K(0.45, [-14.8, 3.3, 29.6], [0.0, 9.6, 0.0], 60, -2),
+  K(1.1, [-16.0, 3.9, 28.9], [0.0, 9.8, 0.0], 60, 1.5), K(X1 - 0.04, [-17.0, 4.4, 28.3], [0.0, 10.0, 0.0], 60, -1)];
 const OPENING: Record<Open, Shot> = {
-  a: { name: "abertura a: montagem relâmpago — pilares, arcos, ombros e contrafortes sobem do chão e a cúpula cai do céu (⏩)", t0: 0, keys: [
-    K(0, [-14.0, 3.0, 30.0], [0.0, 7.5, 0.0], 60, 3), K(0.45, [-15.2, 3.6, 29.4], [0.0, 7.8, 0.0], 60, -2),
-    K(1.1, [-17.0, 5.0, 28.4], [0.0, 8.4, 0.0], 60, 1.5), K(X1 - 0.04, [-18.6, 6.4, 27.4], [0.0, 9.0, 0.0], 60, -1)] },
+  a: { name: "abertura a: montagem relâmpago — o prédio já subindo no quadro 0, a cúpula paira no céu e cai no tambor (estouro, tremor) (⏩)", t0: 0, keys: OPEN_A_KEYS,
+    fn: (t) => { // tremor de ~7 quadros no impacto da cúpula
+      const c = keyed(OPEN_A_KEYS, t), k = t < DROP_A ? 0 : 1 - prog(t, DROP_A, DROP_A + 0.24), f = Math.floor(t * 30), j = (n: number) => (((f * 7919 + n * 104729) % 1000) / 500 - 1) * k;
+      return { ...c, pos: [c.pos[0] + 0.5 * j(1), c.pos[1] + 0.45 * j(2), c.pos[2] + 0.3 * j(3)], look: [c.look[0] + 0.35 * j(4), c.look[1] + 0.35 * j(5), c.look[2]], roll: c.roll + 3 * j(6) };
+    } },
   b: { name: "abertura b: lá no alto, o operário fecha a cúpula com tijolos que voam da praça; a câmera abre", t0: 0, keys: [
     K(0, [4.4, DB + 9.4, 8.2], [0.0, DB + 3.6, 0.0], 56, 3), K(0.6, [4.0, DB + 9.8, 8.8], [0.0, DB + 3.6, 0.0], 56, -1.5),
     K(1.15, [4.6, DB + 10.2, 9.6], [0.0, DB + 3.4, 0.0], 56, 1), K(X1 - 0.04, [11.0, DB + 11.0, 23.0], [0.0, DB + 1.0, 0.0], 58, 0)] },
@@ -120,7 +125,8 @@ const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState
 const IN = { scale: 1.05 };
 const roof: V3 = [0, DB + H_NEW - 0.48, 0];
 const OPEN_W: Record<Open, [number, WorkerState][]> = {
-  a: [[0, S([7.5, 0, 12.5], -0.6, "alarm")], [1.15, S([7.5, 0, 12.5], -0.6, "cheer")]],
+  a: [[0, S(fgA(11, -2.0), -0.42, "point")], [DROP_A, S(fgA(11, -2.0), -0.42, "alarm", { follow: (t) => { const p = fgA(11, -2.0); p[1] = hopA(t); return p; } })],
+    [DROP_A + 0.42, S(fgA(11, -2.0), -0.42, "cheer")]],
   b: [[0, S(roof, 0.45, "chisel", { prop: "hammer" })], [1.15, S(roof, 0.45, "cheer")]],
   c: [[0, S([-7.5, 0, 15.4], PI / 2, "walk", { follow: (t) => [runX(t), t > 0.95 ? 0.5 * Math.sin(PI * prog(t, 0.95, 1.3)) : 0, 15.4] })],
     [0.95, S([-1.6, 0, 15.4], PI / 2, "alarm", { follow: (t) => [runX(t), t < 1.3 ? 0.5 * Math.sin(PI * prog(t, 0.95, 1.3)) : 0, 15.4] })]],
@@ -179,7 +185,8 @@ const HAVE: [number, string][] = [[T.ladrillo, "LADRILLO"], [T.piedra, "PIEDRA"]
 const ERAS: [number, string, string][] = [[T.iglesia, "IGLESIA", "537"], [T.mezquita0, "MEZQUITA", "1453"], [T.museo, "MUSEO", "1935"], [T.mezquita1, "MEZQUITA", "2020"]];
 const hud: HudData = {
   pills: [
-    { a: 0, b: X1 - 0.1, label: "CONSTRUIDA EN", value: (t) => `${count(t, 0.05, 1.25, 0, 5.8, 1)} AÑOS`, y: 440, tone: "gold" },
+    // pára em 5,8 e some antes da legenda «seis años» (1,08 s)
+    { a: 0, b: OPEN === "a" ? 1.02 : X1 - 0.1, label: "CONSTRUIDA EN", value: (t) => `${count(t, 0.0, OPEN === "a" ? 0.62 : 1.25, 0, 5.8, 1)} AÑOS`, y: OPEN === "a" ? 660 : 440, tone: "gold" },
     { a: T.treinta, b: X2 - 0.1, label: "CÚPULA", value: (t) => `+${count(t, T.treinta, T.treinta + 0.6, 0, 30)} m`, y: 440 },
     { a: T.grande, b: T.constantinopla - 0.1, label: "LA IGLESIA MÁS GRANDE", value: () => "N.º 1", y: 440, tone: "gold" },
     { a: T.quinientos0, b: T.constantinopla - 0.1, label: "DURANTE", value: (t) => `+${count(t, T.quinientos0, T.quinientos0 + 0.6, 0, 500)} AÑOS`, y: 550, tone: "gold" },

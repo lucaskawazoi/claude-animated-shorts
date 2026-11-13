@@ -52,6 +52,8 @@ export const NWIN = 40;
 /** instante em que a janela k (0..39) acende: «cuarenta ventanas … una junto a otra» */
 export const winAt = (k: number) => T.cuarenta + 0.1 + (k * (T.otra + 0.25 - T.cuarenta - 0.1)) / (NWIN - 1);
 /** a tentativa que dá errado: a cúpula pousa nas 4 cristas, balança, tomba na quina vazia e cai (✖) */
+/** abertura a: a cúpula do céu bate no tambor (estouro, operário quica, câmera treme) */
+export const DROP_A = 1.25;
 export const LAND = T.apoya + 0.05, TIP0 = T.huecos + 0.05, CRASH = T.huecos + 0.55;
 /** o colapso de 558 */
 export const FALL0 = T.cae + 0.05, FALL1 = T.cae + 0.75;
@@ -62,7 +64,7 @@ const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const c of XC) S.push(["whoosh", c - 0.2, -15]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
-if (OPEN === "a") { S.push(["ss-rise", 0.0, -8], ["ss-ffwd", 0.0, -12], ["stone", 0.25, -12], ["stone", 0.5, -12], ["stone", 0.75, -13], ["thud", 1.33, -6], ["quake", 1.34, -12], ["ding", 1.5, -10]); }
+if (OPEN === "a") { S.push(["ss-rise", 0.0, -8], ["ss-ffwd", 0.0, -12], ["stone", 0.1, -12], ["stone", 0.3, -12], ["stone", 0.5, -13], ["whoosh", DROP_A - 0.36, -11], ["thud", DROP_A, -3], ["quake", DROP_A + 0.01, -8], ["qe-boing", DROP_A + 0.05, -9], ["clack", DROP_A + 0.3, -12], ["ding", DROP_A + 0.32, -11]); }
 else if (OPEN === "b") S.push(["ss-bricks", 0.0, -7], ["clack", 0.2, -12], ["clack", 0.55, -12], ["clack", 0.9, -12], ["sh-click", 1.2, -6], ["cheer", 1.25, -13], ["whoosh", 1.3, -12]);
 else S.push(["ss-ffwd", 0.0, -8], ["crowd", 0.0, -12], ["ss-bricks", 0.1, -11], ["qe-slip", 0.95, -10], ["thud", 1.2, -9], ["qe-boing", 1.25, -10], ["stone", 1.3, -12]);
 for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2], [T.b3, T.c3]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
@@ -70,7 +72,7 @@ S.push(["chime", T.s2 + 0.03, -8]);
 for (const a of [T.p1, T.p2, T.p3, T.p4]) S.push(["alert", a + 0.05, -12]);
 for (const a of [T.constantinopla, T.b1, T.s2, T.b3]) S.push(["rewind", a - 0.05, -13]);
 for (const a of [T.pechinas, T.semicupulas, T.ventanas, T.nueva]) S.push(["ding", a + 0.05, -9]);
-for (const a of [T.seis0, T.treinta, T.quinientos0, T.nohay + 0.05, T.acero + 0.05, T.hormigon + 0.05, T.cuatroPilares, T.ano558, T.seis1, T.novecientos, T.quinientos1]) S.push(["pop", a, -11]);
+for (const a of [...(OPEN === "a" ? [] : [T.seis0]), T.treinta, T.quinientos0, T.nohay + 0.05, T.acero + 0.05, T.hormigon + 0.05, T.cuatroPilares, T.ano558, T.seis1, T.novecientos, T.quinientos1]) S.push(["pop", a, -11]);
 for (let k = 0; k < NWIN; k += 4) S.push(["qe-pling", winAt(k) - 0.02, -16 - (k % 8 ? 2 : 0)]);
 S.push(
   ["wind", 0.0, -17], ["gulls", 4.4, -16], ["bells", T.grande, -15], ["sink", T.constantinopla + 0.1, -10], ["waves", T.ano532, -17],
