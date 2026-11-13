@@ -26,14 +26,14 @@ export const T = {
   mueble: find("las piezas de un mueble"), juntas: find("estas son las juntas"),
   giro: find("y el giro"), mira: find("mira al sol"), largo: find("el dia mas largo"), sale: find("el sol sale"), alineado: find("alineado con su eje"), eje: find("su eje"),
   nadie: find("aun nadie sabe"), paraque: find("para que lo hicieron"),
-  manda: find("mandaselo"),
+  manda: find("mandaselo"), sofa: find("el sofa"),
   end: DURATION_S,
 };
 export { CUTS, WINS };
 
 /** cortes duros extras (ritmo do lote 3: um corte a cada ~4 s; os 7 da régua continuam), todos a ≥1,5 s de um corte da régua */
 export const XCUTS = [T.algunas, T.inglaterra, T.levantar, T.desliza - 0.3, T.b2, T.empujan - 0.1, T.esteHoyo - 0.3,
-  T.palancas - 0.05, T.capa - 0.05, T.cada - 0.05, T.giro - 0.05, T.nadie - 0.1];
+  T.palancas - 0.05, T.capa - 0.05, T.cada - 0.05, T.giro - 0.05, T.sale - 0.2, T.nadie + 0.35]; // [11] = o plano do sol no eixo
 /** a queda cômica: o dintel solto escorrega dos pilares, cai e quica no chão; no «solución» volta de ré */
 export const FALL0 = T.caer - 0.12, FALL1 = T.caer + 0.5;
 
@@ -48,13 +48,13 @@ export const stepAt = (k: number) => {
 };
 
 // a abertura escolhida (a mixagem roda no bun: OPEN=b ./cues-json.sh …); no navegador o som não é usado
-const OPEN = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPEN ?? "a";
+const OPEN = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPEN ?? "c"; // padrão: c (escolha do crítico, 13/11)
 const S: [string, number, number][] = [];
 for (const c of CUTS) S.push(["whoosh", c - 0.22, -12]);
 for (const c of XCUTS) S.push(["whoosh", c - 0.2, -15]);
 if (OPEN === "a") { S.push(["stone", 0.3, -5], ["quake", 0.32, -11]); for (let k = 0; k < 6; k++) S.push(["stone", 0.6 + k * 0.24, -13 - (k % 2) * 2]); }
 else if (OPEN === "b") S.push(["drag", 0.0, -8], ["qe-heave", 0.1, -9], ["qe-taut", 0.05, -12], ["crowd", 0.0, -15], ["sh-log", 0.55, -12], ["sh-log", 1.15, -12], ["sh-log", 1.75, -13]);
-else S.push(["qe-heave", 0.05, -9], ["qe-slip", 0.38, -12], ["qe-slip", 0.78, -12], ["qe-slip", 1.1, -11], ["qe-boing", 1.28, -9], ["thud", 1.6, -10], ["buzzer", 1.35, -14]);
+else S.push(["qe-heave", 0.0, -8], ["qe-slip", 0.02, -12], ["qe-slip", 0.4, -12], ["qe-slip", 0.68, -11], ["qe-boing", 0.95, -9], ["buzzer", 1.02, -14], ["thud", 1.28, -9], ["qe-pling", 1.75, -8]);
 for (const w of [WINS[3], WINS[6], WINS[10]]) S.push(["whoosh", w - 0.25, -13]);
 for (const [a, c] of [[T.b1, T.c1], [T.b2, T.c2], [T.b3, T.c3]]) S.push(["stamp", a + 0.05, -8], ["strike", a + 0.32, -12], ["chime", c + 0.04, -7]);
 S.push(["chime", T.b4 + 0.05, -8]);
@@ -73,5 +73,9 @@ S.push(["wind", 0.0, -16], ["sink", T.inglaterra + 0.1, -10], ["crowd", T.gente,
   ["stone", T.arriba - 0.3, -12], ["crumble", T.caer - 0.1, -11], ["whoosh", T.caer, -13], ["thud", FALL1, -6], ["qe-boing", FALL1 + 0.2, -10], ["buzzer", FALL1 + 0.05, -13], ["qe-slip", T.caer - 0.05, -12],
   ["chisel", T.tallan, -9], ["chisel", T.comoMadera + 0.3, -11], ["sh-click", T.encaja, -4], ["confetti", T.encaja + 0.1, -16],
   ["giro", T.giro, -9], ["wind", T.mira, -15], ["sh-sunrise", T.sale - 0.4, -8], ["chime", T.eje, -10],
-  ["fanfare", T.manda - 0.15, -8], ["confetti", T.manda + 0.3, -12]);
+  ["fanfare", T.manda - 0.15, -8], ["confetti", T.manda + 0.3, -12],
+  // a tentativa no braço na pergunta da altura (o dintel sobe um palmo e despenca)
+  ["qe-heave", T.b3 + 0.1, -10], ["thud", T.b3 + 0.62, -8], ["qe-boing", T.b3 + 0.7, -12], ["buzzer", T.b3 + 0.72, -14],
+  // o fim: o sofá cai do céu, ele empurra e nada; confete até o fim da voz
+  ["whoosh", T.sofa - 0.45, -14], ["thud", T.sofa, -6], ["qe-boing", T.sofa + 0.1, -11], ["qe-heave", T.sofa + 0.45, -10], ["confetti", T.sofa + 0.2, -12]);
 export const SFX = S;

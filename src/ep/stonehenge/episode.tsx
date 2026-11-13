@@ -8,12 +8,12 @@ import { V3, ease, lerp, prog } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { FALL0, FALL1, NSTEP, SFX, T, XCUTS, stepAt } from "./cues";
 import { Open, OPEN } from "./open";
-import { HERO_RY, HL as H, NEO, World, dawn, dragZ, pushX, pushY } from "./world";
+import { CX, HERO_RY, HL as H, HL1, NEO, PEBBLE, SOFA, World, dawn, dragZ, pushX, pushY } from "./world";
 import { EXPOSURE } from "./exposure";
 
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 const W3 = WINS[3], W6 = WINS[6], W10 = WINS[10];
-const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12] = XCUTS;
+const [X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13] = XCUTS;
 
 /** as três aberturas (0 → «algunas»), cada uma já em ação no quadro 0 */
 const OPENING: Record<Open, Shot> = {
@@ -24,8 +24,11 @@ const OPENING: Record<Open, Shot> = {
     K(0, [1.1, 1.9, 38.2], [0.0, 1.1, 27.5], 56, 2.5), K(0.8, [0.7, 2.0, 38.8], [0.0, 1.2, 28.5], 56, -1.5),
     K(1.45, [0.9, 2.4, 39.6], [0.0, 1.4, 29.6], 56, 1), K(X1 - 0.04, [1.6, 6.2, 41.6], [0.0, 2.4, 22.0], 58, 0)] },
   c: { name: "abertura c: o operário empurra sozinho um pilar de 30 t em pé, escorrega e voa para trás (✖)", t0: 0, keys: [
-    K(0, [-2.2, 1.5, 33.0], [-0.5, 2.3, 27.0], 56, 3), K(1.2, [-2.0, 1.6, 33.4], [-0.6, 2.4, 27.0], 56, -1.5),
-    K(1.6, [-3.0, 1.4, 33.0], [-1.8, 1.8, 27.0], 56, 2), K(X1 - 0.04, [-2.0, 5.0, 35.0], [0.0, 2.6, 20.0], 58, 0)] },
+    // push-in com tranco nos 10 primeiros quadros; acompanha o voo; no fim sobe e mostra o círculo
+    K(0, [CX - 2.6, 2.6, 39.6], [CX - 0.3, 1.5, 27.0], 46, 2.5), K(0.1, [CX - 2.5, 2.45, 39.1], [CX - 0.25, 1.45, 27.0], 46, -2),
+    K(0.2, [CX - 2.4, 2.55, 38.6], [CX - 0.35, 1.4, 27.0], 46, 1.5), K(0.33, [CX - 2.35, 2.4, 38.1], [CX - 0.3, 1.4, 27.0], 46, -0.5),
+    K(0.9, [CX - 2.2, 2.4, 37.8], [CX - 0.4, 1.4, 27.0], 46, 0.5), K(1.3, [CX - 2.8, 2.3, 37.9], [CX - 1.4, 1.3, 27.0], 46, 2),
+    K(1.8, [CX - 3.0, 2.4, 37.8], [CX - 1.6, 1.4, 27.0], 46, -0.5), K(X1 - 0.04, [CX - 1.5, 5.5, 40.5], [CX + 2.5, 2.2, 18.0], 52, 0)] },
 };
 
 // ritmo: corte duro a cada ~4 s (régua + XCUTS), chicote na entrada de todo plano (a câmera chega andando e rolando)
@@ -51,22 +54,24 @@ const SHOTS: Shot[] = [
     K(W3 + 0.6, H(-26.0, 3.6, -6.5), H(-32.5, 0.8, 0.5), 58, 4), K(T.trineo, H(-27.0, 3.0, -6.2), H(-33.0, 0.8, 0.0), 56, 0),
     K(X4 - 0.05, H(-27.4, 2.8, -6.0), H(-32.6, 0.8, 0.0), 56, -0.5)] },
   { name: "rente ao chão: desliza sobre troncos-trilho → centenas na corda", t0: X4, keys: [
-    K(X4, H(-23.0, 1.2, -5.4), H(-30.0, 0.5, -0.6), 54, 3), K(X4 + 0.45, H(-23.6, 1.5, -5.6), H(-29.0, 0.4, -0.4), 54, -0.5),
-    K(T.troncos, H(-24.4, 2.4, -4.6), H(-27.0, 0.2, 0.0), 54, 0.5), K(T.rieles + 0.2, H(-24.2, 3.8, -4.6), H(-21.8, 0.2, 0.2), 54, -0.5),
+    K(X4, H(-23.0, 1.6, -6.2), H(-30.0, 0.5, -0.6), 54, 3), K(X4 + 0.45, H(-23.6, 1.9, -6.4), H(-29.0, 0.4, -0.4), 54, -0.5),
+    K(T.troncos, H(-25.6, 5.2, -10.6), H(-27.6, 0.2, 0.4), 54, 0.5), K(T.rieles + 0.2, H(-24.4, 5.8, -10.0), H(-21.8, 0.2, 0.6), 54, -0.5),
     K(T.cientos, H(-33.5, 6.5, -6.5), H(-21.0, 0.5, 1.5), 58, 1), K(T.tiran, H(-32.0, 7.5, -8.0), H(-19.5, 0.5, 1.5), 58, 0),
     K(C3 - 0.05, H(-31.4, 7.8, -8.4), H(-19.0, 0.5, 1.5), 58, 0.5)] },
   { name: "de fora, no canteiro: chega deitada → o fantasma em pé", t0: C3, keys: [
     K(C3, H(-12.8, 3.8, 9.4), H(-11.5, 0.9, 0.0), 56, 3), K(C3 + 0.45, H(-11.8, 4.0, 8.9), H(-10.4, 0.9, 0.0), 56, -0.5),
-    K(T.acostada + 0.3, H(-8.8, 3.8, 8.2), H(-7.2, 0.9, 0.0), 56, 0.5), K(T.depie, H(-5.0, 5.0, 9.6), H(-2.2, 1.6, 0.0), 58, -0.5),
+    K(T.acostada + 0.3, H(-6.4, 6.0, 11.6), H(-3.2, 0.6, 0.0), 62, 0.5), K(T.depie, H(-5.0, 6.2, 11.4), H(-2.2, 1.4, 0.0), 60, -0.5),
     K(X5 - 0.05, H(-4.2, 5.6, 10.0), H(-1.8, 1.9, 0.0), 58, 0)] },
   { name: "corte em seção (fechado): ⏪ cavam o buraco com a parede em rampa", t0: X5, keys: [
     K(X5, H(-4.6, -0.3, 10.4), H(-3.4, 0.9, 0.0), 48, -3), K(X5 + 0.45, H(-3.6, -0.32, 10.0), H(-2.6, 0.8, 0.0), 48, 0.5),
     K(T.cavan, H(-2.0, -0.32, 9.6), H(-1.2, 0.5, 0.0), 48, -0.5), K(T.rampa + 0.6, H(-2.3, -0.32, 9.4), H(-1.6, 0.4, 0.0), 48, 0.5),
     K(X6 - 0.05, H(-2.7, -0.32, 9.6), H(-2.0, 0.4, 0.0), 48, 0)] },
-  { name: "corte em seção (aberto): empurram → a ponta cai dentro", t0: X6, keys: [
-    K(X6, H(-7.4, -0.3, 13.8), H(-6.4, 0.9, 0.0), 62, 3), K(X6 + 0.45, H(-6.8, -0.32, 13.4), H(-6.0, 0.9, 0.0), 62, -0.5),
-    K(T.punta - 0.3, H(-5.6, -0.32, 12.8), H(-5.0, 0.9, 0.0), 60, 0.5), K(T.punta + 0.25, H(-3.0, -0.32, 11.4), H(-2.4, 0.6, 0.0), 58, -0.5),
-    K(C4 - 0.05, H(-2.4, -0.3, 10.8), H(-1.7, 0.6, 0.0), 58, 0)] },
+  { name: "de fora, 3/4 de cima: empurram a pedra → a ponta tomba na borda e cai no buraco", t0: X6, keys: [
+    K(X6, H(-15.6, 4.4, 1.4), H(-3.0, 0.0, -0.3), 58, 3), K(X6 + 0.45, H(-15.0, 4.2, 1.2), H(-3.0, 0.0, -0.3), 58, -0.5),
+    K(T.punta - 0.2, H(-12.0, 4.0, 1.4), H(-2.0, -0.3, -0.2), 58, 0.5),
+    // chicote para o lado (3/4 de cima, de fora): a ponta passa a borda e tomba na rampa — de trás, a própria pedra escondia isso
+    K(T.punta + 0.12, H(-5.6, 4.9, 5.8), H(-1.6, -0.4, 0.0), 58, 2.5), K(T.cae + 0.3, H(-4.8, 4.5, 5.4), H(-1.2, -0.6, 0.0), 58, -0.5),
+    K(C4 - 0.05, H(-4.4, 4.6, 5.6), H(-1.0, -0.5, 0.0), 58, 0)] },
   { name: "de fora: endireitam com cordas → enchem o buraco com pedras e terra", t0: C4, keys: [
     K(C4, H(-4.4, 7.0, 13.4), H(2.4, 1.8, 0.8), 58, 3), K(C4 + 0.45, H(-3.5, 7.6, 12.5), H(2.4, 1.8, 0.8), 58, -0.5),
     K(T.tirando + 0.8, H(-3.0, 7.8, 12.8), H(2.2, 1.9, 0.8), 58, 0.5), K(T.rellenan + 0.2, H(-4.2, 5.2, 4.8), H(-1.2, -0.3, 0.0), 54, -0.5),
@@ -76,7 +81,7 @@ const SHOTS: Shot[] = [
     K(T.p2 + 0.4, [0.0, 3.0, 19.5], [0.0, 2.6, 10.0], 58, -0.5), K(W6, [0.2, 3.2, 19.0], [0.0, 2.6, 10.0], 58, 0),
     K(W6 + 0.4, [1.6, 7.0, 15.2], [0.0, 0.4, 11.4], 56, 3), K(C5 - 0.02, [1.4, 7.0, 15.0], [0.0, 0.4, 11.4], 56, 2)] },
   { name: "a altura: +4 m → ⏪ «lo más probable» (HIPÓTESIS)", t0: C5, keys: [
-    K(C5, [-6.6, 2.0, 19.4], [0.4, 2.2, 10.8], 58, -3), K(C5 + 0.45, [-5.8, 2.4, 18.6], [0.4, 2.2, 10.8], 58, 0.5),
+    K(C5, [-6.6, 2.0, 19.4], [-0.6, 2.2, 10.8], 58, -3), K(C5 + 0.45, [-5.8, 2.4, 18.6], [-0.6, 2.2, 10.8], 58, 0.5),
     K(T.metros + 0.6, [-5.4, 2.6, 18.2], [0.3, 2.2, 10.8], 58, -0.5), K(X8 - 0.05, [-4.4, 3.6, 17.2], [0.3, 2.5, 10.8], 58, 0.5)] },
   { name: "alavancas de perto: um lado, um tronco → o outro lado, outro tronco", t0: X8, keys: [
     K(X8, [-8.8, 1.5, 17.4], [-2.4, 1.2, 11.6], 54, 3), K(X8 + 0.45, [-8.0, 2.2, 19.0], [-2.4, 1.2, 11.6], 56, -0.5),
@@ -98,24 +103,29 @@ const SHOTS: Shot[] = [
   { name: "de fora, do alto: juntas de carpinteiro → o círculo se completa", t0: C7, keys: [
     K(C7, [4.0, 11.2, 17.4], [0.0, 4.0, 10.0], 54, -3), K(C7 + 0.45, [3.0, 10.5, 16.5], [0.0, 4.0, 10.0], 54, 0.5),
     K(T.juntas - 0.3, [5.0, 13.0, 20.0], [0.0, 3.0, 8.0], 58, -0.5), K(X11 - 0.05, [3.5, 15.0, 21.0], [0.0, 2.0, 4.0], 58, 0)] },
-  { name: "do centro, rente ao chão: o sol do dia mais longo nasce no eixo", t0: X11, keys: [
-    K(X11, [0.0, 5.4, 3.6], [0.0, 3.0, -20.0], 60, 3), K(X11 + 0.45, [0.0, 3.9, 3.1], [0.0, 2.8, -20.0], 60, -0.5),
-    K(T.mira + 0.3, [0.0, 2.1, 2.6], [0.0, 2.5, -20.0], 60, 0.5), K(T.alineado, [0.0, 2.2, 2.8], [0.0, 2.4, -20.0], 60, 0),
-    K(X12 - 0.05, [0.2, 2.5, 3.0], [0.0, 2.8, -20.0], 60, -0.5)] },
-  { name: "o operário: ¿para qué? → chicote para o alto, o círculo ao nascer do sol", t0: X12, keys: [
-    K(X12, [-0.5, 1.6, -1.4], [-1.6, 1.7, -7.0], 54, -3), K(X12 + 0.45, [-0.9, 1.7, -1.9], [-1.6, 1.7, -7.0], 54, 0.5),
-    K(W10, [-1.3, 1.8, -2.5], [-1.9, 1.6, -6.8], 54, -0.5), K(W10 + 0.5, [-2.6, 8.6, 1.2], [-0.5, 2.0, -8.0], 60, 1.5),
-    K(T.end, [-3.0, 10.2, 1.8], [-0.5, 2.0, -8.0], 60, 0)] },
+  { name: "atrás do operário: o círculo mira o nordeste, ele aponta e ergue os braços para a aurora", t0: X11, keys: [
+    K(X11, [1.6, 3.6, 0.6], [-1.6, 2.0, -9.0], 56, 3), K(X11 + 0.45, [1.2, 3.0, 0.0], [-1.6, 2.0, -9.0], 56, -0.5),
+    K(T.largo, [1.0, 2.6, -0.8], [-1.8, 2.0, -9.5], 54, 0.5), K(X12 - 0.05, [0.7, 2.5, -1.6], [-2.0, 2.0, -9.5], 54, 0)] },
+  { name: "do centro, rente ao chão, NO eixo: o sol nasce no vão, no fim da linha tracejada (sem operário)", t0: X12, keys: [
+    K(X12, [0.0, 1.7, 2.6], [0.0, 1.9, -30.0], 50, 2), K(X12 + 0.45, [0.0, 1.55, 1.8], [0.0, 1.8, -30.0], 50, -0.5),
+    K(X13 - 0.05, [0.0, 1.35, 0.2], [0.0, 1.9, -30.0], 50, 0)] },
+  { name: "o operário de frente: ¿para qué? → mándaselo → o sofá cai do céu e nem ele se mexe", t0: X13, keys: [
+    K(X13, [0.6, 1.9, 0.6], [-2.1, 2.4, -6.4], 50, -3), K(X13 + 0.45, [0.3, 1.8, 0.1], [-2.1, 2.4, -6.4], 50, 0.5),
+    K(W10, [-0.1, 1.8, -0.6], [-2.2, 2.3, -6.4], 50, -0.5), K(W10 + 0.5, [0.6, 3.2, 0.2], [-2.8, 1.9, -6.0], 52, 1.5),
+    K(T.end, [0.8, 3.5, 0.8], [-2.8, 1.9, -6.0], 52, 0)] },
 ];
 // sem janela parada: a câmera na mão anda sempre (a seção, com a câmera sob o chão, e o close das juntas ficam baixos)
-const DYN = [0.8, 2.0, 4.0, 2.4, 0.35, 1.6, 3.6, 3.0, 0.9, 1.3, 0.3];
+// (janela 9 baixa: no plano do sol a câmera tem de ficar NO eixo, senão o sol cai atrás de um pilar)
+const DYN = [0.8, 2.0, 4.0, 2.4, 0.35, 1.6, 3.6, 3.0, 0.9, 0.15, 0.3];
 
 const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState> = {}): WorkerState => ({ p, yaw, pose, ...o });
 const camp = H(-29.0, 0, -0.9), sec = H(-5.0, 0, -1.8), rope = H(3.9, 0, 2.6), lever: V3 = [-4.95, 0, 11.7];
 const OPEN_W: Record<Open, [number, WorkerState][]> = {
   a: [[0, S([-1.5, 0, 4.0], 2.6, "alarm")]],
   b: [[0, S([0, 1.75, 21.6], 0, "cheer", { follow: (t) => [0, 1.75, dragZ(t) - 2.0] })]],
-  c: [[0, S([-1.2, 0, 27], Math.PI / 2, "pull", { follow: (t) => [pushX(t), pushY(t), 27] })], [1.25, S([-1.2, 0, 27], Math.PI / 2, "alarm", { follow: (t) => [pushX(t), pushY(t), 27] })]],
+  c: [[0, S([CX - 1.1, 0, 27], Math.PI / 2, "pull", { follow: (t) => [pushX(t), pushY(t), 27] })],
+    [0.93, S([CX - 1.1, 0, 27], Math.PI / 2, "alarm", { follow: (t) => [pushX(t), pushY(t), 27] })],
+    [PEBBLE, S([CX - 1.1, 0, 27], 0.6, "think", { follow: (t) => [pushX(t), 0, 27] })]],
 };
 const dodge = (t: number): V3 => { const u = ease(t, T.caer - 0.1, T.caer + 0.3); return [lerp(1.8, 3.4, u), 0.6 * Math.sin(Math.PI * prog(t, T.caer - 0.1, T.caer + 0.3)), lerp(7.2, 7.6, u)]; };
 const WORKER: [number, WorkerState][] = [
@@ -143,7 +153,10 @@ const WORKER: [number, WorkerState][] = [
   [T.tirando + 0.9, S(rope, HERO_RY - 0.6, "cheer")],
   [T.esteHoyo, S(rope, HERO_RY - 0.6, "present")],
   [T.p2, S(rope, HERO_RY - 0.6, "alarm")],
-  [C5, S(lever, 0.6, "present")],
+  [C5, S([-2.7, 0, 11.0], -0.43, "present")],
+  [T.altura, S([-2.7, 0, 11.0], -0.43, "point")],
+  [T.b3, S([-2.7, 0, 11.0], 0.9, "alarm")],
+  [T.c3, S([-2.7, 0, 11.0], -0.43, "think")],
   [T.palancas, S(lever, Math.PI / 2, "point")],
   [T.levantan, S(lever, Math.PI / 2, "pull")],
   [T.tronco1 + 0.3, S(lever, 0.5, "cheer")],
@@ -155,10 +168,51 @@ const WORKER: [number, WorkerState][] = [
   [T.b4, S([1.8, 0, 7.2], Math.PI - 0.2, "point")],
   [C7, S([-2.3, 0, -6.4], Math.PI, "idle", { scale: 0 })],
   [T.giro, S([-2.3, 0, -6.4], Math.PI + 0.2, "point")],
-  [T.sale, S([-2.3, 0, -6.4], Math.PI + 0.2, "cheer")],
-  [T.nadie, S([-2.3, 0, -6.4], Math.PI - 0.5, "think")],
-  [T.manda, S([-2.3, 0, -6.4], 0.24, "cheer")],
+  [T.largo - 0.1, S([-2.3, 0, -6.4], Math.PI + 0.2, "cheer")],
+  [X12, S([-2.3, 0, -6.4], Math.PI + 0.2, "cheer", { scale: 0 })],
+  [X13, S([-2.3, 0, -6.4], 0.35, "think")],
+  [T.manda, S([-2.3, 0, -6.4], 0.42, "cheer")],
+  [T.sofa - 0.05, S([-2.3, 0, -6.4], -0.5, "alarm")],
+  [T.sofa + 0.35, S([SOFA[0] + 1.05, 0, SOFA[2] - 0.75], -0.94, "pull")],
 ];
+
+/** bordão «SIN X» → «¡CON INGENIO!»: igual ao do motor, mas o amarelo entra abaixo do carimbo cinza (o crítico: um cobria o outro) */
+const STAMPS: [number, number, string][] = [[T.b1, T.c1, "SIN RUEDAS"], [T.b2, T.c2, "SIN GRÚA"], [T.b3, T.c3, "SIN GRÚA"]];
+const StampLo: React.FC<{ t: number; a: number; b: number; label: string }> = ({ t, a, b, label }) => {
+  const k = win(t, a, b + 1.5, 0.15); if (k <= 0) return null;
+  const s1 = pop(t, a, 0.25), strike = ease(t, a + 0.3, a + 0.55), s2 = pop(t, b, 0.3), shake = t > b ? Math.sin((t - b) * 30) * 6 * (1 - prog(t, b, b + 0.5)) : 0;
+  return (
+    <div style={{ position: "absolute", left: 0, width: 1080, top: 560, height: 420, opacity: k }}>
+      <div style={{ position: "absolute", left: 0, width: 1080, top: 0, display: "flex", justifyContent: "center", transform: `rotate(-4deg) scale(${s1 * (t > b ? 0.86 : 1)})`, opacity: t > b ? 0.8 : 1 }}>
+        <div style={{ position: "relative", padding: "6px 30px 10px", border: "8px solid #5b6670", borderRadius: 18, background: "#d9dee2e6" }}>
+          <span style={{ fontFamily: FONT, fontSize: 70, color: "#5b6670", letterSpacing: 3 }}>{label}</span>
+          <div style={{ position: "absolute", left: -12, top: "48%", height: 16, width: `${104 * strike}%`, background: "#e0262b", borderRadius: 8, transform: "rotate(-8deg)", transformOrigin: "left center" }} />
+        </div>
+      </div>
+      {t >= b ? (
+        <div style={{ position: "absolute", left: 0, width: 1080, top: 150, display: "flex", justifyContent: "center", transform: `rotate(${3 + shake * 0.2}deg) scale(${s2})` }}>
+          <span style={{ fontFamily: FONT, fontSize: 124, color: "#ffd400", lineHeight: 1, ...stroke(16, "#3a2300") }}>¡CON INGENIO!</span>
+        </div>) : null}
+    </div>
+  );
+};
+/** ao lado das pílulas MOTORES / RUEDAS / GRÚAS 0: o ícone surge e leva um ✖ */
+const NOPE: [number, number, "gear" | "wheel" | "crane"][] = [[T.nohay, 440, "gear"], [T.ruedas, 550, "wheel"], [T.gruas, 660, "crane"]];
+const Nope: React.FC<{ t: number; a: number; y: number; kind: "gear" | "wheel" | "crane" }> = ({ t, a, y, kind }) => {
+  const k = win(t, a, T.madera - 0.15, 0.15); if (k <= 0) return null;
+  const x = ease(t, a + 0.25, a + 0.45), B = "#14202b", C = "#8a5a2e";
+  return (
+    <div style={{ position: "absolute", left: 770, top: y - 14, width: 110, height: 110, opacity: k, transform: `scale(${pop(t, a, 0.3)}) rotate(${-8 + 6 * Math.sin(t * 6)}deg)` }}>
+      <svg viewBox="0 0 120 120" width="110" height="110">
+        <circle cx="60" cy="60" r="54" fill="#ffffffd9" stroke={B} strokeWidth="6" />
+        {kind === "gear" ? <g>{Array.from({ length: 8 }, (_, i) => <rect key={i} x="54" y="20" width="12" height="16" fill="#6b7680" transform={`rotate(${i * 45} 60 60)`} />)}<circle cx="60" cy="60" r="24" fill="#6b7680" /><circle cx="60" cy="60" r="9" fill="#ffffff" /></g> : null}
+        {kind === "wheel" ? <g><circle cx="60" cy="60" r="30" fill="none" stroke={C} strokeWidth="9" />{[0, 45, 90, 135].map((d) => <line key={d} x1="60" y1="30" x2="60" y2="90" stroke={C} strokeWidth="5" transform={`rotate(${d} 60 60)`} />)}</g> : null}
+        {kind === "crane" ? <g stroke="#e0a020" strokeWidth="8" strokeLinecap="round" fill="none"><path d="M40 98 L40 26 L92 26" /><path d="M40 44 L60 26" /><path d="M86 26 L86 52" stroke={B} strokeWidth="3" /><path d="M80 52 L92 52 L86 62 Z" fill={B} stroke={B} strokeWidth="2" /></g> : null}
+        {x > 0 ? <path d="M22 22 L98 98 M98 22 L22 98" stroke="#e0262b" strokeWidth="12" strokeLinecap="round" pathLength={1} strokeDasharray={`${x} 1`} /> : null}
+      </svg>
+    </div>
+  );
+};
 
 const HAVE: [number, string][] = [[T.madera, "MADERA"], [T.cuerda, "CUERDA"], [T.piedra, "PIEDRA"], [T.gente, "MUCHA GENTE"]];
 const steps = (t: number) => { let n = 0; for (let k = 1; k <= NSTEP; k++) if (t >= stepAt(k)) n++; return n; };
@@ -178,7 +232,7 @@ const hud: HudData = {
     { a: T.rampa, b: T.empujan + 0.5, label: "PARED", value: () => "EN RAMPA", y: 440 },
     { a: T.piedras, b: T.esteHoyo - 0.1, label: "RELLENO", value: (t) => (t < T.tierra - 0.05 ? "PIEDRAS" : t < T.apretadas - 0.05 ? "TIERRA" : "¡APRETADO!"), y: 440, tone: "green" },
     { a: T.altura, b: T.b3 - 0.1, label: "ALTURA", value: (t) => `+${count(t, T.altura, T.metros + 0.5, 0, 4)} m`, y: 440, tone: "red" },
-    { a: T.tronco1, b: T.estaTorre - 0.1, label: "CAPAS", value: (t) => `${steps(t)}`, y: 440, tone: "green" },
+    { a: T.tronco1, b: T.estaTorre - 0.1, label: "CAPAS", value: (t) => `${Math.ceil(steps(t) / 2)}`, y: 440, tone: "green" },
     { a: T.saliente, b: T.encima - 0.1, label: "PILAR", value: () => "SALIENTE", y: 440, tone: "green" },
     { a: T.hueco, b: T.encaja + 0.4, label: "DINTEL", value: () => "HUECO", y: 440, tone: "green" },
     { a: T.largo, b: T.nadie - 0.1, label: "SOLSTICIO", value: () => "DE VERANO", y: 440, tone: "gold" },
@@ -189,15 +243,17 @@ const hud: HudData = {
   ],
   alerts: [T.p1, T.p2, T.p3],
   rewinds: [T.inglaterra, T.b2, T.b3, T.b4],
-  crosses: [...(OPEN === "c" ? [[1.3, T.algunas - 0.05] as [number, number]] : []), [T.toneladas + 0.5, C2 - 0.1], [FALL0 + 0.1, T.b4 - 0.1]],
-  stamps: [[T.b1, T.c1, "SIN RUEDAS"], [T.b2, T.c2, "SIN GRÚA"], [T.b3, T.c3, "SIN GRÚA"]],
-  reward: { a: T.manda - 0.1, len: T.end - T.manda + 0.1, top: "LEVANTADO HACE", big: (t) => `~${count(t, T.manda - 0.1, T.manda + 1.1, 0, 4500)} AÑOS`, sub: "SIN UN SOLO MOTOR" },
+  crosses: [...(OPEN === "c" ? [[1.0, T.algunas - 0.05] as [number, number]] : []), [T.toneladas + 0.5, C2 - 0.1], [HL1 + 0.05, T.c3 - 0.1], [FALL0 + 0.1, T.b4 - 0.1]],
+  stamps: [], // o carimbo do bordão é o local (StampLo): o «¡CON INGENIO!» entra ABAIXO do cinza, sem cobri-lo
+  reward: { a: T.manda - 0.1, len: T.end - T.manda + 0.1, top: "LEVANTADO HACE", big: () => "~4500 AÑOS", sub: "SIN UN SOLO MOTOR" },
   Extra: ({ t }) => {
     const map = win(t, T.algunas, T.rueda - 0.1, 0.2), wheel = win(t, T.rueda, T.inglaterra - 0.05, 0.15), h = hyp(t);
-    const clic = win(t, T.encaja, T.encaja + 0.55, 0.1), mueble = win(t, T.mueble, T.juntas - 0.1, 0.15), q = win(t, T.nadie, T.manda - 0.2, 0.2);
+    const clic = win(t, T.encaja, T.encaja + 0.55, 0.1), mueble = win(t, T.mueble, T.juntas - 0.1, 0.15), q = win(t, X13, T.manda - 0.2, 0.2);
     const route = prog(t, T.algunas + 0.2, T.doscientos + 0.4);
     return (
       <>
+        {STAMPS.map(([a, b, l]) => <StampLo key={a} t={t} a={a} b={b} label={l} />)}
+        {NOPE.map(([a, y, kind]) => <Nope key={a} t={t} a={a} y={y} kind={kind} />)}
         {map > 0 ? (
           <div style={{ position: "absolute", left: 0, width: 1080, top: 600, display: "flex", justifyContent: "center", opacity: map, transform: `scale(${pop(t, T.algunas, 0.3)}) rotate(-2deg)` }}>
             <div style={{ position: "relative", width: 560, height: 400, borderRadius: 34, background: "#bfe3f5", border: "8px solid #14202b", boxShadow: "0 10px 0 #00000055", overflow: "hidden" }}>
@@ -244,7 +300,7 @@ const hud: HudData = {
             </div>
           </div>) : null}
         {q > 0 ? (
-          <div style={{ position: "absolute", left: 0, width: 1080, top: 640, display: "flex", justifyContent: "center", opacity: q, transform: `scale(${pop(t, T.nadie, 0.35)})` }}>
+          <div style={{ position: "absolute", left: 0, width: 1080, top: 640, display: "flex", justifyContent: "center", opacity: q, transform: `scale(${pop(t, X13, 0.35)})` }}>
             <span style={{ fontFamily: FONT, fontSize: 120, color: "#ffd400", ...stroke(14, "#3a2300") }}>¿PARA QUÉ?</span>
             {[0, 1, 2, 3, 4].map((i) => <span key={i} style={{ position: "absolute", left: 120 + i * 190, top: -80 - 40 * Math.sin(t * 2 + i * 1.7), fontFamily: FONT, fontSize: 70 + (i % 2) * 24, color: "#fff", opacity: 0.85, ...stroke(8) }}>?</span>)}
           </div>) : null}

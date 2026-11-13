@@ -8,7 +8,7 @@ import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBac
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
 import { Costume, Crowd, PoseName } from "../../toy/worker";
 import { CUTS } from "../../toy/cues";
-import { FALL0, FALL1, NSTEP, T, stepAt } from "./cues";
+import { FALL0, FALL1, NSTEP, T, XCUTS, stepAt } from "./cues";
 import { OPEN } from "./open";
 
 const PI = Math.PI, D2R = PI / 180;
@@ -20,7 +20,10 @@ const NEO2: Costume = { ...NEO, top: "#8c6c4a", kilt: "#5e4630", skin: "#c48a5e"
 const GHOST = { opacity: 0.42, depthWrite: false, emissive: "#ffd400", ei: 0.55 };
 
 // ---------------------------------------------------------------- referenciais
-const slotA = (i: number) => (96 - 12 * i) * D2R;
+// o vão do eixo do solstício (entre os pilares 15 e 16, em −z) é mais largo — como a entrada real — para o sol caber nele
+const slotA = (i: number) => (96 - 12 * i + (i === 15 ? 2.5 : i === 16 ? -2.5 : 0)) * D2R;
+/** dintel i (entre os pilares i e i+1): ângulo do meio, meia-abertura */
+const lintelArc = (i: number) => { const a1 = slotA(i), h = ((((a1 - slotA((i + 1) % 30)) % (2 * PI)) + 2 * PI) % (2 * PI)) / 2; return { am: a1 - h, h }; };
 export const slotP = (i: number): V3 => [R * Math.cos(slotA(i)), 0, R * Math.sin(slotA(i))];
 const slotRY = (i: number) => PI / 2 - slotA(i);
 const A0 = slotA(0);
@@ -34,7 +37,7 @@ const toHL = (x: number, z: number): [number, number] => { const dx = x - HERO[0
 const sinkT = (t: number, k: number) => ease(t, T.inglaterra + 0.05 + k * 0.6, T.inglaterra + 0.5 + k * 0.6); // ⏪: tudo afunda
 const hook = (t: number) => t < T.inglaterra + 1.3;
 const site = (t: number) => t >= C3; // canteiro (do plano 4 em diante)
-export const sectionOn = (t: number) => t >= C3 && t < C4; // plano 4: corte em seção (câmera abaixo do chão, olhando a face)
+export const sectionOn = (t: number) => t >= XCUTS[4] && t < XCUTS[5]; // corte em seção (câmera abaixo do chão): só «cavan… rampa»
 const LATE = [2, 3, 4, 26, 27, 28, 29]; // pilares que só sobem na onda final (o lado do canteiro fica livre)
 const FAR = (i: number) => (i >= 5 && i <= 25) || i === 1;
 const WA = T.juntas + 0.1, WB = T.giro - 0.2;
@@ -99,18 +102,29 @@ const OpenDrag: React.FC<{ t: number }> = ({ t }) => {
     </G>
   );
 };
-/** abertura c: o operário sozinho empurra um pilar de 30 t em pé — os pés escorregam, ele voa para trás (✖) */
-export const pushX = (t: number) => -1.2 - 0.2 * ease(t, 0.35, 0.5) - 0.2 * ease(t, 0.75, 0.9) - 0.25 * ease(t, 1.05, 1.2) - 1.1 * ease(t, 1.25, 1.6);
-export const pushY = (t: number) => (t > 1.25 && t < 1.6 ? 0.75 * Math.sin(PI * prog(t, 1.25, 1.6)) : 0);
+/** abertura c (a padrão, escolhida pelo crítico): o operário sozinho empurra um monólito de 30 t em pé — já no meio do
+ *  esforço no quadro 0, os pés escorregam (pó), ele voa para trás (✖) e a pedra nem se mexe; uma pedrinha cai do topo na cabeça dele.
+ *  O monólito fica à esquerda do círculo (x = CX) para o círculo aparecer inteiro no fundo. */
+export const CX = -5.5, MH = 3.8;
+const OP0 = CX - 0.6 - 0.5; // onde ele empurra (encostado na face −x do monólito)
+export const pushX = (t: number) => OP0 - 0.12 * ease(t, 0, 0.12) - 0.18 * ease(t, 0.38, 0.5) - 0.2 * ease(t, 0.66, 0.78) - 1.5 * ease(t, 0.93, 1.28);
+export const pushY = (t: number) => (t > 0.93 && t < 1.28 ? 0.7 * Math.sin(PI * prog(t, 0.93, 1.28)) : 0);
+export const PEBBLE = 1.75; // a pedrinha acerta a cabeça
 const OpenPush: React.FC<{ t: number }> = ({ t }) => {
   if (OPEN !== "c" || t >= OPEN_END) return null;
-  const sh = t < 1.25 ? 0.012 * Math.sin(t * 50) : 0;
+  const sh = t < 0.9 ? 0.015 * Math.sin(t * 50) : 0, land = OP0 - 2.0;
+  // pedrinha: solta do topo em 1,45, acerta a cabeça em PEBBLE, quica para trás
+  const pb = t < 1.45 ? null : t < PEBBLE ? (() => { const u = prog(t, 1.45, PEBBLE); return [lerp(CX - 0.4, land, u), lerp(MH + 0.1, 1.95, u) + 0.6 * Math.sin(PI * u), 27] as V3; })()
+    : (() => { const u = prog(t, PEBBLE, PEBBLE + 0.3); return [land - 0.7 * u, 1.95 * (1 - u) + 0.5 * Math.sin(PI * u) + 0.12, 27] as V3; })();
   return (
     <G>
-      <Box s={[1.4, 5.6, 1.3]} p={[sh, 2.8, 27]} c={SAR} />
-      <Box s={[1.3, 0.12, 1.2]} p={[sh, 5.6, 27]} c={SAR3} cast={false} />
-      <Puffs t={t} p={[pushX(t) - 0.2, 0.05, 27]} n={6} period={0.45} rise={0.5} size={0.3} c="#d8c8a8" drift={[-0.8, 0, 0]} on={t > 0.3 && t < 1.3 ? 1 : 0} />
-      <Puffs t={t} p={[-2.95, 0.05, 27]} n={7} period={0.5} rise={0.8} size={0.4} c="#d8c8a8" on={t > 1.55 && t < 2.0 ? 1 : 0} />
+      <Box s={[1.2, MH, 1.2]} p={[CX + sh, MH / 2, 27]} c={SAR} />
+      <Box s={[1.1, 0.12, 1.1]} p={[CX + sh, MH, 27]} c={SAR3} cast={false} />
+      <Puffs t={t} p={[pushX(t) - 0.2, 0.05, 27]} n={7} period={0.4} rise={0.6} size={0.34} c="#d8c8a8" drift={[-0.9, 0, 0]} on={t < 0.92 ? 1 : 0} />
+      <Puffs t={t} p={[CX - 0.6, 0.05, 27.3]} n={5} period={0.5} rise={0.4} size={0.25} c="#e2d6bc" drift={[-0.4, 0, 0.3]} on={t < 0.6 ? 1 : 0} o={0.3} />
+      <Puffs t={t} p={[land, 0.05, 27]} n={7} period={0.5} rise={0.8} size={0.4} c="#d8c8a8" on={t > 1.24 && t < 1.75 ? 1 : 0} />
+      {pb ? <Sph rad={0.27} p={pb} c={SAR3} ws={8} hs={6} /> : null}
+      {t > PEBBLE && t < OPEN_END ? Array.from({ length: 4 }, (_, i) => { const a = t * 7 + (i * PI) / 2; return <Sph key={i} rad={0.09} p={[land + 0.45 * Math.cos(a), 2.15 + 0.08 * Math.sin(a * 2), 27 + 0.45 * Math.sin(a)]} c="#ffe14a" o={{ emissive: "#ffcc00", ei: 0.9 }} cast={false} ws={6} hs={4} />; }) : null}
     </G>
   );
 };
@@ -155,7 +169,7 @@ const Earthworks: React.FC = () => (
       <mesh position={[0, 0.014, 0]} rotation={[-PI / 2, 0, -b1]} receiveShadow material={mat("#5c9a38")}><ringGeometry args={[16.4, 17.8, 48, 1, 0, b1 - b0]} /></mesh>
     </G>)}
     {[-3.2, 3.2].map((x) => <Box key={x} s={[0.9, 0.3, 64]} p={[x, 0.15, -50]} c="#86c255" cast={false} />)}
-    <Box s={[1.8, 3.6, 1.4]} p={[1.2, 1.6, -24]} r={[0.14, 0.4, -0.1]} c={SAR2} />
+    <Box s={[1.8, 3.6, 1.4]} p={[3.2, 1.6, -24]} r={[0.14, 0.4, -0.1]} c={SAR2} />
   </G>
 );
 
@@ -179,8 +193,8 @@ const Ring: React.FC<{ t: number }> = ({ t }) => (
     {Array.from({ length: 30 }, (_, i) => {
       if (i === 0) return null; // dintel herói: componente Lintel
       const l = lintelDrop(i, t); if (!l.on) return null;
-      const am = slotA(i) - 6 * D2R, rc = R * Math.cos(6 * D2R);
-      return <Box key={i} s={[2 * R * Math.sin(6 * D2R) + 0.02, LH, UD]} p={[rc * Math.cos(am), UH + LH / 2 + l.dy, rc * Math.sin(am)]} r={[0, PI / 2 - am, 0]} c={i % 2 ? SAR2 : SAR} />;
+      const { am, h } = lintelArc(i), rc = R * Math.cos(h);
+      return <Box key={i} s={[2 * R * Math.sin(h) + 0.02, LH, UD]} p={[rc * Math.cos(am), UH + LH / 2 + l.dy, rc * Math.sin(am)]} r={[0, PI / 2 - am, 0]} c={i % 2 ? SAR2 : SAR} />;
     })}
   </G>
 );
@@ -377,6 +391,12 @@ const Pushers: React.FC<{ t: number }> = ({ t }) => {
   const crew = [-0.3, 0.3].map((z, i) => ({ p: [tail - i * 0.5, 0, z - 0.35] as V3, yaw: PI / 2, pose: (go ? "pull" : "cheer") as PoseName, ph: i * 0.3 }));
   return <Crowd list={crew} t={t} c={NEO2} />;
 };
+/** estaca com bandeirinha onde a pedra vai ficar em pé (da chegada até começarem a cavar) */
+const Stake: React.FC<{ t: number }> = ({ t }) => {
+  if (t < C3 || t > T.cavan - 0.1) return null;
+  const k = outBack(prog(t, C3 + 0.3, C3 + 0.7)), wave = Math.sin(t * 9) * 0.25;
+  return <G p={[0, 0, 0]} sc={Math.max(0.001, k)}><Cyl rt={0.06} h={1.7} p={[0, 0.85, 0]} c={WOOD2} seg={6} /><Box s={[0.05, 0.36, 0.55]} p={[0, 1.5, 0.3]} r={[wave, 0, 0]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.5 }} cast={false} /></G>;
+};
 /** fantasma: a pedra tem de ficar EM PÉ aqui (o plano do objetivo, estilo jogo) */
 const GhostUpright: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, T.depie - 0.15, T.depie + 0.25) * (1 - ease(t, T.cavan, T.cavan + 0.4)); if (k <= 0.01) return null;
@@ -486,10 +506,23 @@ const colState = (s: number, t: number) => {
 };
 const towerTop = (s: number, t: number) => LOG * (1 + colState(s, t).n);
 /** dintel herói: x do centro, altura da base, z, inclinação (z) e balanço (x) */
+/** «¿cómo la subes sin grúa?»: quatro tentam levantar o dintel no braço; sobe um palmo e despenca */
+export const HL0 = T.b3 + 0.1, HL1 = T.b3 + 0.62;
+const handLift = (t: number) => {
+  if (t < HL0 || t > HL1 + 0.6) return 0;
+  if (t < HL1) return 0.42 * Math.sin((PI / 2) * prog(t, HL0, HL1 - 0.08)) * (t > HL1 - 0.08 ? 1 - prog(t, HL1 - 0.08, HL1) : 1);
+  const a = t - HL1; return 0.14 * Math.abs(Math.sin((a * PI) / 0.16)) * Math.exp(-a * 7);
+};
+const HandCrew: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.b3 - 0.05 || t > T.c3 + 0.4) return null;
+  const up = t < HL1, fall = t > HL1 ? Math.min(1, prog(t, HL1, HL1 + 0.25)) : 0;
+  const crew = [[-1.4, -0.85, PI / 2], [1.4, -0.85, -PI / 2], [-1.4, 0.85, PI / 2], [1.4, 0.85, -PI / 2]].map(([x, dz, yaw], i) => ({ p: [x - Math.sign(x) * 0.5 * fall, 0, TZ + dz] as V3, yaw, pose: (up ? "pull" : "alarm") as PoseName, ph: i * 0.3 }));
+  return <G><Crowd list={crew} t={t} c={NEO2} /><Puffs t={t} p={[0, 0.1, TZ]} n={7} period={0.45} rise={0.6} size={0.4} c="#e2d6bc" on={t > HL1 && t < HL1 + 0.5 ? 1 : 0} /></G>;
+};
 const lintelPose = (t: number) => {
   const a = colState(-1, t), b = colState(1, t), hA = LOG * (1 + a.n) + a.lift, hB = LOG * (1 + b.n) + b.lift;
   const top = LOG * (1 + NSTEP / 2);
-  if (t < C6) return { y: (hA + hB) / 2, z: TZ, pitch: Math.atan2(hB - hA, 2.09), roll: 0 };
+  if (t < C6) return { y: (hA + hB) / 2 + handLift(t), z: TZ, pitch: Math.atan2(hB - hA, 2.09), roll: 0 };
   // em cima: desliza para os pilares, balança (solta), volta (⏪), e encaixa
   const in1 = ease(t, C6 + 0.05, C6 + 0.7), back = ease(t, T.b4 + 0.05, T.b4 + 0.6), in2 = ease(t, T.hueco - 0.25, T.encaja - 0.14);
   const z = lerp(TZ, LZ0, in1 * (1 - back) + in2);
@@ -565,14 +598,14 @@ const Levers: React.FC<{ t: number }> = ({ t }) => {
 /** régua de altura ao lado do pilar 1: «a más de cuatro metros de altura» */
 const Ruler: React.FC<{ t: number }> = ({ t }) => {
   const k = ease(t, T.altura - 0.05, T.metros + 0.5), on = t > T.altura - 0.1 && t < T.b3 + 0.4; if (!on) return null;
-  const x = 1.95, z = 10.75, h = UH * k;
+  const x = -1.95, z = 10.75, h = UH * k;
   return <G><Box s={[0.08, Math.max(0.01, h), 0.08]} p={[x, h / 2, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />
     <Cone rad={0.2} h={0.35} seg={8} p={[x, h + 0.1, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />
-    {[0, h].map((y, i) => <Box key={i} s={[0.6, 0.06, 0.06]} p={[x, y + 0.03, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />)}</G>;
+    {[0, h, ...[1, 2, 3].map((m) => (UH * m) / 4).filter((y) => y < h)].map((y, i) => <Box key={i} s={[i < 2 ? 0.6 : 0.36, 0.06, 0.06]} p={[x, y + 0.03, z]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />)}</G>;
 };
 /** «encima de dos pilares va otra piedra»: o lugar do dintel em fantasma sobre os dois pilares */
 const GhostLintel: React.FC<{ t: number }> = ({ t }) => {
-  const k = ease(t, T.pilares - 0.1, T.pilares + 0.3); if (k <= 0.01 || t > C5) return null;
+  const k = ease(t, T.pilares - 0.1, T.pilares + 0.3); if (k <= 0.01 || t > T.b3 + 0.3) return null;
   return <Box s={[2.1, LH, UD]} p={[0, UH + LH / 2 + 1.2 * (1 - k), LZ0]} c="#ffd84a" o={{ ...GHOST, opacity: 0.62 * (0.8 + 0.2 * Math.sin(t * 9)), ei: 0.8 }} cast={false} />;
 };
 /** pó no chão onde o dintel cai */
@@ -603,25 +636,48 @@ const JointFx: React.FC<{ t: number }> = ({ t }) => {
 };
 /** pilar 1 do par (o vizinho do herói) já em pé no canteiro — parte do círculo (slot 1), desenhado em Ring */
 
+// ---------------------------------------------------------------- o fim: «…a quien no puede mover ni el sofá»
+export const SOFA: V3 = [-3.7, 0, -5.2];
+const Sofa: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.sofa - 0.45) return null;
+  const s = prog(t, T.sofa - 0.45, T.sofa), a = t - T.sofa, dy = s < 1 ? 7 * (1 - s * s) : a < 0.7 ? 0.3 * Math.abs(Math.sin((a * PI) / 0.22)) * Math.exp(-a * 6) : 0;
+  const sh = t > T.sofa + 0.45 ? 0.012 * Math.sin(t * 50) : 0;
+  return (
+    <G p={[SOFA[0] + sh, dy, SOFA[2]]} r={[0, 0.9, 0]}>
+      <Box s={[1.9, 0.42, 0.85]} p={[0, 0.36, 0]} c="#c8443a" />
+      <Box s={[1.9, 0.62, 0.24]} p={[0, 0.82, -0.32]} c="#b23a31" />
+      {[-0.86, 0.86].map((x) => <Box key={x} s={[0.22, 0.34, 0.85]} p={[x, 0.7, 0]} c="#b23a31" />)}
+      {[-0.55, 0.55].map((x) => <Box key={x} s={[0.8, 0.12, 0.6]} p={[x, 0.62, 0.08]} c="#e06a5c" cast={false} />)}
+      {[[-0.85, -0.35], [0.85, -0.35], [-0.85, 0.35], [0.85, 0.35]].map(([x, z]) => <Box key={`${x}${z}`} s={[0.1, 0.15, 0.1]} p={[x, 0.075, z]} c="#5a3a24" />)}
+    </G>
+  );
+};
+const CONF = ["#ffd400", "#5cff7a", "#4ab8ff", "#ff6bb5", "#ffffff", "#ff8a3a"];
+const Confetti: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.manda) return null;
+  return <G>{Array.from({ length: 70 }, (_, i) => { const u = fract((t - T.manda) / 2.4 + rnd(i * 3 + 1)); return <Box key={i} s={[0.14, 0.02, 0.1]} p={[-2.4 + (rnd(i * 3 + 2) - 0.5) * 7 + 0.4 * Math.sin(t * 3 + i), 7.5 - 7.4 * u, -4.2 + (rnd(i * 3 + 3) - 0.5) * 6]} r={[t * 5 + i, t * 3 + i * 2, 0]} c={CONF[i % 6]} cast={false} recv={false} />; })}</G>;
+};
+
 // ---------------------------------------------------------------- o giro: o sol do solstício nasce no eixo
 export const dawn = (t: number) => ease(t, T.giro, T.mira + 0.6) * (1 - 0.7 * ease(t, T.sale, T.eje + 0.6));
 // já está meio fora do horizonte, no vão do eixo, no «alineado con su eje»; depois continua subindo devagar
-const sunY = (t: number) => lerp(-28, 8, ease(t, T.sale - 0.5, T.alineado + 0.4)) + lerp(0, 14, ease(t, T.alineado + 0.4, T.end));
+const sunY = (t: number) => lerp(-30, 22, ease(t, T.sale - 0.25, T.eje + 0.1)) + lerp(0, 8, ease(t, T.eje + 0.1, T.end));
 const Glow: React.FC<{ t: number }> = ({ t }) => {
   const tex = useMemo(() => { const cv = document.createElement("canvas"); cv.width = cv.height = 128; const g = cv.getContext("2d")!; const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, "rgba(255,190,90,1)"); gr.addColorStop(0.4, "rgba(255,150,70,0.5)"); gr.addColorStop(1, "rgba(255,120,60,0)"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return tx; }, []);
   const k = ease(t, T.giro, T.mira + 0.8); if (k <= 0.01) return null;
   return (
     <G>
       <mesh position={[0, 6, -420]}><planeGeometry args={[520, 150]} /><meshBasicMaterial map={tex} transparent opacity={0.85 * k} fog={false} depthWrite={false} blending={THREE.AdditiveBlending} /></mesh>
-      <mesh position={[0, sunY(t), -400]}><sphereGeometry args={[17, 24, 16]} /><meshBasicMaterial color="#ffd36b" fog={false} /></mesh>
+      <mesh position={[0, sunY(t), -400]}><sphereGeometry args={[24, 28, 18]} /><meshBasicMaterial color="#ffd36b" fog={false} /></mesh>
     </G>
   );
 };
 /** o eixo: traço dourado no chão, do centro, pela abertura do círculo e pela avenida, até o horizonte */
 const Axis: React.FC<{ t: number }> = ({ t }) => {
-  const k = ease(t, T.alineado - 0.1, T.eje + 0.5); if (k <= 0.01) return null;
-  const n = 40, pulse = 0.7 + 0.3 * Math.sin(t * 8);
-  return <G>{Array.from({ length: n }, (_, i) => { const z = 2.0 - i * 2.0; return i / n < k ? <Box key={i} s={[0.22, 0.03, 1.1]} p={[0, 0.03, z]} c="#ffd400" o={{ emissive: "#ffc000", ei: 1.1 * pulse }} cast={false} recv={false} /> : null; })}</G>;
+  const k = ease(t, T.sale - 0.1, T.alineado + 0.2); if (k <= 0.01) return null;
+  // até perto do horizonte, com traços mais largos ao longe (rente ao chão eles somem de perfil)
+  const n = 110, pulse = 0.7 + 0.3 * Math.sin(t * 8);
+  return <G>{Array.from({ length: n }, (_, i) => { const z = 2.0 - i * 2.0; return i / n < k ? <Box key={i} s={[0.22 + 0.012 * i, 0.03, 1.1]} p={[0, 0.03, z]} c="#ffd400" o={{ emissive: "#ffc000", ei: 1.1 * pulse }} cast={false} recv={false} /> : null; })}</G>;
 };
 
 export const World: React.FC<{ t: number }> = ({ t }) => (
@@ -632,11 +688,11 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Earthworks />
     <Ring t={t} /><Trilithons t={t} /><Bluestones t={t} /><GhostRing t={t} />
     <G p={HERO} r={[0, HERO_RY, 0]}>
-      <Pit t={t} /><Dig t={t} /><Pushers t={t} /><GhostUpright t={t} /><HeroStone t={t} />
+      <Pit t={t} /><Dig t={t} /><Pushers t={t} /><GhostUpright t={t} /><Stake t={t} /><HeroStone t={t} />
       <Track t={t} /><Sled t={t} /><Team t={t} /><Camp t={t} /><Raisers t={t} />
     </G>
     <Lintel t={t} /><GhostLintel t={t} /><Tower t={t} /><Levers t={t} /><Ruler t={t} /><FallDust t={t} /><Carving t={t} /><JointFx t={t} />
     <Glow t={t} /><Axis t={t} />
-    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} />
+    <DustA t={t} /><OpenDrag t={t} /><OpenPush t={t} /><HandCrew t={t} /><Sofa t={t} /><Confetti t={t} />
   </>
 );
