@@ -17,7 +17,7 @@ import { L } from "./layout";
 const linCam = (i: number) => (t: number): CamState => {
   const r = ROWS[i], t1 = ROWS[i + 1] ? ROWS[i + 1][0] : T.end, u = Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0]))), La = (a: V3, b: V3): V3 => [lerp(a[0], b[0], u), lerp(a[1], b[1], u), lerp(a[2], b[2], u)];
   const look = La(r[2], r[4]), p = La(r[1], r[3]), K = /caminho|visor|sacos|cristais|lupa|dentro|levedura|come|bolhas|rodas|poça|moscas|fedor/.test(r[9]) ? 1.2 : 1.6;
-  return { pos: [look[0] + (p[0] - look[0]) * K, look[1] + (p[1] - look[1]) * K, look[2] + (p[2] - look[2]) * K], look, fov: lerp(r[5], r[6], u), roll: lerp(r[7], r[8], u) };
+  return { pos: [look[0] + (p[0] - look[0]) * K, Math.max(1.0, look[1] + (p[1] - look[1]) * K), look[2] + (p[2] - look[2]) * K], look, fov: lerp(r[5], r[6], u), roll: lerp(r[7], r[8], u) };
 };
 const SHOTS: Shot[] = ROWS.map((r, i): Shot => ({ name: r[9], t0: r[0], keys: [], fn: linCam(i) }));
 const DYN = [3, 2, 3, 3, 1.5, 1.5, 3, 3, 1.5, 1.5, 2];
@@ -141,7 +141,7 @@ const hud: HudData = {
         {bK > 0 ? <Chip t={t} a={T.media + 0.05} b={T.ja - 0.1} top="MÉDIA DO CENTRO-SUL · POR TONELADA" big="~40 L ETANOL" sub="+ 66 KG DE AÇÚCAR" tone="#14507a" y={290} size={92} subSize={62} /> : null}
         {t > T.media + 0.05 && t < T.ja - 0.1 ? <div style={{ position: "absolute", left: 0, width: 1080, top: 640, textAlign: "center", fontFamily: FONT, fontSize: 70, color: "#ffffff", ...stroke(9, "#0a1620"), opacity: win(t, T.media + 0.4, T.ja - 0.1, 0.2) }}>≠ 85 L / t</div> : null}
         <Chip t={t} a={T.ja} b={T.vinhaca - 0.4} top="500 t/h DE CANA" big="→ ~140 t/h" sub="DE BAGAÇO" tone="#7a5a10" y={290} size={96} />
-        <Check t={t} a={T.cento + 0.2} len={1.3} text="CONFERIDO" />
+        <Check t={t} a={T.cento + 0.95} len={1.3} text="CONFERIDO" />
         <Chip t={t} a={T.vinhaca} b={T.acida - 0.1} top="PARA CADA LITRO DE ETANOL" big="10–13 L" sub="DE VINHAÇA" tone="#3a2414" y={290} size={116} />
         {smell}{fly}
         <Check t={t} a={T.compacta + 0.25} len={1.55} text="COMPACTA" />
