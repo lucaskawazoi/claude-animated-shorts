@@ -1,1694 +1,1454 @@
 [
  {
   "id": "w0",
-  "text": "Essa",
+  "text": "Chefe,",
   "start": 0.0,
-  "end": 0.302
+  "end": 0.604
  },
  {
   "id": "w1",
-  "text": "folha",
-  "start": 0.36,
-  "end": 0.58
+  "text": "vocês",
+  "start": 0.755,
+  "end": 0.998
  },
  {
   "id": "w2",
-  "text": "de",
-  "start": 0.627,
-  "end": 0.685
+  "text": "avisaram",
+  "start": 1.045,
+  "end": 1.474
  },
  {
   "id": "w3",
-  "text": "papel",
-  "start": 0.731,
-  "end": 1.207
+  "text": "nos",
+  "start": 1.498,
+  "end": 1.602
  },
  {
   "id": "w4",
-  "text": "já",
-  "start": 1.509,
-  "end": 1.66
+  "text": "comentários:",
+  "start": 1.649,
+  "end": 2.45
  },
  {
   "id": "w5",
-  "text": "foi",
-  "start": 1.741,
-  "end": 1.916
+  "text": "faltou",
+  "start": 2.589,
+  "end": 2.926
  },
  {
   "id": "w6",
-  "text": "uma",
-  "start": 1.962,
-  "end": 2.125
+  "text": "o",
+  "start": 2.961,
+  "end": 2.984
  },
  {
   "id": "w7",
-  "text": "árvore",
-  "start": 2.229,
-  "end": 2.543
+  "text": "açúcar.",
+  "start": 3.03,
+  "end": 3.611
  },
  {
   "id": "w8",
-  "text": "de",
-  "start": 2.601,
-  "end": 2.682
+  "text": "Então,",
+  "start": 3.762,
+  "end": 4.226
  },
  {
   "id": "w9",
-  "text": "eucalipto",
-  "start": 2.705,
-  "end": 3.448
+  "text": "parte",
+  "start": 4.365,
+  "end": 4.644
  },
  {
   "id": "w10",
-  "text": "com",
-  "start": 3.75,
-  "end": 3.959
+  "text": "dois.",
+  "start": 4.69,
+  "end": 5.213
  },
  {
   "id": "w11",
-  "text": "uns",
-  "start": 3.982,
-  "end": 4.122
+  "text": "Na",
+  "start": 5.364,
+  "end": 5.48
  },
  {
   "id": "w12",
-  "text": "sete",
-  "start": 4.168,
-  "end": 4.54
- },
- {
-  "id": "w13",
-  "text": "anos.",
-  "start": 4.574,
-  "end": 5.132
- },
- {
-  "id": "w14",
-  "text": "Cerca",
-  "start": 5.538,
-  "end": 5.898
- },
- {
-  "id": "w15",
-  "text": "de",
-  "start": 5.944,
+  "text": "usina,",
+  "start": 5.526,
   "end": 6.014
  },
  {
+  "id": "w13",
+  "text": "o",
+  "start": 6.165,
+  "end": 6.235
+ },
+ {
+  "id": "w14",
+  "text": "caldo",
+  "start": 6.293,
+  "end": 6.525
+ },
+ {
+  "id": "w15",
+  "text": "não",
+  "start": 6.571,
+  "end": 6.664
+ },
+ {
   "id": "w16",
-  "text": "metade",
-  "start": 6.06,
-  "end": 6.478
+  "text": "vai",
+  "start": 6.699,
+  "end": 6.815
  },
  {
   "id": "w17",
-  "text": "dessa",
-  "start": 6.536,
-  "end": 6.757
+  "text": "direto",
+  "start": 6.838,
+  "end": 7.14
  },
  {
   "id": "w18",
-  "text": "madeira",
-  "start": 6.815,
-  "end": 7.268
+  "text": "pro",
+  "start": 7.175,
+  "end": 7.303
  },
  {
   "id": "w19",
-  "text": "nem",
-  "start": 7.372,
-  "end": 7.523
+  "text": "álcool.",
+  "start": 7.407,
+  "end": 7.709
  },
  {
   "id": "w20",
-  "text": "virou",
-  "start": 7.558,
-  "end": 7.79
+  "text": "Primeiro",
+  "start": 7.755,
+  "end": 8.069
  },
  {
   "id": "w21",
-  "text": "papel.",
-  "start": 7.837,
-  "end": 8.429
+  "text": "ele",
+  "start": 8.092,
+  "end": 8.197
  },
  {
   "id": "w22",
-  "text": "Então",
-  "start": 8.684,
-  "end": 9.033
+  "text": "é",
+  "start": 8.22,
+  "end": 8.243
  },
  {
   "id": "w23",
-  "text": "virou",
-  "start": 9.067,
-  "end": 9.334
+  "text": "limpo,",
+  "start": 8.29,
+  "end": 8.684
  },
  {
   "id": "w24",
-  "text": "o",
-  "start": 9.532,
-  "end": 9.601
+  "text": "e",
+  "start": 8.835,
+  "end": 8.94
  },
  {
   "id": "w25",
-  "text": "quê?",
-  "start": 9.683,
-  "end": 10.112
+  "text": "o",
+  "start": 8.986,
+  "end": 9.021
  },
  {
   "id": "w26",
-  "text": "A",
-  "start": 10.67,
-  "end": 10.751
+  "text": "lodo",
+  "start": 9.067,
+  "end": 9.253
  },
  {
   "id": "w27",
-  "text": "floresta",
-  "start": 10.855,
-  "end": 11.366
+  "text": "do",
+  "start": 9.3,
+  "end": 9.369
  },
  {
   "id": "w28",
-  "text": "plantada",
-  "start": 11.401,
-  "end": 11.842
+  "text": "filtro",
+  "start": 9.427,
+  "end": 9.694
  },
  {
   "id": "w29",
   "text": "vira",
-  "start": 11.889,
-  "end": 12.109
+  "start": 9.741,
+  "end": 9.892
  },
  {
   "id": "w30",
-  "text": "tora",
-  "start": 12.19,
-  "end": 12.481
+  "text": "a",
+  "start": 9.915,
+  "end": 9.938
  },
  {
   "id": "w31",
-  "text": "no",
-  "start": 12.539,
-  "end": 12.62
+  "text": "torta",
+  "start": 10.008,
+  "end": 10.275
  },
  {
   "id": "w32",
-  "text": "caminhão.",
-  "start": 12.655,
-  "end": 13.328
+  "text": "de",
+  "start": 10.321,
+  "end": 10.391
  },
  {
   "id": "w33",
-  "text": "Só",
-  "start": 13.688,
-  "end": 13.909
+  "text": "filtro,",
+  "start": 10.461,
+  "end": 10.832
  },
  {
   "id": "w34",
-  "text": "que",
-  "start": 13.978,
-  "end": 14.06
+  "text": "adubo",
+  "start": 10.971,
+  "end": 11.343
  },
  {
   "id": "w35",
-  "text": "a",
-  "start": 14.106,
-  "end": 14.129
+  "text": "pra",
+  "start": 11.389,
+  "end": 11.494
  },
  {
   "id": "w36",
-  "text": "casca",
-  "start": 14.199,
-  "end": 14.629
+  "text": "lavoura.",
+  "start": 11.54,
+  "end": 12.016
  },
  {
   "id": "w37",
-  "text": "suja",
-  "start": 14.687,
-  "end": 14.988
+  "text": "Chefe,",
+  "start": 12.411,
+  "end": 12.922
  },
  {
   "id": "w38",
-  "text": "a",
-  "start": 15.012,
-  "end": 15.035
+  "text": "tem",
+  "start": 13.073,
+  "end": 13.201
  },
  {
   "id": "w39",
-  "text": "polpa.",
-  "start": 15.105,
-  "end": 15.581
+  "text": "um",
+  "start": 13.247,
+  "end": 13.293
  },
  {
   "id": "w40",
-  "text": "Zerou?",
-  "start": 15.801,
-  "end": 16.335
+  "text": "probleminha:",
+  "start": 13.316,
+  "end": 13.943
  },
  {
   "id": "w41",
-  "text": "Ainda",
-  "start": 16.695,
-  "end": 17.067
+  "text": "esse",
+  "start": 14.164,
+  "end": 14.396
  },
  {
   "id": "w42",
-  "text": "não.",
-  "start": 17.136,
-  "end": 17.508
+  "text": "caldo",
+  "start": 14.443,
+  "end": 14.744
  },
  {
   "id": "w43",
-  "text": "Aí",
-  "start": 17.763,
-  "end": 17.972
+  "text": "ainda",
+  "start": 14.826,
+  "end": 15.081
  },
  {
   "id": "w44",
-  "text": "a",
-  "start": 18.03,
-  "end": 18.053
+  "text": "é",
+  "start": 15.104,
+  "end": 15.128
  },
  {
   "id": "w45",
-  "text": "tora",
-  "start": 18.135,
-  "end": 18.402
+  "text": "quase",
+  "start": 15.232,
+  "end": 15.511
  },
  {
   "id": "w46",
-  "text": "gira",
-  "start": 18.46,
-  "end": 18.657
+  "text": "só",
+  "start": 15.557,
+  "end": 15.673
  },
  {
   "id": "w47",
-  "text": "num",
-  "start": 18.703,
-  "end": 18.808
+  "text": "água.",
+  "start": 15.778,
+  "end": 16.068
  },
  {
   "id": "w48",
-  "text": "tambor",
-  "start": 18.866,
-  "end": 19.261
+  "text": "Deixa",
+  "start": 16.184,
+  "end": 16.405
  },
  {
   "id": "w49",
-  "text": "que",
-  "start": 19.319,
-  "end": 19.4
+  "text": "comigo.",
+  "start": 16.451,
+  "end": 16.927
  },
  {
   "id": "w50",
-  "text": "arranca",
-  "start": 19.435,
-  "end": 19.748
+  "text": "O",
+  "start": 17.171,
+  "end": 17.217
  },
  {
   "id": "w51",
-  "text": "a",
-  "start": 19.772,
-  "end": 19.841
+  "text": "evaporador",
+  "start": 17.264,
+  "end": 17.717
  },
  {
   "id": "w52",
-  "text": "casca.",
-  "start": 19.911,
-  "end": 20.468
+  "text": "ferve",
+  "start": 17.821,
+  "end": 18.193
  },
  {
   "id": "w53",
-  "text": "Esse",
-  "start": 20.77,
-  "end": 21.06
+  "text": "a",
+  "start": 18.216,
+  "end": 18.239
  },
  {
   "id": "w54",
-  "text": "é",
-  "start": 21.083,
-  "end": 21.118
+  "text": "água",
+  "start": 18.32,
+  "end": 18.494
  },
  {
   "id": "w55",
-  "text": "o",
-  "start": 21.176,
-  "end": 21.223
+  "text": "fora,",
+  "start": 18.553,
+  "end": 18.924
  },
  {
   "id": "w56",
-  "text": "descascador.",
-  "start": 21.304,
-  "end": 22.465
+  "text": "e",
+  "start": 18.959,
+  "end": 19.063
  },
  {
   "id": "w57",
-  "text": "Depois",
-  "start": 22.767,
-  "end": 23.162
+  "text": "o",
+  "start": 19.11,
+  "end": 19.156
  },
  {
   "id": "w58",
-  "text": "uma",
-  "start": 23.196,
-  "end": 23.324
+  "text": "caldo",
+  "start": 19.203,
+  "end": 19.505
  },
  {
   "id": "w59",
-  "text": "máquina",
-  "start": 23.371,
-  "end": 23.684
+  "text": "vira",
+  "start": 19.586,
+  "end": 19.806
  },
  {
   "id": "w60",
-  "text": "corta",
-  "start": 23.742,
-  "end": 23.986
+  "text": "xarope.",
+  "start": 19.853,
+  "end": 20.399
  },
  {
   "id": "w61",
-  "text": "a",
-  "start": 24.009,
-  "end": 24.032
+  "text": "No",
+  "start": 20.793,
+  "end": 20.898
  },
  {
   "id": "w62",
-  "text": "madeira",
-  "start": 24.137,
-  "end": 24.601
+  "text": "cozedor,",
+  "start": 20.944,
+  "end": 21.49
  },
  {
   "id": "w63",
-  "text": "em",
-  "start": 24.625,
-  "end": 24.671
+  "text": "ele",
+  "start": 21.641,
+  "end": 21.815
  },
  {
   "id": "w64",
-  "text": "lascas.",
-  "start": 24.752,
-  "end": 25.426
+  "text": "engrossa",
+  "start": 21.838,
+  "end": 22.291
  },
  {
   "id": "w65",
-  "text": "Essa",
-  "start": 25.727,
-  "end": 26.076
+  "text": "e",
+  "start": 22.337,
+  "end": 22.384
  },
  {
   "id": "w66",
-  "text": "é",
-  "start": 26.111,
-  "end": 26.145
+  "text": "cristaliza.",
+  "start": 22.43,
+  "end": 23.185
  },
  {
   "id": "w67",
-  "text": "a",
-  "start": 26.215,
-  "end": 26.238
+  "text": "A",
+  "start": 23.475,
+  "end": 23.533
  },
  {
   "id": "w68",
-  "text": "picadora.",
-  "start": 26.296,
-  "end": 27.063
+  "text": "centrífuga",
+  "start": 23.603,
+  "end": 24.137
  },
  {
   "id": "w69",
-  "text": "Só",
-  "start": 27.364,
-  "end": 27.585
+  "text": "gira:",
+  "start": 24.195,
+  "end": 24.59
  },
  {
   "id": "w70",
-  "text": "que",
-  "start": 27.643,
-  "end": 27.713
+  "text": "o",
+  "start": 24.729,
+  "end": 24.775
  },
  {
   "id": "w71",
-  "text": "as",
-  "start": 27.748,
-  "end": 27.829
+  "text": "açúcar",
+  "start": 24.822,
+  "end": 25.193
  },
  {
   "id": "w72",
-  "text": "fibras",
-  "start": 27.887,
-  "end": 28.189
+  "text": "fica,",
+  "start": 25.275,
+  "end": 25.727
  },
  {
   "id": "w73",
-  "text": "da",
-  "start": 28.235,
-  "end": 28.305
+  "text": "e",
+  "start": 25.867,
+  "end": 25.971
  },
  {
   "id": "w74",
-  "text": "madeira",
-  "start": 28.363,
-  "end": 28.851
+  "text": "escorre",
+  "start": 26.006,
+  "end": 26.389
  },
  {
   "id": "w75",
-  "text": "vêm",
-  "start": 29.013,
-  "end": 29.187
+  "text": "o",
+  "start": 26.424,
+  "end": 26.447
  },
  {
   "id": "w76",
-  "text": "coladas",
-  "start": 29.245,
-  "end": 29.686
+  "text": "melaço.",
+  "start": 26.482,
+  "end": 27.051
  },
  {
   "id": "w77",
-  "text": "com",
-  "start": 29.745,
-  "end": 29.872
+  "text": "Chefe,",
+  "start": 27.504,
+  "end": 28.049
  },
  {
   "id": "w78",
-  "text": "lignina.",
-  "start": 29.93,
-  "end": 30.58
+  "text": "tem",
+  "start": 28.27,
+  "end": 28.421
  },
  {
   "id": "w79",
-  "text": "Zerou?",
-  "start": 30.94,
-  "end": 31.532
+  "text": "um",
+  "start": 28.444,
+  "end": 28.49
  },
  {
   "id": "w80",
-  "text": "Ainda",
-  "start": 31.892,
-  "end": 32.264
+  "text": "probleminha:",
+  "start": 28.525,
+  "end": 29.164
  },
  {
   "id": "w81",
-  "text": "não.",
-  "start": 32.322,
-  "end": 32.705
+  "text": "o",
+  "start": 29.454,
+  "end": 29.5
  },
  {
   "id": "w82",
-  "text": "Aí",
-  "start": 32.902,
-  "end": 33.146
+  "text": "melaço",
+  "start": 29.547,
+  "end": 30.034
  },
  {
   "id": "w83",
-  "text": "as",
-  "start": 33.193,
-  "end": 33.297
+  "text": "ainda",
+  "start": 30.092,
+  "end": 30.348
  },
  {
   "id": "w84",
-  "text": "lascas",
-  "start": 33.367,
-  "end": 33.704
+  "text": "tem",
+  "start": 30.394,
+  "end": 30.51
  },
  {
   "id": "w85",
-  "text": "vão",
-  "start": 33.762,
-  "end": 33.901
+  "text": "açúcar",
+  "start": 30.557,
+  "end": 30.928
  },
  {
   "id": "w86",
-  "text": "pra",
-  "start": 33.936,
-  "end": 34.052
+  "text": "que",
+  "start": 30.952,
+  "end": 31.033
  },
  {
   "id": "w87",
-  "text": "uma",
-  "start": 34.075,
-  "end": 34.168
+  "text": "não",
+  "start": 31.079,
+  "end": 31.184
  },
  {
   "id": "w88",
-  "text": "panela",
-  "start": 34.214,
-  "end": 34.539
+  "text": "cristaliza.",
+  "start": 31.219,
+  "end": 31.927
  },
  {
   "id": "w89",
-  "text": "de",
-  "start": 34.574,
-  "end": 34.632
+  "text": "Deixa",
+  "start": 32.217,
+  "end": 32.438
  },
  {
   "id": "w90",
-  "text": "pressão",
-  "start": 34.679,
-  "end": 35.108
+  "text": "comigo.",
+  "start": 32.472,
+  "end": 32.983
  },
  {
   "id": "w91",
-  "text": "gigante,",
-  "start": 35.155,
-  "end": 35.967
+  "text": "O",
+  "start": 33.134,
+  "end": 33.169
  },
  {
   "id": "w92",
-  "text": "com",
-  "start": 36.188,
-  "end": 36.327
+  "text": "melaço",
+  "start": 33.239,
+  "end": 33.564
  },
  {
   "id": "w93",
-  "text": "água",
-  "start": 36.397,
-  "end": 36.641
+  "text": "vai",
+  "start": 33.599,
+  "end": 33.691
  },
  {
   "id": "w94",
-  "text": "quente",
-  "start": 36.71,
-  "end": 37.105
+  "text": "pra",
+  "start": 33.726,
+  "end": 33.831
  },
  {
   "id": "w95",
-  "text": "e",
-  "start": 37.175,
-  "end": 37.244
+  "text": "dorna,",
+  "start": 33.877,
+  "end": 34.272
  },
  {
   "id": "w96",
-  "text": "produtos",
-  "start": 37.303,
-  "end": 37.72
+  "text": "a",
+  "start": 34.411,
+  "end": 34.446
  },
  {
   "id": "w97",
-  "text": "químicos.",
-  "start": 37.79,
-  "end": 38.44
+  "text": "levedura",
+  "start": 34.493,
+  "end": 34.852
  },
  {
   "id": "w98",
-  "text": "A",
-  "start": 38.696,
-  "end": 38.777
+  "text": "come",
+  "start": 34.899,
+  "end": 35.178
  },
  {
   "id": "w99",
-  "text": "cola",
-  "start": 38.893,
-  "end": 39.172
+  "text": "e",
+  "start": 35.224,
+  "end": 35.27
  },
  {
   "id": "w100",
-  "text": "se",
-  "start": 39.218,
-  "end": 39.323
+  "text": "faz",
+  "start": 35.328,
+  "end": 35.526
  },
  {
   "id": "w101",
-  "text": "dissolve",
-  "start": 39.381,
-  "end": 39.961
+  "text": "álcool.",
+  "start": 35.63,
+  "end": 35.955
  },
  {
   "id": "w102",
-  "text": "e",
-  "start": 40.019,
-  "end": 40.159
+  "text": "Por",
+  "start": 36.095,
+  "end": 36.246
  },
  {
   "id": "w103",
-  "text": "as",
-  "start": 40.228,
-  "end": 40.321
+  "text": "isso",
+  "start": 36.292,
+  "end": 36.582
  },
  {
   "id": "w104",
-  "text": "fibras",
-  "start": 40.391,
-  "end": 40.716
+  "text": "o",
+  "start": 36.687,
+  "end": 36.757
  },
  {
   "id": "w105",
-  "text": "se",
-  "start": 40.739,
-  "end": 40.844
+  "text": "açúcar",
+  "start": 36.803,
+  "end": 37.128
  },
  {
   "id": "w106",
-  "text": "soltam.",
-  "start": 40.902,
-  "end": 41.424
+  "text": "sai",
+  "start": 37.163,
+  "end": 37.372
  },
  {
   "id": "w107",
-  "text": "Esse",
-  "start": 41.621,
-  "end": 41.935
+  "text": "antes",
+  "start": 37.418,
+  "end": 37.604
  },
  {
   "id": "w108",
-  "text": "é",
-  "start": 41.958,
-  "end": 41.981
+  "text": "do",
+  "start": 37.65,
+  "end": 37.732
  },
  {
   "id": "w109",
-  "text": "o",
-  "start": 42.016,
-  "end": 42.051
+  "text": "álcool.",
+  "start": 37.836,
+  "end": 38.161
  },
  {
   "id": "w110",
-  "text": "digestor.",
-  "start": 42.097,
-  "end": 42.678
+  "text": "Quem",
+  "start": 38.405,
+  "end": 38.556
  },
  {
   "id": "w111",
-  "text": "Só",
-  "start": 42.875,
-  "end": 43.119
+  "text": "só",
+  "start": 38.603,
+  "end": 38.695
  },
  {
   "id": "w112",
-  "text": "que",
-  "start": 43.189,
-  "end": 43.258
+  "text": "faz",
+  "start": 38.742,
+  "end": 38.939
  },
  {
   "id": "w113",
-  "text": "a",
-  "start": 43.282,
-  "end": 43.305
+  "text": "álcool",
+  "start": 39.044,
+  "end": 39.299
  },
  {
   "id": "w114",
-  "text": "massa",
-  "start": 43.363,
-  "end": 43.642
+  "text": "é",
+  "start": 39.369,
+  "end": 39.404
  },
  {
   "id": "w115",
-  "text": "sai",
-  "start": 43.688,
-  "end": 43.827
+  "text": "destilaria.",
+  "start": 39.45,
+  "end": 40.158
  },
  {
   "id": "w116",
-  "text": "marrom.",
-  "start": 43.874,
-  "end": 44.419
+  "text": "E",
+  "start": 40.692,
+  "end": 40.797
  },
  {
   "id": "w117",
-  "text": "Zerou?",
-  "start": 44.826,
-  "end": 45.36
+  "text": "a",
+  "start": 40.866,
+  "end": 40.901
  },
  {
   "id": "w118",
-  "text": "Ainda",
-  "start": 45.615,
-  "end": 45.987
+  "text": "conta",
+  "start": 40.948,
+  "end": 41.203
  },
  {
   "id": "w119",
-  "text": "não.",
-  "start": 46.045,
-  "end": 46.358
+  "text": "do",
+  "start": 41.238,
+  "end": 41.296
  },
  {
   "id": "w120",
-  "text": "Então",
-  "start": 46.579,
-  "end": 46.974
+  "text": "primeiro",
+  "start": 41.342,
+  "end": 41.644
  },
  {
   "id": "w121",
-  "text": "a",
-  "start": 47.02,
-  "end": 47.043
+  "text": "vídeo?",
+  "start": 41.691,
+  "end": 42.097
  },
  {
   "id": "w122",
-  "text": "massa",
-  "start": 47.101,
-  "end": 47.426
+  "text": "Oitenta",
+  "start": 42.341,
+  "end": 42.759
  },
  {
   "id": "w123",
-  "text": "é",
-  "start": 47.496,
-  "end": 47.519
+  "text": "e",
+  "start": 42.782,
+  "end": 42.806
  },
  {
   "id": "w124",
-  "text": "lavada",
-  "start": 47.589,
-  "end": 48.042
+  "text": "cinco",
+  "start": 42.84,
+  "end": 43.108
  },
  {
   "id": "w125",
-  "text": "e",
-  "start": 48.065,
-  "end": 48.088
+  "text": "litros",
+  "start": 43.177,
+  "end": 43.433
  },
  {
   "id": "w126",
-  "text": "clareada.",
-  "start": 48.135,
-  "end": 48.878
+  "text": "por",
+  "start": 43.479,
+  "end": 43.584
  },
  {
   "id": "w127",
-  "text": "Essa",
-  "start": 49.18,
-  "end": 49.516
+  "text": "tonelada",
+  "start": 43.618,
+  "end": 44.094
  },
  {
   "id": "w128",
   "text": "é",
-  "start": 49.551,
-  "end": 49.574
+  "start": 44.152,
+  "end": 44.199
  },
  {
   "id": "w129",
-  "text": "a",
-  "start": 49.656,
-  "end": 49.679
+  "text": "numa",
+  "start": 44.245,
+  "end": 44.396
  },
  {
   "id": "w130",
-  "text": "torre",
-  "start": 49.748,
-  "end": 50.015
+  "text": "destilaria.",
+  "start": 44.431,
+  "end": 45.128
  },
  {
   "id": "w131",
-  "text": "de",
-  "start": 50.062,
-  "end": 50.132
+  "text": "Na",
+  "start": 45.418,
+  "end": 45.534
  },
  {
   "id": "w132",
-  "text": "branqueamento.",
-  "start": 50.19,
-  "end": 50.933
+  "text": "média",
+  "start": 45.58,
+  "end": 45.766
  },
  {
   "id": "w133",
-  "text": "Mas",
-  "start": 51.188,
-  "end": 51.397
+  "text": "do",
+  "start": 45.801,
+  "end": 45.882
  },
  {
   "id": "w134",
-  "text": "essa",
-  "start": 51.467,
-  "end": 51.664
+  "text": "Centro-Sul,",
+  "start": 45.929,
+  "end": 46.579
  },
  {
   "id": "w135",
-  "text": "polpa",
-  "start": 51.734,
-  "end": 52.047
+  "text": "metade",
+  "start": 46.718,
+  "end": 47.067
  },
  {
   "id": "w136",
-  "text": "é",
-  "start": 52.071,
-  "end": 52.094
+  "text": "da",
+  "start": 47.113,
+  "end": 47.194
  },
  {
   "id": "w137",
-  "text": "quase",
-  "start": 52.152,
-  "end": 52.419
+  "text": "cana",
+  "start": 47.241,
+  "end": 47.461
  },
  {
   "id": "w138",
-  "text": "só",
-  "start": 52.477,
-  "end": 52.64
+  "text": "vira",
+  "start": 47.508,
+  "end": 47.659
  },
  {
   "id": "w139",
-  "text": "água,",
-  "start": 52.744,
-  "end": 53.127
+  "text": "açúcar:",
+  "start": 47.682,
+  "end": 48.216
  },
  {
   "id": "w140",
-  "text": "e",
-  "start": 53.174,
-  "end": 53.336
+  "text": "são",
+  "start": 48.367,
+  "end": 48.529
  },
  {
   "id": "w141",
-  "text": "água",
-  "start": 53.406,
-  "end": 53.615
+  "text": "uns",
+  "start": 48.553,
+  "end": 48.645
  },
  {
   "id": "w142",
-  "text": "não",
-  "start": 53.661,
-  "end": 53.766
+  "text": "quarenta",
+  "start": 48.692,
+  "end": 49.04
  },
  {
   "id": "w143",
-  "text": "vira",
-  "start": 53.812,
-  "end": 53.986
+  "text": "litros",
+  "start": 49.087,
+  "end": 49.342
  },
  {
   "id": "w144",
-  "text": "folha.",
-  "start": 54.056,
-  "end": 54.497
+  "text": "de",
+  "start": 49.377,
+  "end": 49.423
  },
  {
   "id": "w145",
-  "text": "Zerou?",
-  "start": 54.857,
-  "end": 55.38
+  "text": "etanol",
+  "start": 49.458,
+  "end": 49.853
  },
  {
   "id": "w146",
-  "text": "Ainda",
-  "start": 55.739,
-  "end": 56.099
+  "text": "e",
+  "start": 49.992,
+  "end": 50.097
  },
  {
   "id": "w147",
-  "text": "não.",
-  "start": 56.157,
-  "end": 56.482
+  "text": "sessenta",
+  "start": 50.143,
+  "end": 50.526
  },
  {
   "id": "w148",
-  "text": "Aí,",
-  "start": 56.784,
-  "end": 57.237
+  "text": "e",
+  "start": 50.561,
+  "end": 50.584
  },
  {
   "id": "w149",
-  "text": "muitas",
-  "start": 57.272,
-  "end": 57.609
+  "text": "seis",
+  "start": 50.642,
+  "end": 50.909
  },
  {
   "id": "w150",
-  "text": "vezes",
-  "start": 57.678,
-  "end": 57.98
+  "text": "quilos",
+  "start": 50.967,
+  "end": 51.223
  },
  {
   "id": "w151",
-  "text": "em",
-  "start": 58.038,
-  "end": 58.108
+  "text": "de",
+  "start": 51.269,
+  "end": 51.316
  },
  {
   "id": "w152",
-  "text": "outra",
-  "start": 58.178,
-  "end": 58.41
+  "text": "açúcar",
+  "start": 51.362,
+  "end": 51.722
  },
  {
   "id": "w153",
-  "text": "fábrica,",
-  "start": 58.468,
-  "end": 59.048
+  "text": "por",
+  "start": 51.757,
+  "end": 51.873
  },
  {
   "id": "w154",
-  "text": "ela",
-  "start": 59.118,
-  "end": 59.327
+  "text": "tonelada.",
+  "start": 51.908,
+  "end": 52.5
  },
  {
   "id": "w155",
-  "text": "escorre",
-  "start": 59.35,
-  "end": 59.698
+  "text": "Já",
+  "start": 52.953,
+  "end": 53.104
  },
  {
   "id": "w156",
-  "text": "numa",
-  "start": 59.733,
-  "end": 59.931
+  "text": "o",
+  "start": 53.15,
+  "end": 53.173
  },
  {
   "id": "w157",
-  "text": "tela",
-  "start": 60.0,
-  "end": 60.256
+  "text": "bagaço,",
+  "start": 53.208,
+  "end": 53.8
  },
  {
   "id": "w158",
-  "text": "que",
-  "start": 60.314,
-  "end": 60.441
+  "text": "a",
+  "start": 53.94,
+  "end": 53.986
  },
  {
   "id": "w159",
-  "text": "anda,",
-  "start": 60.476,
-  "end": 60.883
+  "text": "gente",
+  "start": 54.032,
+  "end": 54.218
  },
  {
   "id": "w160",
-  "text": "rolos",
-  "start": 61.022,
-  "end": 61.301
+  "text": "conferiu:",
+  "start": 54.241,
+  "end": 54.81
  },
  {
   "id": "w161",
-  "text": "prensam,",
-  "start": 61.37,
-  "end": 61.986
+  "text": "numa",
+  "start": 55.101,
+  "end": 55.263
  },
  {
   "id": "w162",
-  "text": "cilindros",
-  "start": 62.206,
-  "end": 62.752
+  "text": "usina",
+  "start": 55.298,
+  "end": 55.553
  },
  {
   "id": "w163",
-  "text": "quentes",
-  "start": 62.822,
-  "end": 63.181
+  "text": "de",
+  "start": 55.6,
+  "end": 55.658
  },
  {
   "id": "w164",
-  "text": "secam,",
-  "start": 63.205,
-  "end": 63.785
+  "text": "quinhentas",
+  "start": 55.704,
+  "end": 56.099
  },
  {
   "id": "w165",
-  "text": "e",
-  "start": 63.983,
-  "end": 64.087
+  "text": "toneladas",
+  "start": 56.134,
+  "end": 56.528
  },
  {
   "id": "w166",
-  "text": "sai",
-  "start": 64.157,
-  "end": 64.366
+  "text": "por",
+  "start": 56.575,
+  "end": 56.714
  },
  {
   "id": "w167",
-  "text": "uma",
-  "start": 64.412,
-  "end": 64.528
+  "text": "hora,",
+  "start": 56.761,
+  "end": 57.051
  },
  {
   "id": "w168",
-  "text": "bobina",
-  "start": 64.575,
-  "end": 64.969
+  "text": "dá",
+  "start": 57.19,
+  "end": 57.283
  },
  {
   "id": "w169",
-  "text": "gigante.",
-  "start": 65.027,
-  "end": 65.805
+  "text": "cerca",
+  "start": 57.33,
+  "end": 57.55
  },
  {
   "id": "w170",
-  "text": "Essa",
-  "start": 66.026,
-  "end": 66.293
+  "text": "de",
+  "start": 57.597,
+  "end": 57.666
  },
  {
   "id": "w171",
-  "text": "é",
-  "start": 66.316,
-  "end": 66.339
+  "text": "cento",
+  "start": 57.713,
+  "end": 57.957
  },
  {
   "id": "w172",
-  "text": "a",
-  "start": 66.397,
-  "end": 66.42
+  "text": "e",
+  "start": 57.98,
+  "end": 58.003
  },
  {
   "id": "w173",
-  "text": "máquina",
-  "start": 66.479,
-  "end": 66.804
+  "text": "quarenta",
+  "start": 58.049,
+  "end": 58.386
  },
  {
   "id": "w174",
-  "text": "de",
-  "start": 66.85,
-  "end": 66.908
+  "text": "toneladas.",
+  "start": 58.421,
+  "end": 59.129
  },
  {
   "id": "w175",
-  "text": "papel.",
-  "start": 66.955,
-  "end": 67.558
+  "text": "E",
+  "start": 59.28,
+  "end": 59.385
  },
  {
   "id": "w176",
-  "text": "Só",
-  "start": 67.814,
-  "end": 68.023
+  "text": "a",
+  "start": 59.431,
+  "end": 59.454
  },
  {
   "id": "w177",
-  "text": "que",
-  "start": 68.092,
-  "end": 68.174
+  "text": "vinhaça?",
+  "start": 59.501,
+  "end": 60.046
  },
  {
   "id": "w178",
-  "text": "lá",
-  "start": 68.232,
-  "end": 68.359
+  "text": "São",
+  "start": 60.337,
+  "end": 60.546
  },
  {
   "id": "w179",
-  "text": "atrás,",
-  "start": 68.383,
-  "end": 68.789
+  "text": "dez",
+  "start": 60.592,
+  "end": 60.813
  },
  {
   "id": "w180",
-  "text": "no",
-  "start": 68.812,
-  "end": 68.905
+  "text": "a",
+  "start": 60.871,
+  "end": 60.894
  },
  {
   "id": "w181",
-  "text": "digestor,",
-  "start": 68.963,
-  "end": 69.671
+  "text": "treze",
+  "start": 60.94,
+  "end": 61.172
  },
  {
   "id": "w182",
-  "text": "ficou",
-  "start": 69.776,
-  "end": 70.089
+  "text": "litros",
+  "start": 61.207,
+  "end": 61.474
  },
  {
   "id": "w183",
-  "text": "um",
-  "start": 70.112,
-  "end": 70.182
+  "text": "pra",
+  "start": 61.521,
+  "end": 61.637
  },
  {
   "id": "w184",
-  "text": "caldo",
-  "start": 70.252,
-  "end": 70.496
+  "text": "cada",
+  "start": 61.683,
+  "end": 61.904
  },
  {
   "id": "w185",
-  "text": "escuro,",
-  "start": 70.519,
-  "end": 71.111
+  "text": "litro",
+  "start": 61.95,
+  "end": 62.171
  },
  {
   "id": "w186",
-  "text": "o",
-  "start": 71.366,
-  "end": 71.436
+  "text": "de",
+  "start": 62.217,
+  "end": 62.264
  },
  {
   "id": "w187",
-  "text": "licor",
-  "start": 71.506,
-  "end": 71.773
+  "text": "etanol.",
+  "start": 62.299,
+  "end": 62.786
  },
  {
   "id": "w188",
-  "text": "preto,",
-  "start": 71.842,
-  "end": 72.307
+  "text": "Ela",
+  "start": 62.937,
+  "end": 63.123
  },
  {
   "id": "w189",
-  "text": "cheio",
-  "start": 72.388,
-  "end": 72.771
+  "text": "é",
+  "start": 63.146,
+  "end": 63.169
  },
  {
   "id": "w190",
-  "text": "de",
-  "start": 72.818,
-  "end": 72.887
+  "text": "ácida,",
+  "start": 63.251,
+  "end": 63.715
  },
  {
   "id": "w191",
-  "text": "lignina",
-  "start": 72.934,
-  "end": 73.491
+  "text": "cheira",
+  "start": 63.831,
+  "end": 64.075
  },
  {
   "id": "w192",
-  "text": "e",
-  "start": 73.851,
-  "end": 73.967
+  "text": "forte",
+  "start": 64.133,
+  "end": 64.574
  },
  {
   "id": "w193",
-  "text": "de",
-  "start": 74.037,
-  "end": 74.106
+  "text": "e,",
+  "start": 64.679,
+  "end": 64.806
  },
  {
   "id": "w194",
-  "text": "produtos",
-  "start": 74.153,
-  "end": 74.536
+  "text": "mal",
+  "start": 64.841,
+  "end": 64.946
  },
  {
   "id": "w195",
-  "text": "químicos.",
-  "start": 74.606,
-  "end": 75.151
+  "text": "manejada,",
+  "start": 64.969,
+  "end": 65.526
  },
  {
   "id": "w196",
-  "text": "Zerou?",
-  "start": 75.453,
-  "end": 75.975
+  "text": "cria",
+  "start": 65.573,
+  "end": 65.84
  },
  {
   "id": "w197",
-  "text": "Ainda",
-  "start": 76.277,
-  "end": 76.591
+  "text": "mosca.",
+  "start": 65.886,
+  "end": 66.351
  },
  {
   "id": "w198",
-  "text": "não.",
-  "start": 76.649,
-  "end": 76.997
+  "text": "Por",
+  "start": 66.745,
+  "end": 66.919
  },
  {
   "id": "w199",
-  "text": "Aí",
-  "start": 77.357,
-  "end": 77.566
+  "text": "isso",
+  "start": 66.966,
+  "end": 67.268
  },
  {
   "id": "w200",
-  "text": "o",
-  "start": 77.601,
-  "end": 77.624
+  "text": "a",
+  "start": 67.419,
+  "end": 67.523
  },
  {
   "id": "w201",
-  "text": "licor",
-  "start": 77.671,
-  "end": 77.914
+  "text": "dose",
+  "start": 67.581,
+  "end": 67.871
  },
  {
   "id": "w202",
-  "text": "preto",
-  "start": 77.961,
-  "end": 78.216
+  "text": "tem",
+  "start": 67.918,
+  "end": 68.057
  },
  {
   "id": "w203",
-  "text": "queima",
-  "start": 78.251,
-  "end": 78.472
+  "text": "limite,",
+  "start": 68.08,
+  "end": 68.684
  },
  {
   "id": "w204",
-  "text": "numa",
-  "start": 78.495,
-  "end": 78.646
+  "text": "pelo",
+  "start": 68.823,
+  "end": 69.021
  },
  {
   "id": "w205",
-  "text": "caldeira.",
-  "start": 78.692,
-  "end": 79.284
+  "text": "potássio",
+  "start": 69.056,
+  "end": 69.45
  },
  {
   "id": "w206",
-  "text": "O",
-  "start": 79.482,
-  "end": 79.563
+  "text": "do",
+  "start": 69.485,
+  "end": 69.555
  },
  {
   "id": "w207",
-  "text": "fogo",
-  "start": 79.667,
-  "end": 79.911
+  "text": "solo.",
+  "start": 69.601,
+  "end": 70.008
  },
  {
   "id": "w208",
-  "text": "faz",
-  "start": 79.958,
-  "end": 80.109
+  "text": "Petrificar",
+  "start": 70.298,
+  "end": 70.82
  },
  {
   "id": "w209",
-  "text": "vapor,",
-  "start": 80.167,
-  "end": 80.712
+  "text": "o",
+  "start": 70.867,
+  "end": 70.89
  },
  {
   "id": "w210",
-  "text": "o",
-  "start": 80.91,
-  "end": 80.979
+  "text": "solo,",
+  "start": 70.936,
+  "end": 71.18
  },
  {
   "id": "w211",
-  "text": "vapor",
-  "start": 81.037,
-  "end": 81.351
+  "text": "não:",
+  "start": 71.203,
+  "end": 71.459
  },
  {
   "id": "w212",
-  "text": "gira",
-  "start": 81.386,
-  "end": 81.572
+  "text": "o",
+  "start": 71.575,
+  "end": 71.621
  },
  {
   "id": "w213",
-  "text": "a",
-  "start": 81.595,
-  "end": 82.001
+  "text": "que",
+  "start": 71.668,
+  "end": 71.737
  },
  {
   "id": "w214",
-  "text": "turbina,",
-  "start": 82.071,
-  "end": 82.663
+  "text": "compacta",
+  "start": 71.784,
+  "end": 72.283
  },
  {
   "id": "w215",
-  "text": "e",
-  "start": 82.918,
-  "end": 83.023
+  "text": "é",
+  "start": 72.353,
+  "end": 72.399
  },
  {
   "id": "w216",
-  "text": "a",
-  "start": 83.093,
-  "end": 83.139
+  "text": "o",
+  "start": 72.446,
+  "end": 72.469
  },
  {
   "id": "w217",
-  "text": "fábrica",
-  "start": 83.209,
-  "end": 83.603
+  "text": "caminhão-tanque.",
+  "start": 72.504,
+  "end": 73.305
  },
  {
   "id": "w218",
-  "text": "gera",
-  "start": 83.661,
-  "end": 83.847
+  "text": "E",
+  "start": 73.491,
+  "end": 73.549
  },
  {
   "id": "w219",
-  "text": "a",
-  "start": 83.87,
-  "end": 83.894
+  "text": "dá",
+  "start": 73.607,
+  "end": 73.688
  },
  {
   "id": "w220",
-  "text": "própria",
-  "start": 83.963,
-  "end": 84.323
+  "text": "pra",
+  "start": 73.734,
+  "end": 73.816
  },
  {
   "id": "w221",
-  "text": "energia.",
-  "start": 84.37,
-  "end": 85.066
+  "text": "fazer",
+  "start": 73.85,
+  "end": 74.059
  },
  {
   "id": "w222",
-  "text": "Em",
-  "start": 85.426,
-  "end": 85.554
+  "text": "biogás",
+  "start": 74.106,
+  "end": 74.501
  },
  {
   "id": "w223",
-  "text": "várias",
-  "start": 85.6,
-  "end": 85.891
+  "text": "com",
+  "start": 74.547,
+  "end": 74.675
  },
  {
   "id": "w224",
-  "text": "fábricas,",
-  "start": 85.96,
-  "end": 86.529
+  "text": "ela.",
+  "start": 74.756,
+  "end": 75.023
  },
  {
   "id": "w225",
-  "text": "ainda",
-  "start": 86.599,
-  "end": 86.924
+  "text": "Parabéns,",
+  "start": 75.418,
+  "end": 75.859
  },
  {
   "id": "w226",
-  "text": "sobra",
-  "start": 86.982,
-  "end": 87.237
+  "text": "chefe:",
+  "start": 75.882,
+  "end": 76.37
  },
  {
   "id": "w227",
-  "text": "pra",
-  "start": 87.272,
-  "end": 87.411
+  "text": "agora",
+  "start": 76.509,
+  "end": 76.811
  },
  {
   "id": "w228",
-  "text": "vender.",
-  "start": 87.458,
-  "end": 87.98
+  "text": "a",
+  "start": 76.915,
+  "end": 76.962
  },
  {
   "id": "w229",
-  "text": "A",
-  "start": 88.387,
-  "end": 88.491
+  "text": "usina",
+  "start": 77.008,
+  "end": 77.287
  },
  {
   "id": "w230",
-  "text": "casca",
-  "start": 88.607,
-  "end": 89.025
+  "text": "tá",
+  "start": 77.322,
+  "end": 77.403
  },
  {
   "id": "w231",
-  "text": "vai",
-  "start": 89.072,
-  "end": 89.188
+  "text": "completa.",
+  "start": 77.45,
+  "end": 78.03
  },
  {
   "id": "w232",
-  "text": "pra",
-  "start": 89.223,
-  "end": 89.35
+  "text": "Que",
+  "start": 78.367,
+  "end": 78.471
  },
  {
   "id": "w233",
   "text": "outra",
-  "start": 89.385,
-  "end": 89.559
+  "start": 78.518,
+  "end": 78.692
  },
  {
   "id": "w234",
-  "text": "caldeira",
-  "start": 89.617,
-  "end": 90.105
+  "text": "fábrica",
+  "start": 78.738,
+  "end": 79.017
  },
  {
   "id": "w235",
-  "text": "e",
-  "start": 90.175,
-  "end": 90.279
+  "text": "você",
+  "start": 79.052,
+  "end": 79.214
  },
  {
   "id": "w236",
-  "text": "também",
-  "start": 90.337,
-  "end": 90.627
+  "text": "quer",
+  "start": 79.261,
+  "end": 79.377
  },
  {
   "id": "w237",
-  "text": "vira",
-  "start": 90.662,
-  "end": 90.848
+  "text": "ver",
+  "start": 79.412,
+  "end": 79.516
  },
  {
   "id": "w238",
-  "text": "combustível.",
-  "start": 90.906,
-  "end": 91.684
+  "text": "por",
+  "start": 79.563,
+  "end": 79.679
  },
  {
   "id": "w239",
-  "text": "E",
-  "start": 91.986,
-  "end": 92.09
+  "text": "dentro?",
+  "start": 79.725,
+  "end": 80.073
  },
  {
   "id": "w240",
-  "text": "a",
-  "start": 92.16,
-  "end": 92.183
+  "text": "Comenta",
+  "start": 80.259,
+  "end": 80.642
  },
  {
   "id": "w241",
-  "text": "maior",
-  "start": 92.253,
-  "end": 92.601
- },
- {
-  "id": "w242",
-  "text": "parte",
-  "start": 92.682,
-  "end": 93.031
- },
- {
-  "id": "w243",
-  "text": "dos",
-  "start": 93.089,
-  "end": 93.193
- },
- {
-  "id": "w244",
-  "text": "produtos",
-  "start": 93.251,
-  "end": 93.634
- },
- {
-  "id": "w245",
-  "text": "químicos",
-  "start": 93.704,
-  "end": 94.134
- },
- {
-  "id": "w246",
-  "text": "volta",
-  "start": 94.238,
-  "end": 94.552
- },
- {
-  "id": "w247",
-  "text": "pro",
-  "start": 94.598,
-  "end": 94.703
- },
- {
-  "id": "w248",
-  "text": "digestor.",
-  "start": 94.749,
-  "end": 95.388
- },
- {
-  "id": "w249",
-  "text": "Essa",
-  "start": 95.747,
-  "end": 96.061
- },
- {
-  "id": "w250",
-  "text": "é",
-  "start": 96.084,
-  "end": 96.119
- },
- {
-  "id": "w251",
-  "text": "a",
-  "start": 96.189,
-  "end": 96.212
- },
- {
-  "id": "w252",
-  "text": "caldeira",
-  "start": 96.282,
-  "end": 96.723
- },
- {
-  "id": "w253",
-  "text": "de",
-  "start": 96.769,
-  "end": 96.827
- },
- {
-  "id": "w254",
-  "text": "recuperação.",
-  "start": 96.873,
-  "end": 97.709
- },
- {
-  "id": "w255",
-  "text": "Agora",
-  "start": 97.93,
-  "end": 98.301
- },
- {
-  "id": "w256",
-  "text": "sim:",
-  "start": 98.371,
-  "end": 98.685
- },
- {
-  "id": "w257",
-  "text": "zerou.",
-  "start": 98.847,
-  "end": 99.416
- },
- {
-  "id": "w258",
-  "text": "O",
-  "start": 99.613,
-  "end": 99.683
- },
- {
-  "id": "w259",
-  "text": "Brasil",
-  "start": 99.753,
-  "end": 100.043
- },
- {
-  "id": "w260",
-  "text": "fez",
-  "start": 100.101,
-  "end": 100.264
- },
- {
-  "id": "w261",
-  "text": "quase",
-  "start": 100.333,
-  "end": 100.6
- },
- {
-  "id": "w262",
-  "text": "trinta",
-  "start": 100.647,
-  "end": 100.949
- },
- {
-  "id": "w263",
-  "text": "milhões",
-  "start": 100.995,
-  "end": 101.274
- },
- {
-  "id": "w264",
-  "text": "de",
-  "start": 101.297,
-  "end": 101.355
- },
- {
-  "id": "w265",
-  "text": "toneladas",
-  "start": 101.425,
-  "end": 101.993
- },
- {
-  "id": "w266",
-  "text": "de",
-  "start": 102.04,
-  "end": 102.11
- },
- {
-  "id": "w267",
-  "text": "celulose",
-  "start": 102.156,
-  "end": 102.771
- },
- {
-  "id": "w268",
-  "text": "em",
-  "start": 102.841,
-  "end": 102.969
- },
- {
-  "id": "w269",
-  "text": "dois",
-  "start": 103.027,
-  "end": 103.201
- },
- {
-  "id": "w270",
-  "text": "mil",
-  "start": 103.271,
-  "end": 103.387
- },
- {
-  "id": "w271",
-  "text": "e",
-  "start": 103.433,
-  "end": 103.468
- },
- {
-  "id": "w272",
-  "text": "vinte",
-  "start": 103.503,
-  "end": 103.712
- },
- {
-  "id": "w273",
-  "text": "e",
-  "start": 103.735,
-  "end": 103.758
- },
- {
-  "id": "w274",
-  "text": "cinco.",
-  "start": 103.805,
-  "end": 104.292
- },
- {
-  "id": "w275",
-  "text": "Mostra",
-  "start": 104.594,
-  "end": 104.977
- },
- {
-  "id": "w276",
-  "text": "pra",
-  "start": 105.024,
-  "end": 105.163
- },
- {
-  "id": "w277",
-  "text": "quem",
-  "start": 105.209,
-  "end": 105.349
- },
- {
-  "id": "w278",
-  "text": "rasga",
-  "start": 105.407,
-  "end": 105.674
- },
- {
-  "id": "w279",
-  "text": "papel",
-  "start": 105.72,
-  "end": 106.045
- },
- {
-  "id": "w280",
-  "text": "sem",
-  "start": 106.115,
-  "end": 106.278
- },
- {
-  "id": "w281",
-  "text": "pensar.",
-  "start": 106.324,
-  "end": 107.044
+  "text": "aí.",
+  "start": 80.665,
+  "end": 81.176
  }
 ]
