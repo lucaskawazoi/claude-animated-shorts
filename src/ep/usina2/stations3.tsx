@@ -4,52 +4,75 @@ import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, prog, rnd }
 import { Puffs } from "../../toy/scenery";
 import { Flow, PI, STEEL, Spray, mixc, pk } from "../papel/parts";
 import { T } from "./anchors";
-import { CANE_C, CutTank, Drum, Sack, Truck } from "./kit2";
+import { BRICK, CANE_C, CutTank, Drum, Sack, Shell, Truck } from "./kit2";
 import { L } from "./layout";
 
-// ---------------------------------------------------------------- a conta
+// ---------------------------------------------------------------- a conta: caminhão de 1 t de cana, destilaria (85 L) × usina média (40 L + 66 kg), bagaço indo para a caldeira
+const Jerry: React.FC<{ p: V3; k: number; c?: string }> = ({ p, k, c = "#33c46a" }) => (
+  <G p={p} sc={Math.max(0.001, k)}>
+    <Box s={[0.95, 1.15, 0.6]} p={[0, 0.58, 0]} c={c} o={{ rough: 0.4 }} /><Box s={[0.28, 0.22, 0.28]} p={[0.22, 1.25, 0]} c="#ffd400" cast={false} />
+    <Box s={[0.4, 0.12, 0.14]} p={[-0.18, 1.2, 0]} c="#2a2f36" cast={false} /><Box s={[0.55, 0.4, 0.03]} p={[0, 0.5, 0.31]} c="#ffffff" cast={false} />
+  </G>
+);
+const Stick: React.FC<{ t: number; t0: number; from: V3; to: V3 }> = ({ t, t0, from, to }) => {
+  const u = prog(t, t0, t0 + 0.9); if (u <= 0 || u >= 1) return null;
+  return <G>{[0, 1, 2, 3, 4].map((i) => { const v = clamp(u * 1.3 - i * 0.06); return <Cyl key={i} rt={0.2} h={2.4} p={[lerp(from[0], to[0], v) + (i - 2) * 0.35, lerp(from[1], to[1], v) + 5 * Math.sin(v * PI), lerp(from[2], to[2], v)]} r={[0, 0, PI / 2 + v * 3]} c={CANE_C} seg={6} cast={false} />; })}</G>;
+};
+export const CONTA_A = 292, CONTA_B = 322;
 export const Conta: React.FC<{ t: number }> = ({ t }) => {
-  const [x, , z] = L.conta;
-  const b1 = ease(t, T.oitenta - 0.1, T.oitenta + 1.2), b2 = ease(t, T.media, T.media + 1.0), b3 = ease(t, T.media + 0.5, T.media + 1.6);
-  const dim = 1 - 0.35 * ease(t, T.media, T.media + 0.4);
+  const [, , z] = L.conta, xa = CONTA_A, xb = CONTA_B;
+  const tA = lerp(xa - 26, xa - 2, ease(t, T.conta - 0.4, T.conta + 0.9)) - 30 * ease(t, T.oitenta + 0.3, T.oitenta + 1.3);
+  const tB = lerp(xb - 28, xb - 2, ease(t, T.media - 0.5, T.media + 0.7)) - 32 * ease(t, T.quarenta - 0.9, T.quarenta - 0.2);
+  const showA = t > T.conta - 0.5 && t < T.oitenta + 1.4, showB = t > T.media - 0.6 && t < T.quarenta - 0.1;
+  const flame = 0.85 + 0.15 * Math.sin(t * 23);
   return (
     <G>
-      <Box s={[34, 0.4, 13]} p={[x, 0.2, z]} c="#e6edf2" /><Box s={[34.4, 0.25, 13.4]} p={[x, 0.08, z]} c="#2f86ff" cast={false} />
-      {/* 85 L/t: destilaria (barra única verde) */}
-      <G p={[x - 11, 0.4, z]} sc={b1 > 0.01 ? 1 : 0.001}>
-        <Box s={[5, 6.0 * b1 + 0.01, 5]} p={[0, 3.0 * b1, 0]} c="#33c46a" o={{ emissive: "#33c46a", ei: 0.15 * dim }} />
-        <Drum p={[0, 6.0 * b1, 0]} c="#33c46a" sc={Math.max(0.001, b1) * 1.2} />
-      </G>
-      {/* média do Centro-Sul: ~40 L de etanol + 66 kg de açúcar */}
-      <G p={[x + 2, 0.4, z]} sc={b2 > 0.01 ? 1 : 0.001}>
-        <Box s={[5, 2.8 * b2 + 0.01, 5]} p={[0, 1.4 * b2, 0]} c="#33c46a" />
-        <Drum p={[0, 2.8 * b2, 0]} c="#33c46a" sc={Math.max(0.001, b2) * 1.3} />
-      </G>
-      <G p={[x + 10, 0.4, z]} sc={b3 > 0.01 ? 1 : 0.001}>
-        <Box s={[5, 4.6 * b3 + 0.01, 5]} p={[0, 2.3 * b3, 0]} c="#ffffff" o={{ rough: 0.5 }} />
-        <Sack p={[0, 4.6 * b3, 0]} sc={Math.max(0.001, b3) * 1.8} />
-      </G>
+      <Box s={[16, 0.2, 16]} p={[xa, 0.1, z + 1]} c="#c4c9cc" cast={false} /><Box s={[18, 0.2, 16]} p={[xb, 0.1, z + 1]} c="#c4c9cc" cast={false} />
+      {/* A: destilaria só de etanol */}
+      <Shell p={[xa, 0, z - 1]} w={9} d={5} h={4.5} wall="#cfe0ee" side="#9fb7cf" roof="#2f86ff" />
+      <Cyl rt={1.0} h={9} p={[xa + 6, 4.5, z - 2]} c="#d0dae1" seg={16} /><Sph rad={1.0} ps={0} pl={PI / 2} p={[xa + 6, 9, z - 2]} c="#9fb2c0" ws={14} hs={6} />
+      <Box s={[3.2, 2, 0.2]} p={[xa - 5, 5.2, z + 1]} c="#2f86ff" /><Cyl rt={0.14} h={4.2} p={[xa - 5, 2.1, z + 1]} c="#59626b" seg={6} />
+      <Sph rad={0.55} p={[xa - 5, 5.2, z + 1.18]} sc={[0.8, 1.1, 0.4]} c="#ffffff" ws={8} hs={6} cast={false} />
+      {Array.from({ length: 17 }, (_, i) => <Jerry key={i} p={[xa - 3.4 + (i % 6) * 1.3, 0.2, z + 3.4 + Math.floor(i / 6) * 1.1]} k={pk(t, T.oitenta + 0.15 + i * 0.075, 0.3)} />)}
+      {/* B: usina média, açúcar e álcool */}
+      <Shell p={[xb, 0, z - 1]} w={11} d={5} h={4.5} wall="#f0e6d8" side={BRICK} roof="#ff7a1a" />
+      <Cyl rt={0.7} rb={0.9} h={11} p={[xb + 6.5, 5.5, z - 2]} c="#f2f2f2" seg={14} />{[3, 6.5, 10].map((y, i) => <Cyl key={i} rt={0.8} h={1.2} p={[xb + 6.5, y, z - 2]} c="#e2392f" seg={14} cast={false} />)}
+      <Puffs t={t} p={[xb + 6.5, 11.4, z - 2]} n={6} period={3.4} rise={5} size={1.2} c="#f4f6f8" drift={[1.6, 0, 0.4]} />
+      {Array.from({ length: 8 }, (_, i) => <Jerry key={i} p={[xb - 5.8 + (i % 4) * 1.3, 0.2, z + 3.4 + Math.floor(i / 4) * 1.1]} k={pk(t, T.quarenta - 0.2 + i * 0.1, 0.3)} />)}
+      {Array.from({ length: 13 }, (_, i) => <Sack key={i} p={[xb + 0.2 + (i % 5) * 1.2, 0.2, z + 3.4 + Math.floor(i / 5) * 1.1]} sc={pk(t, T.sessenta - 0.1 + i * 0.07, 0.3) * 0.9} />)}
+      {/* caminhão com 1 t de cana */}
+      {showA ? <Truck p={[tA, 0, z + 9]} kind="cane" t={t} /> : null}
+      {showB ? <Truck p={[tB, 0, z + 9]} kind="cane" t={t} /> : null}
+      <Stick t={t} t0={T.oitenta - 0.5} from={[xa - 2, 2.4, z + 9]} to={[xa, 3, z - 1]} />
+      <Stick t={t} t0={T.media + 0.9} from={[xb - 2, 2.4, z + 9]} to={[xb, 3, z - 1]} />
+      <Cone rad={0.35} h={1.0 * flame} seg={6} p={[xb - 2, 1.2, z + 1.6]} c="#ffd24a" o={{ emissive: "#ffb000", ei: 2.4 }} sc={ease(t, T.media + 1.5, T.media + 2.2)} cast={false} />
     </G>
   );
 };
 export const Bagaco: React.FC<{ t: number }> = ({ t }) => {
-  const [x, , z] = L.bagaco, c = ease(t, T.ja - 0.1, T.ja + 0.7), b = ease(t, T.cento - 0.8, T.cento + 0.6);
-  const s1 = 7, s2 = 7 * Math.cbrt(0.28);
+  const [x, , z] = L.bagaco, c = ease(t, T.ja - 0.1, T.ja + 0.8), conv = ease(t, T.quinhentas - 0.3, T.quinhentas + 0.4), b = ease(t, T.quinhentas, T.cento + 0.8), fire = ease(t, T.cento - 0.5, T.cento + 0.8), flick = 0.85 + 0.15 * Math.sin(t * 23);
   return (
     <G>
-      <Box s={[26, 0.4, 12]} p={[x, 0.2, z]} c="#e6edf2" /><Box s={[26.4, 0.25, 12.4]} p={[x, 0.08, z]} c="#2f86ff" cast={false} />
-      {/* cubo de cana: 500 t/h */}
-      <G p={[x - 6.5, 0.4, z]} sc={Math.max(0.001, c)}>
-        <Box s={[s1, s1, s1]} p={[0, s1 / 2, 0]} c={CANE_C} o={{ flat: true }} />
-        {Array.from({ length: 7 }, (_, i) => <Cyl key={i} rt={0.2} h={s1 + 0.3} p={[-3 + i, s1 / 2, s1 / 2 + 0.05]} r={[PI / 2, 0, 0]} c="#7fa81a" seg={6} cast={false} />)}
+      <Box s={[44, 0.2, 18]} p={[x, 0.1, z + 1]} c="#c4c9cc" cast={false} />
+      {/* monte de cana: 500 t/h */}
+      <G p={[x - 15, 0, z + 1]} sc={Math.max(0.001, c)}>
+        {[[0, 0, 0, 4.2], [-3, 0, 1, 3.0], [3, 0, 1.2, 3.0], [0.4, 2.6, 0, 3.0]].map(([a, b2, d, r], i) => <Sph key={i} rad={r} p={[a, b2 + r * 0.55, d]} sc={[1.2, 0.8, 1.1]} c={i % 2 ? "#a8c830" : CANE_C} ws={10} hs={7} o={{ flat: true }} />)}
+        {Array.from({ length: 12 }, (_, i) => <Cyl key={i} rt={0.18} h={3} p={[(rnd(i) - 0.5) * 8, 1.5 + rnd(i + 3) * 3, 3 + rnd(i + 6)]} r={[0, rnd(i + 8) * 3, PI / 2 + (rnd(i + 5) - 0.5)]} c="#8fb81a" seg={6} cast={false} />)}
       </G>
-      <Box s={[4, 0.25, 1.4]} p={[x - 1.5, 3.2, z]} c="#3b4650" />
-      <Flow pts={[[x - 3, 3.5, z], [x + 1, 3.5, z]]} t={t} t0={T.quinhentas} t1={T.cento + 1} spd={5} gap={1.0} rad={0.3} c={CANE_C} box />
-      {/* cubo de bagaço: ~140 t/h */}
-      <G p={[x + 6, 0.4, z]} sc={Math.max(0.001, b)}>
-        <Box s={[s2, s2, s2]} p={[0, s2 / 2, 0]} c="#d6b86a" o={{ rough: 1 }} />
-        {Array.from({ length: 14 }, (_, i) => <Box key={i} s={[0.7, 0.08, 0.08]} p={[(rnd(i) - 0.5) * s2, rnd(i + 3) * s2, s2 / 2 + 0.05]} r={[0, 0, rnd(i + 7) * 3]} c="#8d6a2b" cast={false} />)}
+      {/* moenda pequena e esteira até a caldeira */}
+      <Box s={[5, 3, 3.4]} p={[x - 7, 1.7, z + 1]} c="#a9c0d3" /><Cyl rt={0.9} h={3.6} p={[x - 7, 3.2, z + 1.2]} r={[PI / 2, 0, 0]} c="#7e8d99" seg={14} cast={false} />
+      <G p={[x + 1.2, 3.1, z + 1]} r={[0, 0, Math.atan2(2.6, 11)]}><Box s={[12, 0.25, 1.6]} c="#3b4650" /></G>
+      <Flow pts={[[x - 4, 2.2, z + 1], [x + 6.5, 4.3, z + 1]]} t={t} t0={T.quinhentas - 0.2} spd={6} gap={1.0} rad={0.32} c="#d6b86a" box />
+      {/* monte de bagaço: ~140 t/h */}
+      <G p={[x + 2, 0, z + 5.6]} sc={Math.max(0.001, b)}>
+        {[[0, 0, 0, 2.3], [-1.6, 0, 0.5, 1.6], [1.6, 0, 0.5, 1.5]].map(([a, b2, d, r], i) => <Sph key={i} rad={r} p={[a, b2 + r * 0.5, d]} sc={[1.2, 0.8, 1.1]} c="#d6b86a" ws={10} hs={7} o={{ rough: 1 }} />)}
       </G>
+      {/* caldeira que recebe o bagaço */}
+      <Shell p={[x + 14, 0, z - 0.5]} w={9} d={6} h={6} wall="#e6dcd4" side={BRICK} roof="#7e4a3a" />
+      <Cyl rt={1.8} h={5} p={[x + 14, 2.9, z - 1.4]} c="#c9d3da" seg={20} o={{ metal: 0.3 }} /><Box s={[2.4, 1.6, 0.4]} p={[x + 14, 1.2, z + 1.4]} c="#2a2c30" /><Box s={[1.7, 1.1, 0.1]} p={[x + 14, 1.2, z + 1.65]} c="#ff7a18" o={{ emissive: "#ff5a00", ei: 0.1 + 2.2 * fire }} cast={false} />
+      <Cone rad={0.6} h={1.4 * flick} seg={6} p={[x + 13.6, 1.0 + 0.7 * flick, z + 1.7]} c="#ffd24a" o={{ emissive: "#ffb000", ei: 2.6 }} sc={Math.max(0.001, fire)} cast={false} />
+      <Cyl rt={0.8} rb={1.0} h={14} p={[x + 18, 7, z - 3]} c="#f2f2f2" seg={14} />{[3, 7, 11].map((y, i) => <Cyl key={i} rt={0.9} h={1.3} p={[x + 18, y, z - 3]} c="#e2392f" seg={14} cast={false} />)}
+      <Puffs t={t} p={[x + 18, 14.4, z - 3]} n={7} period={3.4} rise={6} size={1.5} c="#f4f6f8" on={fire} drift={[2, 0, 0.4]} />
     </G>
   );
 };
@@ -78,16 +101,16 @@ export const Vinhaca: React.FC<{ t: number }> = ({ t }) => {
 
 export const Puddle: React.FC<{ t: number }> = ({ t }) => {
   const [x, , z] = L.field, k = ease(t, T.mosca - 1.8, T.mosca - 0.6), px = x - 22, pz = z + 11;
-  const fly = ease(t, T.mosca - 0.1, T.mosca + 0.4) * (1 - ease(t, T.porIsso2 + 0.2, T.porIsso2 + 0.9));
+  const fly = ease(t, T.cheira + 0.3, T.cheira + 0.8) * (1 - ease(t, T.porIsso2 + 0.2, T.porIsso2 + 0.9));
   return (
     <G>
       <Cyl rt={1} h={0.12} p={[px, 0.1, pz]} sc={[Math.max(0.01, k * 5.5), 1, Math.max(0.01, k * 3.6)]} c="#1a0e06" seg={24} o={{ rough: 0.15 }} cast={false} />
-      <Puffs t={t} p={[px, 0.8, pz]} n={6} period={2.2} rise={4} size={0.9} c="#9fd84a" on={ease(t, T.cheira - 0.2, T.cheira + 0.4) * (1 - ease(t, T.mosca + 0.6, T.mosca + 1.2))} drift={[0, 0, -0.8]} />
+      <Puffs t={t} p={[px, 0.8, pz]} n={6} period={2.2} rise={4} size={0.5} c="#9fd84a" on={ease(t, T.cheira - 0.2, T.cheira + 0.4) * (1 - ease(t, T.mosca - 0.2, T.mosca + 0.3))} drift={[0, 0, -0.8]} />
       {fly > 0.02 ? Array.from({ length: 9 }, (_, i) => {
         const a = t * (3 + rnd(i) * 2) + i * 1.7, rr = 1.6 + rnd(i + 3) * 2.6, y = 1.8 + rnd(i + 9) * 2.4 + 0.4 * Math.sin(t * 7 + i);
         return (
           <G key={i} p={[px + Math.cos(a) * rr, y, pz + Math.sin(a) * rr * 0.8]} r={[0, -a, 0]} sc={Math.max(0.001, fly) * 0.9}>
-            <Sph rad={0.28} c="#14181c" ws={8} hs={6} cast={false} /><Sph rad={0.2} c="#14181c" p={[0.28, 0, 0]} ws={8} hs={6} cast={false} />
+            <Sph rad={0.3} c="#14181c" sc={[1.3, 1, 1]} ws={8} hs={6} cast={false} /><Sph rad={0.22} c="#2a2f36" p={[0.38, 0.03, 0]} ws={8} hs={6} cast={false} /><Sph rad={0.1} c="#ff2020" p={[0.5, 0.12, 0.14]} ws={6} hs={4} cast={false} o={{ emissive: "#ff2020", ei: 0.8 }} /><Sph rad={0.1} c="#ff2020" p={[0.5, 0.12, -0.14]} ws={6} hs={4} cast={false} o={{ emissive: "#ff2020", ei: 0.8 }} />
             <Box s={[0.5, 0.04, 0.34]} p={[0, 0.22, 0.28]} r={[0.5 * Math.sin(t * 60 + i), 0, 0]} c="#e8f4ff" cast={false} /><Box s={[0.5, 0.04, 0.34]} p={[0, 0.22, -0.28]} r={[-0.5 * Math.sin(t * 60 + i), 0, 0]} c="#e8f4ff" cast={false} />
           </G>
         );
@@ -100,7 +123,7 @@ export const Puddle: React.FC<{ t: number }> = ({ t }) => {
 export const SoilField: React.FC<{ t: number }> = ({ t }) => {
   const [x, , z] = L.field;
   const dose = ease(t, T.porIsso2 + 0.1, T.potassio + 1.0), stone = ease(t, T.petr, T.petr + 0.35) * (1 - ease(t, T.nao, T.nao + 0.35));
-  const truckX = lerp(x - 14, x + 44, ease(t, T.compacta - 0.9, T.caminhao + 1.2));
+  const truckX = lerp(x - 14, x + 44, ease(t, T.compacta - 0.6, T.caminhao + 1.6));
   const press = ease(t, T.compacta, T.caminhao + 0.8);
   const showT = t > T.compacta - 0.9 && t < T.biogas + 0.3;
   const soil = mixc("#7a5233", "#8a8f94", stone);

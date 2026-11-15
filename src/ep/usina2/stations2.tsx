@@ -86,8 +86,8 @@ export const Centrifuge: React.FC<{ t: number }> = ({ t }) => {
       </G>
       {/* melaço sai pelas frestas e escorre pela parede */}
       {mol > 0.02 ? Array.from({ length: 16 }, (_, i) => { const th = (i / 16) * PI * 2 + a * 0.2, u = fract(t * 2.2 + rnd(i)), rr = lerp(2.5, 3.2, Math.min(1, u * 1.6)); return <Sph key={i} rad={0.16} p={[x + Math.sin(th) * rr, lerp(3.3, 2.0, u * u), z + Math.cos(th) * rr]} c="#3a1c08" ws={6} hs={4} cast={false} o={{ emissive: "#2a1204", ei: 0.4 }} />; }) : null}
-      <Pipe a={[x + 3.0, 1.0, z + 2.6]} b={[L.barrel[0] - 1.4, 1.0, L.barrel[2]]} rad={0.3} c="#333a40" />
-      <Flow pts={[[x + 3.0, 1.0, z + 2.6], [L.barrel[0] - 1.4, 1.0, L.barrel[2]]]} t={t} t0={T.melaco - 0.1} spd={7} gap={1.0} rad={0.34} c="#3a1c08" glow />
+      <Pipe a={[x + 3.0, 1.0, z + 2.6]} b={[L.barrel[0] - 1.4, 1.0, L.barrel[2]]} rad={0.45} c="#333a40" />
+      <Flow pts={[[x + 3.0, 1.0, z + 2.6], [L.barrel[0] - 1.4, 1.0, L.barrel[2]]]} t={t} t0={T.melaco - 0.1} spd={7} gap={0.8} rad={0.5} c="#3a1c08" glow />
       {/* saída do açúcar branco: calha até a pilha de sacos */}
       <Box s={[6, 0.25, 1.8]} p={[x - 1.0, 1.7, z + 4.4]} r={[0, 0, 0.0]} c="#c3cbd3" cast={false} />
       <Box s={[3, 0.18, 1.5]} p={[x - 0.2, 1.9, z + 4.4]} c="#3b4650" />
@@ -97,13 +97,12 @@ export const Centrifuge: React.FC<{ t: number }> = ({ t }) => {
 };
 /** barril de melaço e pilha de sacos de açúcar (um a um) */
 export const Outputs: React.FC<{ t: number }> = ({ t }) => {
-  const [bx, , bz] = L.barrel, lvl = 0.25 + 0.7 * ease(t, T.melaco, T.prob2);
+  const [bx, , bz] = L.barrel, lvl = 0.1 + 0.85 * ease(t, T.melaco + 0.2, T.melaco + 2.4);
   const sacks = Array.from({ length: 9 }, (_, i) => ({ i, k: pk(t, T.fica + 0.2 + i * 0.22, 0.4) }));
   const sx = L.cent[0] + 6.6, sz = L.cent[2] + 8.4;
   return (
     <G>
-      <Cyl rt={1.9} h={4.2} p={[bx, 2.3, bz]} c="#4a2a14" seg={20} /><Cyl rt={1.92} h={0.25} p={[bx, 3.0, bz]} c="#2a1204" seg={20} cast={false} /><Cyl rt={1.92} h={0.25} p={[bx, 1.6, bz]} c="#2a1204" seg={20} cast={false} />
-      <Cyl rt={1.6} h={0.12} p={[bx, 0.3 + 3.8 * lvl, bz]} c="#2a1204" seg={20} o={{ rough: 0.2 }} cast={false} />
+      <CutTank p={[bx, 0, bz]} r={2.1} h={4.2} cut={PI / 1.7} wall="#5a3a22" layers={[{ h: 3.6 * lvl, c: "#3a1c08", face: "#2a1204", o: { emissive: "#1a0a02", ei: 0.5 } }]} />
       {sacks.map(({ i, k }) => { const row = Math.floor(i / 3), col = i % 3; return <Sack key={i} p={[sx - 1.6 + col * 1.7, 0.25 + row * 0.7, sz]} r={[0, 0.1 * (i % 3 - 1), 0]} sc={k} />; })}
     </G>
   );
@@ -112,11 +111,12 @@ export const Outputs: React.FC<{ t: number }> = ({ t }) => {
 // ---------------------------------------------------------------- dorna: levedura come o melaço, faz álcool
 export const Dorna: React.FC<{ t: number }> = ({ t }) => {
   const [x, , z] = L.dorna, h = 6.6, r = 3.3;
-  const level = lerp(0.1, 0.78, ease(t, T.dorna - 0.2, T.levedura + 0.8)), yeast = ease(t, T.levedura - 0.1, T.levedura + 0.5), alc = ease(t, T.come, T.faz + 0.4);
+  const level = lerp(0.3, 0.78, ease(t, T.dorna - 0.2, T.dorna + 1.6)), yeast = ease(t, T.dorna + 0.1, T.dorna + 0.9), alc = ease(t, T.come, T.faz + 0.4);
   const surf = 0.3 + level * h;
   const beings = Array.from({ length: 11 }, (_, i) => ({ p: [x + (rnd(i) - 0.5) * 2.2, lerp(1.2, Math.max(1.4, surf - 0.7), rnd(i + 4)) + Math.sin(t * 2 + i) * 0.18, z + 0.3 + rnd(i + 8) * 1.2] as V3, i }));
   const bubbles = Array.from({ length: 24 }, (_, i) => { const u = fract(t * 0.5 + rnd(i) * 3); return { p: [x + (rnd(i + 1) - 0.5) * 2.4 + Math.sin(t * 3 + i) * 0.1, lerp(0.7, surf, u), z + 0.2 + rnd(i + 5) * 1.6] as V3, s: 0.1 + rnd(i + 3) * 0.12 }; });
   const sugar = prog(t, T.levedura, T.faz);
+  const cald = ease(t, T.parteCaldo, T.parteCaldo + 0.5);
   return (
     <G>
       <Box s={[22, 0.2, 8]} p={[x, 0.1, z]} c="#c4c9cc" cast={false} />
@@ -135,7 +135,9 @@ export const Dorna: React.FC<{ t: number }> = ({ t }) => {
       {bubbles.map((b, i) => <Sph key={i} rad={b.s} p={b.p} c="#fff8e0" o={{ opacity: 0.85, rough: 0.2 }} vis={yeast > 0.5} cast={false} ws={6} hs={4} />)}
       {/* melaço chega do barril */}
       <Pipe a={[L.barrel[0] + 1.9, 1.0, L.barrel[2]]} b={[x - 5, 1.0, L.barrel[2]]} rad={0.28} c="#333a40" /><Pipe a={[x - 5, 1.0, L.barrel[2]]} b={[x - 3.4, 1.0, z + 1.4]} rad={0.28} c="#333a40" />
-      <Flow pts={[[L.barrel[0] + 1.9, 1.0, L.barrel[2]], [x - 5, 1.0, L.barrel[2]], [x - 3.4, 1.0, z + 1.4]]} t={t} t0={T.dorna - 0.3} t1={T.faz} spd={8} gap={1.1} rad={0.34} c="#3a1c08" glow />
+      <Flow pts={[[L.barrel[0] + 1.9, 1.0, L.barrel[2]], [x - 5, 1.0, L.barrel[2]], [x - 3.4, 1.0, z + 1.4]]} t={t} t0={T.dorna - 0.3} t1={T.faz} spd={8} gap={0.8} rad={0.5} c="#3a1c08" glow />
+      <Pipe a={[x - 9, 1.0, z - 6]} b={[x - 3, 1.0, z - 2.4]} rad={0.4} c={STEEL} /><Cyl rt={1.4} h={2.6} p={[x - 9.5, 1.3, z - 6]} c="#cfd8de" seg={16} /><Cyl rt={1.3} h={0.3} p={[x - 9.5, 2.65, z - 6]} c="#e8b030" seg={16} cast={false} />
+      <Flow pts={[[x - 9, 1.0, z - 6], [x - 3, 1.0, z - 2.4]]} t={t} t0={T.parteCaldo - 0.2} t1={T.faz + 0.3} spd={6} gap={0.9} rad={0.42} c="#f0c040" glow />
       {/* medidor de álcool */}
       <Box s={[0.5, 4.0, 0.2]} p={[x + r + 1.0, 3.0, z + 1.2]} c="#2a3138" /><Box s={[0.36, 3.8 * (0.05 + 0.85 * alc), 0.22]} p={[x + r + 1.0, 1.1 + 3.8 * (0.05 + 0.85 * alc) / 2, z + 1.22]} c="#55e0ff" o={{ emissive: "#19b8e6", ei: 0.6 }} cast={false} />
       <Pipe a={[x + 4.0, 7.0, z]} b={[L.still[0] - 4.5, 7.0, L.still[2]]} rad={0.3} c={STEEL2} /><Pipe a={[L.still[0] - 4.5, 7.0, L.still[2]]} b={[L.still[0] - 4.5, 1.3, L.still[2]]} rad={0.3} c={STEEL2} />

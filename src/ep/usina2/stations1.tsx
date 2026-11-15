@@ -88,8 +88,10 @@ export const Clarifier: React.FC<{ t: number }> = ({ t }) => {
       <Cyl rt={0.14} h={3.6} p={[x, 2.2, z]} c="#59626b" seg={8} cast={false} />
       <G p={[x, 3.7, z]} r={[0, a, 0]}><Box s={[6.6, 0.18, 0.3]} c="#59626b" cast={false} /><Box s={[0.3, 0.18, 4]} c="#59626b" cast={false} /></G>
       {/* cano do lodo para o filtro */}
-      <Pipe a={[x + 3.4, 0.9, z + 0.5]} b={[L.filt[0] - 4.5, 0.9, z + 0.5]} rad={0.25} c={STEEL} />
-      <Flow pts={[[x + 3.2, 0.9, z + 0.5], [L.filt[0] - 4.5, 0.9, z + 0.5]]} t={t} t0={T.lodo - 0.6} spd={9} gap={1.4} rad={0.28} c="#5a3a1a" />
+      <Pipe a={[x + 3.4, 0.9, z + 0.5]} b={[L.filt[0] - 4.5, 0.9, z + 0.5]} rad={0.4} c={STEEL} />
+      <Pipe a={[L.tank[0] + 1.7, 1.2, L.tank[2] - 0.2]} b={[x - 3.4, 1.2, z + 1.0]} rad={0.35} c={STEEL} />
+      <Flow pts={[[L.tank[0] + 1.7, 1.2, L.tank[2] - 0.2], [x - 3.4, 1.2, z + 1.0]]} t={t} t0={0.5} spd={8} gap={1.1} rad={0.4} c="#8a9a2a" glow />
+      <Flow pts={[[x + 3.2, 0.9, z + 0.5], [L.filt[0] - 4.5, 0.9, z + 0.5]]} t={t} t0={T.primeiro + 0.2} spd={9} gap={0.9} rad={0.42} c="#5a3a1a" />
       {/* cano do caldo limpo (âmbar) vai para o tanque de vidro adiante */}
       <Pipe a={[x + 1, 0.9, z - 3.7]} b={[L.glass[0] - 3, 0.9, z - 3.7]} rad={0.25} c={STEEL} /><Pipe a={[L.glass[0] - 3, 0.9, z - 3.7]} b={[L.glass[0] - 2.2, 0.9, z]} rad={0.25} c={STEEL} />
       <Flow pts={[[x + 1, 0.9, z - 3.7], [L.glass[0] - 3, 0.9, z - 3.7]]} t={t} t0={T.limpo + 0.5} spd={12} gap={2.2} rad={0.3} c="#f0c040" glow />
