@@ -45,11 +45,12 @@ const ROWS: R[] = [
   [T.voce, [5, 4, 12], [1.5, 2.5, -1], [4.6, 4.1, 11.4], [1.5, 2.5, -1], 50, 48, 0, 0, "o dinheiro do tanque sai do carro"],
   [T.postoFica, [3.6, 2.9, 10.5], [PUMP[0] + 1.2, 2.6, PUMP[2] + 1.2], [3.3, 2.9, 10], [PUMP[0] + 1.2, 2.6, PUMP[2] + 1.2], 44, 42, 0, 0, "ao posto ficam uns cinquenta"],
   [T.resto, [-1.5, 6.5, 16], [L[0], 5.0, L[2]], [-1.9, 7.0, 16.5], [L[0], 6.0, L[2]], 50, 54, 0, 0, "o resto: o cinza vira fatias que voam para os donos"],
-  [T.so, [C[0] - 0.8, 3.4, 18], [C[0] - 0.8, 1.4, C[2]], [C[0] - 0.8, 3.5, 17.4], [C[0] - 0.8, 1.4, C[2]], 44, 42, 0, 0, "a coluna do ICMS"],
-  [T.postoDist, [C[0] + 0.4, 3.8, 19.5], [C[0], 1.4, C[2]], [C[0] + 0.6, 3.9, 19], [C[0], 1.4, C[2]], 44, 42, 0, 0, "posto + distribuidora ao lado: a régua"],
+  [T.so, [C[0] - 0.8, 4.4, C[2] + 15], [C[0] - 0.8, 5.0, C[2]], [C[0] - 0.8, 4.5, C[2] + 14.4], [C[0] - 0.8, 5.0, C[2]], 44, 42, 0, 0, "a coluna do ICMS"],
+  [T.postoDist, [C[0], 4.6, C[2] + 15], [C[0], 5.0, C[2]], [C[0] + 0.2, 4.8, C[2] + 14], [C[0], 5.2, C[2]], 44, 42, 0, 0, "posto + distribuidora ao lado: a régua"],
+  [T.juntos, [C[0] - 0.35, 7.0, C[2] + 4.4], [C[0] - 0.35, 6.95, C[2]], [C[0] - 0.35, 7.0, C[2] + 4.1], [C[0] - 0.35, 6.95, C[2]], 40, 40, 0, 0, "o topo das duas: o vermelho passa da régua"],
   [T.agoraSim, [-2.5, 3.8, 12.5], [2.2, 1.6, -2.5], [-2.2, 3.9, 12], [3.0, 1.6, -3.5], 50, 48, 0, 0, "Agora sim: o operário comemora, o carro sai"],
   [T.quanto2, [4.4, 3.1, 12.5], W1, [4.0, 3.2, 11.5], W1, 44, 42, 0, 0, "a pergunta: o operário aponta para quem assiste"],
-  [T.comenta, [2.5, 9, 28], [HOLE[0] - 4, 1, HOLE[2] - 8], [2, 18, 46], [-1, 1, -6], 54, 56, 0, 0, "recuando e subindo: o remendo do buraco na estrada"],
+  [T.soLucro, [2.5, 9, 28], [HOLE[0] - 4, 1, HOLE[2] - 8], [2, 18, 46], [-1, 1, -6], 54, 56, 0, 0, "recuando e subindo: o remendo do buraco na estrada"],
 ];
 const linCam = (i: number) => (t: number): CamState => {
   const r = ROWS[i], t1 = ROWS[i + 1] ? ROWS[i + 1][0] : T.end, x = Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0]))), u = sstep(x) * 0.6 + 0.4 * x;
@@ -79,22 +80,23 @@ const WORKER: [number, WorkerState][] = [
   [T.resto, S(SIDE, FRONT, "think")],
   [T.so, S(SIDE, TO_LIT, "point")],
   [T.agoraSim, S(SIDE, FRONT, "cheer")],
-  [T.quanto2, S(SIDE, 0.15, "point")],
-  [T.comenta + 0.6, S(SIDE, FRONT, "present")],
+  // o crítico: o gesto não aparecia. Braços abertos na pergunta («e aí?»); no «comenta aí» aponta para quem assiste, até o recuo final
+  [T.quanto2 - 0.35, S(SIDE, 0.15, "present")],
+  [T.comenta, S(SIDE, 0.05, "point")],
 ];
 
 const hud: HudData = {
   // números de e16-posto/FONTES.md § 0 (ANP, Brasil, 08–14/11/2026; posto = revenda − distribuição da mesma semana, ago–set)
   pills: [
-    { a: 0.25, b: T.mas - 0.1, label: "UM POSTO · ENTRA NO CAIXA", value: () => "≈ R$ 18 MIL/DIA", y: 440, hi: true, tone: "green" },
+    { a: -0.35, b: T.mas - 0.1, label: "UM POSTO · ENTRA NO CAIXA", y: 440, hi: true, tone: "green" }, // o número vai grande no título
     { a: T.seis, b: T.medio - 0.1, label: "1 LITRO", value: () => "≈ R$ 6,48", y: 440, hi: true, tone: "gold" },
     { a: T.segundo, b: T.medio - 0.1, label: "FONTE: ANP", value: () => "MÉDIA BRASIL", y: 560, hi: true, tone: "dark" },
     { a: T.vende + 0.2, b: T.chefe - 0.1, label: "POSTO MÉDIO", value: () => "≈ 2.800 L/DIA", y: 440, hi: true, tone: "gold" },
     { a: T.vende + 0.5, b: T.dois2 - 0.1, label: "CONTA COM DADOS DA ANP", y: 560, hi: true, tone: "dark" },
-    { a: T.dois2 + 0.2, b: T.chefe - 0.1, label: "2.800 L × R$ 6,50", y: 560, hi: true, tone: "dark" },
+    { a: T.dois2 + 0.2, b: T.chefe - 0.1, label: "2.800 L × R$ 6,48", y: 560, hi: true, tone: "dark" },
     { a: T.dezoito2, b: T.chefe - 0.1, label: "=", value: () => "R$ 18 MIL POR DIA", y: 680, hi: true, tone: "green" },
     { a: T.paga + 0.3, b: T.z1 - 0.1, label: "PAGA À DISTRIBUIDORA", value: () => "≈ R$ 5,50", y: 440, hi: true, tone: "dark" },
-    { a: T.cobra + 0.3, b: T.z1 - 0.1, label: "COBRA NA BOMBA", value: () => "≈ R$ 6,50", y: 560, hi: true, tone: "gold" },
+    { a: T.cobra + 0.3, b: T.z1 - 0.1, label: "COBRA NA BOMBA", value: () => "≈ R$ 6,48", y: 560, hi: true, tone: "gold" },
     { a: T.diferenca + 0.8, b: T.desse - 0.1, label: "FICA PRO POSTO", value: () => "≈ R$ 1 POR LITRO", y: 440, hi: true, tone: "gold" },
     { a: T.da + 0.2, b: T.desse - 0.1, label: "NO DIA", value: () => "≈ R$ 2.800", y: 560, hi: true, tone: "gold" },
     { a: T.lucro + 0.1, b: T.z2 - 0.1, label: "LUCRO BRUTO", y: 440, hi: true, tone: "gold" },
@@ -104,13 +106,15 @@ const hud: HudData = {
     // o resto tem dono: cada fatia que voa ganha nome (o crítico: sem rótulo, ninguém sabe o que está vendo)
     { a: T.resto + 0.35, b: T.so - 0.1, label: "REFINARIA", value: () => "R$ 2,17", y: 440, hi: true, tone: "gold" },
     { a: T.resto + 0.55, b: T.so - 0.1, label: "USINA (ETANOL)", value: () => "R$ 1,15", y: 560, hi: true, tone: "green" },
-    { a: T.resto + 0.75, b: T.so - 0.1, label: "IMPOSTOS", value: () => "R$ 1,63", y: 680, hi: true, tone: "red" },
-    { a: T.resto + 0.95, b: T.so - 0.1, label: "DISTRIBUIDORA", value: () => "≈ R$ 0,50", y: 800, hi: true, tone: "dark" },
+    { a: T.resto + 0.75, b: T.so - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 680, hi: true, tone: "red" },
+    { a: T.resto + 0.95, b: T.so - 0.1, label: "FEDERAL", value: () => "R$ 0,06", y: 800, hi: true, tone: "wine" },
+    { a: T.resto + 1.15, b: T.so - 0.1, label: "DISTRIBUIDORA · CONTA NOSSA", value: () => "≈ R$ 0,50", y: 920, hi: true, tone: "blue" },
     { a: T.so + 0.3, b: T.agoraSim - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 440, hi: true, tone: "red" },
     { a: T.postoDist + 0.3, b: T.agoraSim - 0.1, label: "POSTO + DISTRIBUIDORA", value: () => "R$ 1,53", y: 560, hi: true, tone: "gold" },
   ],
-  titles: ([[T.mas, "QUANTO FICA PRO POSTO?"], [T.paga, "DISTRIBUIDORA"], [T.desse, "AS CONTAS DO POSTO"], [T.pra, "NO SEU TANQUE"], [T.resto, "O RESTO TEM DONO"]] as [number, string][])
-    .map(([a, text], i, all) => ({ a, text, len: Math.min(3.0, (all[i + 1]?.[0] ?? T.agoraSim) - a - 0.12, a < T.agoraSim ? T.agoraSim + 0.25 - a : 9) })),
+  // o 1º título já cheio no quadro 0 (o crítico: o número do gancho não pesava numa pílula pequena); o «1,57 > 1,53» diz a comparação
+  titles: ([[-0.4, "R$ 18 MIL POR DIA", 96], [T.mas, "QUANTO FICA PRO POSTO?"], [T.paga, "DISTRIBUIDORA"], [T.desse, "AS CONTAS DO POSTO"], [T.pra, "NO SEU TANQUE"], [T.resto, "O RESTO TEM DONO"], [T.postoDist + 0.5, "1,57 > 1,53"]] as [number, string, number?][])
+    .map(([a, text, size], i, all) => ({ a, text, size, len: Math.min(3.0, (all[i + 1]?.[0] ?? T.agoraSim) - a - 0.12, a < T.agoraSim ? T.agoraSim + 0.25 - a : 9) })),
   alerts: [], // o ⚠ só faz sentido num problema; aqui o «Chefe» é uma pergunta
   rewinds: [],
   crosses: [],
@@ -129,7 +133,7 @@ const Pergunta: React.FC<{ t: number }> = ({ t }) => {
       <span style={{ fontFamily: FONT, fontSize: 80, color: "#ffffff", lineHeight: 1.05, ...stroke(12) }}>QUANTO VOCÊ ACHAVA</span>
       <span style={{ fontFamily: FONT, fontSize: 104, color: "#ffd400", lineHeight: 1.05, ...stroke(13, "#3a2300") }}>QUE FICAVA</span>
       <span style={{ fontFamily: FONT, fontSize: 104, color: "#ffd400", lineHeight: 1.05, ...stroke(13, "#3a2300") }}>PRO POSTO?</span>
-      <span style={{ fontFamily: FONT, fontSize: 64, color: "#ffffff", lineHeight: 1.3, ...stroke(10) }}>COMENTA O SEU PALPITE</span>
+      <span style={{ fontFamily: FONT, fontSize: 78, color: "#ffffff", lineHeight: 1.3, ...stroke(11) }}>COMENTA O SEU PALPITE</span>
     </div>
   );
 };

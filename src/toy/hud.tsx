@@ -12,7 +12,7 @@ export const stroke = (px: number, c = "#1c1208") => ({ WebkitTextStroke: `${px}
 export const pop = (t: number, t0: number, dur = 0.28) => { const u = prog(t, t0, t0 + dur); return u <= 0 ? 0 : outBack(u); };
 export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.min((t - a) / fade, (b - t) / fade));
 
-export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold"; hi?: boolean };
+export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold" | "blue" | "wine"; hi?: boolean };
 export type Title = { a: number; text: string; len?: number; size?: number };
 export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string; bounces?: number[] };
 /** stampQ/stampA: o texto do bordão (padrão «ZEROU?» / «AINDA NÃO»; o Lucas pediu outra expressão em 18/11, «zerou» não é usado no Brasil) */
@@ -24,8 +24,8 @@ export const count = (t: number, t0: number, t1: number, a: number, b: number, d
   return dec ? v.toFixed(dec).replace(".", ",") : Math.round(v).toLocaleString("pt-BR").replace(/ /g, ".").replace(/,/g, ".");
 };
 
-const TONE_HI = { dark: "#0b1620", red: "#b01818", green: "#0b7a35", gold: "#a86f00" } as const;
-const TONE = { dark: "#15202bd9", red: "#7a1414e6", green: "#0f4a2ae6", gold: "#6a4a00e6" } as const;
+const TONE_HI = { dark: "#0b1620", red: "#b01818", green: "#0b7a35", gold: "#a86f00", blue: "#1f5fbf", wine: "#5a0d0d" } as const;
+const TONE = { dark: "#15202bd9", red: "#7a1414e6", green: "#0f4a2ae6", gold: "#6a4a00e6", blue: "#163f7ae6", wine: "#3d0909e6" } as const;
 const PillEl: React.FC<{ p: Pill; t: number }> = ({ p, t }) => {
   const k = win(t, p.a, p.b, 0.22); if (k <= 0) return null;
   const s = pop(t, p.a, 0.3), val = p.value ? p.value(t) : "";
@@ -102,10 +102,11 @@ const RewardEl: React.FC<{ t: number; r: Reward }> = ({ t, r }) => {
   const cols = ["#ffd400", "#5cff7a", "#4ab8ff", "#ff6bb5", "#ffffff"];
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 300, display: "flex", flexDirection: "column", alignItems: "center", opacity: k, transform: `scale(${s})` }}>
+      {/* confete antes do texto: fica atrás das letras (cobria o «L» do RESOLVIDO no posto) */}
+      {Array.from({ length: 14 }, (_, i) => { const u = prog(t, r.a + 0.04 * i, r.a + 1.6), ang = (i / 14) * Math.PI * 2; return <span key={i} style={{ position: "absolute", top: 160 + Math.sin(ang) * 230 * u, left: 520 + Math.cos(ang) * 420 * u, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: 1 - u * 0.85, zIndex: -1, ...stroke(5, "#1c1208") }}>★</span>; })}
       <span style={{ fontFamily: FONT, fontSize: 76, color: "#fff", ...stroke(11) }}>{r.top}</span>
       <span style={{ fontFamily: FONT, fontSize: 150, color: "#5cff7a", lineHeight: 1, ...stroke(16, "#05381a") }}>{r.big(t)}</span>
       <span style={{ fontFamily: FONT, fontSize: 88, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(13, "#3a2300") }}>{r.sub}</span>
-      {Array.from({ length: 14 }, (_, i) => { const u = prog(t, r.a + 0.04 * i, r.a + 1.6), ang = (i / 14) * Math.PI * 2; return <span key={i} style={{ position: "absolute", top: 160 + Math.sin(ang) * 230 * u, left: 520 + Math.cos(ang) * 420 * u, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: 1 - u * 0.85, ...stroke(5, "#1c1208") }}>★</span>; })}
     </div>
   );
 };

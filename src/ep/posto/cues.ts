@@ -14,9 +14,9 @@ export const T = {
   lucro: find("e lucro bruto"), antes: find("antes das contas"),
   z2: z(1), a2: an(1),
   pra: find("pra sentir"), tanque: find("num tanque"), voce: find("voce paga"), postoFica: find("e o posto fica"),
-  resto: find("o resto"), so: find("o imposto do estado"), postoDist: find("que o posto e a"),
+  resto: find("o resto"), so: find("o imposto do estado"), postoDist: find("que o posto e a"), juntos: find("distribuidora juntos"),
   agoraSim: find("agora sim"), resolvido: find("sim resolvido"),
-  quanto2: find("quanto voce achava"), comenta: find("comenta ai"), manda: find("e manda"),
+  quanto2: find("quanto voce achava"), comenta: find("comenta ai"), manda: find("e manda"), soLucro: find("e so lucro"),
   end: DURATION_S,
 };
 
@@ -30,7 +30,7 @@ export const CUTS10: number[] = [
   T.caixa, T.mas, T.litro, T.segundo, T.medio, T.oito1, T.dois2, T.dezoito2,
   T.chefe, T.deixa, T.naoGanha, T.paga, T.cobra, T.z1,
   T.diferenca, T.umReal2, T.da, T.desse, T.frentista, T.luz, T.maquininha, T.lucro, T.z2,
-  T.pra, T.voce, T.postoFica, T.resto, T.so, T.postoDist, T.agoraSim, T.quanto2, T.comenta,
+  T.pra, T.voce, T.postoFica, T.resto, T.so, T.postoDist, T.juntos, T.agoraSim, T.quanto2, T.soLucro,
 ].map(q);
 export { WINS };
 

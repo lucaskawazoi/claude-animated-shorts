@@ -89,7 +89,6 @@ const Ground: React.FC<{ t: number }> = ({ t }) => {
         <Cyl rt={0.25} h={7} p={[0, 3.5, 0]} c="#9aa3ab" seg={10} />
         <Box s={[3, 3.4, 0.4]} p={[0, 6.6, 0]} c="#ff7a1a" />
         {[0, 1, 2].map((k) => <Box key={k} s={[2.4, 0.6, 0.05]} p={[0, 7.6 - k * 0.95, 0.23]} c="#14202b" cast={false} />)}
-        {[1, 2].map((k) => <Box key={k} s={[1.2, 0.3, 0.03]} p={[0.35, 7.6 - k * 0.95, 0.27]} c="#ffd400" o={{ emissive: "#ffd400", ei: 0.8 }} cast={false} />)}
         {/* o preço escrito no painel de cima (o crítico: barras sem dígito não se leem como preço) */}
         <PriceText />
       </G>
@@ -268,17 +267,17 @@ const Liter: React.FC<{ t: number }> = ({ t }) => {
 const Columns: React.FC<{ t: number }> = ({ t }) => {
   const a = pk(t, T.so + 0.15, 0.5), b = pk(t, T.postoDist + 0.1, 0.5);
   if (a < 0.01 || t > T.agoraSim + 0.2) return null;
-  const k = 1.7; // colunas maiores que o litro, para a diferença de 4 centavos ficar visível de perto
+  // altas e coladas: 4 centavos viram ≈ 0,17 de altura, que o close do «juntos» mostra acima da régua (o crítico: a olho eram iguais)
+  const k = 5, X = 0.8, Wd = 1.4, h = (v: number) => U * k * v;
   return (
     <G p={COLS2}>
-      <Box s={[2.2, 0.2, 2.2]} p={[-1.5, 0.1, 0]} c="#9aa3ab" />
-      <Box s={[1.6, U * k * 1.57 * a, 1.6]} p={[-1.5, 0.2 + (U * k * 1.57 * a) / 2, 0]} c={COLS[2]} o={{ emissive: COLS[2], ei: 0.15 }} />
+      <Box s={[3.6, 0.2, 1.9]} p={[0, 0.1, 0]} c="#9aa3ab" />
+      <Box s={[Wd, h(1.57) * a, Wd]} p={[-X, 0.2 + (h(1.57) * a) / 2, 0]} c={COLS[2]} o={{ emissive: COLS[2], ei: 0.15 }} />
       {b > 0.01 ? <>
-        <Box s={[2.2, 0.2, 2.2]} p={[1.5, 0.1, 0]} c="#9aa3ab" />
-        <Box s={[1.6, U * k * 0.53 * b, 1.6]} p={[1.5, 0.2 + (U * k * 0.53 * b) / 2, 0]} c={COLS[4]} o={{ emissive: COLS[4], ei: 0.15 }} />
-        <Box s={[1.6, U * k * 1.0 * b, 1.6]} p={[1.5, 0.2 + U * k * 0.53 * b + (U * k * 1.0 * b) / 2, 0]} c={GOLD} o={{ emissive: GOLD, ei: 0.18 }} />
-        {/* a régua: a linha do topo do ICMS passa por cima da outra coluna */}
-        <Box s={[5.2, 0.05, 0.05]} p={[0, 0.2 + U * k * 1.57, 0.85]} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.6 }} cast={false} />
+        <Box s={[Wd, h(0.53) * b, Wd]} p={[X, 0.2 + (h(0.53) * b) / 2, 0]} c={COLS[4]} o={{ emissive: COLS[4], ei: 0.15 }} />
+        <Box s={[Wd, h(1.0) * b, Wd]} p={[X, 0.2 + h(0.53) * b + (h(1.0) * b) / 2, 0]} c={GOLD} o={{ emissive: GOLD, ei: 0.18 }} />
+        {/* a régua no topo de posto + distribuidora: o ICMS passa dela */}
+        <Box s={[3.4, 0.04, 0.04]} p={[0, 0.2 + h(1.53) * b, Wd / 2 + 0.05]} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.6 }} cast={false} />
       </> : null}
     </G>
   );
