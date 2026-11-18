@@ -138,7 +138,7 @@ const Drain: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[60, 12, 1.5]} p={[0, -4, ZB - 0.75]} c="#b9bfc4" />
       <Box s={[120, 0.2, 60]} p={[0, -8.3 + 1.0 * ease(t, T.mar - 0.2, T.mar + 0.8), ZB - 31]} c="#3aa0d8" o={{ opacity: 0.9 }} cast={false} />
       <G p={[GX, GY, ZB - 1.5]} r={[-PI / 2, 0, 0]} sc={[1, 1, 0.4]}>
-        <Cone rad={GR * 0.95} h={3.2} seg={18} p={[0, 1.6, 0]} c="#2b2b2e" o={{ rough: 0.6 }} />
+        <Cone rad={GR * 0.95} h={3.2} seg={18} p={[0, 1.6, 0]} c="#4a4a52" o={{ rough: 0.45 }} />
       </G>
       {/* patinho de borracha boiando perto do bico (o pato do vídeo anterior, só sugerido) */}
       <G p={[lerp(GX + 2.8, GX + 1.0, ease(t, T.mar, T.mar + 1.2)), -8.0 + 1.0 * ease(t, T.mar - 0.2, T.mar + 0.8) + 0.08 * Math.sin(t * 3), lerp(ZB - 6, ZB - 4.3, ease(t, T.mar, T.mar + 1.2))]} r={[0, 2.2 + 0.2 * Math.sin(t * 1.3), 0]} sc={1.5}>
@@ -276,7 +276,12 @@ const Truck: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[3.6, 3.2, 7.2]} p={[0, 2.2, -2.0]} c="#3d7be0" />
       <Box s={[3.4, 2.6, 2.6]} p={[0, 1.9, 3.0]} c="#e0262b" />
       <Box s={[3.0, 1.0, 0.1]} p={[0, 2.6, 4.32]} c="#bfe6ff" o={{ opacity: 0.8 }} cast={false} />
-      {[-4.2, 0.4, 2.8].flatMap((zz) => [-1, 1].map((s) => <Cyl key={`${zz}${s}`} rt={0.9} h={0.7} r={[0, 0, PI / 2]} p={[s * 1.7, 0, zz]} c="#1d1e21" seg={14} />))}
+      {[-4.2, 0.4, 2.8].flatMap((zz) => [-1, 1].map((s) => (
+        <G key={`${zz}${s}`} p={[s * 1.7, 0, zz]}>
+          <Cyl rt={0.9} h={0.7} r={[0, 0, PI / 2]} c="#1d1e21" seg={14} />
+          <Cyl rt={0.45} h={0.74} r={[0, 0, PI / 2]} c="#d4d9de" seg={12} o={{ metal: 0.3 }} />
+        </G>
+      )))}
       {Array.from({ length: 6 }, (_, k) => <Box key={k} s={[1, 0.9, 1.4]} p={[-1 + (k % 3), 4.2 + Math.floor(k / 3) * 0.9, -2 + (k % 2)]} c="#c99a5b" />)}
       {/* luzes de ré acesas enquanto vem de ré (traseira = -z local) */}
       {t < T.quebra ? [-1.2, 1.2].map((x) => <Box key={x} s={[0.6, 0.4, 0.1]} p={[x, 1.2, -5.65]} c="#ffffff" o={{ emissive: "#ffffff", ei: 1.4 }} cast={false} />) : null}
