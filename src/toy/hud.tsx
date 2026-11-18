@@ -46,7 +46,7 @@ const TitleEl: React.FC<{ ti: Title; t: number; next: number }> = ({ ti, t, next
   const s = pop(t, ti.a, 0.34), bob = Math.sin((t - ti.a) * 3) * 6;
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 175 + bob, display: "flex", justifyContent: "center", opacity: k, transform: `rotate(-3.5deg) scale(${s})` }}>
-      <span style={{ fontFamily: FONT, fontSize: ti.size ?? (ti.text.length > 16 ? 76 : ti.text.length > 12 ? 94 : 124), color: "#ffd400", textAlign: "center", lineHeight: 1, whiteSpace: "nowrap", ...stroke(14, "#3a2300") }}>{ti.text}</span>
+      <span style={{ fontFamily: FONT, fontSize: ti.size ?? (ti.text.length > 16 ? 76 : ti.text.length > 12 ? 94 : 124), color: "#ffd400", textAlign: "center", lineHeight: 1, whiteSpace: "nowrap", ...stroke(18, "#3a2300") }}>{ti.text}</span>
     </div>
   );
 };

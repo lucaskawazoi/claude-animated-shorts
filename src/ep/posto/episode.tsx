@@ -21,7 +21,7 @@ const ROWS: R[] = [
   [T.caixa, [12, 6.5, 22], [1, 1.5, 0], [11, 6.6, 21], [1, 1.5, 0], 52, 50, 0, 0, "o posto inteiro: o carro entra, a pilha do dia"],
   [T.mas, [4.6, 3.0, 13], W1, [4.3, 3.0, 12.5], W1, 42, 40, 1, -1, "operário: quanto fica ali?"],
   [T.litro, [-2.2, 3.0, 9.5], [1.0, 1.8, -1], [-2.0, 3.0, 9.0], [1.0, 1.8, -1], 46, 44, 0, 0, "a bomba e o carro: o litro"],
-  [T.segundo, [8.6, 5.6, 16.5], [12.5, 6.6, 9.5], [8.9, 5.7, 16], [12.5, 6.6, 9.5], 44, 42, 0, 0, "o totem de preço do posto (ANP)"],
+  [T.segundo, [8.4, 6.2, 17.5], [12.5, 8.6, 9.5], [8.7, 6.3, 17], [12.5, 8.6, 9.5], 44, 42, 0, 0, "o totem de preço do posto, com o 6,48 escrito (ANP)"],
   [T.medio, [18, 16, 34], [0, 1, 2], [16.5, 16.5, 32], [0, 1, 2], 52, 50, 0, 0, "do alto: o posto e os carros na estrada"],
   [T.oito1, [-6, 1.8, 22], [6, 1.2, 12], [-5.6, 1.8, 21.4], [6, 1.2, 12], 50, 48, 0, 0, "rente à estrada: carros passando"],
   [T.dois2, [13, 4, 13], [P[0], 1.0, P[2]], [12.5, 4.1, 12.5], [P[0], 1.0, P[2]], 46, 44, 0, 0, "a pilha do dia: a conta dos 18 mil"],
@@ -48,7 +48,7 @@ const ROWS: R[] = [
   [T.so, [C[0] - 0.8, 3.4, 18], [C[0] - 0.8, 1.4, C[2]], [C[0] - 0.8, 3.5, 17.4], [C[0] - 0.8, 1.4, C[2]], 44, 42, 0, 0, "a coluna do ICMS"],
   [T.postoDist, [C[0] + 0.4, 3.8, 19.5], [C[0], 1.4, C[2]], [C[0] + 0.6, 3.9, 19], [C[0], 1.4, C[2]], 44, 42, 0, 0, "posto + distribuidora ao lado: a régua"],
   [T.agoraSim, [-2.5, 3.8, 12.5], [2.2, 1.6, -2.5], [-2.2, 3.9, 12], [3.0, 1.6, -3.5], 50, 48, 0, 0, "Agora sim: o operário comemora, o carro sai"],
-  [T.quanto2, [3, 7, 22], [-1, 2, 0], [2.5, 9, 28], [-1, 2, 0], 52, 54, 0, 0, "a pergunta: o posto inteiro"],
+  [T.quanto2, [4.4, 3.1, 12.5], W1, [4.0, 3.2, 11.5], W1, 44, 42, 0, 0, "a pergunta: o operário aponta para quem assiste"],
   [T.comenta, [2.5, 9, 28], [HOLE[0] - 4, 1, HOLE[2] - 8], [2, 18, 46], [-1, 1, -6], 54, 56, 0, 0, "recuando e subindo: o remendo do buraco na estrada"],
 ];
 const linCam = (i: number) => (t: number): CamState => {
@@ -79,15 +79,16 @@ const WORKER: [number, WorkerState][] = [
   [T.resto, S(SIDE, FRONT, "think")],
   [T.so, S(SIDE, TO_LIT, "point")],
   [T.agoraSim, S(SIDE, FRONT, "cheer")],
-  [T.quanto2, S(SIDE, FRONT, "present")],
+  [T.quanto2, S(SIDE, 0.15, "point")],
+  [T.comenta + 0.6, S(SIDE, FRONT, "present")],
 ];
 
 const hud: HudData = {
   // números de e16-posto/FONTES.md § 0 (ANP, Brasil, 08–14/11/2026; posto = revenda − distribuição da mesma semana, ago–set)
   pills: [
-    { a: 0.25, b: T.mas - 0.1, label: "ENTRA NO CAIXA", value: () => "≈ R$ 18 MIL/DIA", y: 440, hi: true, tone: "green" },
+    { a: 0.25, b: T.mas - 0.1, label: "UM POSTO · ENTRA NO CAIXA", value: () => "≈ R$ 18 MIL/DIA", y: 440, hi: true, tone: "green" },
     { a: T.seis, b: T.medio - 0.1, label: "1 LITRO", value: () => "≈ R$ 6,48", y: 440, hi: true, tone: "gold" },
-    { a: T.segundo, b: T.medio - 0.1, label: "ANP · MÉDIA BRASIL · 8 A 14/11", y: 560, hi: true, tone: "dark" },
+    { a: T.segundo, b: T.medio - 0.1, label: "FONTE: ANP", value: () => "MÉDIA BRASIL", y: 560, hi: true, tone: "dark" },
     { a: T.vende + 0.2, b: T.chefe - 0.1, label: "POSTO MÉDIO", value: () => "≈ 2.800 L/DIA", y: 440, hi: true, tone: "gold" },
     { a: T.vende + 0.5, b: T.dois2 - 0.1, label: "CONTA COM DADOS DA ANP", y: 560, hi: true, tone: "dark" },
     { a: T.dois2 + 0.2, b: T.chefe - 0.1, label: "2.800 L × R$ 6,50", y: 560, hi: true, tone: "dark" },
@@ -98,18 +99,23 @@ const hud: HudData = {
     { a: T.da + 0.2, b: T.desse - 0.1, label: "NO DIA", value: () => "≈ R$ 2.800", y: 560, hi: true, tone: "gold" },
     { a: T.lucro + 0.1, b: T.z2 - 0.1, label: "LUCRO BRUTO", y: 440, hi: true, tone: "gold" },
     { a: T.antes, b: T.z2 - 0.1, label: "ANTES DAS CONTAS", y: 560, hi: true, tone: "dark" },
-    { a: T.tanque + 0.2, b: T.resto - 0.1, label: "TANQUE CHEIO · 50 L", value: () => "≈ R$ 324", y: 440, hi: true, tone: "dark" },
+    { a: T.tanque + 0.2, b: T.resto - 0.1, label: "TANQUE · 50 L × R$ 6,48", value: () => "≈ R$ 324", y: 440, hi: true, tone: "dark" },
     { a: T.postoFica + 0.3, b: T.resto - 0.1, label: "PRO POSTO", value: () => "≈ R$ 50", y: 560, hi: true, tone: "gold" },
+    // o resto tem dono: cada fatia que voa ganha nome (o crítico: sem rótulo, ninguém sabe o que está vendo)
+    { a: T.resto + 0.35, b: T.so - 0.1, label: "REFINARIA", value: () => "R$ 2,17", y: 440, hi: true, tone: "gold" },
+    { a: T.resto + 0.55, b: T.so - 0.1, label: "USINA (ETANOL)", value: () => "R$ 1,15", y: 560, hi: true, tone: "green" },
+    { a: T.resto + 0.75, b: T.so - 0.1, label: "IMPOSTOS", value: () => "R$ 1,63", y: 680, hi: true, tone: "red" },
+    { a: T.resto + 0.95, b: T.so - 0.1, label: "DISTRIBUIDORA", value: () => "≈ R$ 0,50", y: 800, hi: true, tone: "dark" },
     { a: T.so + 0.3, b: T.agoraSim - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 440, hi: true, tone: "red" },
     { a: T.postoDist + 0.3, b: T.agoraSim - 0.1, label: "POSTO + DISTRIBUIDORA", value: () => "R$ 1,53", y: 560, hi: true, tone: "gold" },
   ],
-  titles: ([[T.mas, "QUANTO FICA PRO POSTO?"], [T.naoGanha, "DISTRIBUIDORA"], [T.desse, "AS CONTAS DO POSTO"], [T.pra, "NO SEU TANQUE"], [T.resto, "O RESTO TEM DONO"]] as [number, string][])
+  titles: ([[T.mas, "QUANTO FICA PRO POSTO?"], [T.paga, "DISTRIBUIDORA"], [T.desse, "AS CONTAS DO POSTO"], [T.pra, "NO SEU TANQUE"], [T.resto, "O RESTO TEM DONO"]] as [number, string][])
     .map(([a, text], i, all) => ({ a, text, len: Math.min(3.0, (all[i + 1]?.[0] ?? T.agoraSim) - a - 0.12, a < T.agoraSim ? T.agoraSim + 0.25 - a : 9) })),
-  alerts: [T.chefe],
+  alerts: [], // o ⚠ só faz sentido num problema; aqui o «Chefe» é uma pergunta
   rewinds: [],
   crosses: [],
   stamps: [[T.z1, T.a1], [T.z2, T.a2]],
-  reward: { a: T.agoraSim + 0.3, len: T.quanto2 - 0.15 - (T.agoraSim + 0.3), top: "AGORA SIM:", big: () => "RESOLVIDO!", sub: "A CONTA FECHOU", bounces: [T.resolvido + 0.2] },
+  reward: { a: T.agoraSim + 0.3, len: T.quanto2 - 0.15 - (T.agoraSim + 0.3), top: "AGORA SIM:", big: () => "RESOLVIDO!", sub: "R$ 1 POR LITRO", bounces: [T.resolvido + 0.2] },
   stampQ: "RESOLVEU?", stampA: "AINDA NÃO",
   Extra: ({ t }) => <Pergunta t={t} />,
 };
@@ -123,6 +129,7 @@ const Pergunta: React.FC<{ t: number }> = ({ t }) => {
       <span style={{ fontFamily: FONT, fontSize: 80, color: "#ffffff", lineHeight: 1.05, ...stroke(12) }}>QUANTO VOCÊ ACHAVA</span>
       <span style={{ fontFamily: FONT, fontSize: 104, color: "#ffd400", lineHeight: 1.05, ...stroke(13, "#3a2300") }}>QUE FICAVA</span>
       <span style={{ fontFamily: FONT, fontSize: 104, color: "#ffd400", lineHeight: 1.05, ...stroke(13, "#3a2300") }}>PRO POSTO?</span>
+      <span style={{ fontFamily: FONT, fontSize: 64, color: "#ffffff", lineHeight: 1.3, ...stroke(10) }}>COMENTA O SEU PALPITE</span>
     </div>
   );
 };

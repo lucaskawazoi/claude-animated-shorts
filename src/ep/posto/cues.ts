@@ -14,7 +14,7 @@ export const T = {
   lucro: find("e lucro bruto"), antes: find("antes das contas"),
   z2: z(1), a2: an(1),
   pra: find("pra sentir"), tanque: find("num tanque"), voce: find("voce paga"), postoFica: find("e o posto fica"),
-  resto: find("o resto"), so: find("so o imposto"), postoDist: find("que o posto e a"),
+  resto: find("o resto"), so: find("o imposto do estado"), postoDist: find("que o posto e a"),
   agoraSim: find("agora sim"), resolvido: find("sim resolvido"),
   quanto2: find("quanto voce achava"), comenta: find("comenta ai"), manda: find("e manda"),
   end: DURATION_S,

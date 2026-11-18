@@ -32,6 +32,18 @@ const Coin: React.FC<{ p: V3; s?: number; spin?: number }> = ({ p, s = 1, spin =
   <Cyl rt={0.36 * s} h={0.09 * s} p={p} r={[PI / 2 + spin, spin * 0.7, 0]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.35 }} seg={14} cast={false} />
 );
 
+const PriceText: React.FC = () => {
+  const tex = useMemo(() => {
+    const cv = document.createElement("canvas"); cv.width = 512; cv.height = 128;
+    const g = cv.getContext("2d")!; g.fillStyle = "#14202b"; g.fillRect(0, 0, 512, 128); g.textBaseline = "middle";
+    g.fillStyle = "#ffffff"; g.font = "bold 40px Arial, sans-serif"; g.fillText("GASOLINA", 16, 66);
+    g.fillStyle = "#ffd400"; g.font = "bold 96px Arial, sans-serif"; g.fillText("6,48", 250, 68);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }, []);
+  const m = useMemo(() => new THREE.MeshStandardMaterial({ map: tex, emissive: "#ffffff", emissiveMap: tex, emissiveIntensity: 0.5 }), [tex]);
+  return <mesh position={[0, 7.6, 0.26]} material={m}><planeGeometry args={[2.4, 0.6]} /></mesh>;
+};
+
 // ---------------------------------------------------------------- chão, estrada (com o remendo do buraco), posto, loja
 const Ground: React.FC<{ t: number }> = ({ t }) => {
   const lamps = ease(t, T.luz, T.luz + 0.3);
@@ -77,7 +89,9 @@ const Ground: React.FC<{ t: number }> = ({ t }) => {
         <Cyl rt={0.25} h={7} p={[0, 3.5, 0]} c="#9aa3ab" seg={10} />
         <Box s={[3, 3.4, 0.4]} p={[0, 6.6, 0]} c="#ff7a1a" />
         {[0, 1, 2].map((k) => <Box key={k} s={[2.4, 0.6, 0.05]} p={[0, 7.6 - k * 0.95, 0.23]} c="#14202b" cast={false} />)}
-        {[0, 1, 2].map((k) => <Box key={k} s={[1.2, 0.3, 0.03]} p={[0.35, 7.6 - k * 0.95, 0.27]} c="#ffd400" o={{ emissive: "#ffd400", ei: 0.8 }} cast={false} />)}
+        {[1, 2].map((k) => <Box key={k} s={[1.2, 0.3, 0.03]} p={[0.35, 7.6 - k * 0.95, 0.27]} c="#ffd400" o={{ emissive: "#ffd400", ei: 0.8 }} cast={false} />)}
+        {/* o preço escrito no painel de cima (o crítico: barras sem dígito não se leem como preço) */}
+        <PriceText />
       </G>
       {/* boca do tanque subterrâneo */}
       <Cyl rt={0.55} h={0.05} p={LID} c="#5a6068" seg={16} />
@@ -229,7 +243,7 @@ const Liter: React.FC<{ t: number }> = ({ t }) => {
   const H = U * (DONO + POSTO) + LB + 0.4;
   const grey = ease(t, T.diferenca + 0.1, T.diferenca + 0.7), gold = t < T.diferenca + 0.75 ? 0 : outBack(prog(t, T.diferenca + 0.75, T.diferenca + 1.25));
   const split = t >= T.resto + 0.25; // a parte cinza vira as fatias dos donos e elas voam
-  const fly = (i: number) => ease(t, T.resto + 0.9 + i * 0.15, T.resto + 2.0 + i * 0.12); // as cores aparecem e seguram meio segundo antes de voar
+  const fly = (i: number) => ease(t, T.resto + 1.6 + i * 0.12, T.resto + 2.6 + i * 0.12); // as cores aparecem, os nomes entram, e só então voam
   const gH = U * POSTO * goldLeft(t), yGrey = LB + (U * DONO * grey) / 2;
   let acc = 0;
   return (
