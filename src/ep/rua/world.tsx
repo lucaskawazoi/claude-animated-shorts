@@ -347,9 +347,10 @@ const Conta: React.FC<{ t: number }> = ({ t }) => {
           <Box s={[3.6, 0.04, 1.6]} p={[0, 0.01, 0]} c="#e9e4d8" cast={false} />
         </G>
       ) : null}
-      {coins ? Array.from({ length: 10 }, (_, k) => {
-        const u = ((t - T.quemPaga) * 0.9 + k * 0.1) % 1, sx = k % 2 ? 1 : -1, hz = -6 + (k % 5) * 3;
-        return <Cyl key={k} rt={0.7} h={0.16} p={[lerp(sx * 18, PX, u), 4.5 + 5 * Math.sin(u * PI), lerp(hz, PZ - 1, u)]} r={[PI / 2 + u * 6, u * 4, 0]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.3 }} seg={14} cast={false} />;
+      {coins ? Array.from({ length: 16 }, (_, k) => {
+        // das janelas das casas da direita (x = 17, z = -45 … -1) até o meio da rua, em arco
+        const u = ((t - T.quemPaga) * 0.8 + k / 16) % 1, hz = -1 - (k % 4) * 11 + 1.2;
+        return <Cyl key={k} rt={0.7} h={0.16} p={[lerp(17, PX - 1, u), 3 + 4.5 * Math.sin(u * PI), lerp(hz, PZ - 2 - (k % 3), u)]} r={[PI / 2 + u * 6, u * 4, 0]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.35 }} seg={14} cast={false} />;
       }) : null}
     </G>
   );

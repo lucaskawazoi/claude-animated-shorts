@@ -62,9 +62,9 @@ const ROWS: R[] = [
   [T.conta, [PX + 9, 6, PZ + 12], [PX - 3, 0.6, PZ - 3], [PX + 8, 5.6, PZ + 11], [PX - 3, 0.6, PZ - 3], 50, 48, 0, 0, "e a conta? a tonelada de asfalto cai na rua"],
   [T.oito, [PX - 1.2, 14, PZ + 3], [PX - 1.2, 0, PZ - 5], [PX - 1.2, 13, PZ + 2.5], [PX - 1.2, 0, PZ - 5], 50, 48, 0, 0, "de cima: a tonelada vira só 8 m²"],
   [T.medir, [1.6, 3.1, PZ + 7], [-1.6, 0.9, PZ - 1], [1.3, 2.9, PZ + 6.5], [-1.6, 0.9, PZ - 1], 46, 44, 0, 0, "duas amostras de asfalto: 5 cm pagos contra 3,4 cm medidos"],
-  [T.quemPaga, [6, 4.5, 22], [16, 3, -4], [5, 5, 21], [12, 3, -4], 50, 50, 0, 0, "quem paga: moedas saem das casas para a rua"],
+  [T.quemPaga, [0, 7, 26], [11, 2.5, -6], [-1, 7.5, 25], [9, 2.5, -6], 54, 54, 0, 0, "quem paga: moedas saem das janelas e cruzam a rua (aberto)"],
   [T.quemEscolhe, [13.5, 2.8, 14], W1, [13, 2.8, 13], W1, 44, 42, -1, 1, "quem escolhe… não é: o operário dá de ombros"],
-  [T.qual, [0, 13, 40], [0, -1, -10], [0, 17, 47], [0, -1, -10], 54, 56, 0, 0, "a rua inteira, de longe"],
+  [T.qual, [3, 9, 30], [0, -1, -6], [-2, 19, 52], [0, -1, -12], 52, 56, 0, 0, "a rua inteira, recuando e subindo"],
 ];
 const linCam = (i: number) => (t: number): CamState => {
   const r = ROWS[i], t1 = ROWS[i + 1] ? ROWS[i + 1][0] : T.end, u = sstep(Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0])))) * 0.6 + 0.4 * Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0])));
@@ -116,13 +116,13 @@ const hud: HudData = {
     { a: T.mole, b: T.deixa4 - 0.05, label: "LÁ EMBAIXO", value: () => "BASE MOLE", y: 440, hi: true, tone: "red" },
     { a: T.quente + 0.2, b: T.remendo - 0.1, label: "ASFALTO QUENTE", value: () => "≈ 150 °C", y: 440, hi: true, tone: "gold" },
     // a conta: números de FONTES-custo.md (SINAPI 10/2026 insumo 34770; 1 t ÷ 2,4 t/m³ ÷ 0,05 m ≈ 8,3 m²; CGU, Lagarto/SE, 2023)
-    { a: T.tonelada + 0.2, b: T.oito - 0.05, label: "1 TONELADA", value: () => "≈ R$ 500", y: 440, hi: true, tone: "gold" },
-    { a: T.quinhentos + 0.3, b: T.oito - 0.05, label: "TABELA OFICIAL (SINAPI)", y: 560, tone: "dark" },
-    { a: T.oito, b: T.medir - 0.05, label: "COBRE SÓ", value: () => "≈ 8 m²", y: 440, hi: true, tone: "gold" },
-    { a: T.oito + 0.3, b: T.medir - 0.05, label: "A 5 CM DE ESPESSURA", y: 560, tone: "dark" },
+    // faixa porque o SINAPI oficial não abriu: espelho 10/2026 R$ 500 (média nacional, sem frete); editais 2025: R$ 581 (BA), R$ 714 (MG)
+    { a: T.tonelada + 0.2, b: T.oito - 0.05, label: "1 TONELADA", value: () => "≈ R$ 500 A 700", y: 440, hi: true, tone: "gold" },
+    { a: T.quinhentos + 0.3, b: T.oito - 0.05, label: "SINAPI · SEM FRETE", y: 560, hi: true, tone: "dark" },
+    { a: T.oito, b: T.quemPaga - 0.05, label: "1 t =", value: () => "8 m² A 5 CM", y: 320, hi: true, tone: "gold" },
     { a: T.medir + 0.3, b: T.quemPaga - 0.05, label: "PAGO", value: () => "5 CM", y: 440, hi: true, tone: "green" },
     { a: T.auditoria + 0.6, b: T.quemPaga - 0.05, label: "MEDIDO", value: () => "3,4 CM", y: 560, hi: true, tone: "red" },
-    { a: T.auditoria + 0.6, b: T.quemPaga - 0.05, label: "AUDITORIA DA CGU · SE · 2023", y: 680, tone: "dark" },
+    { a: T.auditoria + 0.6, b: T.quemPaga - 0.05, label: "AUDITORIA · 2023", y: 680, hi: true, tone: "dark" },
   ],
   // cada título some antes do próximo entrar (o painel só corta pelo próximo alerta ou carimbo)
   titles: ([[0.3, "POR QUE ELE VOLTA?"], [T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.pato + 0.9, "BICO DE PATO"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"], [T.conta, "E A CONTA?"]] as [number, string][])
