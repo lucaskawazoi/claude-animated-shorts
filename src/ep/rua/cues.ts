@@ -25,7 +25,7 @@ export const SELA = T.remendo - 0.5;
 const q = (x: number) => Math.round(x * 30) / 30;
 export const CUTS10: number[] = [
   3.0, T.camada, T.terra, T.pedra, T.asfalto, T.cinco, T.prob1, T.racha, T.trinca, T.meio, T.sarjeta, T.z1,
-  T.prob2, T.alaga, T.boca, T.galeria, T.pato, T.z2,
+  T.prob2, T.alaga, T.boca, T.galeria, T.pato, T.mar, T.z2,
   T.prob3, T.caminhao, T.eixo, T.cede, T.buraco2, T.massa, T.pisa, T.z3,
   T.voltou, T.capa, T.corta, T.tira, T.refaz, T.quente, T.remendo, T.agoraSim, T.custa, T.qual,
 ].map(q);
@@ -41,7 +41,7 @@ S.push(
   ["dig", T.terra + 0.1, -13], ["thud", T.rolo + 0.2, -12], ["gravel", T.pedra, -11], ["gravel", T.pedra + 0.5, -13], ["pour", T.asfalto + 0.1, -12], ["steam", T.asfalto + 0.4, -15], ["tick", T.cinco + 0.2, -12],
   ["crack", T.racha + 0.1, -10], ["rain", T.chuva - 0.3, -16], ["drip", T.trinca + 0.2, -12], ["slide", T.meio + 0.2, -13], ["stream", T.sarjeta, -14],
   ["fill", T.enche, -13], ["wave", T.alaga, -12], ["drain", T.boca + 0.3, -11], ["gush", T.galeria, -12], ["quack", T.pato + 0.55, -12], ["wave", T.mar, -15],
-  ["squelch", T.amolece + 0.2, -12], ["horn", T.caminhao + 0.1, -14], ["quake", T.eixo, -13], ["creak", T.cede, -12], ["crack", T.quebra, -8], ["stone", T.quebra + 0.2, -11],
+  ["squelch", T.amolece + 0.2, -12], ["mud", T.amolece + 0.9, -13], ["horn", T.caminhao + 0.1, -14], ["beep", T.caminhao + 0.6, -15], ["beep", T.caminhao + 1.2, -15], ["beep", T.eixo + 0.3, -15], ["beep", T.eixo + 0.9, -15], ["rubber", T.mar + 0.9, -13], ["quake", T.eixo, -13], ["creak", T.cede, -12], ["crack", T.quebra, -8], ["stone", T.quebra + 0.2, -11],
   ["pour", T.massa, -11], ["thud", T.pisa + 0.1, -10], ["thud", T.pisa + 0.4, -11],
   ["thud", T.voltou + 0.35, -10], ["splash", T.voltou + 0.45, -12], ["sad", T.capa, -16],
   ["drill", T.corta, -14], ["scrape", T.tira, -12], ["dig", T.firme, -13], ["gravel", T.refaz, -12], ["thud", T.compacta, -12], ["thud", T.compacta + 0.25, -13], ["thud", T.compacta + 0.5, -13],

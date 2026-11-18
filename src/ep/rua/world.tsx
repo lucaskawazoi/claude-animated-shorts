@@ -64,8 +64,10 @@ const Layers: React.FC<{ t: number }> = ({ t }) => {
       })}
       {/* pedrinhas da base e da sub-base na face do corte */}
       {Array.from({ length: 46 }, (_, k) => {
-        const sub = k % 2 === 0, u = layerU(sub ? 1 : 2, t), x = -8.2 + rnd(k * 3.1) * 16.4, y = sub ? lerp(SUB_B + 0.25, BASE_B - 0.25, rnd(k * 7.7)) : lerp(BASE_B + 0.25, -0.75, rnd(k * 5.3));
-        return u < 0.95 ? null : <Sph key={k} rad={0.17 + 0.1 * rnd(k)} p={[x, y, FRONT + 0.04]} sc={[1, 0.75, 0.3]} c={sub ? "#a39882" : "#7f868d"} ws={6} hs={4} cast={false} />;
+        const sub = k % 2 === 0, u = layerU(sub ? 1 : 2, t), x = -8.2 + rnd(k * 3.1) * 16.4, y0 = sub ? lerp(SUB_B + 0.25, BASE_B - 0.25, rnd(k * 7.7)) : lerp(BASE_B + 0.25, -0.75, rnd(k * 5.3));
+        // pedras da base sob o buraco afundam quando a base amolece (até o remendo profundo tirar tudo)
+        const under = !sub && Math.abs(x - PX) < 1.3 ? ease(t, T.amolece, T.amolece + 1.6) * (1 - ease(t, T.tira, T.tira + 0.3)) : 0, y = y0 - 0.45 * under;
+        return u < 0.95 ? null : <Sph key={k} rad={0.17 + 0.1 * rnd(k)} p={[x, y, FRONT + 0.04]} sc={[1, 0.75, 0.3]} c={sub ? "#a39882" : mixc("#7f868d", "#4a3a2a", under)} ws={6} hs={4} cast={false} />;
       })}
     </>
   );
@@ -134,12 +136,12 @@ const Drain: React.FC<{ t: number }> = ({ t }) => {
       {boca > 0.5 ? <Cyl rt={0.45} h={GY + GR + 3.6} p={[BX, (-3.6 + GY + GR) / 2, BZ]} c="#9aa3ab" seg={10} o={{ opacity: 0.6, depthWrite: false }} cast={false} /> : null}
       {down ? [0, 1, 2, 3, 4].map((k) => { const u = (t * 2.2 + k * 0.2) % 1; return <Sph key={k} rad={0.28} p={[BX, lerp(-0.2, GY + GR - 0.2, u), BZ]} c={WATER} ws={6} hs={4} cast={false} />; }) : null}
       <Box s={[60, 12, 1.5]} p={[0, -4, ZB - 0.75]} c="#b9bfc4" />
-      <Box s={[120, 0.2, 60]} p={[0, -8.3 + 0.5 * ease(t, T.mar - 0.2, T.mar + 0.8), ZB - 31]} c="#3aa0d8" o={{ opacity: 0.9 }} cast={false} />
+      <Box s={[120, 0.2, 60]} p={[0, -8.3 + 1.0 * ease(t, T.mar - 0.2, T.mar + 0.8), ZB - 31]} c="#3aa0d8" o={{ opacity: 0.9 }} cast={false} />
       <G p={[GX, GY, ZB - 1.5]} r={[-PI / 2, 0, 0]} sc={[1, 1, 0.4]}>
         <Cone rad={GR * 0.95} h={3.2} seg={18} p={[0, 1.6, 0]} c="#2b2b2e" o={{ rough: 0.6 }} />
       </G>
       {/* patinho de borracha boiando perto do bico (o pato do vídeo anterior, só sugerido) */}
-      <G p={[GX + 2.4, -8.0 + 0.5 * ease(t, T.mar - 0.2, T.mar + 0.8) + 0.08 * Math.sin(t * 3), ZB - 5.5]} r={[0, 2.2 + 0.2 * Math.sin(t * 1.3), 0]} sc={1.3}>
+      <G p={[lerp(GX + 2.8, GX + 1.0, ease(t, T.mar, T.mar + 1.2)), -8.0 + 1.0 * ease(t, T.mar - 0.2, T.mar + 0.8) + 0.08 * Math.sin(t * 3), lerp(ZB - 6, ZB - 4.3, ease(t, T.mar, T.mar + 1.2))]} r={[0, 2.2 + 0.2 * Math.sin(t * 1.3), 0]} sc={1.5}>
         <Sph rad={0.55} c="#ffd400" sc={[1.1, 0.8, 1]} ws={10} hs={8} cast={false} /><Sph rad={0.34} c="#ffd400" p={[0, 0.5, 0.35]} ws={8} hs={6} cast={false} /><Box s={[0.34, 0.12, 0.3]} p={[0, 0.5, 0.7]} c="#ff8a10" cast={false} />
       </G>
     </>
@@ -189,7 +191,8 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
   const y0 = top(PX) + 0.02, hook = t < T.camada + 0.2;
   const crack = !hook && t > T.racha ? ease(t, T.racha, T.racha + 0.8) : 0;
   const seep = !hook && ((t > T.trinca && t < T.meio) || (t > T.amolece - 0.4 && t < T.caminhao));
-  const mud = hook ? 1 : ease(t, T.trinca + 0.3, T.amolece + 0.6) * (1 - ease(t, T.tira, T.tira + 0.4));
+  // a base mole aparece pequena quando a água entra e cresce de verdade em «amolece a pedra» (e fica pastosa e escura)
+  const soft = ease(t, T.amolece - 0.2, T.amolece + 1.4), mud = hook ? 1 : (0.35 * ease(t, T.trinca + 0.3, T.meio) + 0.65 * soft) * (1 - ease(t, T.tira, T.tira + 0.4));
   const holeOpen = hook ? 1 : Math.max(ease(t, T.quebra, T.quebra + 0.3) * (1 - ease(t, T.massa, T.massa + 0.4)), ease(t, T.voltou + 0.3, T.voltou + 0.7) * (1 - ease(t, T.corta, T.corta + 0.2)));
   const sag = !hook && t > T.cede - 0.2 && t < T.quebra + 0.1 ? 0.25 * ease(t, T.cede - 0.2, T.quebra) : 0;
   const massa = !hook ? pk(t, T.massa, 0.5) * (1 - ease(t, T.corta, T.corta + 0.2)) : 0, flat = ease(t, T.pisa, T.pisa + 0.5), sink = ease(t, T.voltou + 0.2, T.voltou + 0.7);
@@ -205,7 +208,7 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
         return <Box key={k} s={[l, 0.03, 0.07]} p={[PX + Math.cos(a) * l * 0.5, y0 + 0.02, PZ + Math.sin(a) * l * 0.5]} r={[0, -a, 0]} c="#0d0e10" cast={false} />;
       }) : null}
       {seep ? [0, 1, 2, 3].map((k) => { const u = (t * 1.4 + k * 0.25) % 1; return <Sph key={k} rad={0.16} p={[PX + (k - 1.5) * 0.35, lerp(y0, BASE_B + 0.2, u), FRONT + 0.06]} c={WATER} ws={6} hs={4} cast={false} />; }) : null}
-      {mud > 0.01 ? <Sph rad={1.0} p={[PX, -1.1, FRONT + 0.03]} sc={[1.3 * mud, 0.42 * mud, 0.06]} c={mixc(MUD, "#4a6f8f", 0.35 + 0.15 * Math.sin(t * 4))} ws={12} hs={8} cast={false} /> : null}
+      {mud > 0.01 ? <Sph rad={1.0} p={[PX, -1.1, FRONT + 0.03]} sc={[1.3 * mud, 0.42 * mud, 0.06]} c={mixc(mixc(MUD, "#4a6f8f", 0.35 + 0.15 * Math.sin(t * 4)), "#3a2412", soft)} o={{ rough: lerp(0.9, 0.25, soft) }} ws={12} hs={8} cast={false} /> : null}
       {sag > 0.01 ? <Cyl rt={1.6} h={0.05} p={[PX, y0 - sag, PZ]} c={ASPH2} seg={20} cast={false} /> : null}
       {holeOpen > 0.01 ? (
         <G>
@@ -243,7 +246,7 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
         </G>
       ) : null}
       {newBase > 0.01 ? <Box s={[RX * 2 - 0.05, (y0 - ASF - SUB_B) * newBase, FRONT - RZ0 + 0.06]} p={[PX, SUB_B + ((y0 - ASF - SUB_B) * newBase) / 2, (FRONT + RZ0) / 2 + 0.03]} c="#8d949b" /> : null}
-      {hot > 0.01 ? <Box s={[RX * 2 - 0.05, ASF * hot + 0.02, FRONT - RZ0 + 0.06]} p={[PX, y0 - ASF + (ASF * hot) / 2 + 0.01, (FRONT + RZ0) / 2 + 0.03]} c={mixc("#101012", ASPH, ease(t, SELA, T.agoraSim))} o={{ rough: 0.3 }} /> : null}
+      {hot > 0.01 ? <Box s={[RX * 2 - 0.05, ASF * hot + 0.02, FRONT - RZ0 + 0.06]} p={[PX, y0 - ASF + (ASF * hot) / 2 + 0.01, (FRONT + RZ0) / 2 + 0.03]} c={mixc("#101012", ASPH, ease(t, SELA, T.agoraSim))} o={{ rough: 0.3, emissive: "#ff5a12", ei: 0.45 * (1 - ease(t, T.quente + 0.9, SELA + 0.4)) }} /> : null}
       {hot > 0.2 && t < SELA + 1 ? <Puffs t={t} p={[PX, y0 + 0.2, PZ - 0.5]} n={8} period={1.4} rise={3} size={0.5} c="#f4f4f4" /> : null}
     </G>
   );
@@ -275,6 +278,8 @@ const Truck: React.FC<{ t: number }> = ({ t }) => {
       <Box s={[3.0, 1.0, 0.1]} p={[0, 2.6, 4.32]} c="#bfe6ff" o={{ opacity: 0.8 }} cast={false} />
       {[-4.2, 0.4, 2.8].flatMap((zz) => [-1, 1].map((s) => <Cyl key={`${zz}${s}`} rt={0.9} h={0.7} r={[0, 0, PI / 2]} p={[s * 1.7, 0, zz]} c="#1d1e21" seg={14} />))}
       {Array.from({ length: 6 }, (_, k) => <Box key={k} s={[1, 0.9, 1.4]} p={[-1 + (k % 3), 4.2 + Math.floor(k / 3) * 0.9, -2 + (k % 2)]} c="#c99a5b" />)}
+      {/* luzes de ré acesas enquanto vem de ré (traseira = -z local) */}
+      {t < T.quebra ? [-1.2, 1.2].map((x) => <Box key={x} s={[0.6, 0.4, 0.1]} p={[x, 1.2, -5.65]} c="#ffffff" o={{ emissive: "#ffffff", ei: 1.4 }} cast={false} />) : null}
     </G>
   );
 };

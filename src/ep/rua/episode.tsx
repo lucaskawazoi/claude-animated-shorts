@@ -3,7 +3,8 @@
 import type { Shot } from "../../toy/cam";
 import { CamState } from "../../toy/cam";
 import type { Episode } from "../../toy/episode";
-import { HudData } from "../../toy/hud";
+import React from "react";
+import { FONT, HudData, pop, stroke, win } from "../../toy/hud";
 import { V3, lerp, prog, sstep } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { COSTUMES } from "../../toy/worker";
@@ -21,7 +22,7 @@ const camS1 = (t: number): CamState => { const o = openId(); return (o === "A" ?
 
 // [t0, pos0, look0, pos1, look1, fov0, fov1, roll0, roll1, nome] — um corte seco por virada da história; câmera anda pouco dentro do plano
 type R = [number, V3, V3, V3, V3, number, number, number, number, string];
-const W1: V3 = [11, 1.9, 5]; // rosto do operário na calçada
+const W1: V3 = [11, 3.3, 5]; // mira acima do operário: ele fica na metade de baixo e o carimbo/cartão não cobre o rosto
 const ROWS: R[] = [
   [3.0, [0, 7, 38], [0, -3, -2], [0, 6, 34], [0, -3, 0], 54, 52, 1, -1, "a rua inteira em corte"],
   [T.camada, [0, 1, 27], [0, -2.5, 6], [0, 1.5, 25], [0, -2.4, 6], 50, 48, -1, 1, "camada por camada: a rua desmonta"],
@@ -39,11 +40,12 @@ const ROWS: R[] = [
   [T.alaga, [9, 7, 28], [0, 0, -6], [7, 6.5, 26], [0, 0, -6], 52, 50, 1, -1, "a esquina alaga"],
   [T.boca, [-3.5, 2.6, 7.5], [BX - 0.5, 0.2, BZ], [-4.2, 2.4, 6.8], [BX - 0.5, 0.2, BZ], 46, 44, 0, 0, "a boca de lobo engole a água (vista da rua)"],
   [T.galeria, [-6, -4.5, 19], [GX, -7, 8], [-6.5, -5, 18], [GX, -7, 8], 48, 46, 0, 0, "a galeria leva até o rio (corte)"],
-  [T.pato, [GX + 11, -5.2, ZB - 8], [GX + 1, -7.2, ZB - 3], [GX + 10, -5.6, ZB - 7], [GX + 1, -7.2, ZB - 3], 46, 44, 0, 0, "a saída no córrego, de lado: o bico de pato e o patinho"],
+  [T.pato, [GX + 14, -4.4, ZB - 11], [GX + 1.5, -7.4, ZB - 3.5], [GX + 13, -4.6, ZB - 10], [GX + 1.5, -7.4, ZB - 3.5], 50, 48, 0, 0, "a saída no córrego, de lado e aberto: o bico de pato e o patinho"],
+  [T.mar, [GX + 6.5, -6.0, ZB - 7], [GX + 1, -7.0, ZB - 2.8], [GX + 6, -5.8, ZB - 6.5], [GX + 1, -6.8, ZB - 2.8], 44, 42, 0, 0, "a maré sobe e empurra o patinho contra a válvula fechada"],
   [T.z2, [9.5, 2.8, 13], W1, [10, 2.7, 12.5], W1, 44, 42, 1, -1, "Zerou? (operário)"],
   [T.prob3, [PX - 0.5, -0.4, 16.5], [PX, -1.0, 8], [PX, -0.5, 16], [PX, -1.0, 8], 44, 42, 0, 0, "a pedra amolece (corte)"],
   [T.caminhao, [PX + 7, 2.2, 20], [PX - 1, 2, -12], [PX + 6.5, 2.2, 19], [PX - 1, 2, -12], 50, 48, 0, 0, "o caminhão vem"],
-  [T.eixo, [PX + 15, 4, PZ + 3], [PX - 1, 1.4, PZ - 2], [PX + 14, 3.8, PZ + 2.4], [PX - 1, 1.4, PZ - 2], 48, 46, 0, 0, "o caminhão de ré: o eixo carregado chega na trinca"],
+  [T.eixo, [PX + 6.5, 1.1, PZ + 2.5], [PX, 0.6, PZ - 1], [PX + 6, 1.0, PZ + 2], [PX, 0.5, PZ - 0.5], 50, 46, 0, 0, "baixo e de lado: a roda traseira de ré entra na trinca"],
   [T.cede, [PX + 1, 0.6, 15.5], [PX, -0.6, 8], [PX + 0.5, 0.5, 15], [PX, -0.6, 8], 44, 42, 0, 0, "a base cede e o asfalto quebra (corte)"],
   [T.buraco2, [PX, 8.5, PZ + 4], [PX, 0, PZ], [PX, 7.5, PZ + 3.5], [PX, 0, PZ], 46, 44, 0, 0, "o buraco, de cima"],
   [T.massa, [PX + 6, 3.8, PZ + 7], [PX + 1, 0.4, PZ], [PX + 5.5, 3.6, PZ + 6.5], [PX + 1, 0.4, PZ], 48, 46, 0, 0, "massa fria por cima"],
@@ -101,17 +103,33 @@ const hud: HudData = {
     { a: 0.4, b: T.camada - 0.1, label: "TAPADO", value: () => "3 VEZES", y: 440, hi: true, tone: "red" },
     { a: T.cinco, b: T.prob1 - 0.1, label: "ASFALTO", value: () => "≈ 5 CM", y: 440, hi: true, tone: "gold" },
     { a: T.meio + 0.2, b: T.z1 - 0.1, label: "CAIMENTO", value: () => "≈ 2%", y: 440, hi: true, tone: "green" },
-    { a: T.eixo, b: T.cede - 0.05, label: "1 EIXO CARREGADO", value: () => "= MILHARES DE CARROS", y: 440, hi: true, tone: "red" },
+    // em duas linhas para caber grande no celular (numa só, o painel encolhia o texto)
+    { a: T.eixo, b: T.cede - 0.05, label: "1 EIXO CARREGADO", y: 440, hi: true, tone: "red" },
+    { a: T.carros - 0.1, b: T.cede - 0.05, label: "=", value: () => "MILHARES DE CARROS", y: 560, hi: true, tone: "red" },
     { a: T.mole, b: T.deixa4 - 0.05, label: "LÁ EMBAIXO", value: () => "BASE MOLE", y: 440, hi: true, tone: "red" },
+    { a: T.quente + 0.2, b: T.remendo - 0.1, label: "ASFALTO QUENTE", value: () => "≈ 150 °C", y: 440, hi: true, tone: "gold" },
   ],
   // cada título some antes do próximo entrar (o painel só corta pelo próximo alerta ou carimbo)
-  titles: ([[T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"]] as [number, string][])
+  titles: ([[0.3, "POR QUE ELE VOLTA?"], [T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.pato + 0.9, "BICO DE PATO"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"]] as [number, string][])
     .map(([a, text], i, all) => ({ a, text, len: Math.min(i === all.length - 1 ? 2.4 : 3.0, (all[i + 1]?.[0] ?? 1e9) - a - 0.12) })),
   alerts: [T.prob1, T.prob2, T.prob3, T.voltou],
   rewinds: [T.camada],
   crosses: [[T.voltou + 0.45, T.capa - 0.1]],
   stamps: [[T.z1, T.a1], [T.z2, T.a2], [T.z3, T.a3]],
-  reward: { a: T.agoraSim, len: T.end - T.agoraSim, top: "AGORA SIM:", big: () => "ZEROU!", sub: "DO CHÃO FIRME PRA CIMA", bounces: [T.qual + 0.3] },
+  reward: { a: T.agoraSim, len: T.qual - 0.1 - T.agoraSim, top: "AGORA SIM:", big: () => "ZEROU!", sub: "DO CHÃO FIRME PRA CIMA", bounces: [T.custa + 0.3] },
+  Extra: ({ t }) => <Pergunta t={t} />,
+};
+
+/** a pergunta do comentário na tela quando ela é dita (o crítico: só na voz, ela se perdia) */
+const Pergunta: React.FC<{ t: number }> = ({ t }) => {
+  const k = win(t, T.qual, T.end + 1, 0.25); if (k <= 0) return null;
+  const s = pop(t, T.qual, 0.4);
+  return (
+    <div style={{ position: "absolute", left: 0, width: 1080, top: 300, display: "flex", flexDirection: "column", alignItems: "center", opacity: k, transform: `scale(${s})` }}>
+      <span style={{ fontFamily: FONT, fontSize: 84, color: "#ffffff", lineHeight: 1.05, ...stroke(12) }}>QUAL BURACO DA SUA RUA</span>
+      <span style={{ fontFamily: FONT, fontSize: 96, color: "#ffd400", lineHeight: 1.05, ...stroke(13, "#3a2300") }}>VOLTOU MAIS VEZES?</span>
+    </div>
+  );
 };
 
 export const EP: Episode = {
