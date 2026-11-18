@@ -308,6 +308,53 @@ const Compactor: React.FC<{ t: number }> = ({ t }) => {
   return <G p={[PX, top(PX) - ASF + 0.1 + hop, PZ]}><Box s={[1.4, 0.2, 1.4]} c="#e8b923" /><Box s={[0.8, 0.8, 0.8]} p={[0, 0.5, 0]} c="#3a3f45" /><Cyl rt={0.06} h={1.6} p={[0, 1.4, -0.4]} r={[0.5, 0, 0]} c="#2b2f36" seg={6} /></G>;
 };
 
+// ---------------------------------------------------------------- a conta (v2): 1 t de asfalto ≈ R$ 500 cobre só ≈ 8 m² a 5 cm;
+// a auditoria mediu 3,4 cm onde pagaram 5; «quem paga é você»: moedas saem das casas para a rua (sugerido, sem acusar ninguém)
+export const TON: V3 = [PX - 4.6, top(PX - 4.6), PZ - 1.5], AREA: V3 = [PX - 1.2, top(PX - 1.2), PZ - 6.5], CORE: V3 = [-1.6, top(-1.6) + 0.02, PZ - 1];
+const SQ = 5.8; // lado do quadrado de 8,3 m² (1 unidade ≈ 0,5 m)
+const Conta: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.conta - 0.2) return null;
+  const ton = pk(t, T.tonelada + 0.1, 0.5) * (1 - ease(t, T.oito + 0.6, T.oito + 1.4)), area = ease(t, T.oito, T.oito + 1.4);
+  const ruler = ease(t, T.medir, T.medir + 0.5) * (1 - ease(t, T.quemPaga, T.quemPaga + 0.3)), measured = ease(t, T.auditoria + 0.4, T.auditoria + 1.2);
+  const coins = t > T.quemPaga - 0.1 && t < T.qual + 0.5;
+  return (
+    <G>
+      {ton > 0.01 ? (
+        <G p={[TON[0], TON[1] + 0.8 * ton * (1 - area), TON[2]]} sc={ton * (1 - 0.8 * area)}>
+          <Box s={[1.6, 1.6, 1.6]} c="#141416" o={{ rough: 0.3 }} />
+          <Box s={[1.0, 0.35, 0.05]} p={[0, 0.25, 0.83]} c="#ffd400" cast={false} />
+        </G>
+      ) : null}
+      {area > 0.01 && t < T.medir + 0.4 ? (
+        <G p={[AREA[0], AREA[1] + 0.05, AREA[2]]}>
+          {[[0, -SQ / 2, SQ, 0.08], [0, SQ / 2, SQ, 0.08]].map(([x, z, w, d], k) => <Box key={k} s={[w, 0.05, d]} p={[x, 0, z]} c="#ffd400" o={{ emissive: "#ffd400", ei: 0.4 }} cast={false} />)}
+          {[-1, 1].map((s) => <Box key={s} s={[0.08, 0.05, SQ]} p={[(s * SQ) / 2, 0, 0]} c="#ffd400" o={{ emissive: "#ffd400", ei: 0.4 }} cast={false} />)}
+          <Box s={[SQ * area, 0.06, SQ * area]} c="#101012" o={{ rough: 0.3 }} cast={false} />
+        </G>
+      ) : null}
+      {ruler > 0.01 ? (
+        <G p={[CORE[0], CORE[1], CORE[2]]}>
+          {/* duas amostras de asfalto tiradas do chão (é assim que a auditoria mede): a paga, 5 cm, e a medida, 3,4 cm (68,6%) */}
+          {([[-1.1, 1, "#2fcf6a"], [1.1, 0.686 * measured, "#e0262b"]] as [number, number, string][]).map(([dx, f, c], k) => {
+            const h = 1.6 * f * ruler + 0.001;
+            return (
+              <G key={k} p={[dx, 0, 0]}>
+                <Cyl rt={0.62} h={h} p={[0, h / 2, 0]} c="#1d1e21" seg={20} o={{ rough: 0.35 }} />
+                <Cyl rt={0.66} h={0.08} p={[0, h + 0.02, 0]} c={c} seg={20} o={{ emissive: c, ei: 0.35 }} cast={false} />
+              </G>
+            );
+          })}
+          <Box s={[3.6, 0.04, 1.6]} p={[0, 0.01, 0]} c="#e9e4d8" cast={false} />
+        </G>
+      ) : null}
+      {coins ? Array.from({ length: 10 }, (_, k) => {
+        const u = ((t - T.quemPaga) * 0.9 + k * 0.1) % 1, sx = k % 2 ? 1 : -1, hz = -6 + (k % 5) * 3;
+        return <Cyl key={k} rt={0.7} h={0.16} p={[lerp(sx * 18, PX, u), 4.5 + 5 * Math.sin(u * PI), lerp(hz, PZ - 1, u)]} r={[PI / 2 + u * 6, u * 4, 0]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.3 }} seg={14} cast={false} />;
+      }) : null}
+    </G>
+  );
+};
+
 // ---------------------------------------------------------------- mundo
 export const World: React.FC<{ t: number }> = ({ t }) => {
   const open = openId(), c0 = open === "B" ? 0 : 0.6;
@@ -326,6 +373,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Roller t={t} t0={T.asfalto + 0.2} t1={T.cinco - 0.1} />
       <Truck t={t} />
       <Compactor t={t} />
+      <Conta t={t} />
       <Car t={t} t0={c0} t1={OPEN_END + 0.6} z0={-24} z1={FRONT + 10} c="#ff7a1a" falls />
       <Car t={t} t0={T.voltou - 0.6} t1={T.voltou + 1.6} z0={-14} z1={FRONT + 8} c="#2fcf6a" falls />
       <Car t={t} t0={T.agoraSim - 0.6} t1={T.agoraSim + 2.4} z0={-22} z1={FRONT + 10} c="#ff7a1a" />

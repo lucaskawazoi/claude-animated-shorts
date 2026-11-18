@@ -35,14 +35,14 @@ const ROWS: R[] = [
   [T.trinca, [PX + 0.5, -0.4, 14.5], [PX, -0.9, 8], [PX, -0.5, 14], [PX, -0.9, 8], 42, 40, 0, 0, "a água desce pela trinca (corte)"],
   [T.meio, [0, 1.8, 25], [0, 0, 6], [0, 2.2, 23], [0, 0, 6], 46, 44, 0, 0, "a rua mais alta no meio: a água escorre"],
   [T.sarjeta, [-13, 3, 17], [-8, 0, 2], [-12.5, 2.8, 15], [-8, 0, 2], 48, 46, 1, -1, "guia e sarjeta"],
-  [T.z1, [13.5, 2.8, 13], W1, [13, 2.6, 12.5], W1, 44, 42, -1, 1, "Zerou? (operário)"],
+  [T.z1, [13.5, 2.8, 13], W1, [13, 2.6, 12.5], W1, 44, 42, -1, 1, "Resolveu? (operário)"],
   [T.prob2, [-5, 1.6, 22], [-6.5, 0.2, -12], [-4.5, 1.8, 20], [-6.5, 0.2, -12], 50, 48, 0, 0, "a sarjeta enche"],
   [T.alaga, [9, 7, 28], [0, 0, -6], [7, 6.5, 26], [0, 0, -6], 52, 50, 1, -1, "a esquina alaga"],
   [T.boca, [-3.5, 2.6, 7.5], [BX - 0.5, 0.2, BZ], [-4.2, 2.4, 6.8], [BX - 0.5, 0.2, BZ], 46, 44, 0, 0, "a boca de lobo engole a água (vista da rua)"],
   [T.galeria, [-6, -4.5, 19], [GX, -7, 8], [-6.5, -5, 18], [GX, -7, 8], 48, 46, 0, 0, "a galeria leva até o rio (corte)"],
   [T.pato, [GX + 14, -4.4, ZB - 11], [GX + 1.5, -7.4, ZB - 3.5], [GX + 13, -4.6, ZB - 10], [GX + 1.5, -7.4, ZB - 3.5], 50, 48, 0, 0, "a saída no córrego, de lado e aberto: o bico de pato e o patinho"],
   [T.mar, [GX + 7.5, -5.4, ZB - 8.5], [GX + 1.4, -6.9, ZB - 3.7], [GX + 7, -5.3, ZB - 8], [GX + 1.3, -6.7, ZB - 3.6], 46, 44, 0, 0, "a maré sobe e empurra o patinho (inteiro) contra a válvula fechada"],
-  [T.z2, [9.5, 2.8, 13], W1, [10, 2.7, 12.5], W1, 44, 42, 1, -1, "Zerou? (operário)"],
+  [T.z2, [9.5, 2.8, 13], W1, [10, 2.7, 12.5], W1, 44, 42, 1, -1, "Resolveu? (operário)"],
   [T.prob3, [PX - 0.5, -0.4, 16.5], [PX, -1.0, 8], [PX, -0.5, 16], [PX, -1.0, 8], 44, 42, 0, 0, "a pedra amolece (corte)"],
   [T.caminhao, [PX + 7, 2.2, 20], [PX - 1, 2, -12], [PX + 6.5, 2.2, 19], [PX - 1, 2, -12], 50, 48, 0, 0, "o caminhão vem"],
   [T.eixo, [PX + 8, 1.5, PZ + 3.2], [PX, 0.9, PZ - 1], [PX + 7.4, 1.4, PZ + 2.6], [PX, 0.8, PZ - 0.5], 50, 46, 0, 0, "baixo e de lado: a roda traseira de ré entra na trinca"],
@@ -50,7 +50,7 @@ const ROWS: R[] = [
   [T.buraco2, [PX, 8.5, PZ + 4], [PX, 0, PZ], [PX, 7.5, PZ + 3.5], [PX, 0, PZ], 46, 44, 0, 0, "o buraco, de cima"],
   [T.massa, [PX + 6, 3.8, PZ + 7], [PX + 1, 0.4, PZ], [PX + 5.5, 3.6, PZ + 6.5], [PX + 1, 0.4, PZ], 48, 46, 0, 0, "massa fria por cima"],
   [T.pisa, [PX + 2.5, 2.4, PZ + 4], [PX, 0.2, PZ], [PX + 2.2, 2.2, PZ + 3.6], [PX, 0.2, PZ], 44, 42, 0, 0, "e pisa: o tapa-buraco"],
-  [T.z3, [PX + 7.5, 3.0, PZ + 7.5], [PX + 2.6, 3.0, PZ + 0.8], [PX + 7, 2.9, PZ + 7], [PX + 2.6, 3.0, PZ + 0.8], 46, 44, 1, -1, "Zerou? (operário no buraco, abaixo do carimbo)"],
+  [T.z3, [PX + 7.5, 3.0, PZ + 7.5], [PX + 2.6, 3.0, PZ + 0.8], [PX + 7, 2.9, PZ + 7], [PX + 2.6, 3.0, PZ + 0.8], 46, 44, 1, -1, "Resolveu? (operário no buraco, abaixo do carimbo)"],
   [T.voltou, [PX + 7, 2.6, PZ + 11], [PX, 0.5, PZ - 3], [PX + 6.5, 2.6, PZ + 10], [PX, 0.5, PZ - 3], 50, 48, 0, 0, "o carro cai de novo: voltou"],
   [T.capa, [PX, -0.2, 16.5], [PX, -0.9, 8], [PX + 0.4, -0.3, 16], [PX, -0.9, 8], 44, 42, 0, 0, "a base mole continua lá embaixo (corte)"],
   [T.corta, [PX, 9, PZ + 4], [PX, 0, PZ - 0.6], [PX, 8.5, PZ + 3.6], [PX, 0, PZ - 0.6], 46, 44, 0, 0, "corta um retângulo, de cima"],
@@ -59,7 +59,11 @@ const ROWS: R[] = [
   [T.quente, [PX + 3, 3.2, 13.5], [PX, 0.2, PZ], [PX + 2.6, 3, 13], [PX, 0.2, PZ], 46, 44, 0, 0, "asfalto quente"],
   [T.remendo, [PX, 8.5, PZ + 3.5], [PX, 0, PZ - 0.6], [PX, 8, PZ + 3.2], [PX, 0, PZ - 0.6], 46, 44, 0, 0, "o remendo profundo, de cima"],
   [T.agoraSim, [7, 4.2, 27], [PX, 0.5, 0], [6, 4.4, 25], [PX, 0.5, 0], 50, 48, 0, 0, "o carro passa liso"],
-  [T.custa, [13.5, 2.8, 14], W1, [13, 2.8, 13], W1, 44, 42, -1, 1, "operário comemora"],
+  [T.conta, [PX + 9, 6, PZ + 12], [PX - 3, 0.6, PZ - 3], [PX + 8, 5.6, PZ + 11], [PX - 3, 0.6, PZ - 3], 50, 48, 0, 0, "e a conta? a tonelada de asfalto cai na rua"],
+  [T.oito, [PX - 1.2, 14, PZ + 3], [PX - 1.2, 0, PZ - 5], [PX - 1.2, 13, PZ + 2.5], [PX - 1.2, 0, PZ - 5], 50, 48, 0, 0, "de cima: a tonelada vira só 8 m²"],
+  [T.medir, [1.6, 3.1, PZ + 7], [-1.6, 0.9, PZ - 1], [1.3, 2.9, PZ + 6.5], [-1.6, 0.9, PZ - 1], 46, 44, 0, 0, "duas amostras de asfalto: 5 cm pagos contra 3,4 cm medidos"],
+  [T.quemPaga, [6, 4.5, 22], [16, 3, -4], [5, 5, 21], [12, 3, -4], 50, 50, 0, 0, "quem paga: moedas saem das casas para a rua"],
+  [T.quemEscolhe, [13.5, 2.8, 14], W1, [13, 2.8, 13], W1, 44, 42, -1, 1, "quem escolhe… não é: o operário dá de ombros"],
   [T.qual, [0, 13, 40], [0, -1, -10], [0, 17, 47], [0, -1, -10], 54, 56, 0, 0, "a rua inteira, de longe"],
 ];
 const linCam = (i: number) => (t: number): CamState => {
@@ -96,6 +100,9 @@ const WORKER: [number, WorkerState][] = [
   [T.corta, S(HOLE, -1.7, "point")],
   [T.refaz, S(HOLE, -1.7, "present")],
   [T.agoraSim, S(SIDE, -0.9, "cheer")],
+  [T.conta, S(SIDE, -0.9, "point")],
+  [T.quemEscolhe, S(SIDE, -0.9, "think")],
+  [T.qual, S(SIDE, -0.9, "present")],
 ];
 
 const hud: HudData = {
@@ -108,15 +115,25 @@ const hud: HudData = {
     { a: T.carros - 0.1, b: T.cede - 0.05, label: "=", value: () => "MILHARES DE CARROS", y: 560, hi: true, tone: "red" },
     { a: T.mole, b: T.deixa4 - 0.05, label: "LÁ EMBAIXO", value: () => "BASE MOLE", y: 440, hi: true, tone: "red" },
     { a: T.quente + 0.2, b: T.remendo - 0.1, label: "ASFALTO QUENTE", value: () => "≈ 150 °C", y: 440, hi: true, tone: "gold" },
+    // a conta: números de FONTES-custo.md (SINAPI 10/2026 insumo 34770; 1 t ÷ 2,4 t/m³ ÷ 0,05 m ≈ 8,3 m²; CGU, Lagarto/SE, 2023)
+    { a: T.tonelada + 0.2, b: T.oito - 0.05, label: "1 TONELADA", value: () => "≈ R$ 500", y: 440, hi: true, tone: "gold" },
+    { a: T.quinhentos + 0.3, b: T.oito - 0.05, label: "TABELA OFICIAL (SINAPI)", y: 560, tone: "dark" },
+    { a: T.oito, b: T.medir - 0.05, label: "COBRE SÓ", value: () => "≈ 8 m²", y: 440, hi: true, tone: "gold" },
+    { a: T.oito + 0.3, b: T.medir - 0.05, label: "A 5 CM DE ESPESSURA", y: 560, tone: "dark" },
+    { a: T.medir + 0.3, b: T.quemPaga - 0.05, label: "PAGO", value: () => "5 CM", y: 440, hi: true, tone: "green" },
+    { a: T.auditoria + 0.6, b: T.quemPaga - 0.05, label: "MEDIDO", value: () => "3,4 CM", y: 560, hi: true, tone: "red" },
+    { a: T.auditoria + 0.6, b: T.quemPaga - 0.05, label: "AUDITORIA DA CGU · SE · 2023", y: 680, tone: "dark" },
   ],
   // cada título some antes do próximo entrar (o painel só corta pelo próximo alerta ou carimbo)
-  titles: ([[0.3, "POR QUE ELE VOLTA?"], [T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.pato + 0.9, "BICO DE PATO"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"]] as [number, string][])
-    .map(([a, text], i, all) => ({ a, text, len: Math.min(i === all.length - 1 ? 2.4 : 3.0, (all[i + 1]?.[0] ?? 1e9) - a - 0.12) })),
+  titles: ([[0.3, "POR QUE ELE VOLTA?"], [T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.pato + 0.9, "BICO DE PATO"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"], [T.conta, "E A CONTA?"]] as [number, string][])
+    // e nenhum título invade o cartão «RESOLVIDO!» (entra em T.agoraSim + 0.3)
+    .map(([a, text], i, all) => ({ a, text, len: Math.min(i === all.length - 1 ? 2.4 : 3.0, (all[i + 1]?.[0] ?? 1e9) - a - 0.12, a < T.agoraSim ? T.agoraSim + 0.25 - a : 9) })),
   alerts: [T.prob1, T.prob2, T.prob3, T.voltou],
   rewinds: [T.camada],
   crosses: [[T.voltou + 0.45, T.capa - 0.1]],
   stamps: [[T.z1, T.a1], [T.z2, T.a2], [T.z3, T.a3]],
-  reward: { a: T.agoraSim + 0.3, len: T.qual - 0.4 - T.agoraSim, top: "AGORA SIM:", big: () => "ZEROU!", sub: "DO CHÃO FIRME PRA CIMA", bounces: [T.custa + 0.3] },
+  reward: { a: T.agoraSim + 0.3, len: T.conta - 0.2 - (T.agoraSim + 0.3), top: "AGORA SIM:", big: () => "RESOLVIDO!", sub: "DO CHÃO FIRME PRA CIMA", bounces: [T.resolvido + 0.2] },
+  stampQ: "RESOLVEU?", stampA: "AINDA NÃO",
   Extra: ({ t }) => <Pergunta t={t} />,
 };
 

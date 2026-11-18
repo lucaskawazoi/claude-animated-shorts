@@ -15,7 +15,8 @@ export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.m
 export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold"; hi?: boolean };
 export type Title = { a: number; text: string; len?: number; size?: number };
 export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string; bounces?: number[] };
-export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }> };
+/** stampQ/stampA: o texto do bordão (padrão «ZEROU?» / «AINDA NÃO»; o Lucas pediu outra expressão em 18/11, «zerou» não é usado no Brasil) */
+export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number][]; reward: Reward; Extra?: React.FC<{ t: number }>; stampQ?: string; stampA?: string };
 
 /** contador que sobe de a até b entre t0 e t1, com separador de milhar em português */
 export const count = (t: number, t0: number, t1: number, a: number, b: number, dec = 0) => {
@@ -77,18 +78,18 @@ const Cross: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
 };
 
 /** o bordão do canal (Mundo em Peças): «ZEROU?» branco e, por cima, o carimbo vermelho «AINDA NÃO» (Panamá, 10/11) */
-const Stamp: React.FC<{ t: number; a: number; b: number }> = ({ t, a, b }) => {
+const Stamp: React.FC<{ t: number; a: number; b: number; q?: string; ans?: string }> = ({ t, a, b, q = "ZEROU?", ans = "AINDA NÃO" }) => {
   const end = b + 1.4, k = win(t, a, end, 0.15); if (k <= 0) return null;
   const s1 = pop(t, a, 0.25), s2 = pop(t, b, 0.22), shake = t > b ? Math.sin((t - b) * 34) * 7 * (1 - prog(t, b, b + 0.45)) : 0;
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 600, height: 320, opacity: k }}>
       <div style={{ position: "absolute", left: 0, width: W, top: 0, display: "flex", justifyContent: "center", transform: `scale(${s1})` }}>
-        <span style={{ fontFamily: FONT, fontSize: 128, color: "#ffffff", lineHeight: 1, ...stroke(15, "#14202b") }}>ZEROU?</span>
+        <span style={{ fontFamily: FONT, fontSize: q.length > 8 ? 108 : 128, color: "#ffffff", lineHeight: 1, ...stroke(15, "#14202b") }}>{q}</span>
       </div>
       {t >= b ? (
         <div style={{ position: "absolute", left: 0, width: W, top: 150, display: "flex", justifyContent: "center", transform: `rotate(${-6 + shake * 0.3}deg) scale(${s2 * 1.04})` }}>
           <div style={{ padding: "4px 34px 10px", border: "10px solid #e0262b", borderRadius: 20, background: "#fffffff2", boxShadow: "0 8px 0 #00000044" }}>
-            <span style={{ fontFamily: FONT, fontSize: 104, color: "#e0262b", lineHeight: 1, letterSpacing: 2 }}>AINDA NÃO</span>
+            <span style={{ fontFamily: FONT, fontSize: 104, color: "#e0262b", lineHeight: 1, letterSpacing: 2 }}>{ans}</span>
           </div>
         </div>) : null}
     </div>
@@ -142,7 +143,7 @@ export const Hud: React.FC<{ t: number; captions?: boolean }> = ({ t, captions =
       {d.alerts.map((a) => <Alert key={a} t={t} a={a} />)}
       {d.rewinds.map((a) => <Rewind key={a} t={t} a={a} />)}
       {d.crosses.map(([a, b]) => <Cross key={a} t={t} a={a} b={b} />)}
-      {d.stamps.map(([a, b]) => <Stamp key={a} t={t} a={a} b={b} />)}
+      {d.stamps.map(([a, b]) => <Stamp key={a} t={t} a={a} b={b} q={d.stampQ} ans={d.stampA} />)}
       <RewardEl t={t} r={d.reward} />
       </div>
       {captions ? <Caption t={t} /> : null}
