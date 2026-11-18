@@ -1,29 +1,30 @@
-// Mundo do episódio «posto» (Mundo em Peças, MEP19): um posto de brinquedo e, ao lado da bomba, um LITRO gigante de vidro
-// que se monta em fatias, uma por dono do preço (escala: 1 real = U unidades de altura). Ao fundo, de onde vem cada fatia:
-// o cavalo de pau e a refinaria (esquerda), o canavial e a usina (direita), a base da distribuidora (fim da estrada).
-// O posto fica em volta da origem; a estrada corre em x na frente dele (z ≈ 14); a câmera olha quase sempre para −z.
+// Mundo do episódio «posto» v2 (Mundo em Peças, MEP19): um posto de brinquedo. O caixa do dia vira uma pilha de moedas;
+// ao lado da bomba, um LITRO gigante de vidro mostra a parte que já tem dono (cinza) e o real do posto (ouro) em cima;
+// no fim a parte cinza se desmonta nos donos (refinaria, usina, ICMS, federal, distribuidora) e duas colunas comparam
+// o ICMS com posto + distribuidora. Escala: 1 real = U unidades de altura. Estrada em x na frente (z ≈ 14).
 import React, { useMemo } from "react";
 import * as THREE from "three";
 import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, lerp, outBack, prog, rnd } from "../../toy/kit";
 import { Clouds, Hills, Puffs, Sky } from "../../toy/scenery";
-import { IN, T, VAL } from "./cues";
+import { DONO, POSTO, RESTO, T } from "./cues";
 
 const PI = Math.PI;
 const Y0 = 0.2; // topo do piso do posto
 export const LIT: V3 = [-5.5, Y0, 4.5]; // o litro gigante
 export const U = 0.85, LR = 1.5, LB = 0.35; // altura por real, raio, fundo do litro
-const COLS = ["#e58a17", "#8fd14f", "#e0262b", "#6b1010", "#3d7be0", "#ffd400"];
-export const sliceY = (i: number) => LIT[1] + LB + U * VAL.slice(0, i).reduce((a, b) => a + b, 0);
-export const LIT_TOP = sliceY(6);
+const GREY = "#5a6170", GOLD = "#ffd400";
+const COLS = ["#e58a17", "#8fd14f", "#e0262b", "#6b1010", "#3d7be0"]; // refinaria, etanol, ICMS, federal, distribuidora
+export const LIT_TOP = LIT[1] + LB + U * (DONO + POSTO);
 export const SIDE: V3 = [1.6, Y0, 3.2]; // onde o operário fala com o chefe
 export const PUMP: V3 = [0, Y0, -1];
 export const CAR_X = 2.9;
 export const ROAD_Z = 14;
 export const MAQ: V3 = [-2.4, Y0, 2.6]; // a maquininha do cartão (num pedestal)
-export const CAL: V3 = [4.2, 2.4, -9.42]; // o calendário na parede da loja
 export const LID: V3 = [-11, Y0 + 0.01, 8]; // boca do tanque subterrâneo
 export const JACK: V3 = [-28, 0, -32], REF: V3 = [-46, 0, -60], USINA: V3 = [42, 0, -56], CANE: V3 = [30, 0, -34], BASE: V3 = [-84, 0, 2];
 export const HOLE: V3 = [7.5, 0.13, ROAD_Z + 1.5]; // o remendo na estrada (o buraco do vídeo anterior)
+export const PILE: V3 = [7.5, Y0, 4.5]; // a pilha de moedas do dia
+export const COLS2: V3 = [-1.6, Y0, 6.2]; // onde nascem as duas colunas (ICMS × posto + distribuidora)
 
 const pk = (t: number, t0: number, d = 0.4) => (t < t0 ? 0 : outBack(prog(t, t0, t0 + d)));
 const arc = (a: V3, b: V3, u: number, h: number): V3 => [lerp(a[0], b[0], u), lerp(a[1], b[1], u) + h * Math.sin(u * PI), lerp(a[2], b[2], u)];
@@ -31,22 +32,11 @@ const Coin: React.FC<{ p: V3; s?: number; spin?: number }> = ({ p, s = 1, spin =
   <Cyl rt={0.36 * s} h={0.09 * s} p={p} r={[PI / 2 + spin, spin * 0.7, 0]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.35 }} seg={14} cast={false} />
 );
 
-/** texto numa placa (textura de canvas, fonte do sistema: não depende do carregamento da fonte do painel) */
-const useText = (lines: [string, string, number][], w = 256, h = 256, bg = "#ffffff") => useMemo(() => {
-  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-  const g = cv.getContext("2d")!; g.fillStyle = bg; g.fillRect(0, 0, w, h); g.textAlign = "center"; g.textBaseline = "middle";
-  lines.forEach(([txt, col, y], i) => { g.fillStyle = col; g.font = `bold ${i === 0 && lines.length > 1 ? Math.round(h * 0.2) : Math.round(h * 0.55)}px Arial, sans-serif`; g.fillText(txt, w / 2, y * h); });
-  const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return tx;
-}, [lines, w, h, bg]);
-const Sign: React.FC<{ tex: THREE.Texture; p: V3; r?: V3; w: number; h: number; glow?: number }> = ({ tex, p, r, w, h, glow = 0 }) => {
-  const m = useMemo(() => new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8, emissive: "#ffffff", emissiveMap: tex, emissiveIntensity: glow }), [tex, glow]);
-  return <mesh position={p} rotation={r} material={m}><planeGeometry args={[w, h]} /></mesh>;
-};
-
 // ---------------------------------------------------------------- chão, estrada (com o remendo do buraco), posto, loja
 const Ground: React.FC<{ t: number }> = ({ t }) => {
   const lamps = ease(t, T.luz, T.luz + 0.3);
-  const patch = 0.25 + 0.75 * ease(t, T.buraco, T.buraco + 0.4) * (1 - ease(t, T.quemPaga + 0.3, T.quemPaga + 0.8));
+  // o remendo do buraco (vídeo anterior) acende só no recuo final, sem fala: a lembrança fica para quem conhece
+  const patch = 0.25 + 0.75 * ease(t, T.comenta, T.comenta + 0.6);
   return (
     <>
       <Box s={[900, 0.2, 600]} p={[0, -0.1, 0]} c="#79c64c" cast={false} />
@@ -99,49 +89,9 @@ const Ground: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ---------------------------------------------------------------- calendário (o federal «zerado até 9 de dezembro»)
-const CAL_LINES: [string, string, number][] = [["DEZEMBRO", "#e0262b", 0.18], ["9", "#14202b", 0.62]];
-const Calendar: React.FC<{ t: number }> = ({ t }) => {
-  const tex = useText(CAL_LINES, 256, 320);
-  const ring = pk(t, T.dez, 0.35);
-  return (
-    <G p={CAL}>
-      <Box s={[1.5, 1.85, 0.06]} c="#e0262b" />
-      <Sign tex={tex} p={[0, -0.08, 0.04]} w={1.34} h={1.6} glow={0.15} />
-      {ring > 0.01 ? <mesh position={[0, -0.18, 0.08]} scale={ring}><torusGeometry args={[0.42, 0.05, 8, 28]} /><meshStandardMaterial color="#e0262b" emissive="#e0262b" emissiveIntensity={0.5} /></mesh> : null}
-    </G>
-  );
-};
-
-// ---------------------------------------------------------------- o litro: vidro, fatias que caem, a fatia do posto que se reparte
-const goldLeft = (t: number) => 1 - 0.18 * ease(t, T.frentista, T.frentista + 0.5) - 0.14 * ease(t, T.luz, T.luz + 0.5) - 0.16 * ease(t, T.aluguel, T.aluguel + 0.5) - 0.12 * ease(t, T.maquininha + 0.3, T.maquininha + 0.8);
-const Liter: React.FC<{ t: number }> = ({ t }) => {
-  const show = pk(t, T.bora, 0.5);
-  if (show < 0.01) return null;
-  const H = U * 6.6 + LB;
-  return (
-    <G p={[LIT[0], LIT[1], LIT[2]]} sc={[show, show, show]}>
-      <Cyl rt={LR + 0.25} h={0.3} p={[0, 0.15, 0]} c="#9aa3ab" seg={28} />
-      {VAL.map((v, i) => {
-        const fall = t < IN[i] ? 0 : outBack(prog(t, IN[i], IN[i] + 0.5)), h = U * v * (i === 5 ? goldLeft(t) : 1), y = sliceY(i) - LIT[1] + h / 2;
-        return fall <= 0 ? null : <Cyl key={i} rt={LR - 0.08} h={Math.max(0.02, h)} p={[0, y + 6 * (1 - Math.min(1, fall)), 0]} c={COLS[i]} seg={28} o={{ rough: 0.4, emissive: COLS[i], ei: 0.12 }} />;
-      })}
-      {/* vidro e gargalo */}
-      <Cyl rt={LR} h={H} p={[0, H / 2 + 0.3, 0]} c="#dff4ff" seg={32} open o={{ opacity: 0.28, side: "double", depthWrite: false, rough: 0.1 }} cast={false} />
-      {/* o gargalo e a tampa só entram quando o litro fecha (a última fatia, a do posto) */}
-      {t > T.fatia + 0.4 ? <G p={[0, H + 0.3, 0]} sc={[1, pk(t, T.fatia + 0.4, 0.4), 1]}>
-        <Cone rad={LR} h={0.9} seg={32} p={[0, 0.45, 0]} c="#dff4ff" o={{ opacity: 0.28, depthWrite: false, rough: 0.1 }} cast={false} />
-        <Cyl rt={0.42} h={0.5} p={[0, 1.05, 0]} c="#e0262b" seg={18} />
-      </G> : null}
-      {/* marcas de cada real, na frente do vidro */}
-      {Array.from({ length: 6 }, (_, k) => <Box key={k} s={[0.5, 0.05, 0.05]} p={[0, LB + U * (k + 1) + 0.3, LR + 0.02]} c="#ffffff" cast={false} />)}
-    </G>
-  );
-};
-
 // ---------------------------------------------------------------- cavalo de pau, oleoduto e refinaria (fatia da gasolina pura)
 const Refinery: React.FC<{ t: number }> = ({ t }) => {
-  const nod = Math.sin(t * 2.4) * 0.35, flow = t > T.petroleo - 0.2 && t < T.essa + 0.8;
+  const nod = Math.sin(t * 2.4) * 0.35, flow = true;
   return (
     <>
       <G p={JACK}>
@@ -155,7 +105,7 @@ const Refinery: React.FC<{ t: number }> = ({ t }) => {
         <Box s={[1.2, 1.2, 1.2]} p={[-2.6, 0.8, 0]} c="#3a3f45" />
       </G>
       <Pipe a={[JACK[0] - 2, 0.4, JACK[2]]} b={[REF[0] + 6, 0.4, REF[2] + 6]} rad={0.35} c="#7f868d" />
-      {flow ? Array.from({ length: 10 }, (_, k) => { const u = ((t - T.petroleo) * 0.6 + k / 10) % 1; return <Sph key={k} rad={0.32} p={[lerp(JACK[0] - 2, REF[0] + 6, u), 0.85, lerp(JACK[2], REF[2] + 6, u)]} c="#1c1410" ws={8} hs={6} cast={false} />; }) : null}
+      {flow ? Array.from({ length: 10 }, (_, k) => { const u = (t * 0.6 + k / 10) % 1; return <Sph key={k} rad={0.32} p={[lerp(JACK[0] - 2, REF[0] + 6, u), 0.85, lerp(JACK[2], REF[2] + 6, u)]} c="#1c1410" ws={8} hs={6} cast={false} />; }) : null}
       <G p={REF}>
         {[[-6, 0, 3, 14], [-2, -4, 2.2, 18], [3, 0, 2.6, 12]].map(([x, z, r, h], i) => (
           <G key={i} p={[x, 0, z]}><Cyl rt={r} h={h} p={[0, h / 2, 0]} c="#c9cdd1" seg={16} />{[0.3, 0.6, 0.85].map((f) => <Cyl key={f} rt={r + 0.12} h={0.35} p={[0, h * f, 0]} c="#ff7a1a" seg={16} cast={false} />)}</G>
@@ -192,41 +142,19 @@ const Usina: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ---------------------------------------------------------------- o carimbo do imposto (ICMS bate; o federal só encosta e volta: zerado)
-const Stamp: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T.imposto || t > T.z2) return null;
-  const hit = T.icmsN + 0.15, fz = T.zerado + 0.25;
-  // desce até bater na fatia do ICMS, sobe; desce de novo no federal e para no ar, volta com mola
-  let y = LIT_TOP + 9;
-  const topICMS = sliceY(3) + 0.9, topFed = sliceY(4) + 0.9;
-  // aparece no alto em «o imposto», paira sobre o litro e bate no «um e cinquenta e sete»
-  if (t < hit) y = t < T.icmsN - 0.25 ? lerp(LIT_TOP + 9, LIT_TOP + 2.5, ease(t, T.imposto, T.deixa2 + 0.4)) + 0.15 * Math.sin(t * 5) : lerp(LIT_TOP + 2.5, topICMS, ease(t, T.icmsN - 0.25, hit));
-  else if (t < T.mesmo) y = lerp(topICMS, LIT_TOP + 4, ease(t, hit + 0.25, hit + 0.9));
-  else if (t < fz) y = lerp(LIT_TOP + 4, topFed + 0.6, ease(t, T.federal + 0.2, fz));
-  else y = topFed + 0.6 + (LIT_TOP + 9 - topFed) * ease(t, fz + 0.1, fz + 1.1) + 0.5 * Math.sin((t - fz) * 16) * Math.exp(-4 * (t - fz));
-  const squash = t > hit && t < hit + 0.2 ? 1 - 0.25 * Math.sin(prog(t, hit, hit + 0.2) * PI) : 1;
-  return (
-    <G p={[LIT[0], y, LIT[2]]} sc={[1, squash, 1]}>
-      {/* redondo e mais estreito que o vidro: desce por dentro do litro */}
-      <Cyl rt={1.25} h={0.9} c="#8a5a32" seg={24} />
-      <Cyl rt={1.2} h={0.3} p={[0, -0.6, 0]} c="#e0262b" seg={24} />
-      <Cyl rt={0.35} h={2.4} p={[0, 1.6, 0]} c="#6b4423" seg={12} />
-      <Sph rad={0.8} p={[0, 3.1, 0]} c="#e0262b" ws={14} hs={10} />
-    </G>
-  );
-};
-
 // ---------------------------------------------------------------- base da distribuidora e o caminhão-tanque
-const truckX = (t: number) => lerp(BASE[0] + 8, -8.5, ease(t, T.longe + 0.3, T.entrega - 0.1)); // sai da base no «o posto tá longe»
 const Base: React.FC = () => (
   <G p={BASE}>
     {[[-6, -6], [2, -6], [-6, -14], [2, -14]].map(([x, z], i) => <G key={i} p={[x, 0, z]}><Cyl rt={3} h={5} p={[0, 2.5, 0]} c="#f4f6f8" seg={20} /><Cyl rt={3.05} h={0.5} p={[0, 3.6, 0]} c="#3d7be0" seg={20} cast={false} /></G>)}
     <Box s={[18, 0.15, 14]} p={[-2, 0.08, -9]} c="#c9cdd1" cast={false} />
   </G>
 );
+
+// ---------------------------------------------------------------- o caminhão da distribuidora chega no «o posto não ganha a gasolina de graça»
+const truckX = (t: number) => lerp(-60, -8.5, ease(t, T.naoGanha - 0.4, T.paga - 0.1));
 const Truck: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T.prob3 - 0.2 || t > T.prob4) return null;
-  const x = truckX(t), moving = t < T.entrega - 0.1, hose = ease(t, T.entrega - 0.05, T.entrega + 0.3);
+  if (t < T.naoGanha - 0.5 || t > T.diferenca) return null;
+  const x = truckX(t), moving = t < T.paga - 0.1, hose = ease(t, T.paga, T.paga + 0.35);
   return (
     <>
       <G p={[x, 0.95, ROAD_Z - 1.8]}>
@@ -243,13 +171,13 @@ const Truck: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ---------------------------------------------------------------- carros: o do gancho (abastece e sai), o da conta, o trânsito
+// ---------------------------------------------------------------- carros: o laranja entra no gancho e fica na bomba até o tanque cheio; trânsito no «posto médio»
 type P = { x: number; z: number; yaw: number };
 const carPath = (t: number): P | null => {
-  if (t > T.agoraSim + 2.6) return null;
+  if (t > T.agoraSim + 2.4) return null;
   if (t < 2.4) return { x: CAR_X, z: lerp(26, PUMP[2], ease(t, 0, 2.4)), yaw: 0 };
-  if (t < T.agoraSim + 0.4) return { x: CAR_X, z: PUMP[2], yaw: 0 };
-  const u = prog(t, T.agoraSim + 0.4, T.agoraSim + 2.6), k = ease(u, 0, 1);
+  if (t < T.agoraSim + 0.3) return { x: CAR_X, z: PUMP[2], yaw: 0 };
+  const k = ease(t, T.agoraSim + 0.3, T.agoraSim + 2.4);
   return k < 0.4 ? { x: CAR_X, z: lerp(PUMP[2], -7, k / 0.4), yaw: 0 } : { x: lerp(CAR_X, 26, (k - 0.4) / 0.6), z: -7, yaw: -PI / 2 * Math.min(1, (k - 0.4) / 0.15) };
 };
 const CarBody: React.FC<{ p: P; c: string; bob?: number }> = ({ p, c, bob = 0 }) => (
@@ -261,14 +189,13 @@ const CarBody: React.FC<{ p: P; c: string; bob?: number }> = ({ p, c, bob = 0 })
   </G>
 );
 const Cars: React.FC<{ t: number }> = ({ t }) => {
-  const a = carPath(t), b = t > T.conta - 0.3 ? { x: CAR_X, z: lerp(22, PUMP[2], ease(t, T.conta - 0.3, T.conta + 1.6)), yaw: 0 } : null;
-  const traffic = t > T.medio - 0.5 && t < T.buraco - 0.2; // some antes da lembrança do buraco (quadro limpo)
-  // a mangueira da bomba até o carro enquanto abastece
-  const fill = ease(t, T.bomba, T.bomba + 0.4) * (1 - ease(t, T.agoraSim + 0.1, T.agoraSim + 0.4));
+  const a = carPath(t);
+  const traffic = t > T.medio - 0.5 && t < T.chefe + 0.2;
+  // a mangueira da bomba até o carro: no «cobra na bomba» e no tanque cheio
+  const fill = Math.max(ease(t, T.cobra, T.cobra + 0.4) * (1 - ease(t, T.z1, T.z1 + 0.3)), ease(t, T.tanque, T.tanque + 0.4) * (1 - ease(t, T.agoraSim, T.agoraSim + 0.3)));
   return (
     <>
       {a ? <CarBody p={a} c="#ff7a1a" /> : null}
-      {b ? <CarBody p={b} c="#2fcf6a" /> : null}
       {traffic ? [0, 1, 2, 3].map((k) => { const u = ((t - T.medio) * 0.11 + k * 0.25) % 1, dir = k % 2 ? 1 : -1; return <CarBody key={k} p={{ x: dir * lerp(-60, 60, u), z: ROAD_Z + (dir > 0 ? 2 : -2), yaw: dir > 0 ? -PI / 2 : PI / 2 }} c={["#3d7be0", "#ffd400", "#e0262b", "#f4f6f8"][k]} />; }) : null}
       {fill > 0.01 ? <Pipe a={[PUMP[0] + 0.58, Y0 + 1.3, PUMP[2] + 0.45]} b={[lerp(PUMP[0] + 0.6, CAR_X - 1.15, fill), Y0 + 1.15, lerp(PUMP[2] + 0.45, PUMP[2] + 1.3, fill)]} rad={0.07} c="#14202b" /> : null}
     </>
@@ -277,7 +204,7 @@ const Cars: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- a maquininha do cartão (morde a moeda)
 const Maquininha: React.FC<{ t: number }> = ({ t }) => {
-  const on = pk(t, T.conta, 0.4); if (on < 0.01) return null;
+  const on = pk(t, T.desse, 0.4); if (on < 0.01) return null;
   const bite = t > T.maquininha + 0.2 && t < T.maquininha + 1.2 ? Math.abs(Math.sin((t - T.maquininha - 0.2) * 9)) : 0;
   return (
     <G p={MAQ} sc={on}>
@@ -293,34 +220,87 @@ const Maquininha: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ---------------------------------------------------------------- moedas: a fatia do posto se reparte; o dia de vendas; quem paga
-const LITGOLD = (): V3 => [LIT[0], sliceY(5) + 0.5, LIT[2]];
+// ---------------------------------------------------------------- o litro: a parte que já tem dono (cinza) e o real do posto (ouro); no «o resto» o cinza se desmonta nos donos
+const DEST: V3[] = [[REF[0], 10, REF[2]], [USINA[0], 10, USINA[2]], [LIT[0] + 2, 40, LIT[2] - 6], [LIT[0] - 2, 40, LIT[2] - 6], [-60, 3, ROAD_Z - 2]];
+const goldLeft = (t: number) => 1 - 0.12 * ease(t, T.frentista, T.frentista + 0.5) - 0.1 * ease(t, T.luz, T.luz + 0.5) - 0.12 * ease(t, T.aluguel, T.aluguel + 0.5) - 0.1 * ease(t, T.maquininha + 0.3, T.maquininha + 0.8);
+const Liter: React.FC<{ t: number }> = ({ t }) => {
+  const show = pk(t, T.diferenca, 0.5);
+  if (show < 0.01) return null;
+  const H = U * (DONO + POSTO) + LB + 0.4;
+  const grey = ease(t, T.diferenca + 0.1, T.diferenca + 0.7), gold = t < T.diferenca + 0.75 ? 0 : outBack(prog(t, T.diferenca + 0.75, T.diferenca + 1.25));
+  const split = t >= T.resto + 0.25; // a parte cinza vira as fatias dos donos e elas voam
+  const fly = (i: number) => ease(t, T.resto + 0.9 + i * 0.15, T.resto + 2.0 + i * 0.12); // as cores aparecem e seguram meio segundo antes de voar
+  const gH = U * POSTO * goldLeft(t), yGrey = LB + (U * DONO * grey) / 2;
+  let acc = 0;
+  return (
+    <G p={[LIT[0], LIT[1], LIT[2]]} sc={[show, show, show]}>
+      <Cyl rt={LR + 0.25} h={0.3} p={[0, 0.15, 0]} c="#9aa3ab" seg={28} />
+      {!split && grey > 0.01 ? <Cyl rt={LR - 0.08} h={U * DONO * grey} p={[0, yGrey, 0]} c={GREY} seg={28} o={{ rough: 0.6 }} /> : null}
+      {split ? RESTO.map((v, i) => {
+        const h = U * v, y0 = LB + acc + h / 2; acc += h;
+        const f = fly(i), d = DEST[i], w: V3 = [d[0] - LIT[0], d[1] - LIT[1], d[2] - LIT[2]];
+        if (f >= 1) return null;
+        const p = arc([0, y0, 0], w, f, 8);
+        return <Cyl key={i} rt={(LR - 0.08) * (1 - 0.5 * f)} h={Math.max(0.03, h)} p={p} c={COLS[i]} seg={28} o={{ rough: 0.4, emissive: COLS[i], ei: 0.15 }} />;
+      }) : null}
+      {gold > 0 ? <Cyl rt={LR - 0.08} h={Math.max(0.02, gH)} p={[0, LB + U * DONO + gH / 2 + 5 * (1 - Math.min(1, gold)), 0]} c={GOLD} seg={28} o={{ rough: 0.35, emissive: GOLD, ei: 0.18 }} /> : null}
+      <Cyl rt={LR} h={H} p={[0, H / 2 + 0.3, 0]} c="#dff4ff" seg={32} open o={{ opacity: 0.28, side: "double", depthWrite: false, rough: 0.1 }} cast={false} />
+      {Array.from({ length: 6 }, (_, k) => <Box key={k} s={[0.5, 0.05, 0.05]} p={[0, LB + U * (k + 1) + 0.3, LR + 0.02]} c="#ffffff" cast={false} />)}
+    </G>
+  );
+};
+
+// ---------------------------------------------------------------- as duas colunas: ICMS (1,57) × posto + distribuidora (1,53)
+const Columns: React.FC<{ t: number }> = ({ t }) => {
+  const a = pk(t, T.so + 0.15, 0.5), b = pk(t, T.postoDist + 0.1, 0.5);
+  if (a < 0.01 || t > T.agoraSim + 0.2) return null;
+  const k = 1.7; // colunas maiores que o litro, para a diferença de 4 centavos ficar visível de perto
+  return (
+    <G p={COLS2}>
+      <Box s={[2.2, 0.2, 2.2]} p={[-1.5, 0.1, 0]} c="#9aa3ab" />
+      <Box s={[1.6, U * k * 1.57 * a, 1.6]} p={[-1.5, 0.2 + (U * k * 1.57 * a) / 2, 0]} c={COLS[2]} o={{ emissive: COLS[2], ei: 0.15 }} />
+      {b > 0.01 ? <>
+        <Box s={[2.2, 0.2, 2.2]} p={[1.5, 0.1, 0]} c="#9aa3ab" />
+        <Box s={[1.6, U * k * 0.53 * b, 1.6]} p={[1.5, 0.2 + (U * k * 0.53 * b) / 2, 0]} c={COLS[4]} o={{ emissive: COLS[4], ei: 0.15 }} />
+        <Box s={[1.6, U * k * 1.0 * b, 1.6]} p={[1.5, 0.2 + U * k * 0.53 * b + (U * k * 1.0 * b) / 2, 0]} c={GOLD} o={{ emissive: GOLD, ei: 0.18 }} />
+        {/* a régua: a linha do topo do ICMS passa por cima da outra coluna */}
+        <Box s={[5.2, 0.05, 0.05]} p={[0, 0.2 + U * k * 1.57, 0.85]} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.6 }} cast={false} />
+      </> : null}
+    </G>
+  );
+};
+
+// ---------------------------------------------------------------- moedas: o caixa do dia (pilhas), quase tudo vai embora no «dois mil e oitocentos reais»; as contas do posto; o tanque
 const Money: React.FC<{ t: number }> = ({ t }) => {
   const out: React.ReactNode[] = [];
-  const burst = (t0: number, to: V3, n: number, key: string, from: V3 = LITGOLD(), h = 3, dur = 0.9) => {
+  const burst = (t0: number, from: V3, to: V3, n: number, key: string, h = 3, dur = 0.9) => {
     for (let k = 0; k < n; k++) { const u = prog(t, t0 + k * 0.07, t0 + k * 0.07 + dur); if (u > 0 && u < 1) out.push(<Coin key={key + k} p={arc(from, [to[0] + (rnd(k) - 0.5), to[1], to[2] + (rnd(k + 9) - 0.5)], u, h)} spin={u * 8} />); }
   };
-  burst(T.frentista, [SIDE[0], 2.4, SIDE[2]], 6, "f");
-  burst(T.luz, [0, 6, 0], 5, "l", LITGOLD(), 4);
-  burst(T.aluguel, [-1.5, 1.4, -9.4], 6, "a", LITGOLD(), 4, 1.1);
-  burst(T.maquininha + 0.05, [MAQ[0], 2.5, MAQ[2]], 7, "m", LITGOLD(), 2.2, 0.7);
-  // o dia de vendas: pilhas de moedas crescem ao lado da loja; quase tudo vai embora para os donos das outras fatias
-  const PILE: V3 = [7.5, Y0, 4.5];
-  const grow = ease(t, T.entram, T.entram + 1.2), keep = 1 - 0.85 * ease(t, T.ficam + 0.2, T.ficam + 1.6);
-  if (t > T.entram - 0.1 && t < T.chute) {
+  // o caixa: 20 pilhas crescem no gancho; no «dá uns dois mil e oitocentos» 85% voam para os donos (refinaria, usina, céu, estrada)
+  const grow = ease(t, 0, 2.6), keep = 1 - 0.85 * ease(t, T.da + 0.2, T.da + 1.6);
+  if (t < T.lucro) {
     const N = 20;
     for (let c = 0; c < N; c++) {
       const hgt = Math.round(10 * grow * (0.6 + 0.4 * rnd(c))), stays = c < Math.ceil(N * 0.15);
-      const dest: V3 = [[REF[0], 8, REF[2]], [USINA[0], 8, USINA[2]], [LIT[0], LIT_TOP + 6, LIT[2]], [BASE[0], 6, BASE[2]]][c % 4] as V3;
+      const dest: V3 = [[REF[0], 8, REF[2]], [USINA[0], 8, USINA[2]], [LIT[0], LIT_TOP + 8, LIT[2]], [-60, 6, ROAD_Z - 2]][c % 4] as V3;
       const fly = stays ? 0 : clamp((1 - keep) / 0.85 * 1.15 - (c % 5) * 0.05);
       const base: V3 = [PILE[0] + (c % 5) * 0.8 - 1.6, Y0, PILE[2] + Math.floor(c / 5) * 0.8 - 1.2];
       if (fly >= 1) continue;
       const p0 = fly > 0 ? arc(base, dest, fly, 10) : base;
       for (let k = 0; k < hgt; k++) out.push(<Cyl key={`p${c}_${k}`} rt={0.34} h={0.09} p={[p0[0], p0[1] + 0.05 + k * 0.1, p0[2]]} c="#ffcf2a" o={{ metal: 0.6, emissive: "#a87a00", ei: 0.35 }} seg={12} cast={false} />);
     }
+    // moedas caindo no caixa durante o gancho
+    if (t < 3.2) for (let k = 0; k < 8; k++) { const u = ((t * 1.3 + k / 8) % 1); out.push(<Coin key={"c" + k} p={[PILE[0] - 1.6 + (k % 5) * 0.8, Y0 + 6 - 5.5 * u, PILE[2] - 1.2 + (k % 4) * 0.8]} spin={u * 6} />); }
   }
-  // quem paga é você: moedas saem da janela do carro verde para o litro
-  if (t > T.quemPaga - 0.1 && t < T.chute + 0.6) for (let k = 0; k < 10; k++) { const u = ((t - T.quemPaga) * 0.9 + k / 10) % 1; out.push(<Coin key={"q" + k} p={arc([CAR_X - 1.2, Y0 + 1.9, PUMP[2] + 0.6], [LIT[0], LIT_TOP + 0.3, LIT[2]], u, 3)} spin={u * 9} />); }
+  // as contas do posto saem da fatia de ouro: frentista, luz, aluguel (loja), maquininha
+  const gold: V3 = [LIT[0], LIT[1] + LB + U * DONO + 0.6, LIT[2]];
+  burst(T.frentista, gold, [SIDE[0], 2.4, SIDE[2]], 6, "f");
+  burst(T.luz, gold, [0, 6, -1], 5, "l", 4);
+  burst(T.aluguel, gold, [-1.5, 1.4, -9.4], 6, "a", 4, 1.1);
+  burst(T.maquininha + 0.05, gold, [MAQ[0], 2.5, MAQ[2]], 7, "m", 2.2, 0.7);
+  // o tanque cheio: R$ 324 saem do carro; R$ 50 caem no posto (operário), o resto sobe e some
+  burst(T.voce + 0.2, [CAR_X - 1.2, Y0 + 1.9, PUMP[2] + 0.6], [PUMP[0] + 1.25, 2.4, PUMP[2] + 1.2], 3, "t1", 2.5, 0.9); // ao operário, que está na bomba
+  burst(T.voce + 0.4, [CAR_X - 1.2, Y0 + 1.9, PUMP[2] + 0.6], [LIT[0], LIT_TOP + 9, LIT[2] - 4], 9, "t2", 5, 1.1);
   return <>{out}</>;
 };
 
@@ -331,14 +311,13 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Hills c={["#6fbe58", "#7ccb62"]} z={-150} n={30} x0={-120} flat={0.6} />
     <Clouds t={t} n={9} y={36} />
     <Ground t={t} />
-    <Calendar t={t} />
     <Refinery t={t} />
     <Usina t={t} />
     <Base />
     <Truck t={t} />
     <Cars t={t} />
     <Liter t={t} />
-    <Stamp t={t} />
+    <Columns t={t} />
     <Maquininha t={t} />
     <Money t={t} />
   </>
