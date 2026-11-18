@@ -82,7 +82,7 @@ const WORKER: [number, WorkerState][] = [
   [T.agoraSim, S(SIDE, FRONT, "cheer")],
   // o crítico: o gesto não aparecia. Braços abertos na pergunta («e aí?»); no «comenta aí» aponta para quem assiste, até o recuo final
   [T.quanto2 - 0.35, S(SIDE, 0.15, "present")],
-  [T.comenta, S(SIDE, 0.05, "point")],
+  [T.comenta, S(SIDE, 1.25, "pointHi")],
 ];
 
 const hud: HudData = {
@@ -104,13 +104,13 @@ const hud: HudData = {
     { a: T.tanque + 0.2, b: T.resto - 0.1, label: "TANQUE · 50 L × R$ 6,48", value: () => "≈ R$ 324", y: 440, hi: true, tone: "dark" },
     { a: T.postoFica + 0.3, b: T.resto - 0.1, label: "PRO POSTO", value: () => "≈ R$ 50", y: 560, hi: true, tone: "gold" },
     // o resto tem dono: cada fatia que voa ganha nome (o crítico: sem rótulo, ninguém sabe o que está vendo)
-    { a: T.resto + 0.35, b: T.so - 0.1, label: "REFINARIA", value: () => "R$ 2,17", y: 440, hi: true, tone: "gold" },
-    { a: T.resto + 0.55, b: T.so - 0.1, label: "USINA (ETANOL)", value: () => "R$ 1,15", y: 560, hi: true, tone: "green" },
-    { a: T.resto + 0.75, b: T.so - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 680, hi: true, tone: "red" },
-    { a: T.resto + 0.95, b: T.so - 0.1, label: "FEDERAL", value: () => "R$ 0,06", y: 800, hi: true, tone: "wine" },
-    { a: T.resto + 1.15, b: T.so - 0.1, label: "DISTRIBUIDORA · CONTA NOSSA", value: () => "≈ R$ 0,50", y: 920, hi: true, tone: "blue" },
+    { a: T.resto + 0.35, b: T.so - 0.1, label: "REFINARIA", value: () => "R$ 2,17", y: 400, hi: true, tone: "gold" },
+    { a: T.resto + 0.55, b: T.so - 0.1, label: "USINA (ETANOL)", value: () => "R$ 1,15", y: 516, hi: true, tone: "green" },
+    { a: T.resto + 0.75, b: T.so - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 632, hi: true, tone: "red" },
+    { a: T.resto + 0.95, b: T.so - 0.1, label: "FEDERAL", value: () => "R$ 0,06", y: 748, hi: true, tone: "wine" },
+    { a: T.resto + 1.15, b: T.so - 0.1, label: "DISTRIBUIDORA · CONTA NOSSA", value: () => "≈ R$ 0,50", y: 864, hi: true, tone: "blue" },
     { a: T.so + 0.3, b: T.agoraSim - 0.1, label: "ICMS (ESTADO)", value: () => "R$ 1,57", y: 440, hi: true, tone: "red" },
-    { a: T.postoDist + 0.3, b: T.agoraSim - 0.1, label: "POSTO + DISTRIBUIDORA", value: () => "R$ 1,53", y: 560, hi: true, tone: "gold" },
+    { a: T.postoDist, b: T.agoraSim - 0.1, label: "POSTO + DISTRIBUIDORA", value: () => "R$ 1,53", y: 560, hi: true, tone: "gold" },
   ],
   // o 1º título já cheio no quadro 0 (o crítico: o número do gancho não pesava numa pílula pequena); o «1,57 > 1,53» diz a comparação
   titles: ([[-0.4, "R$ 18 MIL POR DIA", 96], [T.mas, "QUANTO FICA PRO POSTO?"], [T.paga, "DISTRIBUIDORA"], [T.desse, "AS CONTAS DO POSTO"], [T.pra, "NO SEU TANQUE"], [T.resto, "O RESTO TEM DONO"], [T.postoDist + 0.5, "1,57 > 1,53"]] as [number, string, number?][])

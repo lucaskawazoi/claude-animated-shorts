@@ -4,7 +4,7 @@
 import React from "react";
 import { Box, Cone, Cyl, G, Sph, V3, lerp } from "./kit";
 
-export type PoseName = "idle" | "point" | "alarm" | "think" | "cheer" | "present" | "pull" | "pour" | "read" | "belly" | "walk" | "chisel";
+export type PoseName = "idle" | "point" | "pointHi" | "alarm" | "think" | "cheer" | "present" | "pull" | "pour" | "read" | "belly" | "walk" | "chisel";
 export type Prop = "jar" | "scroll" | "hammer" | "none";
 type Arm = { rx: number; rz: number; el: number };
 export type Pose = { l: Arm; r: Arm; hx: number; hy: number; hz: number; lean: number; hop: number };
@@ -14,6 +14,8 @@ export const poseOf = (n: PoseName, t: number): Pose => {
   const s = Math.sin(t * 5.2), s2 = Math.sin(t * 9.5), s3 = Math.sin(t * 3.1);
   switch (n) {
     case "point": return { l: A(0.05, -0.12), r: A(-1.45 + s * 0.05, 0.28, -0.1), hx: 0, hy: -0.35, hz: 0, lean: 0.06, hop: 0 };
+    // braço erguido para fora e para o alto, cabeça virada para a câmera: o «comenta aí» de três quartos (de frente, o «point» vira só um antebraço)
+    case "pointHi": return { l: A(0.05, -0.12), r: A(-2.05 + s * 0.04, 0.35, -0.05), hx: -0.08, hy: -0.7, hz: 0, lean: 0.04, hop: 0 };
     case "present": return { l: A(-0.9, -0.5, -0.5), r: A(-0.9 + s * 0.04, 0.5, -0.5), hx: 0, hy: 0, hz: 0.04 * s3, lean: 0.0, hop: 0.02 * Math.abs(s) };
     case "alarm": return { l: A(0, -2.55 + s2 * 0.07, -0.2), r: A(0, 2.55 - s2 * 0.07, -0.2), hx: -0.18, hy: 0, hz: s2 * 0.05, lean: -0.05, hop: 0.07 * Math.abs(s2) };
     case "think": return { l: A(0.05, -0.1), r: A(-2.2, 0.35, -1.9), hx: 0.1, hy: 0.25, hz: -0.1, lean: 0, hop: 0 };
