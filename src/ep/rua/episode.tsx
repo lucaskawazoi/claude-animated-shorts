@@ -15,7 +15,7 @@ export { OPENING } from "./opening";
 // ---- as três aberturas (0 a OPEN_END): A de cima mergulhando no buraco; B atrás do carro que cai nele; C a rua do alto fechando nele
 const carZ = (t: number, t0: number) => lerp(-24, 18, prog(t, t0, OPEN_END + 0.6));
 const openA = (t: number): CamState => { const u = sstep(prog(t, 0, OPEN_END)); return { pos: [PX, lerp(16, 6.5, u), PZ + lerp(8, 5, u)], look: [PX, 0, PZ], fov: lerp(54, 46, u), roll: 6 * (1 - u) }; };
-const openB = (t: number): CamState => { const z = carZ(t, 0); return { pos: [PX + 0.6, 3.2, z - 9], look: [PX, 0.8, z + 6], fov: 52, roll: 0 }; };
+const openB = (t: number): CamState => { const z = Math.min(carZ(t, 0), PZ - 1); return { pos: [PX + 1.2, 6.2, z - 11], look: [PX, 0, Math.max(z + 7, PZ)], fov: 50, roll: 0 }; };
 const openC = (t: number): CamState => { const u = sstep(prog(t, 0, OPEN_END)); return { pos: [lerp(0, PX, u), lerp(42, 11, u), lerp(52, PZ + 14, u)], look: [lerp(0, PX, u), 0, lerp(-12, PZ, u)], fov: lerp(58, 50, u), roll: 0 }; };
 const camS1 = (t: number): CamState => { const o = openId(); return (o === "A" ? openA : o === "B" ? openB : openC)(Math.min(t, OPEN_END)); };
 
@@ -37,20 +37,20 @@ const ROWS: R[] = [
   [T.z1, [13.5, 2.8, 13], W1, [13, 2.6, 12.5], W1, 44, 42, -1, 1, "Zerou? (operário)"],
   [T.prob2, [-5, 1.6, 22], [-6.5, 0.2, -12], [-4.5, 1.8, 20], [-6.5, 0.2, -12], 50, 48, 0, 0, "a sarjeta enche"],
   [T.alaga, [9, 7, 28], [0, 0, -6], [7, 6.5, 26], [0, 0, -6], 52, 50, 1, -1, "a esquina alaga"],
-  [T.boca, [-12, 2.6, 8], [BX, 0.1, BZ], [-11.5, 2.4, 7], [BX, 0.1, BZ], 46, 44, 0, 0, "a boca de lobo engole a água"],
+  [T.boca, [-3.5, 2.6, 7.5], [BX - 0.5, 0.2, BZ], [-4.2, 2.4, 6.8], [BX - 0.5, 0.2, BZ], 46, 44, 0, 0, "a boca de lobo engole a água (vista da rua)"],
   [T.galeria, [-6, -4.5, 19], [GX, -7, 8], [-6.5, -5, 18], [GX, -7, 8], 48, 46, 0, 0, "a galeria leva até o rio (corte)"],
-  [T.pato, [-3, -4.5, ZB - 16], [GX, -7, ZB - 1.5], [-4, -5, ZB - 13], [GX, -7, ZB - 1.5], 46, 44, 0, 0, "a saída no córrego, com o bico de pato"],
+  [T.pato, [GX + 11, -5.2, ZB - 8], [GX + 1, -7.2, ZB - 3], [GX + 10, -5.6, ZB - 7], [GX + 1, -7.2, ZB - 3], 46, 44, 0, 0, "a saída no córrego, de lado: o bico de pato e o patinho"],
   [T.z2, [9.5, 2.8, 13], W1, [10, 2.7, 12.5], W1, 44, 42, 1, -1, "Zerou? (operário)"],
-  [T.prob3, [PX - 0.5, -0.8, 14.5], [PX, -1.1, 8], [PX, -0.9, 14], [PX, -1.1, 8], 44, 42, 0, 0, "a pedra amolece (corte)"],
+  [T.prob3, [PX - 0.5, -0.4, 16.5], [PX, -1.0, 8], [PX, -0.5, 16], [PX, -1.0, 8], 44, 42, 0, 0, "a pedra amolece (corte)"],
   [T.caminhao, [PX + 7, 2.2, 20], [PX - 1, 2, -12], [PX + 6.5, 2.2, 19], [PX - 1, 2, -12], 50, 48, 0, 0, "o caminhão vem"],
-  [T.eixo, [PX + 10, 2.5, PZ + 1], [PX, 0.6, PZ], [PX + 9.5, 2.3, PZ + 0.5], [PX, 0.6, PZ], 46, 44, 0, 0, "o eixo carregado sobre a trinca"],
+  [T.eixo, [PX + 15, 4, PZ + 3], [PX - 1, 1.4, PZ - 2], [PX + 14, 3.8, PZ + 2.4], [PX - 1, 1.4, PZ - 2], 48, 46, 0, 0, "o caminhão de ré: o eixo carregado chega na trinca"],
   [T.cede, [PX + 1, 0.6, 15.5], [PX, -0.6, 8], [PX + 0.5, 0.5, 15], [PX, -0.6, 8], 44, 42, 0, 0, "a base cede e o asfalto quebra (corte)"],
   [T.buraco2, [PX, 8.5, PZ + 4], [PX, 0, PZ], [PX, 7.5, PZ + 3.5], [PX, 0, PZ], 46, 44, 0, 0, "o buraco, de cima"],
   [T.massa, [PX + 6, 3.8, PZ + 7], [PX + 1, 0.4, PZ], [PX + 5.5, 3.6, PZ + 6.5], [PX + 1, 0.4, PZ], 48, 46, 0, 0, "massa fria por cima"],
   [T.pisa, [PX + 2.5, 2.4, PZ + 4], [PX, 0.2, PZ], [PX + 2.2, 2.2, PZ + 3.6], [PX, 0.2, PZ], 44, 42, 0, 0, "e pisa: o tapa-buraco"],
   [T.z3, [PX + 5.5, 2.6, PZ + 5.5], [PX + 2.6, 1.4, PZ + 0.8], [PX + 5, 2.5, PZ + 5], [PX + 2.6, 1.4, PZ + 0.8], 44, 42, 1, -1, "Zerou? (operário no buraco)"],
   [T.voltou, [PX + 7, 2.6, PZ + 11], [PX, 0.5, PZ - 3], [PX + 6.5, 2.6, PZ + 10], [PX, 0.5, PZ - 3], 50, 48, 0, 0, "o carro cai de novo: voltou"],
-  [T.capa, [PX, -0.5, 14.5], [PX, -1.0, 8], [PX + 0.4, -0.6, 14], [PX, -1.0, 8], 44, 42, 0, 0, "a base mole continua lá embaixo (corte)"],
+  [T.capa, [PX, -0.2, 16.5], [PX, -0.9, 8], [PX + 0.4, -0.3, 16], [PX, -0.9, 8], 44, 42, 0, 0, "a base mole continua lá embaixo (corte)"],
   [T.corta, [PX, 9, PZ + 4], [PX, 0, PZ - 0.6], [PX, 8.5, PZ + 3.6], [PX, 0, PZ - 0.6], 46, 44, 0, 0, "corta um retângulo, de cima"],
   [T.tira, [PX + 7, 6.5, 17], [PX, 0, PZ], [PX + 6.5, 7, 16], [PX, 0, PZ], 52, 50, 0, 0, "tira o estragado"],
   [T.refaz, [PX + 4.5, 2.2, 13.5], [PX, -0.4, PZ], [PX + 4, 2.1, 13], [PX, -0.4, PZ], 46, 44, 0, 0, "refaz e compacta a base"],
@@ -104,11 +104,9 @@ const hud: HudData = {
     { a: T.eixo, b: T.cede - 0.05, label: "1 EIXO CARREGADO", value: () => "= MILHARES DE CARROS", y: 440, hi: true, tone: "red" },
     { a: T.mole, b: T.deixa4 - 0.05, label: "LÁ EMBAIXO", value: () => "BASE MOLE", y: 440, hi: true, tone: "red" },
   ],
-  titles: [
-    { a: T.terra, text: "TERRA" }, { a: T.pedra, text: "PEDRA BRITADA" }, { a: T.asfalto, text: "ASFALTO" },
-    { a: T.guia, text: "GUIA" }, { a: T.sarjeta, text: "SARJETA" }, { a: T.boca, text: "BOCA DE LOBO" }, { a: T.galeria, text: "GALERIA" },
-    { a: T.tapa, text: "TAPA-BURACO" }, { a: T.remendo, text: "REMENDO PROFUNDO", len: 2.4 },
-  ],
+  // cada título some antes do próximo entrar (o painel só corta pelo próximo alerta ou carimbo)
+  titles: ([[T.terra, "TERRA"], [T.pedra, "PEDRA BRITADA"], [T.asfalto, "ASFALTO"], [T.guia, "GUIA"], [T.sarjeta, "SARJETA"], [T.boca, "BOCA DE LOBO"], [T.galeria, "GALERIA"], [T.tapa, "TAPA-BURACO"], [T.remendo, "REMENDO PROFUNDO"]] as [number, string][])
+    .map(([a, text], i, all) => ({ a, text, len: Math.min(i === all.length - 1 ? 2.4 : 3.0, (all[i + 1]?.[0] ?? 1e9) - a - 0.12) })),
   alerts: [T.prob1, T.prob2, T.prob3, T.voltou],
   rewinds: [T.camada],
   crosses: [[T.voltou + 0.45, T.capa - 0.1]],

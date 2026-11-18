@@ -116,9 +116,11 @@ const Drain: React.FC<{ t: number }> = ({ t }) => {
       <G p={[GX, GY, 0]} vis={grow > 0.01}>
         <Cyl rt={GR} h={len} r={[PI / 2, 0, 0]} p={[0, 0, z0 + len / 2]} c="#a9b0b6" seg={24} open o={{ side: "double" }} />
         <Cyl rt={GR + 0.3} h={0.3} r={[PI / 2, 0, 0]} p={[0, 0, FRONT - 0.15]} c={CONC} seg={24} />
+        {/* na face do corte: o fundo escuro da galeria e a água subindo (meio disco achatado conforme enche) */}
         <Cyl rt={GR - 0.02} h={0.02} r={[PI / 2, 0, 0]} p={[0, 0, FRONT + 0.01]} c="#2a2e33" seg={24} cast={false} />
-        {fill > 0.01 ? <Box s={[GR * 1.7, GR * 1.1 * fill, len]} p={[0, -GR + GR * 0.55 * fill + 0.08, z0 + len / 2]} c={WATER} o={{ opacity: 0.85 }} cast={false} /> : null}
-        {fill > 0.2 ? [0, 1, 2, 3].map((k) => <Cone key={k} rad={0.35} h={0.8} seg={8} r={[-PI / 2, 0, 0]} p={[0, -GR + 0.6, FRONT - 2 - ((t * 9 + k * 6) % 24)]} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.4 }} cast={false} />) : null}
+        {/* metade de baixo (ts=-π/2): x = r·sen θ, y = -r·cos θ; o fundo fica parado e a linha d'água sobe até o meio */}
+        {fill > 0.01 ? <G p={[0, -(GR - 0.08) * (1 - fill), FRONT + 0.03]} sc={[1, fill, 1]}><Cyl rt={GR - 0.08} h={0.02} r={[PI / 2, 0, 0]} ts={-PI / 2} tl={PI} c={WATER} seg={24} o={{ emissive: "#1d6fb8", ei: 0.25 }} cast={false} /></G> : null}
+        {fill > 0.3 ? [0, 1, 2].map((k) => <Box key={k} s={[0.5, 0.08, 0.02]} p={[((t * 1.6 + k / 3) % 1) * 2 * (GR - 0.5) - (GR - 0.5), -(GR - 0.08) * (1 - fill) - 0.15, FRONT + 0.05]} c="#ffffff" cast={false} />) : null}
       </G>
       <G p={[EX, EY, 0]}>
         <Cyl rt={ER} h={FRONT - ZB} r={[PI / 2, 0, 0]} p={[0, 0, (FRONT + ZB) / 2]} c="#c46a3a" seg={18} />
@@ -133,8 +135,12 @@ const Drain: React.FC<{ t: number }> = ({ t }) => {
       {down ? [0, 1, 2, 3, 4].map((k) => { const u = (t * 2.2 + k * 0.2) % 1; return <Sph key={k} rad={0.28} p={[BX, lerp(-0.2, GY + GR - 0.2, u), BZ]} c={WATER} ws={6} hs={4} cast={false} />; }) : null}
       <Box s={[60, 12, 1.5]} p={[0, -4, ZB - 0.75]} c="#b9bfc4" />
       <Box s={[120, 0.2, 60]} p={[0, -8.3 + 0.5 * ease(t, T.mar - 0.2, T.mar + 0.8), ZB - 31]} c="#3aa0d8" o={{ opacity: 0.9 }} cast={false} />
-      <G p={[GX, GY, ZB - 1.5]} r={[-PI / 2, 0, 0]} sc={[1, 1, 0.45]}>
-        <Cone rad={GR * 0.95} h={2.4} seg={18} p={[0, 1.2, 0]} c="#1f1f22" o={{ rough: 0.6 }} />
+      <G p={[GX, GY, ZB - 1.5]} r={[-PI / 2, 0, 0]} sc={[1, 1, 0.4]}>
+        <Cone rad={GR * 0.95} h={3.2} seg={18} p={[0, 1.6, 0]} c="#2b2b2e" o={{ rough: 0.6 }} />
+      </G>
+      {/* patinho de borracha boiando perto do bico (o pato do vídeo anterior, só sugerido) */}
+      <G p={[GX + 2.4, -8.0 + 0.5 * ease(t, T.mar - 0.2, T.mar + 0.8) + 0.08 * Math.sin(t * 3), ZB - 5.5]} r={[0, 2.2 + 0.2 * Math.sin(t * 1.3), 0]} sc={1.3}>
+        <Sph rad={0.55} c="#ffd400" sc={[1.1, 0.8, 1]} ws={10} hs={8} cast={false} /><Sph rad={0.34} c="#ffd400" p={[0, 0.5, 0.35]} ws={8} hs={6} cast={false} /><Box s={[0.34, 0.12, 0.3]} p={[0, 0.5, 0.7]} c="#ff8a10" cast={false} />
       </G>
     </>
   );
@@ -167,7 +173,12 @@ const Water: React.FC<{ t: number }> = ({ t }) => {
       })) : null}
       {gut > 0.01 ? [-1, 1].map((s) => <Box key={s} s={[1.2, 0.3 * gut, FRONT - ZB]} p={[s * 7.95, TOPE + 0.1 + 0.15 * gut, (FRONT + ZB) / 2]} c={WATER} o={{ opacity: 0.85 }} cast={false} />) : null}
       {flood > 0.01 ? <Box s={[17.6, 0.75 * flood, 34]} p={[0, TOPE + 0.375 * flood, -9]} c={WATER} o={{ opacity: 0.72, depthWrite: false }} cast={false} /> : null}
-      {flood > 0.05 && t > T.boca ? <Cyl rt={1.3 * flood} rb={0.2} h={0.6} p={[BX, TOPE + 0.5 * flood, BZ]} c="#ffffff" seg={14} o={{ opacity: 0.6, depthWrite: false }} cast={false} /> : null}
+      {flood > 0.05 && t > T.boca ? (
+        <G p={[BX + 0.6, TOPE + 0.75 * flood + 0.02, BZ]} r={[0, -t * 6, 0]}>
+          <Cyl rt={1.4 * flood} h={0.02} c="#1d6fb8" seg={20} o={{ opacity: 0.7, depthWrite: false }} cast={false} />
+          {[0, 1, 2, 3].map((k) => <Box key={k} s={[1.3 * flood, 0.03, 0.1]} p={[0, 0.03, 0]} r={[0, (k / 4) * PI + 0.4, 0]} sc={[1, 1, 1]} c="#ffffff" cast={false} />)}
+        </G>
+      ) : null}
     </G>
   );
 };
@@ -194,7 +205,7 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
         return <Box key={k} s={[l, 0.03, 0.07]} p={[PX + Math.cos(a) * l * 0.5, y0 + 0.02, PZ + Math.sin(a) * l * 0.5]} r={[0, -a, 0]} c="#0d0e10" cast={false} />;
       }) : null}
       {seep ? [0, 1, 2, 3].map((k) => { const u = (t * 1.4 + k * 0.25) % 1; return <Sph key={k} rad={0.16} p={[PX + (k - 1.5) * 0.35, lerp(y0, BASE_B + 0.2, u), FRONT + 0.06]} c={WATER} ws={6} hs={4} cast={false} />; }) : null}
-      {mud > 0.01 ? <Sph rad={1.0} p={[PX, (BASE_B - ASF) / 2 + 0.1, FRONT + 0.03]} sc={[1.9 * mud, 0.75 * mud, 0.12]} c={mixc(MUD, "#4a6f8f", 0.35 + 0.15 * Math.sin(t * 4))} ws={12} hs={8} cast={false} /> : null}
+      {mud > 0.01 ? <Sph rad={1.0} p={[PX, -1.1, FRONT + 0.03]} sc={[1.3 * mud, 0.42 * mud, 0.06]} c={mixc(MUD, "#4a6f8f", 0.35 + 0.15 * Math.sin(t * 4))} ws={12} hs={8} cast={false} /> : null}
       {sag > 0.01 ? <Cyl rt={1.6} h={0.05} p={[PX, y0 - sag, PZ]} c={ASPH2} seg={20} cast={false} /> : null}
       {holeOpen > 0.01 ? (
         <G>
@@ -218,10 +229,16 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
         </G>
       ) : null}
       {t > T.corta && t < T.tira ? <G p={[PX - RX + 2 * RX * prog(t, T.corta, T.tira), y0 + 0.5, RZ0]}><Cyl rt={0.55} h={0.08} r={[0, 0, PI / 2]} c="#c7ced4" seg={16} /><Puffs t={t} p={[0, 0, 0]} n={5} period={0.5} rise={1} size={0.2} c="#ffe08a" /></G> : null}
-      {lift > 0.01 && lift < 0.999 ? <Box s={[RX * 2, y0 - SUB_B, FRONT - RZ0]} p={[PX, (y0 + SUB_B) / 2 + 9 * lift, (FRONT + RZ0) / 2 - 6 * lift]} r={[0.4 * lift, 0, 0.2 * lift]} c={MUD} /> : null}
+      {lift > 0.01 && lift < 0.999 ? (
+        <G p={[PX, (y0 + SUB_B) / 2 + 9 * lift, (FRONT + RZ0) / 2 - 6 * lift]} r={[0.4 * lift, 0, 0.2 * lift]}>
+          <Box s={[RX * 2, y0 - SUB_B - ASF, FRONT - RZ0]} p={[0, -ASF / 2, 0]} c={MUD} />
+          <Box s={[RX * 2, ASF, FRONT - RZ0]} p={[0, (y0 - SUB_B) / 2 - ASF / 2, 0]} c={ASPH} />
+        </G>
+      ) : null}
       {pit > 0.01 ? (
         <G>
-          <Box s={[RX * 2, 0.04, FRONT - RZ0]} p={[PX, y0 + 0.02, (FRONT + RZ0) / 2]} c="#1a120b" cast={false} />
+          <Box s={[RX * 2, 0.04, FRONT - RZ0]} p={[PX, y0 + 0.02, (FRONT + RZ0) / 2]} c="#140d07" cast={false} />
+          {[[0, RZ0 + 0.18, RX * 2 - 0.1, 0.3], [-RX + 0.15, (FRONT + RZ0) / 2, 0.3, FRONT - RZ0 - 0.2], [RX - 0.15, (FRONT + RZ0) / 2, 0.3, FRONT - RZ0 - 0.2]].map(([dx, z, w, d], k) => <Box key={k} s={[w, 0.045, d]} p={[PX + dx, y0 + 0.03, z]} c="#5a3b20" cast={false} />)}
           <Box s={[RX * 2, -pitDepth, 0.05]} p={[PX, y0 + pitDepth / 2, FRONT + 0.05]} c="#2a1c10" cast={false} />
         </G>
       ) : null}
@@ -233,9 +250,9 @@ const Pothole: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- máquinas e carros
-const Roller: React.FC<{ t: number; t0: number; feet?: boolean }> = ({ t, t0, feet = false }) => {
-  if (t < t0 - 0.2 || t > t0 + 2.6) return null;
-  const z = lerp(-26, FRONT + 6, prog(t, t0 - 0.2, t0 + 2.6)), y = feet ? SUB_B + 1.0 : top(0) + 1.0;
+const Roller: React.FC<{ t: number; t0: number; t1: number; feet?: boolean }> = ({ t, t0, t1, feet = false }) => {
+  if (t < t0 - 0.2 || t > t1) return null;
+  const z = lerp(-30, FRONT - 3, prog(t, t0 - 0.2, t1)) - 30 * ease(t, t1 - 0.5, t1), y = feet ? SUB_B + 1.0 : top(0) + 1.0;
   return (
     <G p={[-1.5, y, z]}>
       <Cyl rt={1.0} h={3.4} r={[0, 0, PI / 2]} c={feet ? "#e8b923" : "#9aa3ab"} seg={18} />
@@ -246,11 +263,13 @@ const Roller: React.FC<{ t: number; t0: number; feet?: boolean }> = ({ t, t0, fe
     </G>
   );
 };
+/** caminhão de obra que vem DE RÉ (cabine para o fundo): o eixo carregado chega primeiro ao buraco e a carroceria fica sobre a rua */
 const Truck: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T.caminhao - 0.4 || t > T.quebra + 1.6) return null;
-  const z = PZ + 4.2 + (t - T.cede) * 10, bump = t > T.cede - 0.15 && t < T.quebra + 0.3 ? 0.18 * Math.sin((t - T.cede) * 26) : 0;
+  if (t < T.caminhao - 0.4 || t > T.quebra + 2.4) return null;
+  const zAx = t < T.eixo + 0.6 ? lerp(-36, PZ - 1.6, ease(t, T.caminhao - 0.4, T.eixo + 0.6)) : t < T.quebra ? lerp(PZ - 1.6, PZ + 0.3, prog(t, T.eixo + 0.6, T.quebra)) : PZ + 0.3 - 9 * ease(t, T.quebra + 0.4, T.quebra + 2.4);
+  const z = zAx - 4.2, bump = t > T.cede - 0.15 && t < T.quebra + 0.3 ? 0.18 * Math.sin((t - T.cede) * 26) : 0, drop = t > T.quebra && t < T.quebra + 0.5 ? -0.3 * Math.sin(prog(t, T.quebra, T.quebra + 0.5) * PI) : 0;
   return (
-    <G p={[PX - 1.7, top(PX) + 0.9 + bump, z]}>
+    <G p={[PX - 1.7, top(PX) + 0.9 + bump + drop, z]} r={[0, PI, 0]}>
       <Box s={[3.6, 3.2, 7.2]} p={[0, 2.2, -2.0]} c="#3d7be0" />
       <Box s={[3.4, 2.6, 2.6]} p={[0, 1.9, 3.0]} c="#e0262b" />
       <Box s={[3.0, 1.0, 0.1]} p={[0, 2.6, 4.32]} c="#bfe6ff" o={{ opacity: 0.8 }} cast={false} />
@@ -293,8 +312,8 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
       <Water t={t} />
       <Rain t={t} />
       <Pothole t={t} />
-      <Roller t={t} t0={T.terra + 0.2} feet />
-      <Roller t={t} t0={T.asfalto + 0.3} />
+      <Roller t={t} t0={T.terra + 0.2} t1={T.pedra - 0.1} feet />
+      <Roller t={t} t0={T.asfalto + 0.2} t1={T.cinco - 0.1} />
       <Truck t={t} />
       <Compactor t={t} />
       <Car t={t} t0={c0} t1={OPEN_END + 0.6} z0={-24} z1={FRONT + 10} c="#ff7a1a" falls />
