@@ -102,9 +102,9 @@ const RewardEl: React.FC<{ t: number; r: Reward }> = ({ t, r }) => {
   const cols = ["#ffd400", "#5cff7a", "#4ab8ff", "#ff6bb5", "#ffffff"];
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 300, display: "flex", flexDirection: "column", alignItems: "center", opacity: k, transform: `scale(${s})` }}>
-      <span style={{ fontFamily: FONT, fontSize: 56, color: "#fff", ...stroke(10) }}>{r.top}</span>
+      <span style={{ fontFamily: FONT, fontSize: 76, color: "#fff", ...stroke(11) }}>{r.top}</span>
       <span style={{ fontFamily: FONT, fontSize: 150, color: "#5cff7a", lineHeight: 1, ...stroke(16, "#05381a") }}>{r.big(t)}</span>
-      <span style={{ fontFamily: FONT, fontSize: 72, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(12, "#3a2300") }}>{r.sub}</span>
+      <span style={{ fontFamily: FONT, fontSize: 88, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(13, "#3a2300") }}>{r.sub}</span>
       {Array.from({ length: 14 }, (_, i) => { const u = prog(t, r.a + 0.04 * i, r.a + 1.6), ang = (i / 14) * Math.PI * 2; return <span key={i} style={{ position: "absolute", top: 160 + Math.sin(ang) * 230 * u, left: 520 + Math.cos(ang) * 420 * u, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: 1 - u * 0.85, ...stroke(5, "#1c1208") }}>★</span>; })}
     </div>
   );

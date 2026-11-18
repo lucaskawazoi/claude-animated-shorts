@@ -4,7 +4,7 @@ import type { Shot } from "../../toy/cam";
 import { CamState } from "../../toy/cam";
 import type { Episode } from "../../toy/episode";
 import React from "react";
-import { FONT, HudData, count, pop, stroke, win } from "../../toy/hud";
+import { FONT, HudData, pop, stroke, win } from "../../toy/hud";
 import { V3, lerp, sstep } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import { COSTUMES } from "../../toy/worker";
@@ -16,8 +16,8 @@ type R = [number, V3, V3, V3, V3, number, number, number, number, string];
 const W1: V3 = [SIDE[0], 3.2, SIDE[2]]; // mira acima do operário: ele fica na metade de baixo e o carimbo não cobre o rosto
 const L = LIT;
 const ROWS: R[] = [
-  [0, [7, 4, 30], [1, 1.5, 6], [6, 3.4, 10], [-0.5, 1.8, -2], 52, 48, 0, 0, "gancho: o carro entra no posto"],
-  [T.quanto, [-4.5, 2.8, 4.5], [0.5, 1.9, -1.2], [-4.2, 2.8, 4.1], [0.5, 1.9, -1.2], 46, 44, 0, 0, "a bomba e o carro: quanto fica pro posto?"],
+  [0, [6.5, 4.2, 22], [0, 1.8, 0], [5.5, 3.8, 16], [-0.5, 1.8, -1], 52, 48, 0, 0, "gancho: o posto inteiro e o carro entrando"],
+  [T.quanto, [-2.2, 3.0, 9.5], [1.0, 1.8, -1], [-2.0, 3.0, 9.0], [1.0, 1.8, -1], 46, 44, 0, 0, "a bomba (inteira), o carro e o operário: quanto fica pro posto?"],
   [T.bora, [-0.5, 4.0, 16.5], [L[0] + 1.3, 3.2, L[2]], [-0.9, 3.9, 15.5], [L[0] + 1.3, 3.2, L[2]], 50, 48, 0, 0, "o litro gigante aparece (vazio)"],
   [T.primeiro, [-14, 6, -15], [-30, 3, -36], [-15, 6.4, -17], [-30, 3, -36], 50, 48, 0, 0, "o cavalo de pau tira o petróleo"],
   [T.refinaria, [-27, 9, -35], [-48, 9, -62], [-28, 9.6, -37], [-48, 9, -62], 52, 50, 0, 0, "a refinaria"],
@@ -27,7 +27,7 @@ const ROWS: R[] = [
   [T.trinta, [-2.2, 4.2, 14.5], [L[0], 3.2, L[2]], [-2.5, 4.2, 14], [L[0], 3.2, L[2]], 46, 44, 0, 0, "a fatia do etanol cai no litro"],
   [T.mais1, [-9.8, 4.2, 14], [L[0], 3.2, L[2]], [-9.4, 4.2, 13.6], [L[0], 3.2, L[2]], 44, 42, 0, 0, "o litro com duas fatias (do outro lado)"],
   [T.z1, [3.6, 2.9, 11.5], W1, [3.9, 2.9, 11], W1, 44, 42, -1, 1, "Resolveu? (operário)"],
-  [T.prob2, [-3.6, 1.2, 11], [L[0], 6.5, L[2]], [-3.8, 1.3, 10.6], [L[0], 6.8, L[2]], 54, 52, 0, 0, "de baixo: o carimbo do imposto desce do céu"],
+  [T.prob2, [-2.8, 2.0, 15.5], [L[0], 6.5, L[2]], [-3.0, 2.1, 15.0], [L[0], 6.7, L[2]], 54, 52, 0, 0, "de baixo: o carimbo do imposto desce do céu"],
   [T.icmsN, [-1.6, 5.0, 14.8], [L[0], 4.0, L[2]], [-1.9, 5.0, 14.3], [L[0], 4.0, L[2]], 46, 44, 0, 0, "o carimbo bate: a fatia do ICMS"],
   [T.mesmo, [6, 7, 26], [-1, 2.5, 0], [5, 7.2, 24.5], [-1, 2.5, 0], 52, 50, 0, 0, "o posto inteiro: igual em todo estado"],
   [T.federal, [-2.4, 5.6, 14], [L[0], 4.8, L[2]], [-2.6, 5.6, 13.6], [L[0], 4.8, L[2]], 44, 42, 0, 0, "o carimbo do federal encosta e volta"],
@@ -40,11 +40,11 @@ const ROWS: R[] = [
   [T.z3, [3.6, 2.8, 10.2], W1, [3.3, 2.8, 9.8], W1, 44, 42, -1, 1, "Resolveu? (operário)"],
   [T.prob4, [0, 2.9, 11], W1, [0.2, 2.9, 10.6], W1, 42, 40, 0, 0, "operário: falta o posto"],
   [T.bomba, [0.2, 2.9, 9.5], [2.0, 1.6, -1], [0.5, 2.9, 9.0], [2.0, 1.6, -1], 46, 44, 0, 0, "o operário abastece o carro"],
-  [T.agoraSim, [4, 6, 22], [9, 1.5, -5], [5, 6, 21.5], [12, 1.5, -6], 52, 50, 0, 0, "tanque cheio: o carro sai"],
+  [T.agoraSim, [-2.5, 3.8, 12.5], [2.2, 1.6, -2.5], [-2.2, 3.9, 12], [3.0, 1.6, -3.5], 50, 48, 0, 0, "tanque cheio: o operário comemora e o carro sai"],
   [T.fatia, [-2.4, 6.0, 14.8], [L[0], 4.6, L[2]], [-2.7, 6.0, 14.2], [L[0], 4.6, L[2]], 44, 42, 0, 0, "a fatia do posto, em cima; o litro fecha"],
   [T.conta, [-2.6, 4.9, 17.5], [-3.8, 3.2, 3], [-2.9, 5.0, 16.8], [-3.8, 3.2, 3], 50, 48, 0, 0, "e a conta? o litro, a maquininha e o operário"],
   [T.frentista, [-1.8, 5.2, 17], [-2.0, 3.8, 1], [-1.6, 5.3, 16.4], [-2.0, 3.8, 1], 54, 52, 0, 0, "as moedas da fatia: frentista, luz, aluguel"],
-  [T.maquininha, [MAQ[0] + 1.2, 3.2, MAQ[2] + 4.2], [MAQ[0], 2.6, MAQ[2]], [MAQ[0] + 1.0, 3.2, MAQ[2] + 3.8], [MAQ[0], 2.6, MAQ[2]], 40, 38, 0, 0, "a maquininha morde a moeda"],
+  [T.maquininha, [-1.0, 3.8, 9.5], [-2.6, 2.8, 2.6], [-1.2, 3.8, 9.0], [-2.6, 2.8, 2.6], 46, 44, 0, 0, "as moedas voam do litro e a maquininha morde"],
   [T.medio, [18, 16, 34], [0, 1, 2], [16.5, 16.5, 32], [0, 1, 2], 52, 50, 0, 0, "o posto do alto, carros na estrada"],
   [T.entram, [11, 3.5, 12], [7.5, 1.0, 4.5], [10.6, 3.6, 11.4], [7.5, 1.0, 4.5], 46, 44, 0, 0, "as pilhas de moedas do dia crescem"],
   [T.ficam, [16, 8, 22], [0, 3, -6], [15, 8.4, 21], [0, 3, -6], 56, 54, 0, 0, "quase tudo voa para os donos das outras fatias"],
@@ -93,22 +93,23 @@ const hud: HudData = {
   pills: [
     { a: T.seis, b: T.bora - 0.1, label: "1 LITRO", value: () => "≈ R$ 6,48", y: 440, hi: true, tone: "gold" },
     { a: T.seis + 0.3, b: T.bora - 0.1, label: "MÉDIA BRASIL · ANP", y: 560, hi: true, tone: "dark" },
-    { a: T.dois, b: T.prob1 - 0.1, label: "GASOLINA PURA", value: () => "R$ 2,17", y: 440, hi: true, tone: "gold" },
+    { a: T.essa + 0.3, b: T.trinta - 0.15, label: "GASOLINA PURA", value: () => "R$ 2,17", y: 440, hi: true, tone: "gold" },
     { a: T.trinta + 0.1, b: T.z1 - 0.1, label: "ETANOL", value: () => "32%", y: 440, hi: true, tone: "green" },
     { a: T.mais1 + 0.1, b: T.z1 - 0.1, label: "+", value: () => "R$ 1,15", y: 560, hi: true, tone: "green" },
     { a: T.icmsN + 0.2, b: T.z2 - 0.1, label: "ICMS", value: () => "R$ 1,57", y: 440, hi: true, tone: "red" },
     { a: T.mesmo + 0.1, b: T.federal - 0.05, label: "IGUAL EM TODO ESTADO", y: 560, hi: true, tone: "dark" },
     { a: T.federal + 0.2, b: T.z2 - 0.1, label: "FEDERAL", value: () => "R$ 0,06", y: 560, hi: true, tone: "red" },
     { a: T.ate + 0.1, b: T.z2 - 0.1, label: "ZERADO ATÉ 9/12", y: 680, hi: true, tone: "dark" },
-    { a: T.cinquenta, b: T.z3 - 0.1, label: "DISTRIBUIDORA", value: () => "≈ R$ 0,53", y: 440, hi: true, tone: "dark" },
-    { a: T.cinquenta + 0.3, b: T.z3 - 0.1, label: "COM O FRETE", y: 560, hi: true, tone: "dark" },
+    { a: T.cinquenta, b: T.z3 - 0.1, label: "DISTRIBUIDORA", value: () => "≈ R$ 0,50", y: 440, hi: true, tone: "dark" },
+    { a: T.cinquenta + 0.3, b: T.z3 - 0.1, label: "COM FRETE · CONTA NOSSA", y: 560, hi: true, tone: "dark" },
     { a: T.umReal, b: T.conta - 0.1, label: "PRO POSTO", value: () => "≈ R$ 1,00", y: 440, hi: true, tone: "gold" },
     { a: T.umReal + 0.4, b: T.conta - 0.1, label: "ANTES DAS CONTAS", y: 560, hi: true, tone: "dark" },
     { a: T.fatia + 0.6, b: T.conta - 0.1, label: "O LITRO", value: () => "R$ 6,48", y: 680, hi: true, tone: "green" },
-    { a: T.vende + 0.2, b: T.buraco - 0.1, label: "POSTO MÉDIO", value: (t) => `≈ ${count(t, T.vende + 0.2, T.vende + 1.4, 0, 2800)} L/DIA`, y: 440, hi: true, tone: "gold" },
+    { a: T.vende + 0.2, b: T.buraco - 0.1, label: "POSTO MÉDIO", value: () => "≈ 2.800 L/DIA", y: 440, hi: true, tone: "gold" },
     { a: T.vende + 0.5, b: T.buraco - 0.1, label: "CONTA COM DADOS DA ANP", y: 560, hi: true, tone: "dark" },
     { a: T.entram + 0.1, b: T.buraco - 0.1, label: "ENTRA", value: () => "≈ R$ 18 MIL", y: 680, hi: true, tone: "green" },
-    { a: T.ficam + 0.1, b: T.buraco - 0.1, label: "FICA", value: () => "≈ R$ 2.800", y: 800, hi: true, tone: "gold" },
+    { a: T.ficam + 0.1, b: T.buraco - 0.1, label: "FICA PRO POSTO", value: () => "≈ R$ 2.800", y: 800, hi: true, tone: "gold" },
+    { a: T.ficam + 0.4, b: T.buraco - 0.1, label: "ANTES DAS CONTAS", y: 920, hi: true, tone: "dark" },
   ],
   // cada título some antes do próximo entrar; nenhum invade o cartão «RESOLVIDO!»
   titles: ([[0.3, "QUANTO FICA PRO POSTO?"], [T.refinaria, "REFINARIA"], [T.misturar, "ETANOL DE CANA"], [T.imposto + 0.2, "IMPOSTO"], [T.caminhao, "DISTRIBUIDORA"], [T.bomba, "O POSTO"], [T.conta, "E A CONTA?"], [T.buraco, "LEMBRA DO BURACO?"]] as [number, string][])

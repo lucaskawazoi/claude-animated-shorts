@@ -83,7 +83,7 @@ const Ground: React.FC<{ t: number }> = ({ t }) => {
         <Box s={[0.5, 1.6, 0.1]} p={[1.2, 1.8, 2.52]} c="#bfe6ff" o={{ opacity: 0.85 }} />
       </G>
       {/* totem com o preço (só cores; o número vai no painel) */}
-      <G p={[-12.5, Y0, 9.5]}>
+      <G p={[12.5, Y0, 9.5]}>
         <Cyl rt={0.25} h={7} p={[0, 3.5, 0]} c="#9aa3ab" seg={10} />
         <Box s={[3, 3.4, 0.4]} p={[0, 6.6, 0]} c="#ff7a1a" />
         {[0, 1, 2].map((k) => <Box key={k} s={[2.4, 0.6, 0.05]} p={[0, 7.6 - k * 0.95, 0.23]} c="#14202b" cast={false} />)}
@@ -262,7 +262,7 @@ const CarBody: React.FC<{ p: P; c: string; bob?: number }> = ({ p, c, bob = 0 })
 );
 const Cars: React.FC<{ t: number }> = ({ t }) => {
   const a = carPath(t), b = t > T.conta - 0.3 ? { x: CAR_X, z: lerp(22, PUMP[2], ease(t, T.conta - 0.3, T.conta + 1.6)), yaw: 0 } : null;
-  const traffic = t > T.medio - 0.5 && t < T.buraco + 1.4;
+  const traffic = t > T.medio - 0.5 && t < T.buraco - 0.2; // some antes da lembrança do buraco (quadro limpo)
   // a mangueira da bomba até o carro enquanto abastece
   const fill = ease(t, T.bomba, T.bomba + 0.4) * (1 - ease(t, T.agoraSim + 0.1, T.agoraSim + 0.4));
   return (
@@ -303,7 +303,7 @@ const Money: React.FC<{ t: number }> = ({ t }) => {
   burst(T.frentista, [SIDE[0], 2.4, SIDE[2]], 6, "f");
   burst(T.luz, [0, 6, 0], 5, "l", LITGOLD(), 4);
   burst(T.aluguel, [-1.5, 1.4, -9.4], 6, "a", LITGOLD(), 4, 1.1);
-  burst(T.maquininha + 0.1, [MAQ[0], 2.5, MAQ[2]], 4, "m", LITGOLD(), 2, 0.6);
+  burst(T.maquininha + 0.05, [MAQ[0], 2.5, MAQ[2]], 7, "m", LITGOLD(), 2.2, 0.7);
   // o dia de vendas: pilhas de moedas crescem ao lado da loja; quase tudo vai embora para os donos das outras fatias
   const PILE: V3 = [7.5, Y0, 4.5];
   const grow = ease(t, T.entram, T.entram + 1.2), keep = 1 - 0.85 * ease(t, T.ficam + 0.2, T.ficam + 1.6);
