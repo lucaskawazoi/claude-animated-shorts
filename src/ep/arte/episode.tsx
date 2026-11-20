@@ -40,7 +40,7 @@ const ROWS: R[] = [
   [T.z2, [-0.6, 2.9, 5.5], W1, [-0.3, 2.9, 5.0], W1, 44, 42, 1, -1, "Resolveu? (operário, do outro lado)"],
   [T.como2, [5.4, 3.2, 5.8], [1.0, 2.6, -0.5], [5.0, 3.2, 5.3], [1.0, 2.6, -0.5], 46, 44, 0, 0, "Como pegam? O operário aponta"],
   [T.pelo, [C[0] + 3, 3.2, C[2] + 5.5], [C[0], 1.6, C[2]], [C[0] + 2.7, 3.3, C[2] + 5.0], [C[0], 1.6, C[2]], 48, 46, 0, 0, "o gráfico de preços do artista"],
-  [T.preco, [C[0] + 1.9, 4.5, C[2] + 3.1], [C[0] + 0.9, 2.5, C[2]], [C[0] + 1.7, 6.0, C[2] + 3.6], [C[0] + 1.1, 5.0, C[2]], 44, 50, 0, 0, "o pico vermelho passa da régua"],
+  [T.preco, [C[0] + 2.6, 5.0, C[2] + 6.5], [C[0] + 0.9, 3.4, C[2]], [C[0] + 2.5, 5.6, C[2] + 6.8], [C[0] + 1.0, 4.2, C[2]], 50, 52, 0, 0, "o pico vermelho passa da régua"],
   [T.pago, [B[0] - 2.4, 1.8, B[2] + 3.2], [B[0] - 0.9, 0.6, B[2] + 0.6], [B[0] - 2.2, 1.7, B[2] + 2.8], [B[0] - 0.9, 0.6, B[2] + 0.6], 44, 42, 0, 0, "a maleta de dinheiro vivo"],
   [T.por, [2.0, 2.5, 6.0], [B[0] - 0.2, 1.7, B[2]], [2.4, 2.5, 5.6], [B[0] - 0.2, 1.7, B[2]], 46, 44, 0, 0, "o comprador nem olha o quadro"],
   [T.brasil, [10, 5.5, 8], [-8, 3.5, -2], [9.4, 5.6, 7.4], [-8, 3.5, -2], 52, 50, 0, 0, "a galeria toda, a sirene ao fundo"],
@@ -51,12 +51,13 @@ const ROWS: R[] = [
   [T.comenta, [4.4, 3.1, 6.8], W1, [7, 7.5, 17], [OBRA[0] - 4, 2, -3], 44, 54, 0, 0, "comenta aí: aponta e recua até a bombinha"],
 ];
 const linCam = (i: number) => (t: number): CamState => {
-  const r = ROWS[i], t1 = ROWS[i + 1] ? ROWS[i + 1][0] : T.end, x = Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0]))), u = sstep(x) * 0.6 + 0.4 * x;
+  const r = ROWS[i], t1 = ROWS[i + 1] ? ROWS[i + 1][0] : T.end, x = Math.min(1, Math.max(0, (t - r[0]) / (t1 - r[0]))), u = 0.6 * (sstep(x) * 0.6 + 0.4 * x); // ponytail: 60% do deslocamento planejado (calma), knob único
   const Lr = (a: V3, b: V3): V3 => [lerp(a[0], b[0], u), lerp(a[1], b[1], u), lerp(a[2], b[2], u)];
   return { pos: Lr(r[1], r[3]), look: Lr(r[2], r[4]), fov: lerp(r[5], r[6], u), roll: lerp(r[7], r[8], u) };
 };
 const SHOTS: Shot[] = ROWS.map((r, i): Shot => ({ name: r[9], t0: r[0], keys: [], fn: linCam(i) }));
-const DYN = [1.2, 1.2, 1.4, 1.2, 1, 1, 1.4, 1.2, 1, 1, 1.2];
+// movimento calmo (teto 2,7 da régua do Lucas): 1ª versão com 1,0–1,4 mediu 3,05; tremor de mão pela metade
+const DYN = [0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.5];
 
 const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState> = {}): WorkerState => ({ p, yaw, pose, ...o });
 const TO_ART = -0.75, FRONT = 0.35;

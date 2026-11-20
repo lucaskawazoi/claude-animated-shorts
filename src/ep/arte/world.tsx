@@ -89,8 +89,8 @@ const WASH0 = () => T.lava, WASH1 = () => T.limpo + 1.4;
 const Painting: React.FC<{ t: number }> = ({ t }) => {
   const w0 = WASH0(), w1 = WASH1();
   const door = ease(t, w0 - 0.2, w0 + 0.35) * (1 - ease(t, w1, w1 + 0.4)); // 0 = tela, 1 = porta redonda
-  const spin = t < w0 ? 0 : (Math.min(t, w1) - w0) * 7 * door;
-  const wob = door > 0.1 ? Math.sin(t * 22) * 0.025 * door : 0;
+  const spin = t < w0 ? 0 : (Math.min(t, w1) - w0) * 3.5 * door;
+  const wob = door > 0.1 ? Math.sin(t * 22) * 0.012 * door : 0;
   const glow = ease(t, T.hook, T.hook + 0.3);
   return (
     <G p={[PAINT[0] + wob, PAINT[1], PAINT[2]]}>
