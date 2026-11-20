@@ -39,7 +39,8 @@ const H = ST.hall, CT = ST.court;
 // ---------------------------------------------------------------- três aberturas (0 → «pero lo pintó»), todas em ação no quadro 0
 const OPEN_KEYS: Record<Open, Key[]> = {
   // a) entrando no salão: Göring (de farda cinza, sem insígnia) aponta o «Vermeer» no cavalete
-  a: [K(0, [H - 6, 5, 10], [H - 0.5, 2.2, -1.5], 56, 1.5), K(1.2, [H - 4.5, 3.8, 7], [H - 0.6, 2.3, -1.6], 54, -0.5), K(T.pero0 - 0.05, [H - 3.4, 3.2, 4.8], [H - 0.6, 2.3, -1.6], 50, 0)],
+  // a) (PADRÃO) começa colado no rosto do «Vermeer» e recua rápido: Göring ao lado, apresentando, pula de alegria e ri
+  a: [K(0, [H - 2.3, 2.5, 0.3], [H - 2.6, 2.45, -2.4], 46, 1.2), K(0.9, [H - 2.0, 3.2, 4.6], [H - 1.4, 2.3, -1.6], 54, -0.6), K(T.pero0 - 0.05, [H - 3.0, 3.4, 5.6], [H - 1.0, 2.2, -1.4], 54, 0)],
   // b) do rosto da pintura para trás, revelando o dono
   b: [K(0, [H - 2.4, 2.6, 0.4], [H - 2.5, 2.5, -2.4], 50, 0), K(1.8, [H - 0.5, 3.4, 4.6], [H - 1.0, 2.2, -2.0], 56, 1), K(T.pero0 - 0.05, [H + 2.0, 4.0, 7.0], [H - 0.5, 2.0, -2.0], 58, 0)],
   // c) mergulho de cima do salão até o quadro
@@ -89,7 +90,7 @@ const SHOTS: Shot[] = [
   shot("a lupa: quadro velho tem rachaduras, o dele é liso ✖", T.p3, [
     K(T.p3, [ST.roll, 5.0, 1.8], [ST.roll, 1.4, -2.6], 46, -1), K(T.liso, [ST.roll - 0.5, 4.6, 1.4], [ST.roll, 1.4, -2.6], 42, 0.5), K(T.b3 - 0.05, [ST.roll - 0.6, 4.5, 1.2], [ST.roll, 1.4, -2.6], 42, 0)]),
   shot("«Solución»: o pintor pega o rolo", T.b3, [
-    K(T.b3, [ST.roll + 4, 3, 1.5], [ST.roll, 1.6, -3], 50, 1.5), ...hold(C5, [ST.roll + 3.6, 2.8, 0.8], [ST.roll, 1.6, -3], 48, 0)]),
+    K(T.b3, [ST.roll + 2.4, 3.4, 2.6], [ST.roll, 1.4, -2.8], 50, 1.5), ...hold(C5, [ST.roll + 2.2, 3.2, 2.2], [ST.roll, 1.4, -2.8], 48, 0)]),  // dentro da sala (x<16)
   shot("enrola no cilindro: a tinta dura racha", C5, [
     K(C5, [ST.roll - 2.2, 5.2, 2.4], [ST.roll, 1.4, -2.8], 48, -1.5), K(T.agrieta, [ST.roll - 1.0, 5.4, 1.8], [ST.roll, 1.4, -2.7], 46, 0.5), K(T.frota - 0.05, [ST.roll - 0.8, 5.4, 1.6], [ST.roll, 1.4, -2.7], 46, 0)]),
   shot("tinta da China nas rachaduras", T.frota, [
@@ -129,27 +130,27 @@ const WORKER: [number, WorkerState][] = [
   [0, S(OVEN, 0.9, "pull", { scale: 0 })],
   [T.pero0, S(OVEN, 0.9, "pull")],
   [T.cocio + 1.4, S(OVEN, 0.5, "cheer")],
-  [C1, S(GAL, -0.6, "think")],
+  [C1, S(GAL, -0.6, "read")],
   [T.desprecian, S(GAL, -0.6, "alarm")],
   [T.vengarse, S(GAL, -0.4, "point")],
   [T.juren, S(GAL, -0.4, "cheer")],
-  [T.p1, S([ST.bredius - 2.2, Y, -1.0], 0.6, "think")],
+  [T.p1, S([ST.bredius - 2.2, Y, -1.0], 0.6, "read")],
   [T.nota, S([ST.bredius - 2.2, Y, -1.0], 0.6, "alarm")],
-  [C2, S(MKT, 2.5, "think")],
+  [C2, S(MKT, 2.5, "read")],
   [T.c1, S(MKT, 2.6, "cheer")],
   [T.compra, S([ST.market - 2.4, 0, 4.5], 2.8, "present")],
   [T.siglo, S(EAS, -0.9, "present")],
   [T.quita, S(EAS, -0.9, "chisel")],
   [T.pinta, S(EAS, -0.9, "point")],
-  [C3, S([ST.test - 1.8, Y, -1.0], 0.7, "think")],
+  [C3, S([ST.test - 1.8, Y, -1.0], 0.7, "read")],
   [T.ablanda, S([ST.test - 1.8, Y, -1.0], 0.7, "alarm")],
-  [T.b2, S(TAB, 0, "think")],
+  [T.b2, S(TAB, 0, "read")],
   [T.c2, S(TAB, 0, "cheer")],
   [T.mezcla, S(TAB, 0, "pour", { prop: "jar" })],
   [T.hornea, S(OVEN, 1.0, "pull")],
   [T.sale, S([ST.oven - 5.0, Y, -2.4], 0.6, "present")],
   [T.yano, S([ST.oven - 5.0, Y, -2.4], 0.4, "cheer")],
-  [T.p3, S(ROLL, 0, "think")],
+  [T.p3, S(ROLL, 0, "read")],
   [T.liso, S(ROLL, 0, "alarm")],
   [T.b3, S(ROLL, 0, "cheer")],
   [T.enrolla, S(ROLL, 0, "pull")],
@@ -160,7 +161,7 @@ const WORKER: [number, WorkerState][] = [
   [T.robados, S([H + 3.4, Y, -0.2], -1.2, "cheer")],
   [T.giro, S(COURT, 0.3, "alarm")],
   [C7, S(COURT, -0.6, "present")],
-  [T.nadie, S(COURT, -0.6, "think")],
+  [T.nadie, S(COURT, -0.6, "read")],
   [T.asique, S([CT + 1.6, Y, -1.0], -1.2, "chisel")],
   [T.testigos, S([CT + 1.6, Y, -1.0], -1.0, "point")],
   [T.traidor, S([CT, 0, 11.6], 0, "cheer")],

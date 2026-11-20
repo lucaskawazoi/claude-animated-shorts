@@ -172,10 +172,11 @@ const Hall: React.FC<{ t: number; tex: Tex }> = ({ t, tex }) => {
   const fly = (i: number) => ease(t, T.otro + i * 0.2, T.otro + i * 0.2 + 0.5);
   const tiltIn = ease(t, T.sucio, T.artefalso + 0.4);
   const pileN = Math.floor(clamp((t - T.otro) / 0.2, 0, 14));
-  const goringPose: PoseName = t < T.pero0 ? "present" : t < T.goring ? "belly" : t < T.robados ? "point" : "cheer";
+  // ponytail: Göring nunca levanta braço nenhum (nada que lembre saudação): apresenta e ri com as mãos na barriga
+  const goringPose: PoseName = t < 0.9 ? "present" : t < T.goring ? "belly" : t < T.robados ? "present" : "belly";   // nunca braço erguido (a transição do «cheer» deixava um braço só no ar)
   return (
     <G>
-      <Room x0={x - 11} x1={x + 11} wall="#2f4a3a" floor="#6a4a2a" trim={GOLD} />
+      <Room x0={x - 11} x1={x + 11} wall="#4a6a52" floor="#7a5a34" trim={GOLD} />
       <Box s={[3, 0.04, 8]} p={[x, 0.32, -2]} c="#9a2a2a" cast={false} />
       {wall.map((q, i) => {
         const k = fly(i), to: V3 = [x + 6.5 + (i % 3) * 0.15, Y + 0.2 + Math.floor(i / 1) * 0.12, 0.6];
@@ -315,8 +316,8 @@ const Gallery: React.FC<{ t: number; tex: Tex }> = ({ t, tex }) => {
   // teste do álcool no quadro novo: cotonete entra no «prueban», a mancha aparece no «ablanda»
   const smear = ease(t, T.ablanda - 0.1, T.ablanda + 0.5), swab = t > T.prueban - 0.3 && t < T.nueva + 0.8;
   const critics = [0, 1, 2].map((i) => ({ p: [ST.critics - 1.5 + i * 1.5, Y, -0.8 + (i % 2) * 0.6] as V3, yaw: PI - 0.2 + i * 0.2,
-    pose: (t > T.desprecian ? (i === 1 ? "alarm" : "think") : "idle") as PoseName, ph: i * 0.7 }));
-  const experts = [0, 1, 2].map((i) => ({ p: [ST.critics - 1.6 + i * 1.6, Y, -0.6] as V3, yaw: PI, pose: (t > T.juren ? "cheer" : "think") as PoseName, ph: i }));
+    pose: (t > T.desprecian ? (i === 1 ? "alarm" : "present") : "idle") as PoseName, ph: i * 0.7 }));
+  const experts = [0, 1, 2].map((i) => ({ p: [ST.critics - 1.6 + i * 1.6, Y, -0.6] as V3, yaw: PI, pose: (t > T.juren ? "cheer" : "read") as PoseName, ph: i }));
   const fans = ([[-4.0, -1.0], [-3.2, -2.4], [-3.0, -0.5]] as [number, number][]).map(([dx, dz], i) => ({ p: [ST.bredius + dx, Y, dz] as V3, yaw: 0.35 - i * 0.2, pose: (t > T.maestra ? "cheer" : "idle") as PoseName, ph: i * 0.37 }));
   const lens = t > T.experto - 0.3 && t < T.guerra;
   return (
@@ -337,7 +338,7 @@ const Gallery: React.FC<{ t: number; tex: Tex }> = ({ t, tex }) => {
       {/* Bredius: a obra-prima no pedestal, a lupa, o público */}
       <Box s={[2.6, 0.9, 1.4]} p={[ST.bredius, Y + 0.45, -3.6]} c="#3a2a1a" />
       <Painting tex={tex} p={[ST.bredius, Y + 2.3, -3.6]} base={tex.vermeer} cracks={1} ink={0.5} sc={1.0} />
-      <Worker p={[ST.bredius - 1.8, Y, -1.8]} yaw={0.6} pose={poseOf(t > T.maestra ? "cheer" : t > T.llama ? "present" : "think", t)} t={t} c={{ ...COAT, hat: "none" }} scale={1.1} mustache />
+      <Worker p={[ST.bredius - 1.8, Y, -1.8]} yaw={0.6} pose={poseOf(t > T.maestra ? "cheer" : t > T.llama ? "present" : "read", t)} t={t} c={{ ...COAT, hat: "none" }} scale={1.1} mustache />
       <G p={[ST.bredius - 0.6 + 0.3 * Math.sin(t * 2.2), Y + 2.4, -2.8]} vis={lens}>
         <mesh><torusGeometry args={[0.45, 0.06, 8, 24]} /><meshStandardMaterial color="#2a2a2a" /></mesh>
         <Cyl rt={0.06} h={0.8} p={[0.5, -0.4, 0]} r={[0, 0, 0.8]} c="#5a3a22" seg={6} />
@@ -351,8 +352,8 @@ const Gallery: React.FC<{ t: number; tex: Tex }> = ({ t, tex }) => {
 /** o tribunal e a praça: a polícia, os juízes que não acreditam, o Vermeer pintado diante dos guardas, o herói */
 const Court: React.FC<{ t: number; tex: Tex }> = ({ t, tex }) => {
   const x = ST.court;
-  const judges = [0, 1, 2].map((i) => ({ p: [x - 1.6 + i * 1.6, Y + 1.0, -4.6] as V3, yaw: 0, pose: (t > T.nadie && t < T.asique ? "alarm" : "think") as PoseName, ph: i * 0.5 }));
-  const guards = [0, 1, 2, 3].map((i) => ({ p: [x + 3.3 + i * 1.2, Y, -0.4 + (i % 2) * 0.7] as V3, yaw: -PI / 2 - 0.4, pose: (t > T.testigos ? "point" : "think") as PoseName, ph: i * 0.6 }));
+  const judges = [0, 1, 2].map((i) => ({ p: [x - 1.6 + i * 1.6, Y + 1.0, -4.6] as V3, yaw: 0, pose: (t > T.nadie && t < T.asique ? "alarm" : "read") as PoseName, ph: i * 0.5 }));
+  const guards = [0, 1, 2, 3].map((i) => ({ p: [x + 3.3 + i * 1.2, Y, -0.4 + (i % 2) * 0.7] as V3, yaw: -PI / 2 - 0.4, pose: (t > T.testigos ? "point" : "read") as PoseName, ph: i * 0.6 }));
   const police = [0, 1].map((i) => ({ p: [lerp(x + 9 + i * 0.6, x + 4.7 + i * 0.9, ease(t, T.terminar, T.arrestan + 0.5)), Y, 1.0 + i * 0.9] as V3, yaw: -PI / 2, pose: (t > T.arrestan ? "point" : "walk") as PoseName, ph: i * 0.3 }));
   const paint = ease(t, T.otroV, T.testigos + 1.2);
   const crowd = Array.from({ length: 16 }, (_, i) => ({ p: [x - 6 + (i % 8) * 1.6, 0, 6.2 + Math.floor(i / 8) * 1.5] as V3, yaw: PI + (rnd(i) - 0.5) * 0.6, pose: (t > T.heroe ? "cheer" : "idle") as PoseName, ph: i * 0.29 }));
