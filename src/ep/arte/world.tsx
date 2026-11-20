@@ -67,7 +67,7 @@ const Room: React.FC<{ t: number }> = ({ t }) => {
         {/* raios da sirene quando liga */}
         {red > 0.2 ? [0.5, 1.3, 2.1, 2.9].map((a, k) => <Box key={k} s={[0.08, 0.6, 0.08]} p={[0.9 + 0.75 * Math.cos(a - PI / 2) * 0, 1.15 * Math.cos(a), 1.15 * Math.sin(a) - 0.6]} r={[a, 0, 0]} c="#ff4a4a" o={{ emissive: "#ff2a2a", ei: 2 * red }} cast={false} />) : null}
         {/* placa «COAF» embaixo: sem ela a sirene vira só uma bola vermelha */}
-        <TextPlane lines={[["COAF", "#ffffff", 120]]} p={[0.36, -0.1, -1.9]} r={[0, PI / 2, 0]} w={1.5} h={0.5} bg="#14202b" glow={0.5} />
+        <G vis={t > T.brasil}><TextPlane lines={[["COAF", "#ffffff", 120]]} p={[0.36, -0.1, -1.9]} r={[0, PI / 2, 0]} w={1.5} h={0.5} bg="#14202b" glow={0.5} /></G>
       </G>
       {/* bancos e uma planta: cara de galeria */}
       <Box s={[3, 0.5, 1]} p={[0, Y0 + 0.25, 3.5]} c="#3a3f45" />
@@ -94,6 +94,14 @@ const Painting: React.FC<{ t: number }> = ({ t }) => {
   const glow = ease(t, T.hook, T.hook + 0.3);
   return (
     <G p={[PAINT[0] + wob, PAINT[1], PAINT[2]]}>
+      {/* corpo de máquina de lavar que cresce em volta da moldura na lavagem (o crítico: só a porta parecia um prato) */}
+      <G sc={Math.max(0.001, door)} vis={door > 0.01} p={[0, 0, -0.08]}>
+        <Box s={[PW + 1.6, PH + 2.4, 0.3]} p={[0, 0.35, 0]} c="#f4f6f8" o={{ rough: 0.4 }} />
+        <Box s={[PW + 1.6, 0.8, 0.34]} p={[0, PH / 2 + 1.15, 0]} c="#d8dee4" />
+        {[-1.8, -1.1].map((x) => <Cyl key={x} rt={0.22} h={0.12} p={[x, PH / 2 + 1.15, 0.22]} r={[PI / 2, 0, 0]} c="#9aa3ab" seg={14} />)}
+        <Box s={[1.2, 0.4, 0.05]} p={[1.4, PH / 2 + 1.15, 0.2]} c="#14202b" />
+        <Box s={[0.9, 0.18, 0.06]} p={[1.4, PH / 2 + 1.15, 0.22]} c="#5cff7a" o={{ emissive: "#5cff7a", ei: 1 }} cast={false} />
+      </G>
       {/* moldura dourada */}
       <Box s={[PW + 0.5, PH + 0.5, 0.2]} c="#d4a63a" o={{ metal: 0.5, rough: 0.4 }} />
       <Box s={[PW, PH, 0.22]} p={[0, 0, 0.02]} c="#f6f1e4" />
@@ -151,8 +159,8 @@ const Money: React.FC<{ t: number }> = ({ t }) => {
         {Array.from({ length: stackN }, (_, i) => <Coin key={i} p={[0.02 * Math.sin(i), 0.1 + i * 0.09, 0]} spin={-PI / 2 + 0.05 * i} />)}
       </G>
       {/* o recibo: papel branco que sobe ao lado da pilha */}
-      <G p={[STACK[0] - 1.2, Y0 + 1.5, STACK[2] + 0.6]} sc={Math.max(0.001, receipt)} vis={receipt > 0.01} r={[0, -0.3, 0.06 * Math.sin(t * 3)]}>
-        <TextPlane lines={[["RECIBO", "#14202b", 56], ["1 QUADRO", "#444444", 40], ["R$ 1.000.000", "#0b7a35", 48]]} p={[0, 0, 0]} w={1.5} h={1.6} bg="#ffffff" glow={0.5} />
+      <G p={[3.3, 3.3, -4.4]} sc={Math.max(0.001, receipt)} vis={receipt > 0.01} r={[0, -0.3, 0.06 * Math.sin(t * 3)]}>
+        <TextPlane lines={[["RECIBO", "#14202b", 56], ["1 QUADRO", "#444444", 40], ["R$ 1.000.000", "#0b7a35", 48]]} p={[0, 0, 0]} w={1.9} h={2.0} bg="#ffffff" glow={0.5} />
       </G>
     </>
   );
@@ -175,14 +183,15 @@ const Chart: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- o comprador: caixa de papelão na cabeça, maleta de dinheiro vivo
 const Buyer: React.FC<{ t: number }> = ({ t }) => {
+  const yaw = t > T.por ? 0.38 : -0.9; // de costas para o quadro no «nem liga pra quem pintou»
   const inn = ease(t, T.comprador - 0.5, T.comprador + 0.2);
   const bag = pk(t, T.vivo, 0.4);
   const p: V3 = [lerp(BUY[0] + 4, BUY[0], inn), BUY[1], BUY[2]];
   return (
-    <G vis={t > T.comprador - 0.6}>
-      <Worker p={p} yaw={-0.9} pose={poseOf(inn < 1 ? "walk" : "idle", t)} t={t} c={BUYER} mustache={false} />
+    <G vis={t > T.comprador - 0.6 && t < T.agoraSim}>
+      <Worker p={p} yaw={yaw} pose={poseOf(inn < 1 ? "walk" : "idle", t)} t={t} c={BUYER} mustache={false} />
       {/* a caixa na cabeça, com um «?» */}
-      <G p={[p[0], p[1] + 1.95, p[2]]} r={[0, -0.9, 0]}>
+      <G p={[p[0], p[1] + 1.95, p[2]]} r={[0, yaw, 0]}>
         <Box s={[0.85, 0.75, 0.85]} c="#c89a5c" />
         <TextPlane lines={[["?", "#3a2300", 120]]} p={[0, 0, 0.43]} w={0.6} h={0.6} bg="#c89a5c" glow={0.2} />
       </G>
@@ -209,6 +218,9 @@ const Warehouse: React.FC<{ t: number }> = ({ t }) => {
         return <G key={`${r}${c}${k}`} vis={k === 0 || lift > 0.02}><Box s={[3, h * 0.95, 2.4]} p={[x, y, z]} c={(r + c + k) % 3 ? "#c8955a" : "#b98447"} />
           <Box s={[3.02, 0.12, 0.3]} p={[x, y + h * 0.3, z + 1.06]} c="#7a5530" cast={false} /></G>;
       })))}
+      {/* uma moldura dourada saindo de uma caixa da frente: «a obra guardada numa caixa» */}
+      <G p={[0, 0.2, 9]} r={[0.25, 0.3, 0]}><Box s={[2.2, 1.7, 0.12]} p={[0, 1.6, 0]} c="#d4a63a" o={{ metal: 0.5, rough: 0.4 }} /><Box s={[1.9, 1.4, 0.14]} p={[0, 1.6, 0.01]} c="#f6f1e4" /><Box s={[0.7, 0.7, 0.03]} p={[-0.3, 1.7, 0.09]} r={[0, 0, 0.2]} c="#e0262b" /></G>
+      <Box s={[3, 1.3, 2.4]} p={[0, 0.85, 10.2]} c="#c8955a" />
       {/* montanhas nevadas atrás (Genebra) */}
       {[[-30, -60, 18], [0, -70, 24], [30, -62, 20]].map(([x, z, h], i) => <G key={i}><Cone rad={h * 0.9} h={h} p={[x, h / 2, z]} c="#6f8a9e" seg={7} o={{ flat: true }} /><Cone rad={h * 0.32} h={h * 0.36} p={[x, h * 0.82, z]} c="#ffffff" seg={7} o={{ flat: true }} /></G>)}
     </G>
