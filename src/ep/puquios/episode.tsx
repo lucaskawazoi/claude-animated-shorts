@@ -54,7 +54,7 @@ const SHOTS: Shot[] = [
   shot("pedra, terra, troncos: de lado, de perto", T.piedra - 0.1, [
     K(T.piedra - 0.1, [-5.2, 1.7, 5.6], [-10.2, 0.7, -1.2], 50, 1), K(T.manos, [-6.2, 1.5, 4.8], [-10, 0.8, -1.2], 48, -0.5), K(T.superficie - 0.05, [-6.8, 1.6, 4.6], [-10, 0.8, -1.2], 48, 0)]),
   shot("o rio da superfície, seco quase o ano todo", T.superficie, [
-    K(T.superficie, [-22, 1.5, 5], [-16, 0.3, -2.4], 54, 1), K(14.9, [-19, 2.4, 6.5], [-14.5, 0.2, -2.2], 55, -0.5), ...hold(C2, [-15, 5.4, 11], [-12, 0, -2], 56, 0)]),
+    K(T.superficie, [-15, 1.6, 4.6], [-10.5, 0.6, -2.4], 54, 1), K(14.9, [-17, 2.6, 6.5], [-12.5, 0.4, -2.2], 55, -0.5), ...hold(C2, [-15, 5.4, 11], [-12, 0, -2], 56, 0)]),
   shot("«¿cómo encuentras agua?»: o agricultor no leito seco", C2, [
     K(C2, [0, 2.2, 7], [0, 0.6, -1.4], 50, -1.5), K(17.95, [0.3, 2.1, 6.6], [0, 0.6, -1.4], 48, 0)]),
   shot("a água escondida sob o leito seco (o rio de verdade)", 18.0, [
@@ -81,7 +81,7 @@ const SHOTS: Shot[] = [
   shot("barro e areia entopem ✖; ninguém consegue entrar", T.p3, [
     K(T.p3, [3, -2.8, 7.4], [1, -3.8, F], 48, -1.5), K(T.barro, [2.4, -3.0, 7.0], [1, -3.8, F], 46, 0.5), K(T.alguien, [1.5, 1.2, 10.5], [1.2, -1.6, 0.6], 58, 0), K(T.b3 - 0.05, [1.8, 1.0, 10.8], [1.2, -1.6, 0.6], 58, 0)]),
   shot("os ojos se abrem em fila (vista do alto)", T.b3, [
-    K(T.b3, [0, 12, 14], [0, 0, -1], 56, 1.5), K(T.embudo, [4, 9, 12], [2, 0, -1], 56, -0.5), K(T.rampa - 0.05, [5, 8.6, 11.6], [2, 0, -1], 56, 0)]),
+    K(T.b3, [2.6, 2.4, 6.2], [2.4, 0.9, -1.0], 48, 1.5), K(T.embudo, [4, 9, 12], [2, 0, -1], 56, -0.5), K(T.rampa - 0.05, [5, 8.6, 11.6], [2, 0, -1], 56, 0)]),
   shot("a rampa em espiral: desce para limpar", T.rampa, [
     K(T.rampa, [2.4, 0.2, 8.4], [0, -1.2, F], 52, -1.5), K(T.bajan, [1.0, -1.2, 8.6], [0, -1.5, F], 50, 0.5), ...hold(C6, [0.6, -1.4, 8.4], [0, -1.5, F], 50, 0)]),
   shot("«estos son los ojos»: de cima", C6, [
@@ -120,6 +120,8 @@ const WORKER: [number, WorkerState][] = [
   [T.motores - 0.1, S([NOPE_X, 0.1, -2.6], 0.1, "alarm")],
   [T.motores, S([NOPE_X, 0.1, -2.6], 0.3, "point")],
   [T.manos, S([NOPE_X, 0.1, -2.6], 0, "cheer")],
+  [T.superficie, S([NOPE_X, 0.1, -2.6], -0.6, "point")],
+  [T.seco, S([NOPE_X, 0.1, -2.6], -0.4, "alarm")],
   [C2, S([0, 0.1, -2.4], 0, "think")],
   [T.c1, S([0, 0.1, -2.4], 0, "cheer")],
   [T.cavan, S([0.4, 0.1, 0.9], -0.3, "chisel", { prop: "hammer" })],
