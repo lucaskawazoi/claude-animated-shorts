@@ -33,7 +33,7 @@ export const blendPose = (a: Pose, b: Pose, u: number): Pose => ({
 });
 
 /** roupa da época. top = cor do tronco (= skin se nu), bottom = pernas, kilt = saiote/túnica curta, hat = chapéu */
-export type Costume = { skin: string; top: string; bottom: string; kilt?: string; kiltLen?: number; hat: "helmet" | "cloth" | "cap" | "none" | "straw"; hatC: string; boot: string; belt?: string; sleeves?: boolean };
+export type Costume = { skin: string; top: string; bottom: string; kilt?: string; kiltLen?: number; hat: "helmet" | "cloth" | "cap" | "none" | "straw"; hatC: string; boot: string; belt?: string; sleeves?: boolean; scarf?: string }; // scarf: lenço (padrão vermelho, a assinatura do canal; estátua = cinza)
 export const COSTUMES: Record<string, Costume> = {
   egypt: { skin: "#b9784b", top: "#b9784b", bottom: "#b9784b", kilt: "#f5f0dc", kiltLen: 0.42, hat: "cloth", hatC: "#f5f0dc", boot: "#8a5a32", belt: "#d4a64a" },
   rome: { skin: "#d39a6c", top: "#c8553d", bottom: "#d39a6c", kilt: "#c8553d", kiltLen: 0.4, hat: "none", hatC: "#000", boot: "#7a4a2a", belt: "#6b4423", sleeves: false },
@@ -82,8 +82,8 @@ export const Worker: React.FC<{ p: V3; yaw?: number; pose: Pose; scale?: number;
       {c.belt ? <Cyl rt={0.315} h={0.08} p={[0, 0.9, 0]} c={c.belt} seg={12} /> : null}
       {c.hat === "helmet" ? <><Cyl rt={0.305} h={0.07} p={[0, 1.0, 0]} c="#fff3c4" seg={12} /><Cyl rt={0.292} h={0.07} p={[0, 1.18, 0]} c="#fff3c4" seg={12} /></> : null}
       {/* LENÇO VERMELHO: a marca do personagem em todas as épocas */}
-      <Cyl rt={0.2} rb={0.27} h={0.12} p={[0, 1.4, 0]} c="#e0262b" seg={12} cast={false} />
-      <Cone rad={0.16} h={0.26} seg={3} p={[0, 1.26, 0.2]} r={[Math.PI + 0.25, 0, 0]} c="#e0262b" cast={false} />
+      <Cyl rt={0.2} rb={0.27} h={0.12} p={[0, 1.4, 0]} c={c.scarf ?? "#e0262b"} seg={12} cast={false} />
+      <Cone rad={0.16} h={0.26} seg={3} p={[0, 1.26, 0.2]} r={[Math.PI + 0.25, 0, 0]} c={c.scarf ?? "#e0262b"} cast={false} />
       <ArmPart side={-1} a={pose.l} c={c} t={t} /><ArmPart side={1} a={pose.r} c={c} prop={prop} t={t} />
       {/* cabeça */}
       <G p={[0, 1.55, 0]} r={[pose.hx, pose.hy, pose.hz]}>
