@@ -19,8 +19,8 @@ export const HS = H - 1.2;                            // cume do morro da Cruz: 
 export const NA = 74, S = 3.0, XA0 = -111, XA1 = XA0 + NA * S;
 const PW = 0.9, PD = 1.6, HEAD = 1.5, DECK = 0.4, WALLH = 0.36, WY = 0.72;
 export const SUM: V3 = [113, HS, 0];
-const LX0 = -28, LX1 = -95, RD = 82, PLAT = 10;
-export const ZG = 18, HG = 3.4, GS = 1.6, NG = 80, GX0 = -56, GX1 = GX0 + NG * GS; // o plano de 1721 (fantasma)
+const LX0 = -28, LX1 = -95, RD = 30, PLAT = 9; // v2: morro de verdade (o Sangremal), cidade plana ao pé
+export const ZG = 18, HG = 3.4, GS = 1.6, NG = 99, GX0 = -56, GX1 = GX0 + NG * GS; // o plano de 1721 (fantasma)
 export const AL: V3 = [-150, H, 0], FZA = 2.5;        // a alberca; face do corte do pântano em z=FZA
 const PIT_BOT = 4, CUT_FLOOR = 2, MUD0 = H - 1.8, DUG = PIT_BOT + 0.25, CLEAN = H + 0.7;
 export const FZ = 0.85, DEEPV = -8, MUDB = -4.3, FIRMB = -6.0; // face do corte do vale (logo na frente dos pilares)
@@ -33,11 +33,13 @@ const sm = (u: number) => sstep(clamp(u));
 /** altura do chão em (x, z): rampa da esquerda até o planalto, domo do morro da Cruz à direita, vale plano no meio */
 export const gH = (x: number, z: number) => {
   const l = x < LX0 ? H * sm((LX0 - x) / (LX0 - LX1)) : 0;
-  const d = Math.hypot(x - SUM[0], z * 1.5), u = clamp((d - PLAT) / (RD - PLAT));
+  const d = Math.hypot(x - SUM[0], z), u = clamp((d - PLAT) / (RD - PLAT));
   return Math.max(l, HS * Math.cos((PI / 2) * u) ** 2);
 };
 const on = (x: number, z: number, dy = 0): V3 => [x, gH(x, z) + dy, z];
-export const F1 = on(120.5, 16.5), F2 = on(127.5, 28.5), F3 = on(133, -5);
+export const F1 = on(124, 21), F2 = on(127.5, 28.5), F3 = on(137, -6);
+/** tubo que desce a encosta: pontos amostrados no chão (uma reta cortaria o morro) */
+const down = (x0: number, z0: number, x1: number, z1: number, n: number): V3[] => Array.from({ length: n + 1 }, (_, k) => on(lerp(x0, x1, k / n), lerp(z0, z1, k / n), 0.25));
 
 // ---------------------------------------------------------------- quando cada coisa existe
 const hook = (t: number) => t < T.queretaro;
@@ -142,7 +144,7 @@ const Sierra: React.FC = () => (
   </G>
 );
 const TREE_SPOTS: V3[] = Array.from({ length: 40 }, (_, i): V3 => [lerp(-80, 240, rnd(i * 5 + 1)), 0, lerp(-120, 110, rnd(i * 5 + 2))])
-  .filter(([x, , z]) => gH(x, z) < 0.05 && !(Math.abs(x) < 34 && z > -36 && z < 44) && Math.abs(z - ZR) > 5 && !(x > 40 && x < 104 && z > 30 && z < 60));
+  .filter(([x, , z]) => gH(x, z) < 0.05 && !(Math.abs(x) < 34 && z > -36 && z < 44) && Math.abs(z - ZR) > 5 && !(x > 40 && x < 104 && z > 30 && z < 60) && Math.hypot(x - SUM[0], z) > 64);
 const NOPAL: V3[] = [[-38, 0, 30], [-44, 0, 12], [36, 0, 30], [40, 0, -24], [-35, 0, -20], [30, 0, 42], [-30, 0, 46]];
 const Nopales: React.FC = () => (
   <G>{NOPAL.map((p, i) => <G key={i} p={p} r={[0, rnd(i) * 3, 0]} sc={1 + rnd(i + 4) * 0.5}>
@@ -156,17 +158,19 @@ const segDist = (x: number, z: number, a: V3, b: V3) => {
   const dx = b[0] - a[0], dz = b[2] - a[2], u = clamp(((x - a[0]) * dx + (z - a[2]) * dz) / (dx * dx + dz * dz));
   return Math.hypot(x - a[0] - u * dx, z - a[2] - u * dz);
 };
-export const PIPE_A: V3[] = [on(114.6, 1.6, 0.25), on(116.5, 8, 0.25), on(F1[0] - 0.9, F1[2] - 0.9, 0.25)];
-export const PIPE_B: V3[] = [on(F1[0] + 0.9, F1[2] + 0.9, 0.25), on(124.5, 23, 0.25), on(F2[0] - 0.9, F2[2] - 0.9, 0.25)];
-export const PIPE_C: V3[] = [on(114.6, -0.8, 0.25), on(124, -2.5, 0.25), on(F3[0] - 1.1, F3[2], 0.25)];
+export const PIPE_A: V3[] = [on(114.6, 1.6, 0.25), ...down(116.5, 8, F1[0] - 0.9, F1[2] - 0.9, 10)];
+export const PIPE_B: V3[] = down(F1[0] + 0.9, F1[2] + 0.9, F2[0] - 0.9, F2[2] - 0.9, 3);
+export const PIPE_C: V3[] = [on(114.6, -0.8, 0.25), ...down(118, -1.5, F3[0] - 1.1, F3[2], 10)];
 const freeCity = (x: number, z: number) => {
   if (Math.abs(z) < 5 && x < SUM[0] + 4) return false;                          // arcaria
-  if (Math.hypot(x - SUM[0], z) < 13) return false;                             // cume: caixa e convento
+  if (Math.hypot(x - SUM[0], z) < 16) return false;                             // cume: caixa e convento
   for (const P of [PIPE_A, PIPE_B, PIPE_C]) for (let k = 0; k < P.length - 1; k++) if (segDist(x, z, P[k], P[k + 1]) < 2.8) return false;
   for (const f of [F1, F2, F3]) if (Math.hypot(x - f[0], z - f[2]) < 5.5) return false;
   if (Math.abs(z - ZG) < 4.5 && x < GX1 + 6) return false;                      // o plano fantasma
   if (x > 66 && x < 104 && z > 36) return false;                               // obrajes, rio, doentes
-  if (Math.hypot(x - 125, z - 26) < 7) return false;                            // câmeras das praças
+  if (Math.hypot(x - 125, z - 26) < 7 || Math.hypot(x - 129, z - 38) < 6 || Math.hypot(x - 86, z - 33) < 5) return false;
+  if ((x > 66 && x < 92 && z > 4 && z < 37) || (x > 88 && x < 99 && z > 22 && z < 37)) return false;
+  if (segDist(x, z, [80, 0, 31.8], [124, 0, 21]) < 3.2) return false;          // card «caja de agua»: a câmera de lado vê a fonte no pé                      // vão do «así»: de baixo do arco fantasma até os arcos reais; e o C7                            // câmeras das praças
   if (segDist(x, z, [115.5, 0, 32.4], CAJA) < 3.4) return false;                // «nunca»: a câmera vê a caixa por cima das casas
   return true;
 };
@@ -177,7 +181,7 @@ const HOUSES = (() => {
   for (let x = 34; x <= 194; x += 4.4) for (let z = -54; z <= 54; z += 4.4) {
     i++;
     const px = x + (rnd(i) - 0.5) * 1.6, pz = z + (rnd(i + 1) - 0.5) * 1.6, g = gH(px, pz);
-    if (g < 0.45 || g > HS - 0.35 || !freeCity(px, pz)) continue;
+    if (g > HS - 0.35 || Math.hypot(px - SUM[0], pz) > 60 || (px < 72 && pz > 24) || !freeCity(px, pz)) continue;
     out.push({ x: px, z: pz, w: 2.4 + rnd(i + 2) * 1.2, d: 2.4 + rnd(i + 3) * 1.2, h: 1.3 + rnd(i + 4) * 1.3, y: g, c: HOUSE_C[i % HOUSE_C.length], r: (rnd(i + 5) - 0.5) * 0.4 });
   }
   return out;
@@ -190,7 +194,7 @@ const City: React.FC = () => {
     const body = new THREE.InstancedMesh(box, mat("#ffffff"), n), roof = new THREE.InstancedMesh(box, mat("#ffffff"), n), door = new THREE.InstancedMesh(box, mat("#4a3426"), n);
     HOUSES.forEach((q, k) => {
       o.rotation.set(0, q.r, 0);
-      o.position.set(q.x, q.y - 0.9 + (q.h + 0.9) / 2, q.z); o.scale.set(q.w, q.h + 0.9, q.d); o.updateMatrix(); body.setMatrixAt(k, o.matrix); body.setColorAt(k, col.set(q.c));
+      o.position.set(q.x, q.y - 1.8 + (q.h + 1.8) / 2, q.z); o.scale.set(q.w, q.h + 1.8, q.d); o.updateMatrix(); body.setMatrixAt(k, o.matrix); body.setColorAt(k, col.set(q.c));
       o.position.set(q.x, q.y + q.h + 0.09, q.z); o.scale.set(q.w + 0.16, 0.18, q.d + 0.16); o.updateMatrix(); roof.setMatrixAt(k, o.matrix); roof.setColorAt(k, col.set(q.c).multiplyScalar(0.82));
       o.position.set(q.x + Math.sin(q.r) * (q.d / 2), q.y + 0.45, q.z + Math.cos(q.r) * (q.d / 2)); o.scale.set(0.6, 0.95, 0.08); o.updateMatrix(); door.setMatrixAt(k, o.matrix);
     });
@@ -278,7 +282,7 @@ const SLOPE = Array.from({ length: NA }, (_, i) => Math.atan2(gH(XA0 + (i + 1) *
 export const htop = (t: number) => {
   if (t < T.primer) return H;
   if (t < T.asi) return lerp(H, -1.5, ease(t, T.primer + 0.05, T.primer + 0.7));
-  if (t < T.manda - 0.02) return lerp(HG, H, ease(t, T.asi + 0.3, T.tres + 0.5));
+  if (t < T.manda - 0.02) return lerp(HG - DECK - WALLH, H, ease(t, T.asi + 0.3, T.tres + 0.5)); // começa com a mesma altura total do arco de 8 m ao lado
   return H;
 };
 const archK = (i: number, t: number) => {
@@ -295,7 +299,7 @@ const realSt = (t: number) => (i: number): St => {
   return { k, top: htop(t), rz: 0, chan: 1, water: w };
 };
 const ghostSt = (t: number) => (i: number): St => {
-  if (!twist(t) || t > T.obra + 0.6) return { k: 0, top: HG, rz: 0, chan: 0, water: 0 };
+  if (!twist(t) || t >= T.asi - 0.02) return { k: 0, top: HG, rz: 0, chan: 0, water: 0 };
   const k = popK(t, T.primer + 0.15 + i * (0.8 / NG), 0.3) * (1 - ease(t, T.obra, T.obra + 0.5));
   return { k, top: HG, rz: 0, chan: k > 0.5 ? 1 : 0, water: t >= C7 ? 1 : 0 };
 };
@@ -304,18 +308,18 @@ const Arcades: React.FC<{ t: number }> = ({ t }) => {
   return (
     <G>
       <ArcadeIM spec={REAL} t={t} st={realSt(t)} />
-      {twist(t) && t < T.obra + 0.6 ? <ArcadeIM spec={GHOST} t={t} st={ghostSt(t)} front={gf} speed={2.2} /> : null}
+      {twist(t) && t < T.asi - 0.02 ? <ArcadeIM spec={GHOST} t={t} st={ghostSt(t)} front={gf} speed={2.2} /> : null}
     </G>
   );
 };
 /** a água do fantasma chega ao fim (na encosta, abaixo da cima) e cai numa poça */
 const GhostEnd: React.FC<{ t: number }> = ({ t }) => {
-  if (!twist(t) || t < C7 || t > T.obra) return null;
-  const k = ease(t, T.sinagua, T.sinagua + 0.5), end: V3 = [GX1 - 0.3, HG + WY, ZG], gy = gH(GX1 + 1.4, ZG);
+  if (!twist(t) || t < C7 || t >= T.asi - 0.02) return null;
+  const k = ease(t, T.sinagua, T.sinagua + 0.5), end: V3 = [GX1 - 0.3, HG + WY, ZG];
   return (
     <G>
-      {k > 0.02 ? Array.from({ length: 6 }, (_, i) => { const u = fract(t * 1.6 + i / 6); return <Sph key={i} rad={0.14} p={[end[0] + 0.4 + u * 1.0, lerp(end[1], gy + 0.1, u * u), ZG + (rnd(i) - 0.5) * 0.3]} c="#7cc8ff" o={{ emissive: "#2f8fd8", ei: 0.6 }} cast={false} ws={6} hs={4} />; }) : null}
-      <mesh position={[GX1 + 1.6, gy + 0.06, ZG]} rotation={[-PI / 2, 0, 0]} scale={[Math.max(0.01, k), Math.max(0.01, k), 1]} material={mat("#5ab8f0", { emissive: "#2f8fd8", ei: 0.3 })}><circleGeometry args={[1.4, 16]} /></mesh>
+      {k > 0.02 ? Array.from({ length: 8 }, (_, i) => { const u = fract(t * 1.6 + i / 8); return <Sph key={i} rad={0.16} p={[end[0] + 0.3 + u * 1.1, lerp(end[1], HG + 0.4, u) + Math.sin(u * PI) * 0.5, ZG + (rnd(i) - 0.5) * 0.8]} c="#7cc8ff" o={{ emissive: "#2f8fd8", ei: 0.6 }} cast={false} ws={6} hs={4} />; }) : null}
+      <mesh position={[GX1 + 1.0, HG + 0.35, ZG]} rotation={[-PI / 2, 0, 0]} scale={[Math.max(0.01, k), Math.max(0.01, k), 1]} material={mat("#5ab8f0", { emissive: "#2f8fd8", ei: 0.3 })}><circleGeometry args={[1.8, 20]} /></mesh>
     </G>
   );
 };
@@ -458,9 +462,12 @@ const Alberca: React.FC<{ t: number }> = ({ t }) => {
         {Array.from({ length: 24 }, (_, i) => <Sph key={i} rad={0.09 + rnd(i) * 0.06} p={[AL[0] + lerp(-11.5, 11.5, rnd(i + 3)), lerp(CUT_FLOOR + 0.15, 4.8, rnd(i + 6)), FZA + 0.05]} c="#9a8566" cast={false} ws={6} hs={4} />)}
         {[[AL[0] - 12, FZA + 6, 0.12, 12], [AL[0] + 12, FZA + 6, 0.12, 12], [AL[0], FZA + 12, 24, 0.12]].map(([x, z, w, d], i) => <Box key={i} s={[w, 0.06, d]} p={[x, H + 0.04, z]} c="#ffe9a8" o={{ emissive: "#ffe9a8", ei: 0.3 }} cast={false} />)}
       </G> : null}
-      {/* obreiros cavando no lodo e os torrões voando para o monte */}
+      {/* obreiros cavando no lodo e os torrões voando para o monte; em «dieciocho» saem para a beira (não cobrem as nascentes) */}
       <Crowd t={t} c={OBRERO} vis={t > T.cavan - 0.02 && t < T.encierran} scale={1.15}
-        list={[[-2.6, 0.5, 0.4, "chisel"], [1.1, -1.0, -0.3, "pull"], [3.2, 1.3, -0.8, "chisel"]].map(([x, z, yaw, pose], i) => ({ p: [AL[0] + (x as number), mt, z as number] as V3, yaw: yaw as number, pose: pose as "chisel", ph: i * 0.5 }))} />
+        list={[[-2.6, 0.5, 0.4, "chisel", -3.6, -3.3], [1.1, -1.0, -0.3, "pull", -0.9, -3.5], [3.2, 1.3, -0.8, "chisel", 4.4, -3.3]].map(([x, z, yaw, pose, sx, sz], i) => {
+          const u = ease(t, T.d18 - 0.5 + i * 0.05, T.d18 - 0.05 + i * 0.05);
+          return { p: [AL[0] + lerp(x as number, sx as number, u), lerp(mt, H, u) + Math.sin(u * PI) * 0.9, lerp(z as number, sz as number, u)] as V3, yaw: u > 0.5 ? 0 : (yaw as number), pose: (u <= 0 ? pose : u < 1 ? "pull" : "cheer") as "chisel", ph: i * 0.5 };
+        })} />
       {t > T.cavan && t < T.encierran + 0.6 ? Array.from({ length: CHUNKS }, (_, k) => {
         const a = CHUNK_T(k), u = prog(t, a, a + 0.65); if (t < a) return null;
         const pile: V3 = [PILE[0] + (rnd(k) - 0.5) * 1.6, H + 0.2 + Math.floor(k / 4) * 0.32, PILE[2] + (rnd(k + 2) - 0.5) * 1.6];
@@ -512,7 +519,7 @@ const PlateauCanal: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- o cume: caixa de água, tubos de barro, fontes, a linha da caixa
 const cajaWalls = (t: number) => (hook(t) || cta(t) ? 1 : t < C4 || twist(t) ? 0 : t < T.caja0 ? 0.25 : lerp(0.25, 1, ease(t, T.caja0, T.caja0 + 0.5)));
-const cajaWater = (t: number) => (hook(t) || cta(t) ? WLC : t < C4 || twist(t) ? 0 : t < T.caja0 ? HS + 0.35 : lerp(HS + 0.35, WLC, ease(t, T.caja0 + 0.1, T.cima0 + 0.45)));
+const cajaWater = (t: number) => (hook(t) || cta(t) ? WLC : t < C4 || twist(t) ? 0 : t < T.caja0 ? HS + 0.35 : lerp(HS + 0.35, WLC, ease(t, T.caja0 + 0.23, T.cima0 + 0.8)));
 const pipesK = (t: number) => (t < T.tubos || twist(t) || cta(t) ? 0 : ease(t, T.tubos, T.cuesta + 0.3));
 const jetOn = (t: number) => hook(t) || cta(t) || (t >= T.brota2 - 0.05 && !twist(t));
 const Caja: React.FC<{ t: number }> = ({ t }) => {
@@ -647,7 +654,7 @@ const River: React.FC<{ t: number }> = ({ t }) => {
     <G>
       <Box s={[312, 0.06, 6]} p={[96, 0.03, ZR]} c={rc} o={{ rough: 0.25 }} cast={false} />
       {[ZR - 3.2, ZR + 3.2].map((z) => <Box key={z} s={[312, 0.08, 0.5]} p={[96, 0.04, z]} c="#8a9a5a" cast={false} />)}
-      {Array.from({ length: 60 }, (_, i) => <Box key={i} s={[1.6, 0.03, 0.12]} p={[-60 + fract(i / 60 + t * 0.012) * 304, 0.08, ZR + (rnd(i) - 0.5) * 4.6]} c={k > 0.5 ? "#b08aa0" : "#d6f1ff"} o={{ emissive: "#bfe6ff", ei: k > 0.5 ? 0 : 0.3 }} cast={false} />)}
+      {Array.from({ length: 60 }, (_, i) => <Box key={i} s={[1.6, 0.03, 0.12]} p={[-60 + fract(i / 60 + t * 0.03) * 304, 0.08, ZR + (rnd(i) - 0.5) * 4.6]} c={k > 0.5 ? "#b08aa0" : "#d6f1ff"} o={{ emissive: "#bfe6ff", ei: k > 0.5 ? 0 : 0.3 }} cast={false} />)}
       {/* obrajes: oficina, tina de tinta, a bica até o rio, lã */}
       {VATS.map((v, i) => <G key={i}>
         <G p={[v.x, 0, OB[2] - 3]}>
@@ -775,7 +782,7 @@ const Measures: React.FC<{ t: number }> = ({ t }) => (
       <G sc={Math.max(0.001, popK(t, T.veintemil - 0.05, 0.3))}><Cyl rt={0.6} h={1.2} p={[0, 0.55, 0]} c="#bfe0ff" o={{ opacity: 0.3, emissive: "#8fc8ff", ei: 0.4, depthWrite: false }} seg={14} cast={false} /></G>
     </G> : null}
     {t >= C5 && t < T.estosArcos ? <G>
-      <G p={[rideX(t) + 3.4, H + DECK + WALLH + 0.12, 0.62]}>
+      <G p={[rideX(t) + 5.5, H + DECK + WALLH + 0.12, 0.62]}>
         <Box s={[1.5, 0.22, 0.32]} c="#f2c230" /><Cyl rt={0.08} h={0.62} p={[0, 0.12, 0]} r={[0, 0, PI / 2]} c="#9fffb0" o={{ emissive: "#3fd060", ei: 0.6, opacity: 0.8 }} seg={10} cast={false} />
         <Sph rad={0.06} p={[0.02 * Math.sin(t * 9), 0.17, 0]} c="#ffffff" o={{ emissive: "#ffffff", ei: 0.8 }} cast={false} ws={6} hs={4} />
         {[-0.12, 0.12].map((x) => <Box key={x} s={[0.02, 0.2, 0.2]} p={[x, 0.12, 0]} c="#1a1a1a" cast={false} />)}
@@ -795,7 +802,7 @@ const Coins: React.FC<{ t: number }> = ({ t }) => {
         const n = Math.floor(14 * clamp(prog(t, COIN_T(k), COIN_T(k) + 0.3))), g = k < 4 && green > 0.5;
         return <G key={k}>
           {Array.from({ length: n }, (_, i) => <Cyl key={i} rt={0.48} h={0.12} p={[x + 0.03 * Math.sin(i * 2 + k), 0.1 + i * 0.13, 0.03 * Math.cos(i * 3)]} c={g ? "#4fbf6a" : "#f2c230"} o={{ emissive: g ? "#1f8f3a" : "#b88a00", ei: 0.3, metal: 0.3 }} seg={14} />)}
-          {k === 0 && t < T.pago ? <Cyl rt={0.66} h={2.1} p={[x, 1.05, 0]} c="#bfe0ff" o={{ opacity: 0.3, emissive: "#8fc8ff", ei: 0.4, depthWrite: false }} seg={14} cast={false} /> : null}
+          {k === 0 ? <Cyl rt={0.66} h={2.1} p={[x, 1.05, 0]} c="#bfe0ff" o={{ opacity: 0.3, emissive: "#8fc8ff", ei: 0.4, depthWrite: false }} seg={14} cast={false} /> : null}
           {k === 0 && t >= T.planeado - 0.05 && t < T.pago ? [0, 1].map((q) => { const u = fract((t - T.planeado) * 1.4 + q / 2), r = 0.8 + u * 1.3;
             return <mesh key={q} position={[x, 0.1, 0]} rotation={[-PI / 2, 0, 0]} material={mat("#ff5a3a", { emissive: "#ff2a1a", ei: 0.9, opacity: 1 - u * 0.8, depthWrite: false })}><ringGeometry args={[r, r + 0.18, 24]} /></mesh>; }) : null}
         </G>;
@@ -822,6 +829,19 @@ const Birds: React.FC<{ t: number }> = ({ t }) => {
     </G>; })}</G>;
 };
 /** «a veces cargaba piedras él mismo»: a pedra nas mãos do marquês enquanto os muros sobem */
+/** «casi tres veces más altos»: UM arco de 8 m, opaco, na frente e ao lado dos arcos reais (mesma profundidade vista da câmera) */
+export const GO_X = 74.5;
+const GhostOne: React.FC<{ t: number }> = ({ t }) => (t < T.asi - 0.02 || t >= T.obra ? null : (
+  <G p={[GO_X, 0, 1.9]}>
+    {[-1.3, 1.3].map((x) => <Box key={x} s={[0.6, HG - 0.5, 1.0]} p={[x, (HG - 0.5) / 2, 0]} c="#cdd4da" />)}
+    <Box s={[3.2, 0.5, 1.0]} p={[0, HG - 0.25, 0]} c="#bcc5cc" />
+    <mesh position={[0, HG - 1.05, 0]} castShadow material={mat("#cdd4da")}><torusGeometry args={[1.0, 0.28, 6, 14, PI]} /></mesh>
+  </G>
+));
+/** «otro pantano»: bolhas de lodo estourando bem na frente da câmera que avança */
+const MudPop: React.FC<{ t: number }> = ({ t }) => (t < T.otro - 0.1 || t >= T.enterrado0 ? null : (
+  <Bubbles t={t * 2.2} spots={[[4, 0.03, 6.5], [-0.5, 0.03, 6], [7, 0.03, 7.5], [3, 0.03, 3.6], [-3, 0.03, 4.5], [5.2, 0.03, 4.2]]} size={0.55} c="#7a6a44" />
+));
 export const CARRY: V3 = [AL[0] + 2, H, -3.8]; // atrás do buraco, de frente para a câmera
 const Carry: React.FC<{ t: number }> = ({ t }) => (t < T.encierran || t > T.ahora ? null : (
   <Box s={[0.6, 0.42, 0.42]} p={[CARRY[0] + 0.15, CARRY[1] + 1.12 * 1.2, CARRY[2] + 0.55 * 1.2]} r={[0, 0.3, 0]} c="#c9b0a0" />
@@ -844,7 +864,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Pump t={t} p={[AL[0] + 8.5, H, 6.2]} a={C2 + 0.3} b={T.p1} x={T.motores + 0.3} yaw={-0.4} />
     <XMark t={t} a={T.pantano0 + 0.25} b={T.b1 - 0.02} p={[AL[0], H + 0.6, 2.5]} sc={1.3} />
     <River t={t} /><Sick t={t} /><Legend t={t} /><Scroll t={t} /><Route t={t} />
-    <Measures t={t} /><Coins t={t} /><CoinRain t={t} /><Birds t={t} /><Carry t={t} />
+    <Measures t={t} /><Coins t={t} /><CoinRain t={t} /><Birds t={t} /><Carry t={t} /><GhostOne t={t} /><MudPop t={t} />
     <Puffs t={t} p={[CONV[0] - 6, HS + 2.5, -8]} n={4} period={3.5} rise={4} size={0.5} c="#eeeeee" />
   </>
 );

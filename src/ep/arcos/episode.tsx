@@ -40,7 +40,7 @@ const A0 = AL[0];
 
 const OPEN_KEYS: Record<Open, Key[]> = {
   // a) (PADRÃO) colado na água que corre no alto dos arcos, recua até a arcaria inteira e o morro da Cruz
-  a: [K(0, [50, H + 3.2, 0.4], [62, H + 0.4, 0], 50, 1.2), K(1.5, [44, H + 4.5, 14], [74, H + 0.5, 0], 54, -0.4), K(T.sin0 - 0.05, [46, H + 9, 34], [104, H, -2], 56, 0)],
+  a: [K(0, [40, H + 3.2, 0.4], [52, H + 0.4, 0], 50, 1.2), K(2.3, [99, H + 2.6, 0.4], [113, H - 0.4, 0], 52, 0), K(2.7, [103, H + 3.2, 1.5], [113.5, H - 0.6, 0], 52, -0.6), K(T.sin0 - 0.05, [100, H + 7, 14], [114, H - 1, 0], 54, 0)],
   // b) do chão do vale, olhando para cima por um arco alto
   b: [K(0, [1.5, 0.9, 5], [0, 8.5, 0], 64, 0.8), K(1.4, [6, 3, 14], [12, 8, 0], 60, -0.4), K(T.sin0 - 0.05, [40, H + 8, 32], [104, H, -2], 56, 0)],
   // c) do alto, mergulhando ao longo da arcaria até a cidade no morro
@@ -56,7 +56,7 @@ const SHOTS: Shot[] = [
   shot("«casi trescientos años en pie»: de baixo, os arcos altos e os pássaros", T.llevan, [
     K(T.llevan, [9, 1.1, 15], [0, 7, 0], 62, 1.5), K(T.queretaro - 0.05, [-7, 1.6, 14], [0, 7.5, 0], 62, 0)]),
   shot("⏪ Querétaro, 1726: os arcos somem de trás para a frente", T.queretaro, [
-    K(T.queretaro, [30, 34, 86], [25, 4, 0], 52, -1.5), ...hold(C1, [12, 30, 80], [20, 3, 0], 52, 0)]),
+    K(T.queretaro, [30, 34, 86], [25, 4, 0], 52, -1.5), K(C1 - 0.4, [6, 20, 62], [14, 2, 0], 52, 0), K(C1 - 0.02, [5, 19.5, 61], [14, 2, 0], 52, 0)]),
   shot("«cuenta la leyenda»: o convento das Capuchinas, a monja na janela", C1, [
     K(C1, at(LEG, [7, 3.4, 11]), at(LEG, [0.6, 2.5, 0]), 54, 1.5), K(T.marques0 - 0.05, at(LEG, [5.5, 3.0, 9]), at(LEG, [0.8, 2.5, 0]), 52, 0)]),
   shot("«un marqués… por amor a una monja»: corações", T.marques0, [
@@ -80,7 +80,7 @@ const SHOTS: Shot[] = [
     K(T.c1, [A0 + 1.5, H + 7, 22], [A0, H - 1.5, 1], 56, -1.5), K(T.cavan, [A0 + 1, H + 5.5, 19], [A0, H + 0.3, 1], 56, 0.5),
     ...hold(C3, [A0 - 1.5, H + 2.6, 17], [A0, H - 0.6, 0], 56, 0)]), // céu no alto antes do corte: o C3 (de cima, sem céu) precisa mudar a imagem
   shot("«dieciocho manantiales pequeños»: o fundo de perto", C3, [
-    K(C3, [A0 + 0.5, H + 12, 9], [A0, 4.25, 0], 54, 1.5), K(T.encierran - 0.05, [A0 + 0.2, H + 11, 8], [A0, 4.25, 0], 54, 0)]),
+    K(C3, [A0 + 0.5, H + 12, 8.4], [A0, 4.25, -0.6], 54, 1.5), K(T.encierran - 0.05, [A0 + 0.2, H + 11, 7.6], [A0, 4.25, -0.6], 54, 0)]),
   shot("«los encierran con muros de piedra»: os muros sobem, a água limpa enche", T.encierran, [
     K(T.encierran, [A0 + 7, H + 5.5, 13], [A0 + 0.8, H - 1.5, 0], 56, -1.5), K(T.ahora - 0.05, [A0 + 5, H + 6, 13.5], [A0 + 0.8, H - 1, 0], 56, 0)]),
   shot("«brota unas cuatro veces más agua»: o canal enche", T.ahora, [
@@ -88,9 +88,9 @@ const SHOTS: Shot[] = [
   shot("«esta es la alberca»: em volta, de cima", T.alberca, [
     K(T.alberca, [A0 - 7, H + 8, 15], [A0, H, 2.5], 54, -1.5), K(T.p2 - 0.05, [A0 + 5, H + 8.5, 15.5], [A0 + 1, H, 2.5], 54, 0)]),
   shot("«un valle con otro pantano al fondo»: da beira do planalto", T.p2, [
-    K(T.p2, [-90, H + 6, 26], [0, -6, 4], 52, 1.5), K(T.otro - 0.05, [-84, H + 5.5, 27], [6, -6, 4], 52, 0)]),
+    K(T.p2, [-62, H + 2.5, 22], [0, -2, 4], 52, 1.5), K(T.otro - 0.05, [-7.6, 2.5, 17.1], [4, 0.2, 3], 54, 0)]),
   shot("«otro pantano»: o lodo borbulha, moscas", T.otro, [
-    K(T.otro, [-7, 2.4, 17], [4, 0.2, 3], 54, -1.5), K(T.enterrado0 - 0.05, [-4, 2.0, 16.5], [6, 0.2, 3], 54, 0)]),
+    K(T.otro, [-7, 2.4, 17], [4, 0.2, 3], 54, -1.5), K(T.enterrado0 - 0.05, [1.8, 1.1, 11], [5, 0.0, 2], 54, 0)]),
   shot("«un canal enterrado podía ensuciarse» ✖: o corte do vale", T.enterrado0, [
     K(T.enterrado0, [3.5, -0.4, FZ + 10.5], [0, -1.8, FZ], 56, 1.5), K(T.b2 - 0.05, [1.5, -0.9, FZ + 9.5], [-0.5, -1.7, FZ], 54, 0)]),
   shot("«¿cómo cruzas sin tocar el lodo?»: o marquês na beira do vale", T.b2, [
@@ -111,21 +111,21 @@ const SHOTS: Shot[] = [
   shot("«estos son los arcos»", T.estosArcos, [
     K(T.estosArcos, [50, 12, 46], [-4, 6, 0], 52, -1.5), K(T.p3 - 0.05, [30, 18, 58], [-16, 6, 0], 52, 0)]),
   shot("«toda el agua llega a un solo punto»: o fim do canal no cume", T.p3, [
-    K(T.p3, [100, H + 4.2, 11], [112, H + 0.3, 0.5], 54, 1.5), K(T.alto2 - 0.05, [102, H + 3.8, 10], [112.5, H + 0.3, 0.5], 54, 0)]),
+    K(T.p3, [110.5, H + 3.6, 5], [113.2, H - 0.2, 0], 50, 1.5), K(T.alto2 - 0.05, [88, 8, 46], [114, 9, 2], 54, 0)]),
   shot("«en lo más alto»: embaixo, os cântaros vazios ✖", T.alto2, [
     K(T.alto2, at(F1, [3.5, 3.2, 8.5]), at(F1, [-0.5, 1.8, 0]), 54, -1.5), K(T.b3 - 0.05, at(F1, [2, 3.0, 8]), at(F1, [-0.5, 2.2, -1]), 54, 0)]),
   shot("«¿cómo la repartes a toda la ciudad?»: o marquês no cume", T.b3, [
-    K(T.b3, [112, H + 1.8, 10.5], at(MQ, [0, 2.6, 0]), 52, 1.5), K(T.c3 - 0.05, [111.5, H + 2.0, 10], at(MQ, [0, 2.6, 0]), 52, 0)]),
+    K(T.b3, [112, H + 1.8, 10.5], at(MQ, [0, 2.6, 0]), 52, 1.5), K(T.c3 - 0.05, [106, H + 5.5, 20], at(MQ, [0, 1.6, 0]), 54, 0)]),
   shot("«una caja de agua en la cima»: a caixa sobe e enche", T.c3, [
     K(T.c3, [106, H + 4.2, 8.5], [113, H + 0.2, 0], 54, -1.5), K(T.tubos - 0.05, [107, H + 4.6, 9], [113, H + 0.4, 0], 54, 0)]),
   shot("«tubos de barro cuesta abajo»: a vala, os tubos e a água neles", T.tubos, [
-    K(T.tubos, [109, H + 7, -3], [121, 5, 20], 56, 1.5), K(T.fuentes - 0.05, [110, H + 6, -1], [122, 5, 22], 56, 0)]),
+    K(T.tubos, [109, H + 7, -3], [121, 3.5, 18], 56, 1.5), K(T.fuentes - 0.05, [110, H + 6, -1], [123, 2.5, 21], 56, 0)]),
   shot("«en las fuentes, el agua brota hacia arriba»", T.fuentes, [
     K(T.fuentes, at(F1, [-1.8, 2.6, 6.2]), at(F1, [0, 1.6, 0]), 54, -1.5), K(T.nunca - 0.05, at(F1, [-1.2, 2.9, 6.8]), at(F1, [0, 2.1, 0]), 54, 0)]),
   shot("«pero nunca más alto que la caja»: a linha da caixa e o jato que para nela", T.nunca, [
-    K(T.nunca, [114.5, WLC + 3.2, 32.4], [117.1, WLC - 0.6, 13], 60, 1.5), ...hold(C6, [114.2, WLC + 3.3, 31.6], [116.9, WLC - 0.6, 13], 60, 0)]),
+    K(T.nunca, [124, 7.5, 42], [118, 6.5, 10], 58, 1.5), ...hold(C6, [123.6, 7.7, 41.4], [118, 6.6, 10], 58, 0)]),
   shot("«…que la caja. Esta es la caja de agua»: de perto e abrindo", C6, [
-    K(C6, [107.8, H + 2.8, 6.2], [113.5, H + 0.8, 0], 50, -1.5), K(T.cajaAgua, [104, H + 6, 18], [114, H, 4], 54, 0), K(T.giro - 0.05, [100, H + 9, 30], [115, H - 1, 6], 54, 0)]),
+    K(C6, [107.8, H + 2.8, 6.2], [113.5, H + 0.8, 0], 50, -1.5), K(C6 + 0.3, [107.4, H + 3.0, 6.8], [113.5, H + 0.8, 0], 50, 0), K(C6 + 0.9, [80, 11, 31.8], [118.5, 8.2, 10.6], 60, 0), K(T.giro - 0.05, [83.6, 10.8, 30], [118.5, 8.2, 10.6], 60, 0)]), // de lado, perpendicular à linha caixa→fonte: a linha fica reta // de lado, na altura do cume: a caixa lá em cima, a cidade embaixo
   shot("«y aquí viene el giro»: chicote para o vale", T.giro, [
     K(T.giro, [100, H + 9, 30], [115, H - 1, 6], 54, -8), K(T.giro + 0.5, [66, 15, 56], [40, 4, 10], 56, 6), K(T.primer - 0.05, [30, 12, 64], [5, 3, 10], 54, 0)]),
   shot("«el primer plan era más barato»: os arcos reais afundam, o fantasma sobe", T.primer, [
@@ -134,15 +134,15 @@ const SHOTS: Shot[] = [
     K(T.arcos8, [4.6, 1.5, 26.6], [0.6, 1.1, ZG], 54, -1.5), K(T.ocho + 0.35, [4.4, 2.9, 26.4], [0.7, 2.6, ZG], 54, 0),
     K(T.veintemil - 0.1, [4.3, 2.6, 26.6], [0.9, 2.0, ZG], 54, 0), ...hold(C7, [3.8, 2.8, 26], [0.8, 2.0, ZG], 54, 0)]),
   shot("«pero dejaba sin agua la cima»: a água do fantasma para na encosta", C7, [
-    K(C7, [40, 7, 25], [GX1 + 1, 3.6, ZG], 54, 1.5), K(T.sinagua + 0.25, [44, 8, 26], [GX1 + 3, 4, ZG - 1], 54, 0), K(T.convento - 0.05, [48, 12, 28], [110, HS + 3, -2], 54, 0)]),
+    K(C7, [84, 6.5, 32], [GX1 + 1, 4.0, ZG], 54, 1.5), K(T.sinagua + 0.25, [86, 7, 33], [GX1 + 2, 4.5, ZG - 2], 54, 0), K(T.convento - 0.05, [88, 9, 34], [116, HS + 2, -2], 54, 0)]),
   shot("«donde estaba el convento de la Cruz» ✖", T.convento, [
     K(T.convento, [110, H + 3.5, 13], [120.1, HS + 2.2, 0.6], 58, -1.5), K(T.asi - 0.05, [111, H + 3.8, 13.5], [120.4, HS + 2.4, 0.4], 58, 0)]),
   shot("«así que los hicieron casi tres veces más altos»", T.asi, [
-    K(T.asi, [-5, 6.5, 44], [4, 4.6, 8], 54, 1.5), K(T.obra - 0.05, [1, 7, 44], [8, 5.6, 6], 54, 0)]),
+    K(T.asi, [74, 1.3, 21], [77.5, 3.0, 0], 60, 1.5), K(T.tres + 0.4, [74.3, 1.5, 21], [78, 5.0, 0], 60, 0), K(T.obra - 0.05, [76, 8, 22], [119.5, HS + 3, -3.4], 58, 0)]),
   shot("«costando más de seis veces lo planeado»: as pilhas de moedas", T.obra, [
     K(T.obra, at(CS, [-10, 5.2, 9]), at(CS, [-1, 1.0, -0.4]), 58, -1.5), K(T.pago - 0.05, at(CS, [-9.2, 5.6, 9.6]), at(CS, [-0.8, 1.1, -0.4]), 58, 0)]),
   shot("«el marqués pagó dos terceras partes»", T.pago, [
-    K(T.pago, at(CS, [-0.45, 11, 11]), at(CS, [-0.45, 0.6, -0.6]), 58, 1.5), K(T.manda - 0.05, at(CS, [-0.45, 11.5, 10.4]), at(CS, [-0.45, 0.6, -0.8]), 58, 0)]),
+    K(T.pago, at(CS, [-0.9, 23, 0.6]), at(CS, [-0.9, 0, -0.8]), 50, 0), K(T.manda - 0.05, at(CS, [-0.9, 22, 0.5]), at(CS, [-0.9, 0, -0.8]), 50, 0)]),
   shot("final: a arcaria com a água correndo", T.manda, [
     K(T.manda, [22, H + 8, 20], [-8, H - 1.5, 0], 54, -1), K(T.end, [28, H + 9.5, 26], [-12, H - 1.5, 0], 54, 0)]),
 ];
@@ -153,10 +153,10 @@ const fix = (p: V3): Partial<WorkerState> => ({ follow: () => p }); // salta par
 const yawTo = (a: V3, b: V3) => Math.atan2(b[0] - a[0], b[2] - a[2]);
 const W_LEG = at(LEG, [2.6, 0, 2.2]), Y_LEG = yawTo(W_LEG, at(LEG, [0.6, 0, 0]));
 const W_SC = at(SCR, [0.2, 0, -2.3]), W_RIO = at(OB, [8.8, 0, 2.6]), W_SICK = at(SICK, [3.6, 0, 1.6]);
-const W_SW: V3 = [A0 + 7.5, H, 2.2], W_B1: V3 = [A0 + 6.4, H, 5.2], W_OUT: V3 = [A0 + 9, H, -2.2];
+const W_SW: V3 = [A0 + 7.5, H, 2.2], W_B1: V3 = [A0 + 6.4, H, 5.2], W_OUT: V3 = [A0 + 8.5, H, -1.4];
 const W_P2: V3 = [-70.2, gH(-70.2, 22.8), 22.8], W_V1: V3 = [-19, 0, 6], W_V2: V3 = [-24, 0, 9], W_PIER: V3 = [2.4, 0, 1.9], W_V3: V3 = [-19, 0, 5];
-const W_F1: V3 = [F1[0] + 1.5, gH(F1[0] + 1.5, F1[2] - 0.2), F1[2] - 0.2], W_F1N: V3 = [F1[0] + 4.6, gH(F1[0] + 4.6, F1[2] + 1.6), F1[2] + 1.6], W_C6: V3 = [117.6, HS, 1.8], W_G: V3 = [14, 0, 23], W_G8: V3 = [-2.4, 0, 20.6];
-const W_CONV: V3 = [124.6, HS, 0.8], W_CS = at(CS, [-1.5, 0, -2.4]), W_END: V3 = [10, 0, 8];
+const W_F1: V3 = [F1[0] + 1.5, gH(F1[0] + 1.5, F1[2] - 0.2), F1[2] - 0.2], W_F1N: V3 = [F1[0] + 4.6, gH(F1[0] + 4.6, F1[2] + 1.6), F1[2] + 1.6], W_C6: V3 = [116.2, HS, -1.6], W_G: V3 = [14, 0, 23], W_G8: V3 = [-2.4, 0, 20.6];
+const W_CONV: V3 = [124.6, gH(124.6, 0.8), 0.8], W_CS = at(CS, [-1.5, 0, -2.4]), W_END: V3 = [10, 0, 8];
 const WORKER: [number, WorkerState][] = [
   [0, S(W_LEG, Y_LEG, "present", { scale: 0 })],
   [C1, S(W_LEG, Y_LEG, "present")],
@@ -191,8 +191,8 @@ const WORKER: [number, WorkerState][] = [
   [T.fuentes, S(W_F1, -0.9, "present", fix(W_F1))],
   [T.brota2, S(W_F1, -0.9, "cheer")],
   [T.nunca, S(W_F1N, -1.6, "point", fix(W_F1N))],
-  [C6, S(W_C6, -1.15, "present", fix(W_C6))],
-  [T.giro, S(W_C6, -1.15, "cheer")],
+  [C6, S(W_C6, -0.82, "present", fix(W_C6))],
+  [T.giro, S(W_C6, -0.82, "cheer")],
   [T.primer, S(W_G, -0.4, "read", { prop: "scroll", ...fix(W_G) })],
   [T.arcos8, S(W_G8, 0.6, "present", fix(W_G8))],
   [C7, S(W_CONV, -0.4, "alarm", fix(W_CONV))],
@@ -202,7 +202,7 @@ const WORKER: [number, WorkerState][] = [
   [T.pago, S(W_CS, 0, "point")],
   [T.dos, S(W_CS, 0, "present")],
   [T.partes, S(W_CS, 0, "cheer")],
-  [T.manda, S(W_END, 0.4, "cheer", fix(W_END))],
+  [T.manda, S(W_END, 0.4, "cheer", { scale: 0, ...fix(W_END) })], // no final só a arcaria (só a cabeça dele aparecia no rodapé)
 ];
 
 /** carimbo vermelho «LEYENDA» (a lenda da monja, nunca como fato) */
@@ -231,7 +231,7 @@ const hud: HudData = {
     { a: T.d18, b: T.encierran - 0.1, label: "ENCUENTRAN", value: () => "18 MANANTIALES", tone: "gold" },
     { a: T.cuatro, b: T.alberca - 0.1, label: "AGUA", value: () => "×4", tone: "green" },
     { a: T.otro, b: T.enterrado0 - 0.1, label: "EN EL VALLE", value: () => "PANTANO", tone: "red" },
-    { a: T.ensuciarse, b: T.b2 - 0.1, label: "CANAL ENTERRADO", value: () => "SE ENSUCIA", tone: "red" },
+    { a: T.ensuciarse, b: T.b2 - 0.1, label: "CANAL ENTERRADO", value: () => "PODÍA ENSUCIARSE", tone: "red" },
     { a: T.setenta, b: T.altos - 0.1, label: "", value: () => "74 ARCOS", tone: "gold" },
     { a: T.veinte, b: T.cimientos - 0.1, label: "LOS MÁS ALTOS", value: () => "+20 m", tone: "gold" },
     { a: T.suelo, b: T.arriba - 0.1, label: "CIMIENTOS HASTA", value: () => "SUELO FIRME", tone: "green" },
@@ -241,7 +241,7 @@ const hud: HudData = {
     { a: T.nunca, b: T.cajaAgua - 0.1, label: "NUNCA MÁS ALTO", value: () => "QUE LA CAJA", tone: "gold" },
     { a: T.barato, b: T.p4 - 0.1, label: "PLAN DE 1721", value: (t) => (t < T.ocho ? "MÁS BARATO" : t < T.veintemil ? "8 m" : "8 m · 20.000 PESOS"), tone: "gold" },
     { a: T.sinagua, b: T.asi - 0.1, label: "LA CIMA", value: () => "SIN AGUA", tone: "red" },
-    { a: T.tres, b: T.obra - 0.1, label: "MÁS ALTOS", value: () => "×3", tone: "green" },
+    { a: T.tres, b: T.obra - 0.1, label: "MÁS ALTOS", value: () => "CASI ×3", tone: "green" },
     { a: T.seis, b: T.pago - 0.1, label: "COSTÓ", value: () => "MÁS DE ×6", tone: "red" },
     { a: T.dos, b: T.manda - 0.1, label: "PAGÓ", value: () => "2/3 EL MARQUÉS", tone: "gold" },
   ],
