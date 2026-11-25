@@ -15,7 +15,7 @@ export const T = {
   z3: z(2), a3: an(2),
   apodrece: find("o lixo apodrece"), manta: find("embaixo tem"), tratamento: find("vai pra tratamento"), gas: find("e o gas vira"), luz: find("vira luz"), usina: find("bagaco da usina"),
   agoraSim: find("agora sim"), resolvido: find("sim resolvido"),
-  conta: find("e a conta"), brasil: find("o brasil jogou"), quatro: find("quatro em cada"), prazo: find("o prazo pra"), paga: find("quem paga"), duzentos: find("duzentos e vinte"),
+  conta: find("e a conta"), brasil: find("o brasil jogou"), quatro: find("quatro em cada"), prazo: find("o prazo pra"), servico: find("o servico do lixo"), paga: find("quem paga"), duzentos: find("duzentos e vinte"),
   onde: find("e esse lixo todo"), voce: find("que dia o caminhao"), comenta: find("comenta ai"),
   end: DURATION_S,
   // derivados do mundo
@@ -30,7 +30,7 @@ export const CUTS10: number[] = [
   T.contra, T.parede, T.colada, T.recua, T.metro, T.z2,
   T.encheu, T.aterro, T.deVolta, T.z3,
   T.apodrece, T.manta, T.tratamento, T.gas, T.agoraSim,
-  T.conta, T.brasil, T.quatro, T.prazo, T.paga, T.onde, T.voce,
+  T.conta, T.brasil, T.quatro, T.prazo, T.servico, T.onde, T.voce,
 ].map(q);
 export { WINS };
 
@@ -47,7 +47,7 @@ S.push(
   ["alert", T.encheu + 0.1, -13], ["spring", T.aterro + 0.6, -13], ["slide", T.deVolta + 0.2, -11], ["thud", T.deVolta + 1.4, -12], ["thud", T.deVolta + 2.0, -13],
   ["bubbles", T.apodrece + 0.3, -15], ["ding", T.manta + 0.2, -13], ["wind", T.gas, -17], ["chime", T.luz + 0.1, -11],
   ["fanfare", T.agoraSim + 0.25, -7], ["confetti", T.resolvido + 0.1, -10],
-  ["coins", T.conta + 0.1, -13], ["tick", T.brasil + 0.4, -13], ["alert", T.quatro + 0.2, -13], ["paper", T.prazo + 0.2, -12], ["coins", T.paga + 0.2, -12], ["ding", T.duzentos + 0.3, -12],
+  ["coins", T.conta + 0.1, -13], ["tick", T.brasil + 0.4, -13], ["alert", T.quatro + 0.2, -13], ["paper", T.prazo + 0.2, -12], ["ding", T.duzentos + 0.3, -12], ["coins", T.paga + 0.2, -12],
   ["wind", T.onde + 0.1, -16], ["pop", T.voce + 0.15, -11], ["pop", T.comenta + 0.1, -12],
 );
 export const SFX = S;

@@ -74,9 +74,15 @@ const Street: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- o caminhão compactador
 /** quanto da caixa já está cheio de lixo apertado (0 a 0,9): a placa recua a cada pá */
-export const fillAt = (t: number) => (hookOn(t) ? 0.55 * ease(t, 2.4, T.bora) : t < T.pa ? 0 : 0.06 + 0.84 * ease(t, T.pa + 0.8, T.cabe + 0.6));
-const PER = 1.5; // um ciclo da pá
-const cyc = (t: number) => (t < T.pa || t > T.fimPa ? -1 : ((t - T.pa) % PER) / PER);
+const STEP0 = () => T.colada + 0.6, NSTEP = 5;
+export const fillAt = (t: number) => {
+  if (hookOn(t)) return 0.55 * ease(t, 2.4, T.bora);
+  if (t < STEP0()) return t < T.pa ? 0 : 0.06;
+  const n = (t - STEP0()) / 1.5, k = Math.min(NSTEP, Math.floor(n) + ease(n - Math.floor(n), 0.45, 0.8)); // um degrau por ciclo da pá
+  return 0.06 + 0.84 * (k / NSTEP);
+};
+const PER = 1.5; // um ciclo da pá (a partir de «começa colada», em fase com os degraus da placa)
+const cyc = (t: number) => (t < T.pa || t > T.fimPa ? -1 : t < T.colada + 0.6 ? ((t - T.pa) % PER) / PER : ((t - T.colada - 0.6) % PER + PER) % PER / PER);
 /** a pá (placa compactadora): gira descendo na boca (0–0,45), puxa para dentro (0,45–0,8), volta para cima */
 const blade = (c: number) => {
   if (c < 0) return { rot: -1.0, dx: 0 };
@@ -145,7 +151,7 @@ const Truck: React.FC<{ t: number; p: V3; mode: "rua" | "aterro" }> = ({ t, p, m
           return <Bag key={k} k={k} p={[x, YB + 0.45 + v * (YT - YB - 0.9) + fall, -ZW + 0.45 + w * (ZW * 2 - 0.9)]} s={0.85} sq={0.8} />;
         })}
         {/* saco solto (antes da pá): a caixa «cheia» de pouco lixo */}
-        {loose > 0.01 ? Array.from({ length: 12 }, (_, k) => <Bag key={`l${k}`} k={k + 7} p={[X1 - 0.9 - (k % 6) * 1.25, YB + 0.95 + Math.floor(k / 6) * 1.6, (rnd(k) - 0.5) * 1.6]} s={1.9 * loose} />) : null}
+        {loose > 0.01 ? [[4.6, 0, 0.5], [3.0, 0, -0.8], [1.2, 0, 0.6], [-0.6, 0, -0.5], [3.8, 1, 0], [0.4, 1, 0.3], [-1.6, 0, 0.7]].map(([x, up, z], k) => <Bag key={`l${k}`} k={k + 7} p={[x, YB + 0.7 + up * 1.4, z]} s={1.5 * loose} />) : null}
       </G>
       {/* a boca (tremonha) com a pá; no aterro levanta inteira */}
       <G sc={Math.max(0.001, sBoca)} p={[X1, YT, 0]} r={[0, 0, lift * 1.1]}>
@@ -191,8 +197,8 @@ const Coletor: React.FC<{ t: number }> = ({ t }) => {
 const Aterro: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.aterro - 0.5 || t > T.lixao + 0.3) return null;
   const manta = t > T.manta - 0.1 && t < T.manta + 2.4 ? 0.6 + 0.4 * Math.sin((t - T.manta) * 7) : 0;
-  const trat = ease(t, T.tratamento, T.tratamento + 1.2);
-  const gas = 0.5 * ease(t, T.apodrece + 0.4, T.apodrece + 1.2) + 0.5 * ease(t, T.gas, T.gas + 0.6), caldo = ease(t, T.apodrece + 0.6, T.manta), luz = ease(t, T.luz - 0.1, T.luz + 0.4);
+  const trat = ease(t, T.tratamento - 0.4, T.tratamento + 0.6);
+  const gas = 0.5 * ease(t, T.apodrece + 0.4, T.apodrece + 1.2) + 0.5 * ease(t, T.gas, T.gas + 0.6), caldo = ease(t, T.apodrece + 0.6, T.manta + 0.4), luz = ease(t, T.luz - 0.1, T.luz + 0.4);
   return (
     <G p={AT}>
       <Box s={[90, 0.2, 70]} p={[0, -0.05, -10]} c="#b9a37a" cast={false} />
@@ -226,6 +232,11 @@ const Aterro: React.FC<{ t: number }> = ({ t }) => {
           <Sph rad={0.35} p={[0, 4.5, 1.6]} c="#fff3a0" o={{ emissive: "#ffe066", ei: 2.2 * luz }} cast={false} />
         </G>
       </G>
+      {/* gotas de caldo escorrendo pela borda do lixo até a manta */}
+      {caldo > 0.01 ? Array.from({ length: 10 }, (_, k) => { const ph = (t * 0.9 + k / 10) % 1; return <Sph key={`d${k}`} rad={0.22} sc={[1, 1.6, 1]} p={[-21.5 + k * 2.9, lerp(2.8, 0.45, ph), -3.6]} c="#3b2f14" cast={false} />; }) : null}
+      {/* o caldo correndo pela calha até a lagoa */}
+      {trat > 0.05 ? Array.from({ length: 8 }, (_, k) => { const ph = (t * 0.8 + k / 8) % 1; return <Sph key={`c${k}`} rad={0.3} p={[8, 0.55, lerp(-8, 4, ph)]} c="#3b2f14" cast={false} />; }) : null}
+      <Box s={[9, 0.3, 0.6]} p={[3.5, 0.25, -3]} c="#9aa3ab" vis={trat > 0.05} />
       {/* o chorume vai por um cano até a lagoa de tratamento */}
       <Box s={[0.3, 0.3, 12]} p={[8, 0.3, -2]} c="#9aa3ab" vis={trat > 0.05} />
       <G p={[8, 0.1, 6]}>
@@ -264,7 +275,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
     <Sky top="#2f86e8" mid="#7cc0f7" low="#e9f5ff" />
     <Hills c={["#6fbe58", "#7ccb62"]} z={-150} n={30} x0={-120} flat={0.6} />
     <Clouds t={t} n={9} y={36} />
-    {t < T.aterro + 0.2 || (t > T.paga - 0.4 && t < T.onde) || t > T.voce - 0.5 ? (
+    {t < T.aterro + 0.2 || (t > T.servico - 0.4 && t < T.onde) || t > T.voce - 0.5 ? (
       <>
         <Street t={t} />
         <Truck t={t} p={truckPos(t)} mode="rua" />
@@ -272,7 +283,7 @@ export const World: React.FC<{ t: number }> = ({ t }) => (
       </>
     ) : null}
     <Aterro t={t} />
-    {t > T.aterro - 0.5 && t < T.lixao + 0.3 ? <Truck t={t} p={[AT[0] - 34, 0, AT[2] - 14]} mode="aterro" /> : null}
+    {t > T.aterro - 0.5 && t < T.apodrece ? <Truck t={t} p={[AT[0] - 34, 0, AT[2] - 14]} mode="aterro" /> : null}
     <Lixao t={t} />
   </>
 );
