@@ -101,9 +101,9 @@ const Truck: React.FC<{ t: number; p: V3; mode: "rua" | "aterro" }> = ({ t, p, m
   const f = rua ? fillAt(t) : 0.9;
   const push = rua ? 0 : ease(t, T.deVolta + 0.2, T.deVolta + 2.6);
   const xe = rua ? lerp(X1 - 0.6, X0 + 0.3, f) : lerp(X0 + 0.3, X1 + 0.2, push);
-  const hi = rua && ((t > T.parede0 - 0.1 && t < T.monta) || (t > T.parede - 0.1 && t < T.cabe + 1.2)) ? 0.6 + 0.4 * Math.sin((t - T.parede) * 6) : 0;
+  const hi = (rua && ((t > T.parede0 - 0.1 && t < T.monta) || (t > T.parede - 0.1 && t < T.cabe + 1.2))) || (!rua && t > T.deVolta && t < T.deVolta + 2.8) ? 0.6 + 0.4 * Math.sin((t - T.parede) * 6) : 0;
   // no aterro a boca levanta (gira para cima em torno da dobradiça de cima)
-  const lift = rua ? 0 : ease(t, T.deVolta - 0.4, T.deVolta + 0.3);
+  const lift = rua ? 0 : ease(t, T.levanta + 0.1, T.levanta + 0.9);
   const c = rua ? cyc(t) : -1, bl = blade(c);
   // lixo apertado entre a placa e a boca: quantos sacos e quão espremidos
   const nIn = rua ? Math.round(lerp(0, 46, clamp(f / 0.9))) : 46;

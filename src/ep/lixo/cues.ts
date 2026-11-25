@@ -11,7 +11,7 @@ export const T = {
   z1: z(0), a1: an(0),
   contra: find("empurra contra"), parede: find("tem uma parede que anda", 1), colada: find("ela comeca colada"), recua: find("recua um"), metro: find("um metro cubico"),
   z2: z(1), a2: an(1),
-  encheu: find("a caixa encheu"), aterro: find("no aterro"), deVolta: find("anda de volta"),
+  encheu: find("a caixa encheu"), aterro: find("no aterro"), levanta: find("a boca levanta"), deVolta: find("anda de volta"),
   z3: z(2), a3: an(2),
   apodrece: find("o lixo apodrece"), manta: find("embaixo tem"), tratamento: find("vai pra tratamento"), gas: find("e o gas vira"), luz: find("vira luz"), usina: find("bagaco da usina"),
   agoraSim: find("agora sim"), resolvido: find("sim resolvido"),

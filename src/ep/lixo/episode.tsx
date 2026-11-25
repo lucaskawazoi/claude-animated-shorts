@@ -36,7 +36,7 @@ const ROWS: R[] = [
   [T.metro, [1.5, 4.6, 12.2], [1.5, 3.3, 0], [1.3, 4.7, 11.4], [1.5, 3.3, 0], 52, 50, 0, 0, "a caixa apertada até o fim"],
   [T.z2, [13.2, 2.9, 9.0], W1, [12.8, 2.9, 8.5], W1, 44, 42, 1, -1, "Resolveu? (operário, do outro lado)"],
   [T.encheu, [10, 7, 15.5], [1.5, 3, 0], [9.4, 7.2, 14.8], [1.5, 3, 0], 52, 50, 0, 0, "a caixa cheia, a rua do alto"],
-  [T.aterro, [TA[0] + 12, 8, 10], [TA[0] + 6, 2.4, -14], [TA[0] + 11.4, 8.2, 9.4], [TA[0] + 6, 2.4, -14], 52, 50, 0, 0, "o aterro do alto: o caminhão chega"],
+  [T.aterro, [TA[0] + 8, 5.0, 5], [TA[0] + 4.5, 2.9, -14], [TA[0] + 7.6, 5.0, 4.4], [TA[0] + 4.5, 2.9, -14], 50, 48, 0, 0, "o aterro do alto: o caminhão chega"],
   [T.deVolta, [TA[0] + 5, 4.0, 4], [TA[0] + 5, 3.2, -14], [TA[0] + 6, 4.0, 3.6], [TA[0] + 6.4, 3.2, -14], 48, 47, 0, 0, "a parede volta e empurra tudo pra fora"],
   [T.z3, [S2[0] + 3.4, 3.1, S2[2] + 7.6], W2, [S2[0] + 3.0, 3.1, S2[2] + 7.0], W2, 44, 42, -1, 1, "Resolveu? (operário no aterro)"],
   [T.apodrece, [AT[0] - 6, 8, 6], [AT[0] - 8, 2.6, -14], [AT[0] - 6.6, 8.2, 5.2], [AT[0] - 8, 2.6, -14], 50, 48, 0, 0, "o lixo apodrece: caldo e gás"],
