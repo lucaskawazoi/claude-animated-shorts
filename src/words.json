@@ -1,1118 +1,1544 @@
 [
  {
   "id": "w0",
-  "text": "Uns",
+  "text": "Toda",
   "start": 0.0,
-  "end": 0.174
+  "end": 0.302
  },
  {
   "id": "w1",
-  "text": "sessenta",
-  "start": 0.221,
-  "end": 0.662
+  "text": "semana",
+  "start": 0.348,
+  "end": 0.917
  },
  {
   "id": "w2",
-  "text": "bilhões",
-  "start": 0.697,
-  "end": 0.998
+  "text": "o",
+  "start": 1.045,
+  "end": 1.149
  },
  {
   "id": "w3",
-  "text": "de",
-  "start": 1.022,
-  "end": 1.08
+  "text": "caminhão",
+  "start": 1.196,
+  "end": 1.567
  },
  {
   "id": "w4",
-  "text": "dólares",
-  "start": 1.138,
-  "end": 1.463
- },
- {
-  "id": "w5",
-  "text": "por",
-  "start": 1.509,
+  "text": "de",
+  "start": 1.614,
   "end": 1.683
  },
  {
+  "id": "w5",
+  "text": "lixo",
+  "start": 1.741,
+  "end": 2.101
+ },
+ {
   "id": "w6",
-  "text": "ano:",
-  "start": 1.707,
-  "end": 1.997
+  "text": "passa",
+  "start": 2.206,
+  "end": 2.508
  },
  {
   "id": "w7",
-  "text": "é",
-  "start": 2.183,
-  "end": 2.229
+  "text": "na",
+  "start": 2.543,
+  "end": 2.612
  },
  {
   "id": "w8",
-  "text": "quanto",
-  "start": 2.299,
-  "end": 2.566
+  "text": "sua",
+  "start": 2.659,
+  "end": 2.856
  },
  {
   "id": "w9",
-  "text": "o",
-  "start": 2.647,
-  "end": 2.705
+  "text": "rua,",
+  "start": 2.891,
+  "end": 3.286
  },
  {
   "id": "w10",
-  "text": "mundo",
-  "start": 2.763,
-  "end": 2.972
+  "text": "e",
+  "start": 3.529,
+  "end": 3.634
  },
  {
   "id": "w11",
-  "text": "gasta",
-  "start": 3.03,
-  "end": 3.367
+  "text": "lá",
+  "start": 3.68,
+  "end": 3.773
  },
  {
   "id": "w12",
-  "text": "com",
-  "start": 3.402,
-  "end": 3.541
+  "text": "dentro",
+  "start": 3.843,
+  "end": 4.226
  },
  {
   "id": "w13",
-  "text": "arte,",
-  "start": 3.669,
-  "end": 3.994
- },
- {
-  "id": "w14",
-  "text": "segundo",
-  "start": 4.145,
+  "text": "tem",
+  "start": 4.377,
   "end": 4.54
  },
  {
+  "id": "w14",
+  "text": "uma",
+  "start": 4.574,
+  "end": 4.725
+ },
+ {
   "id": "w15",
-  "text": "o",
-  "start": 4.563,
-  "end": 4.586
+  "text": "parede",
+  "start": 4.748,
+  "end": 5.062
  },
  {
   "id": "w16",
-  "text": "relatório",
-  "start": 4.644,
-  "end": 5.178
+  "text": "que",
+  "start": 5.097,
+  "end": 5.224
  },
  {
   "id": "w17",
-  "text": "da",
-  "start": 5.213,
-  "end": 5.306
+  "text": "anda.",
+  "start": 5.259,
+  "end": 5.608
  },
  {
   "id": "w18",
-  "text": "Art",
-  "start": 5.387,
-  "end": 5.573
+  "text": "Bora",
+  "start": 5.991,
+  "end": 6.281
  },
  {
   "id": "w19",
-  "text": "Basel.",
-  "start": 5.654,
-  "end": 6.107
+  "text": "montar",
+  "start": 6.316,
+  "end": 6.618
  },
  {
   "id": "w20",
-  "text": "E",
-  "start": 6.444,
-  "end": 6.548
+  "text": "ele,",
+  "start": 6.699,
+  "end": 6.989
  },
  {
   "id": "w21",
-  "text": "um",
-  "start": 6.629,
-  "end": 6.699
+  "text": "peça",
+  "start": 7.268,
+  "end": 7.546
  },
  {
   "id": "w22",
-  "text": "quadro",
-  "start": 6.769,
-  "end": 7.129
+  "text": "por",
+  "start": 7.581,
+  "end": 7.697
  },
  {
   "id": "w23",
-  "text": "de",
-  "start": 7.21,
-  "end": 7.326
+  "text": "peça.",
+  "start": 7.732,
+  "end": 8.243
  },
  {
   "id": "w24",
-  "text": "um",
-  "start": 7.442,
-  "end": 7.512
+  "text": "Primeiro",
+  "start": 8.58,
+  "end": 8.94
  },
  {
   "id": "w25",
-  "text": "milhão",
-  "start": 7.546,
-  "end": 7.779
+  "text": "o",
+  "start": 8.986,
+  "end": 9.044
  },
  {
   "id": "w26",
-  "text": "de",
-  "start": 7.814,
-  "end": 7.872
+  "text": "chassi",
+  "start": 9.079,
+  "end": 9.555
  },
  {
   "id": "w27",
-  "text": "reais",
-  "start": 7.918,
-  "end": 8.348
+  "text": "e",
+  "start": 9.66,
+  "end": 9.776
  },
  {
   "id": "w28",
-  "text": "pode",
-  "start": 8.533,
-  "end": 8.766
+  "text": "a",
+  "start": 9.81,
+  "end": 9.834
  },
  {
   "id": "w29",
-  "text": "servir",
-  "start": 8.8,
-  "end": 9.114
+  "text": "cabine,",
+  "start": 9.88,
+  "end": 10.426
  },
  {
   "id": "w30",
-  "text": "pra",
-  "start": 9.149,
-  "end": 9.265
+  "text": "depois",
+  "start": 10.577,
+  "end": 10.855
  },
  {
   "id": "w31",
-  "text": "lavar",
-  "start": 9.3,
-  "end": 9.532
+  "text": "a",
+  "start": 10.902,
+  "end": 10.937
  },
  {
   "id": "w32",
-  "text": "dinheiro.",
-  "start": 9.567,
-  "end": 10.031
+  "text": "caixa,",
+  "start": 10.983,
+  "end": 11.471
  },
  {
   "id": "w33",
-  "text": "Chefe,",
-  "start": 10.739,
-  "end": 11.308
+  "text": "onde",
+  "start": 11.622,
+  "end": 11.831
  },
  {
   "id": "w34",
-  "text": "como",
-  "start": 11.587,
-  "end": 11.761
+  "text": "o",
+  "start": 11.854,
+  "end": 11.877
  },
  {
   "id": "w35",
-  "text": "um",
-  "start": 11.889,
-  "end": 11.958
+  "text": "lixo",
+  "start": 11.923,
+  "end": 12.214
  },
  {
   "id": "w36",
-  "text": "quadro",
-  "start": 11.993,
-  "end": 12.353
+  "text": "viaja,",
+  "start": 12.237,
+  "end": 12.817
  },
  {
   "id": "w37",
-  "text": "lava",
-  "start": 12.411,
-  "end": 12.585
+  "text": "e",
+  "start": 13.003,
+  "end": 13.119
  },
  {
   "id": "w38",
-  "text": "dinheiro?",
-  "start": 12.632,
-  "end": 13.131
+  "text": "atrás",
+  "start": 13.166,
+  "end": 13.444
  },
  {
   "id": "w39",
-  "text": "Deixa",
-  "start": 13.282,
-  "end": 13.514
+  "text": "a",
+  "start": 13.514,
+  "end": 13.537
  },
  {
   "id": "w40",
-  "text": "comigo:",
-  "start": 13.537,
-  "end": 14.06
+  "text": "boca,",
+  "start": 13.595,
+  "end": 14.013
  },
  {
   "id": "w41",
-  "text": "o",
-  "start": 14.245,
-  "end": 14.303
+  "text": "onde",
+  "start": 14.164,
+  "end": 14.373
  },
  {
   "id": "w42",
-  "text": "litro",
-  "start": 14.349,
-  "end": 14.524
+  "text": "o",
+  "start": 14.396,
+  "end": 14.42
  },
  {
   "id": "w43",
-  "text": "de",
-  "start": 14.558,
-  "end": 14.616
+  "text": "coletor",
+  "start": 14.454,
+  "end": 14.814
  },
  {
   "id": "w44",
-  "text": "gasolina",
-  "start": 14.651,
-  "end": 15.174
+  "text": "joga",
+  "start": 14.884,
+  "end": 15.116
  },
  {
   "id": "w45",
-  "text": "tem",
-  "start": 15.232,
-  "end": 15.371
+  "text": "os",
+  "start": 15.139,
+  "end": 15.209
  },
  {
   "id": "w46",
-  "text": "preço",
-  "start": 15.418,
-  "end": 15.685
+  "text": "sacos.",
+  "start": 15.232,
+  "end": 15.859
  },
  {
   "id": "w47",
-  "text": "na",
-  "start": 15.719,
-  "end": 15.789
+  "text": "Chefe,",
+  "start": 16.3,
+  "end": 16.846
  },
  {
   "id": "w48",
-  "text": "placa,",
-  "start": 15.836,
-  "end": 16.358
+  "text": "tem",
+  "start": 17.032,
+  "end": 17.182
  },
  {
   "id": "w49",
-  "text": "o",
-  "start": 16.486,
-  "end": 16.555
+  "text": "um",
+  "start": 17.229,
+  "end": 17.275
  },
  {
   "id": "w50",
-  "text": "quadro",
-  "start": 16.613,
-  "end": 16.892
+  "text": "probleminha:",
+  "start": 17.31,
+  "end": 17.926
  },
  {
   "id": "w51",
-  "text": "não",
-  "start": 16.927,
-  "end": 17.031
+  "text": "saco",
+  "start": 18.262,
+  "end": 18.587
  },
  {
   "id": "w52",
-  "text": "tem",
-  "start": 17.066,
-  "end": 17.159
+  "text": "solto",
+  "start": 18.669,
+  "end": 19.005
  },
  {
   "id": "w53",
-  "text": "tabela:",
-  "start": 17.194,
-  "end": 17.821
+  "text": "é",
+  "start": 19.11,
+  "end": 19.156
  },
  {
   "id": "w54",
-  "text": "vale",
-  "start": 18.007,
-  "end": 18.355
+  "text": "quase",
+  "start": 19.226,
+  "end": 19.481
  },
  {
   "id": "w55",
-  "text": "o",
-  "start": 18.459,
-  "end": 18.564
+  "text": "tudo",
+  "start": 19.516,
+  "end": 19.69
  },
  {
   "id": "w56",
-  "text": "que",
-  "start": 18.61,
-  "end": 18.68
+  "text": "ar,",
+  "start": 19.76,
+  "end": 20.039
  },
  {
   "id": "w57",
-  "text": "alguém",
-  "start": 18.715,
-  "end": 18.924
+  "text": "a",
+  "start": 20.189,
+  "end": 20.236
  },
  {
   "id": "w58",
-  "text": "disser",
-  "start": 18.947,
-  "end": 19.191
+  "text": "caixa",
+  "start": 20.294,
+  "end": 20.515
  },
  {
   "id": "w59",
-  "text": "que",
-  "start": 19.214,
-  "end": 19.295
+  "text": "ia",
+  "start": 20.549,
+  "end": 20.607
  },
  {
   "id": "w60",
-  "text": "vale,",
-  "start": 19.353,
-  "end": 19.748
+  "text": "encher",
+  "start": 20.631,
+  "end": 20.851
  },
  {
   "id": "w61",
-  "text": "e",
-  "start": 19.829,
-  "end": 19.934
+  "text": "em",
+  "start": 20.886,
+  "end": 20.932
  },
  {
   "id": "w62",
-  "text": "o",
-  "start": 19.969,
-  "end": 20.003
+  "text": "duas",
+  "start": 20.967,
+  "end": 21.188
  },
  {
   "id": "w63",
-  "text": "Gafi,",
-  "start": 20.038,
-  "end": 20.572
+  "text": "ruas.",
+  "start": 21.234,
+  "end": 21.71
  },
  {
   "id": "w64",
-  "text": "o",
-  "start": 20.723,
-  "end": 20.77
+  "text": "Deixa",
+  "start": 21.861,
+  "end": 22.082
  },
  {
   "id": "w65",
-  "text": "grupo",
-  "start": 20.816,
-  "end": 21.072
+  "text": "comigo:",
+  "start": 22.117,
+  "end": 22.569
  },
  {
   "id": "w66",
-  "text": "que",
-  "start": 21.106,
-  "end": 21.176
+  "text": "uma",
+  "start": 22.72,
+  "end": 22.86
  },
  {
   "id": "w67",
-  "text": "vigia",
-  "start": 21.211,
-  "end": 21.501
+  "text": "pá",
+  "start": 22.883,
+  "end": 22.953
  },
  {
   "id": "w68",
-  "text": "lavagem",
-  "start": 21.536,
-  "end": 21.942
+  "text": "desce,",
+  "start": 23.011,
+  "end": 23.405
  },
  {
   "id": "w69",
-  "text": "no",
-  "start": 21.977,
-  "end": 22.035
+  "text": "varre",
+  "start": 23.614,
+  "end": 23.847
  },
  {
   "id": "w70",
-  "text": "mundo,",
-  "start": 22.07,
-  "end": 22.534
+  "text": "a",
+  "start": 23.881,
+  "end": 23.905
  },
  {
   "id": "w71",
-  "text": "diz",
-  "start": 22.662,
-  "end": 22.813
+  "text": "boca",
+  "start": 23.951,
+  "end": 24.253
  },
  {
   "id": "w72",
-  "text": "que",
-  "start": 22.86,
-  "end": 22.929
+  "text": "e",
+  "start": 24.299,
+  "end": 24.346
  },
  {
   "id": "w73",
-  "text": "é",
-  "start": 22.952,
-  "end": 22.987
+  "text": "empurra",
+  "start": 24.369,
+  "end": 24.694
  },
  {
   "id": "w74",
-  "text": "exatamente",
-  "start": 23.069,
-  "end": 23.719
+  "text": "o",
+  "start": 24.729,
+  "end": 24.764
  },
  {
   "id": "w75",
-  "text": "isso",
-  "start": 23.788,
-  "end": 24.021
+  "text": "lixo",
+  "start": 24.81,
+  "end": 25.019
  },
  {
   "id": "w76",
-  "text": "que",
-  "start": 24.055,
-  "end": 24.125
+  "text": "pra",
+  "start": 25.054,
+  "end": 25.147
  },
  {
   "id": "w77",
-  "text": "dificulta",
-  "start": 24.16,
-  "end": 24.659
+  "text": "dentro,",
+  "start": 25.193,
+  "end": 25.53
  },
  {
   "id": "w78",
-  "text": "a",
-  "start": 24.74,
-  "end": 24.787
+  "text": "uma",
+  "start": 25.658,
+  "end": 25.797
  },
  {
   "id": "w79",
-  "text": "fiscalização.",
-  "start": 24.822,
-  "end": 25.681
+  "text": "vez",
+  "start": 25.844,
+  "end": 26.029
  },
  {
   "id": "w80",
-  "text": "Resolveu?",
-  "start": 26.064,
-  "end": 26.679
+  "text": "a",
+  "start": 26.087,
+  "end": 26.111
  },
  {
   "id": "w81",
-  "text": "Ainda",
-  "start": 26.958,
-  "end": 27.248
+  "text": "cada",
+  "start": 26.145,
+  "end": 26.343
  },
  {
   "id": "w82",
-  "text": "não.",
-  "start": 27.283,
-  "end": 27.562
+  "text": "uns",
+  "start": 26.378,
+  "end": 26.494
  },
  {
   "id": "w83",
-  "text": "Muita",
-  "start": 28.084,
-  "end": 28.351
+  "text": "quinze",
+  "start": 26.563,
+  "end": 26.819
  },
  {
   "id": "w84",
-  "text": "venda",
-  "start": 28.397,
-  "end": 28.618
+  "text": "segundos.",
+  "start": 26.865,
+  "end": 27.527
  },
  {
   "id": "w85",
-  "text": "passa",
-  "start": 28.722,
-  "end": 29.047
+  "text": "Resolveu?",
+  "start": 27.562,
+  "end": 28.189
  },
  {
   "id": "w86",
-  "text": "por",
-  "start": 29.082,
-  "end": 29.198
+  "text": "Ainda",
+  "start": 28.34,
+  "end": 28.63
  },
  {
   "id": "w87",
-  "text": "intermediário,",
-  "start": 29.233,
-  "end": 30.011
+  "text": "não.",
+  "start": 28.676,
+  "end": 28.955
  },
  {
   "id": "w88",
-  "text": "o",
-  "start": 30.139,
-  "end": 30.197
+  "text": "Chefe,",
+  "start": 29.663,
+  "end": 30.116
  },
  {
   "id": "w89",
-  "text": "dono",
-  "start": 30.255,
-  "end": 30.406
+  "text": "empurra",
+  "start": 30.267,
+  "end": 30.592
  },
  {
   "id": "w90",
-  "text": "de",
-  "start": 30.441,
-  "end": 30.487
+  "text": "contra",
+  "start": 30.638,
+  "end": 30.847
  },
  {
   "id": "w91",
-  "text": "verdade",
-  "start": 30.522,
-  "end": 30.893
+  "text": "o",
+  "start": 30.871,
+  "end": 30.894
  },
  {
   "id": "w92",
-  "text": "some,",
-  "start": 30.94,
-  "end": 31.416
+  "text": "quê?",
+  "start": 30.929,
+  "end": 31.242
  },
  {
   "id": "w93",
-  "text": "e",
-  "start": 31.532,
-  "end": 31.648
+  "text": "Deixa",
+  "start": 31.521,
+  "end": 31.765
  },
  {
   "id": "w94",
-  "text": "a",
-  "start": 31.683,
-  "end": 31.718
+  "text": "comigo:",
+  "start": 31.799,
+  "end": 32.275
  },
  {
   "id": "w95",
-  "text": "obra",
-  "start": 31.822,
-  "end": 31.996
+  "text": "lá",
+  "start": 32.659,
+  "end": 32.775
  },
  {
   "id": "w96",
-  "text": "pode",
-  "start": 32.066,
-  "end": 32.31
+  "text": "dentro",
+  "start": 32.821,
+  "end": 33.019
  },
  {
   "id": "w97",
-  "text": "ficar",
-  "start": 32.345,
-  "end": 32.577
+  "text": "tem",
+  "start": 33.053,
+  "end": 33.146
  },
  {
   "id": "w98",
-  "text": "guardada",
-  "start": 32.6,
-  "end": 33.018
+  "text": "uma",
+  "start": 33.181,
+  "end": 33.286
  },
  {
   "id": "w99",
-  "text": "numa",
-  "start": 33.053,
-  "end": 33.239
+  "text": "parede",
+  "start": 33.32,
+  "end": 33.611
  },
  {
   "id": "w100",
-  "text": "caixa:",
-  "start": 33.273,
-  "end": 33.738
+  "text": "que",
+  "start": 33.645,
+  "end": 33.796
  },
  {
   "id": "w101",
-  "text": "em",
-  "start": 33.982,
-  "end": 34.086
+  "text": "anda.",
+  "start": 33.82,
+  "end": 34.121
  },
  {
   "id": "w102",
-  "text": "Genebra,",
-  "start": 34.121,
-  "end": 34.632
+  "text": "Ela",
+  "start": 34.563,
+  "end": 34.737
  },
  {
   "id": "w103",
-  "text": "estimam",
-  "start": 34.736,
-  "end": 35.119
+  "text": "começa",
+  "start": 34.772,
+  "end": 35.201
  },
  {
   "id": "w104",
-  "text": "mais",
-  "start": 35.177,
-  "end": 35.375
+  "text": "colada",
+  "start": 35.271,
+  "end": 35.747
  },
  {
   "id": "w105",
-  "text": "de",
-  "start": 35.41,
-  "end": 35.456
+  "text": "na",
+  "start": 35.782,
+  "end": 35.851
  },
  {
   "id": "w106",
-  "text": "um",
-  "start": 35.491,
-  "end": 35.537
+  "text": "boca",
+  "start": 35.898,
+  "end": 36.269
  },
  {
   "id": "w107",
-  "text": "milhão",
-  "start": 35.561,
-  "end": 35.77
+  "text": "e,",
+  "start": 36.478,
+  "end": 36.629
  },
  {
   "id": "w108",
-  "text": "de",
-  "start": 35.816,
-  "end": 35.886
+  "text": "a",
+  "start": 36.664,
+  "end": 36.699
  },
  {
   "id": "w109",
-  "text": "obras",
-  "start": 35.99,
-  "end": 36.234
+  "text": "cada",
+  "start": 36.734,
+  "end": 36.931
  },
  {
   "id": "w110",
-  "text": "num",
-  "start": 36.269,
-  "end": 36.35
+  "text": "pá,",
+  "start": 36.978,
+  "end": 37.326
  },
  {
   "id": "w111",
-  "text": "depósito",
-  "start": 36.385,
-  "end": 36.907
+  "text": "recua",
+  "start": 37.454,
+  "end": 37.744
  },
  {
   "id": "w112",
-  "text": "sem",
-  "start": 36.965,
-  "end": 37.128
+  "text": "um",
+  "start": 37.767,
+  "end": 37.813
  },
  {
   "id": "w113",
-  "text": "imposto.",
-  "start": 37.151,
-  "end": 37.743
+  "text": "pouquinho,",
+  "start": 37.86,
+  "end": 38.394
  },
  {
   "id": "w114",
-  "text": "Resolveu?",
-  "start": 38.08,
-  "end": 38.719
+  "text": "sem",
+  "start": 38.603,
+  "end": 38.835
  },
  {
   "id": "w115",
-  "text": "Ainda",
-  "start": 39.055,
-  "end": 39.334
+  "text": "nunca",
+  "start": 38.893,
+  "end": 39.137
  },
  {
   "id": "w116",
-  "text": "não.",
-  "start": 39.38,
-  "end": 39.682
+  "text": "soltar.",
+  "start": 39.172,
+  "end": 39.648
  },
  {
   "id": "w117",
-  "text": "Como",
-  "start": 39.891,
-  "end": 40.112
+  "text": "Um",
+  "start": 40.031,
+  "end": 40.194
  },
  {
   "id": "w118",
-  "text": "pegam,",
-  "start": 40.147,
-  "end": 40.425
+  "text": "metro",
+  "start": 40.228,
+  "end": 40.53
  },
  {
   "id": "w119",
-  "text": "então?",
-  "start": 40.448,
-  "end": 40.878
+  "text": "cúbico",
+  "start": 40.565,
+  "end": 40.89
  },
  {
   "id": "w120",
-  "text": "Pelo",
-  "start": 41.215,
-  "end": 41.424
+  "text": "chega",
+  "start": 40.937,
+  "end": 41.157
  },
  {
   "id": "w121",
-  "text": "que",
-  "start": 41.458,
-  "end": 41.528
+  "text": "a",
+  "start": 41.18,
+  "end": 41.204
  },
  {
   "id": "w122",
-  "text": "não",
-  "start": 41.563,
-  "end": 41.656
+  "text": "pesar",
+  "start": 41.227,
+  "end": 41.482
  },
  {
   "id": "w123",
-  "text": "combina:",
-  "start": 41.691,
-  "end": 42.248
+  "text": "uns",
+  "start": 41.517,
+  "end": 41.61
  },
  {
   "id": "w124",
-  "text": "preço",
-  "start": 42.457,
-  "end": 42.736
+  "text": "seiscentos",
+  "start": 41.656,
+  "end": 42.214
  },
  {
   "id": "w125",
-  "text": "muito",
-  "start": 42.817,
-  "end": 43.13
+  "text": "quilos.",
+  "start": 42.272,
+  "end": 42.771
  },
  {
   "id": "w126",
-  "text": "acima",
+  "text": "Resolveu?",
   "start": 43.154,
-  "end": 43.409
+  "end": 43.758
  },
  {
   "id": "w127",
-  "text": "do",
-  "start": 43.444,
-  "end": 43.49
+  "text": "Ainda",
+  "start": 44.002,
+  "end": 44.28
  },
  {
   "id": "w128",
-  "text": "normal,",
-  "start": 43.537,
-  "end": 44.071
+  "text": "não.",
+  "start": 44.327,
+  "end": 44.594
  },
  {
   "id": "w129",
-  "text": "pago",
-  "start": 44.199,
-  "end": 44.408
+  "text": "Chefe,",
+  "start": 45.418,
+  "end": 45.975
  },
  {
   "id": "w130",
-  "text": "em",
-  "start": 44.431,
-  "end": 44.477
+  "text": "a",
+  "start": 46.161,
+  "end": 46.207
  },
  {
   "id": "w131",
-  "text": "dinheiro",
-  "start": 44.512,
-  "end": 44.767
+  "text": "caixa",
+  "start": 46.277,
+  "end": 46.486
  },
  {
   "id": "w132",
-  "text": "vivo,",
-  "start": 44.814,
-  "end": 45.267
+  "text": "encheu.",
+  "start": 46.509,
+  "end": 46.962
  },
  {
   "id": "w133",
-  "text": "por",
-  "start": 45.371,
-  "end": 45.476
+  "text": "Deixa",
+  "start": 47.565,
+  "end": 47.798
  },
  {
   "id": "w134",
-  "text": "um",
-  "start": 45.522,
-  "end": 45.592
+  "text": "comigo:",
+  "start": 47.832,
+  "end": 48.308
  },
  {
   "id": "w135",
-  "text": "comprador",
-  "start": 45.615,
-  "end": 45.987
+  "text": "no",
+  "start": 48.552,
+  "end": 48.633
  },
  {
   "id": "w136",
-  "text": "que",
-  "start": 46.021,
-  "end": 46.114
+  "text": "aterro,",
+  "start": 48.68,
+  "end": 49.109
  },
  {
   "id": "w137",
-  "text": "nem",
-  "start": 46.219,
-  "end": 46.37
+  "text": "a",
+  "start": 49.237,
+  "end": 49.284
  },
  {
   "id": "w138",
-  "text": "liga",
-  "start": 46.428,
-  "end": 46.602
+  "text": "boca",
+  "start": 49.342,
+  "end": 49.551
  },
  {
   "id": "w139",
-  "text": "pra",
-  "start": 46.637,
-  "end": 46.718
+  "text": "levanta,",
+  "start": 49.586,
+  "end": 50.062
  },
  {
   "id": "w140",
-  "text": "quem",
-  "start": 46.753,
-  "end": 46.857
+  "text": "e",
+  "start": 50.166,
+  "end": 50.27
  },
  {
   "id": "w141",
-  "text": "pintou.",
-  "start": 46.88,
-  "end": 47.368
+  "text": "a",
+  "start": 50.305,
+  "end": 50.329
  },
  {
   "id": "w142",
-  "text": "No",
-  "start": 47.496,
-  "end": 47.565
+  "text": "parede",
+  "start": 50.375,
+  "end": 50.677
  },
  {
   "id": "w143",
-  "text": "Brasil,",
-  "start": 47.6,
-  "end": 48.088
+  "text": "anda",
+  "start": 50.712,
+  "end": 50.921
  },
  {
   "id": "w144",
-  "text": "a",
-  "start": 48.204,
-  "end": 48.25
+  "text": "de",
+  "start": 50.955,
+  "end": 51.025
  },
  {
   "id": "w145",
-  "text": "galeria",
-  "start": 48.309,
-  "end": 48.587
+  "text": "volta",
+  "start": 51.083,
+  "end": 51.385
  },
  {
   "id": "w146",
-  "text": "tem",
-  "start": 48.668,
-  "end": 48.808
+  "text": "e",
+  "start": 51.443,
+  "end": 51.478
  },
  {
   "id": "w147",
-  "text": "que",
-  "start": 48.843,
-  "end": 48.912
+  "text": "empurra",
+  "start": 51.513,
+  "end": 51.815
  },
  {
   "id": "w148",
-  "text": "avisar",
-  "start": 48.935,
-  "end": 49.214
+  "text": "tudo",
+  "start": 51.896,
+  "end": 52.093
  },
  {
   "id": "w149",
-  "text": "o",
-  "start": 49.249,
-  "end": 49.272
+  "text": "pra",
+  "start": 52.128,
+  "end": 52.221
  },
  {
   "id": "w150",
-  "text": "Coaf",
-  "start": 49.307,
-  "end": 49.655
+  "text": "fora.",
+  "start": 52.279,
+  "end": 52.627
  },
  {
   "id": "w151",
-  "text": "quando",
-  "start": 49.76,
-  "end": 49.969
+  "text": "Resolveu?",
+  "start": 52.964,
+  "end": 53.579
  },
  {
   "id": "w152",
-  "text": "recebe",
-  "start": 50.004,
-  "end": 50.352
+  "text": "Ainda",
+  "start": 53.858,
+  "end": 54.125
  },
  {
   "id": "w153",
-  "text": "dez",
-  "start": 50.422,
-  "end": 50.619
+  "text": "não.",
+  "start": 54.171,
+  "end": 54.45
  },
  {
   "id": "w154",
-  "text": "mil",
-  "start": 50.665,
-  "end": 50.77
+  "text": "Chefe,",
+  "start": 54.891,
+  "end": 55.437
  },
  {
   "id": "w155",
-  "text": "reais",
-  "start": 50.816,
-  "end": 51.083
+  "text": "o",
+  "start": 55.588,
+  "end": 55.646
  },
  {
   "id": "w156",
-  "text": "ou",
-  "start": 51.153,
-  "end": 51.211
+  "text": "lixo",
+  "start": 55.692,
+  "end": 55.855
  },
  {
   "id": "w157",
-  "text": "mais",
-  "start": 51.257,
-  "end": 51.466
+  "text": "apodrece",
+  "start": 55.878,
+  "end": 56.331
  },
  {
   "id": "w158",
-  "text": "em",
-  "start": 51.501,
-  "end": 51.548
+  "text": "e",
+  "start": 56.354,
+  "end": 56.377
  },
  {
   "id": "w159",
-  "text": "dinheiro",
-  "start": 51.583,
-  "end": 51.826
+  "text": "solta",
+  "start": 56.435,
+  "end": 56.702
  },
  {
   "id": "w160",
-  "text": "vivo.",
-  "start": 51.873,
-  "end": 52.233
+  "text": "caldo",
+  "start": 56.772,
+  "end": 57.051
  },
  {
   "id": "w161",
-  "text": "Agora",
-  "start": 52.569,
-  "end": 52.929
+  "text": "e",
+  "start": 57.074,
+  "end": 57.097
  },
  {
   "id": "w162",
-  "text": "sim,",
-  "start": 52.976,
-  "end": 53.336
+  "text": "gás.",
+  "start": 57.144,
+  "end": 57.643
  },
  {
   "id": "w163",
-  "text": "resolvido.",
-  "start": 53.463,
-  "end": 54.113
+  "text": "Deixa",
+  "start": 57.794,
+  "end": 58.003
  },
  {
   "id": "w164",
-  "text": "Você",
-  "start": 54.821,
-  "end": 55.007
+  "text": "comigo:",
+  "start": 58.026,
+  "end": 58.502
  },
  {
   "id": "w165",
-  "text": "pagaria",
-  "start": 55.054,
-  "end": 55.321
+  "text": "embaixo",
+  "start": 58.688,
+  "end": 59.21
  },
  {
   "id": "w166",
-  "text": "um",
-  "start": 55.402,
-  "end": 55.495
+  "text": "tem",
+  "start": 59.268,
+  "end": 59.419
  },
  {
   "id": "w167",
-  "text": "milhão",
-  "start": 55.518,
-  "end": 55.727
+  "text": "uma",
+  "start": 59.454,
+  "end": 59.582
  },
  {
   "id": "w168",
-  "text": "de",
-  "start": 55.762,
-  "end": 55.808
+  "text": "manta,",
+  "start": 59.617,
+  "end": 60.011
  },
  {
   "id": "w169",
-  "text": "reais",
-  "start": 55.843,
-  "end": 56.052
+  "text": "o",
+  "start": 60.162,
+  "end": 60.232
  },
  {
   "id": "w170",
-  "text": "num",
-  "start": 56.087,
-  "end": 56.168
+  "text": "caldo",
+  "start": 60.278,
+  "end": 60.499
  },
  {
   "id": "w171",
-  "text": "quadro?",
-  "start": 56.203,
-  "end": 56.667
+  "text": "vai",
+  "start": 60.534,
+  "end": 60.638
  },
  {
   "id": "w172",
-  "text": "Comenta",
-  "start": 56.818,
-  "end": 57.167
+  "text": "pra",
+  "start": 60.673,
+  "end": 60.754
  },
  {
   "id": "w173",
-  "text": "aí,",
-  "start": 57.19,
-  "end": 57.492
+  "text": "tratamento,",
+  "start": 60.789,
+  "end": 61.393
  },
  {
   "id": "w174",
   "text": "e",
-  "start": 57.515,
-  "end": 57.619
+  "start": 61.474,
+  "end": 61.555
  },
  {
   "id": "w175",
-  "text": "manda",
-  "start": 57.677,
-  "end": 57.84
+  "text": "o",
+  "start": 61.613,
+  "end": 61.66
  },
  {
   "id": "w176",
-  "text": "pro",
-  "start": 57.886,
-  "end": 57.968
+  "text": "gás",
+  "start": 61.706,
+  "end": 61.904
  },
  {
   "id": "w177",
-  "text": "amigo",
-  "start": 58.026,
-  "end": 58.293
+  "text": "vira",
+  "start": 61.938,
+  "end": 62.089
  },
  {
   "id": "w178",
-  "text": "que",
-  "start": 58.328,
-  "end": 58.409
+  "text": "luz,",
+  "start": 62.147,
+  "end": 62.554
  },
  {
   "id": "w179",
-  "text": "jura",
-  "start": 58.467,
-  "end": 58.618
+  "text": "igual",
+  "start": 62.705,
+  "end": 62.995
  },
  {
   "id": "w180",
-  "text": "que",
-  "start": 58.653,
-  "end": 58.722
+  "text": "o",
+  "start": 63.076,
+  "end": 63.111
  },
  {
   "id": "w181",
-  "text": "pintava",
-  "start": 58.757,
-  "end": 59.071
+  "text": "bagaço",
+  "start": 63.146,
+  "end": 63.494
  },
  {
   "id": "w182",
-  "text": "isso",
-  "start": 59.129,
-  "end": 59.291
+  "text": "da",
+  "start": 63.517,
+  "end": 63.587
  },
  {
   "id": "w183",
-  "text": "de",
-  "start": 59.326,
-  "end": 59.407
+  "text": "usina.",
+  "start": 63.622,
+  "end": 64.051
  },
  {
   "id": "w184",
-  "text": "olho",
-  "start": 59.454,
-  "end": 59.605
+  "text": "Agora",
+  "start": 64.295,
+  "end": 64.702
  },
  {
   "id": "w185",
-  "text": "fechado.",
-  "start": 59.639,
-  "end": 60.371
+  "text": "sim,",
+  "start": 64.771,
+  "end": 65.085
+ },
+ {
+  "id": "w186",
+  "text": "resolvido.",
+  "start": 65.294,
+  "end": 65.897
+ },
+ {
+  "id": "w187",
+  "text": "E",
+  "start": 66.234,
+  "end": 66.315
+ },
+ {
+  "id": "w188",
+  "text": "a",
+  "start": 66.373,
+  "end": 66.397
+ },
+ {
+  "id": "w189",
+  "text": "conta?",
+  "start": 66.455,
+  "end": 66.861
+ },
+ {
+  "id": "w190",
+  "text": "O",
+  "start": 67.465,
+  "end": 67.523
+ },
+ {
+  "id": "w191",
+  "text": "Brasil",
+  "start": 67.592,
+  "end": 67.801
+ },
+ {
+  "id": "w192",
+  "text": "jogou",
+  "start": 67.836,
+  "end": 68.022
+ },
+ {
+  "id": "w193",
+  "text": "fora",
+  "start": 68.08,
+  "end": 68.359
+ },
+ {
+  "id": "w194",
+  "text": "quase",
+  "start": 68.428,
+  "end": 68.684
+ },
+ {
+  "id": "w195",
+  "text": "oitenta",
+  "start": 68.719,
+  "end": 69.137
+ },
+ {
+  "id": "w196",
+  "text": "e",
+  "start": 69.16,
+  "end": 69.195
+ },
+ {
+  "id": "w197",
+  "text": "dois",
+  "start": 69.23,
+  "end": 69.45
+ },
+ {
+  "id": "w198",
+  "text": "milhões",
+  "start": 69.497,
+  "end": 69.787
+ },
+ {
+  "id": "w199",
+  "text": "de",
+  "start": 69.81,
+  "end": 69.856
+ },
+ {
+  "id": "w200",
+  "text": "toneladas",
+  "start": 69.903,
+  "end": 70.414
+ },
+ {
+  "id": "w201",
+  "text": "num",
+  "start": 70.46,
+  "end": 70.669
+ },
+ {
+  "id": "w202",
+  "text": "ano,",
+  "start": 70.692,
+  "end": 71.052
+ },
+ {
+  "id": "w203",
+  "text": "e",
+  "start": 71.203,
+  "end": 71.331
+ },
+ {
+  "id": "w204",
+  "text": "quatro",
+  "start": 71.401,
+  "end": 71.76
+ },
+ {
+  "id": "w205",
+  "text": "em",
+  "start": 71.83,
+  "end": 71.923
+ },
+ {
+  "id": "w206",
+  "text": "cada",
+  "start": 71.981,
+  "end": 72.202
+ },
+ {
+  "id": "w207",
+  "text": "dez",
+  "start": 72.26,
+  "end": 72.573
+ },
+ {
+  "id": "w208",
+  "text": "ainda",
+  "start": 72.724,
+  "end": 72.968
+ },
+ {
+  "id": "w209",
+  "text": "vão",
+  "start": 73.026,
+  "end": 73.2
+ },
+ {
+  "id": "w210",
+  "text": "pra",
+  "start": 73.235,
+  "end": 73.316
+ },
+ {
+  "id": "w211",
+  "text": "lugar",
+  "start": 73.351,
+  "end": 73.583
+ },
+ {
+  "id": "w212",
+  "text": "errado.",
+  "start": 73.618,
+  "end": 74.094
+ },
+ {
+  "id": "w213",
+  "text": "O",
+  "start": 74.477,
+  "end": 74.558
+ },
+ {
+  "id": "w214",
+  "text": "prazo",
+  "start": 74.663,
+  "end": 74.988
+ },
+ {
+  "id": "w215",
+  "text": "pra",
+  "start": 75.023,
+  "end": 75.116
+ },
+ {
+  "id": "w216",
+  "text": "fechar",
+  "start": 75.151,
+  "end": 75.394
+ },
+ {
+  "id": "w217",
+  "text": "os",
+  "start": 75.429,
+  "end": 75.51
+ },
+ {
+  "id": "w218",
+  "text": "lixões",
+  "start": 75.545,
+  "end": 75.94
+ },
+ {
+  "id": "w219",
+  "text": "venceu",
+  "start": 75.975,
+  "end": 76.23
+ },
+ {
+  "id": "w220",
+  "text": "em",
+  "start": 76.265,
+  "end": 76.323
+ },
+ {
+  "id": "w221",
+  "text": "dois",
+  "start": 76.381,
+  "end": 76.602
+ },
+ {
+  "id": "w222",
+  "text": "mil",
+  "start": 76.66,
+  "end": 76.787
+ },
+ {
+  "id": "w223",
+  "text": "e",
+  "start": 76.834,
+  "end": 76.869
+ },
+ {
+  "id": "w224",
+  "text": "vinte",
+  "start": 76.904,
+  "end": 77.112
+ },
+ {
+  "id": "w225",
+  "text": "e",
+  "start": 77.136,
+  "end": 77.171
+ },
+ {
+  "id": "w226",
+  "text": "quatro.",
+  "start": 77.205,
+  "end": 77.589
+ },
+ {
+  "id": "w227",
+  "text": "Quem",
+  "start": 77.925,
+  "end": 78.076
+ },
+ {
+  "id": "w228",
+  "text": "paga",
+  "start": 78.123,
+  "end": 78.297
+ },
+ {
+  "id": "w229",
+  "text": "a",
+  "start": 78.32,
+  "end": 78.343
+ },
+ {
+  "id": "w230",
+  "text": "coleta",
+  "start": 78.366,
+  "end": 78.75
+ },
+ {
+  "id": "w231",
+  "text": "é",
+  "start": 78.808,
+  "end": 78.854
+ },
+ {
+  "id": "w232",
+  "text": "você:",
+  "start": 78.889,
+  "end": 79.376
+ },
+ {
+  "id": "w233",
+  "text": "uns",
+  "start": 79.562,
+  "end": 79.678
+ },
+ {
+  "id": "w234",
+  "text": "duzentos",
+  "start": 79.702,
+  "end": 80.038
+ },
+ {
+  "id": "w235",
+  "text": "e",
+  "start": 80.085,
+  "end": 80.108
+ },
+ {
+  "id": "w236",
+  "text": "vinte",
+  "start": 80.143,
+  "end": 80.328
+ },
+ {
+  "id": "w237",
+  "text": "reais",
+  "start": 80.387,
+  "end": 80.63
+ },
+ {
+  "id": "w238",
+  "text": "por",
+  "start": 80.677,
+  "end": 80.816
+ },
+ {
+  "id": "w239",
+  "text": "ano.",
+  "start": 80.851,
+  "end": 81.106
+ },
+ {
+  "id": "w240",
+  "text": "E",
+  "start": 81.385,
+  "end": 81.489
+ },
+ {
+  "id": "w241",
+  "text": "esse",
+  "start": 81.559,
+  "end": 81.698
+ },
+ {
+  "id": "w242",
+  "text": "lixo",
+  "start": 81.733,
+  "end": 81.965
+ },
+ {
+  "id": "w243",
+  "text": "todo",
+  "start": 82.082,
+  "end": 82.337
+ },
+ {
+  "id": "w244",
+  "text": "vai",
+  "start": 82.372,
+  "end": 82.465
+ },
+ {
+  "id": "w245",
+  "text": "pra",
+  "start": 82.488,
+  "end": 82.592
+ },
+ {
+  "id": "w246",
+  "text": "onde?",
+  "start": 82.674,
+  "end": 82.964
+ },
+ {
+  "id": "w247",
+  "text": "Que",
+  "start": 83.092,
+  "end": 83.185
+ },
+ {
+  "id": "w248",
+  "text": "dia",
+  "start": 83.231,
+  "end": 83.324
+ },
+ {
+  "id": "w249",
+  "text": "o",
+  "start": 83.347,
+  "end": 83.382
+ },
+ {
+  "id": "w250",
+  "text": "caminhão",
+  "start": 83.417,
+  "end": 83.719
+ },
+ {
+  "id": "w251",
+  "text": "passa",
+  "start": 83.765,
+  "end": 83.986
+ },
+ {
+  "id": "w252",
+  "text": "na",
+  "start": 84.02,
+  "end": 84.078
+ },
+ {
+  "id": "w253",
+  "text": "sua",
+  "start": 84.125,
+  "end": 84.287
+ },
+ {
+  "id": "w254",
+  "text": "rua?",
+  "start": 84.311,
+  "end": 84.659
+ },
+ {
+  "id": "w255",
+  "text": "Comenta",
+  "start": 84.81,
+  "end": 85.181
+ },
+ {
+  "id": "w256",
+  "text": "aí.",
+  "start": 85.205,
+  "end": 85.681
  }
 ]
