@@ -8,7 +8,7 @@ import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBac
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
 import { COSTUMES, Crowd, Worker, poseOf } from "../../toy/worker";
 import type { PoseName } from "../../toy/worker";
-import { C1, C2, C3, C6, RING_T, ROCKS_N, ROCK_FALL, ROCK_T, T } from "./cues";
+import { C1, C2, C3, C6, RING_T, ROCKS_N, ROCK_FALL, ROCK_T, T, TOP1 } from "./cues";
 
 const PI = Math.PI;
 // ---------------------------------------------------------------- geografia
@@ -25,7 +25,7 @@ export const P = (a: number, r: number, y: number): V3 => [r * Math.sin(a), y, r
 export const DEMO = 4;                                             // o anel cujo muro os pedreiros erguem em «muros de piedra en círculos»
 export const DIO: V3 = [0, 150, 0];                                // origem dos dioramas (cortes) no céu
 type PitDef = { x: number; z: number; R: number; d: number };
-export const PB: PitDef = { x: -74, z: 22, R: 16, d: 7 }, PC: PitDef = { x: 74, z: 30, R: 15, d: 6.5 }, PD: PitDef = { x: -28, z: 76, R: 13, d: 6 };
+export const PB: PitDef = { x: -150, z: 62, R: 20, d: 8 }, PC: PitDef = { x: 74, z: 30, R: 18, d: 7 }, PD: PitDef = { x: -106, z: 62, R: 16, d: 7 };   // PB e PD lado a lado (o plano de «hoyos enormes»)
 // morro ao norte: as nascentes ficam em cima
 const HILL = { x: 0, z: -178, rx: 80, rz: 62, h: 25 };
 export const hillY = (x: number, z: number) => { const q = 1 - ((x - HILL.x) / HILL.rx) ** 2 - ((z - HILL.z) / HILL.rz) ** 2; return q <= 0 ? 0 : HILL.h * Math.sqrt(q) * Math.min(1, q * 2.2); };
@@ -177,8 +177,8 @@ const Tufts: React.FC = () => {
 };
 
 // ---------------------------------------------------------------- a tigela principal
-const ac = (i: number) => PI + 0.9 * (i + 1);                          // onde a água cai do anel i para o anel i+1 (espiral)
-const STA = (i: number) => 0.35 + i * 0.61;                            // onde ficam as pedras que saem do muro (anel i)
+const ac = (i: number) => PI + 0.9 * (Math.floor(i / 3) + 1) + 0.06 * (i % 3);   // onde a água cai do anel i para o i+1: 3 quedas seguidas quase na mesma vertical (escadinha d'água que a câmera enquadra)
+const STA = (i: number) => (i >= 6 && i <= 9 ? 0.35 + 6 * 0.61 : 0.35 + i * 0.61);   // as pedras dos anéis 6–9 na mesma vertical: a escada que o construtor desce                            // onde ficam as pedras que saem do muro (anel i)
 export const STONE_RING = 6, STONE_A = STA(6);
 const tintK = (t: number) => ease(t, T.donde, T.donde + 0.9) * (1 - ease(t, T.paraellos, T.paraellos + 1.0));
 const cropCol = (i: number, t: number) => {
@@ -207,12 +207,12 @@ const BowlRing: React.FC<{ i: number; t: number }> = ({ i, t }) => {
       {i < N - 1 && s.w > 0.01 ? (
         <G p={[0, yb, 0]} sc={[1, Math.max(0.001, s.w), 1]}>
           {blocks ? Array.from({ length: BLK }, (_, j) => {
-            const tj = lerp(T.c1 + 0.2, T.circulosEnd - 0.4, j / (BLK - 1)), u = prog(t, tj, tj + 0.3); if (t < tj) return null;
+            const tj = lerp(TOP1 - 0.12, T.circulosEnd - 0.4, j / (BLK - 1)), u = prog(t, tj, tj + 0.3); if (t < tj) return null;
             const a = STA(0) + ((j + 0.5) * PI * 2) / BLK, arc = (rIn(i) * PI * 2) / BLK;
             return <Box key={j} s={[arc * 0.96, wallH, 1.5]} p={P(a, rIn(i) - 0.3, wallH / 2 + (1 - ease(u, 0, 1)) * 7)} r={[0, a, 0]} sc={0.8 + 0.2 * u} c={j % 2 ? "#cfc5b8" : "#9a8f84"} o={{ flat: true }} cast={false} />;
           }) : <Cyl rt={rIn(i)} h={wallH} p={[0, wallH / 2, 0]} seg={48} open c={i % 2 ? STONE : STONE2} ts={i === DEMO ? STA(0) : 0} tl={i === DEMO ? PI * 2 * Math.max(0.001, s.sw) : PI * 2} o={{ side: "double", flat: true }} cast={false} />}
           {blocks ? null : [0.28, 0.58, 0.88].map((q, k) => <Cyl key={k} rt={rIn(i) + 0.03} h={0.07} p={[0, wallH * q, 0]} seg={48} open c={k === 1 ? "#b9aea0" : "#6f655b"} ts={i === DEMO ? STA(0) : 0} tl={i === DEMO ? PI * 2 * Math.max(0.001, s.sw) : PI * 2} o={{ side: "double" }} cast={false} />)}
-          {[0, 1, 2].map((k) => <Box key={k} s={[1.1, 0.26, 0.62]} p={P(STA(i) + k * 0.05, rIn(i) - 0.2, wallH - 0.5 - k * 0.5)} r={[0, STA(i) + k * 0.05, 0]} c="#b3a79a" />)}
+          {[0, 1, 2].map((k) => <Box key={k} s={i >= 6 && i <= 9 ? [1.5, 0.28, 0.85] : [1.1, 0.26, 0.62]} p={P(STA(i) + k * 0.05, rIn(i) - 0.2, wallH - 0.5 - k * 0.5)} r={[0, STA(i) + k * 0.05, 0]} c="#b3a79a" />)}
           {cas > 0.01 && wetNow ? <G>
             <Box s={[0.62, wallH * cas, 0.14]} p={[...P(ac(i), rIn(i) - 0.1, wallH - (wallH * cas) / 2)] as V3} r={[0, ac(i), 0]} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 1.0, opacity: 0.92 }} cast={false} />
             <Box s={[1.0, 0.3, 0.55]} p={P(ac(i), rIn(i) - 0.15, wallH + 0.02)} r={[0, ac(i), 0]} c="#cfc4b6" cast={false} />
@@ -374,7 +374,7 @@ const Figures: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- contexto: a altura (régua), o corte do solo (diorama), a fundura
-const AltRuler: React.FC<{ t: number }> = ({ t }) => (t < T.tresmil - 0.1 || t >= T.suelo ? null : <Ruler p={[54, 0, -30]} h={52} k={ease(t, T.tresmil, T.metros34)} step={4} w={3.2} />);
+const AltRuler: React.FC<{ t: number }> = ({ t }) => (t < T.altura || t >= T.suelo ? null : <Ruler p={[54, 0, -30]} h={52} k={prog(t, T.altura + 0.05, T.metros34)} step={4} w={3.2} />);
 const DepthRuler: React.FC<{ t: number }> = ({ t }) => (t < T.treinta - 0.1 || t >= T.p1 + 0.05 ? null : <Ruler p={[0, FLOOR, 0]} h={DEPTH} k={ease(t, T.treinta, T.treintaEnd)} step={1.7} w={2.3} />);
 const ON_GEO = (t: number) => t >= T.suelo - 0.02 && t < C2 + 0.05;
 const glow = (t: number, a: number) => (t < a ? 0 : Math.round(Math.max(0, 1 - (t - a) / 0.7) * 6) / 6);
@@ -466,7 +466,7 @@ const Fill: React.FC<{ t: number }> = ({ t }) => {
 const rMid = (i: number) => (rIn(i) + rOut(i)) / 2;
 const LevelBall: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.plano - 0.02 || t >= T.terraza) return null;
-  const k = popK(t, T.plano, 0.3), y = yT(STONE_RING) + 0.1, a = STONE_A + 0.5, hop = Math.abs(Math.sin((t - T.plano - 0.25) * 9)) * Math.exp(-(t - T.plano) * 3.2) * 0.9;
+  const k = popK(t, T.plano, 0.3), y = yT(STONE_RING) + 0.1, a = STONE_A - 0.3, hop = Math.abs(Math.sin((t - T.plano - 0.25) * 9)) * Math.exp(-(t - T.plano) * 3.2) * 0.9;
   return (
     <G sc={Math.max(0.001, k)}>
       <G p={P(a, rMid(STONE_RING), y + 0.18)} r={[0, a, 0]}>
@@ -494,6 +494,8 @@ const Spring: React.FC<{ q: V3; t: number; ph: number }> = ({ q, t, ph }) => {
 const MP: V3 = [0, 0.45, -88];
 const chSeg = (a: V3, b: V3, n: number) => Array.from({ length: n + 1 }, (_, k): V3 => { const x = lerp(a[0], b[0], k / n), z = lerp(a[2], b[2], k / n); return [x, Math.max(0.45, hillY(x, z) + 0.45), z]; });
 const CH = [chSeg(SPR[0], MP, 8), chSeg(SPR[1], MP, 8), chSeg(MP, RIMN, 6)];
+/** a ponta da obra dos canais (onde a água acaba de chegar): a câmera corre com ela */
+export const chanFront = (t: number): V3 => { const cp = prog(t, T.canales, T.bordeEnd); return cp < 0.5 ? along(CH[0], prog(cp, 0, 0.55)) : along(CH[2], prog(cp, 0.45, 1)); };
 const Channels: React.FC<{ t: number }> = ({ t }) => {
   const cp = prog(t, T.canales, T.bordeEnd), fr = [prog(cp, 0, 0.55), prog(cp, 0, 0.55), prog(cp, 0.45, 1)];
   if (cp <= 0) return null;
@@ -501,7 +503,7 @@ const Channels: React.FC<{ t: number }> = ({ t }) => {
     <G>
       {CH.map((pts, c) => <G key={c}>
         {pts.slice(0, -1).map((a, j) => (j / (pts.length - 1) < fr[c] ? <G key={j}><Pipe a={a} b={pts[j + 1]} rad={0.62} c={STONE} seg={8} /><Pipe a={[a[0], a[1] + 0.35, a[2]]} b={[pts[j + 1][0], pts[j + 1][1] + 0.35, pts[j + 1][2]]} rad={0.36} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 0.9 }} seg={8} cast={false} /></G> : null))}
-        <Beads t={t} pts={pts.map((q): V3 => [q[0], q[1] + 0.8, q[2]])} n={c === 2 ? 9 : 6} speed={0.45} r={0.34} ph={c * 0.2} on={fr[c] > 0.98} />
+        <Beads t={t} pts={pts.slice(0, 1 + Math.ceil(fr[c] * (pts.length - 1))).map((q): V3 => [q[0], q[1] + 0.8, q[2]])} n={c === 2 ? 9 : 7} speed={0.9} r={0.42} ph={c * 0.2} on={fr[c] > 0.04} />
       </G>)}
       {cp >= 1 ? <Pipe a={[RIMN[0], 0.6, RIMN[2]]} b={P(PI, rOut(0) + 0.3, yT(0) + 0.3)} rad={0.5} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 1.0 }} seg={8} cast={false} /> : null}
     </G>
@@ -579,7 +581,7 @@ const Lab: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => {
   return (
     <G>
       <Bill p={LAB} cam={cam} yawOnly>
-        <G sc={Math.max(0.001, k) * 0.6} r={[0, 0, -tip]}>
+        <G sc={Math.max(0.001, k) * (t < T.equipo ? 0.9 : 0.6)} r={[0, 0, -tip]}>
           <Cyl rt={0.3} h={15} p={[-5.4, 7.5, -0.2]} c="#7a4a2a" seg={6} /><Cyl rt={0.3} h={15} p={[5.4, 7.5, -0.2]} c="#7a4a2a" seg={6} />
           <G p={[0, 13, 0]}><SignBoard lines={[["SE DICE:", 62, "#6b3a10"], ["LABORATORIO", 60, "#2b1a08"]]} bg="#f6e7c0" border="#7a4a2a" s={[13, 6.5]} />
             {hip > 0 ? <G p={[0.4, -4.1, 0.3]} r={[0, 0, -0.05]} sc={Math.max(0.001, hip) * (1 + 0.8 * (1 - hip))}><SignBoard lines={[["HIPÓTESIS", 66, "#c8352a"]]} bg="#fff4e0" border="#c8352a" s={[10.6, 3.3]} px={[520, 160]} /></G> : null}
@@ -706,23 +708,23 @@ const MorayLife: React.FC<{ t: number }> = ({ t }) => {
 };
 void MOR;
 /** os 2 fios das nascentes correm um trecho e somem na terra seca (nunca chegam à tigela) */
-const TRK_Z = -111, TRK = SPR.map((q, s): V3[] => Array.from({ length: 8 }, (_, k) => { const z = lerp(q[2], TRK_Z, k / 7), x = q[0] + (s ? 1 : -1) * 0.25 * k; return [x, Math.max(0.35, hillY(x, z) + 0.35), z] as V3; }));
+const TRK_Z = -72, TRK = SPR.map((q, s): V3[] => Array.from({ length: 8 }, (_, k) => { const z = lerp(q[2], TRK_Z, k / 7), x = q[0] - (s ? 1 : -1) * 0.65 * k; return [x, Math.max(0.35, hillY(x, z) + 0.35), z] as V3; }));
 const Trickle: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.dos - 0.05 || t >= T.c2 + 0.05) return null;
   const g = ease(t, T.dos, T.dos + 0.75);
   return (
     <G>
       {TRK.map((pts, s) => <G key={s}>
-        {pts.slice(0, -1).map((a, j) => (j / (pts.length - 1) < g ? <Pipe key={j} a={a} b={pts[j + 1]} rad={0.5 - 0.04 * j} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 0.9 }} seg={8} cast={false} /> : null))}
+        {pts.slice(0, -1).map((a, j) => (j / (pts.length - 1) < g ? <Pipe key={j} a={a} b={pts[j + 1]} rad={0.8 - 0.07 * j} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 0.9 }} seg={8} cast={false} /> : null))}
         <Beads t={t} pts={pts.map((q): V3 => [q[0], q[1] + 0.5, q[2]])} n={4} speed={0.5} r={0.28} ph={s * 0.3} on={g > 0.95} />
         {g > 0.5 ? <G p={[pts[7][0], 0.07, pts[7][2]]} sc={ease(g, 0.5, 0.95)}>
-          <Cyl rt={3.4} h={0.05} c="#8a6a44" cast={false} seg={20} /><Cyl rt={2.2} h={0.08} p={[0, 0.02, 0]} c="#6f5333" cast={false} seg={20} /><Cyl rt={1.0 + 0.15 * Math.sin(t * 6 + s)} h={0.1} p={[0, 0.04, 0]} c="#4a3a24" cast={false} seg={16} />
+          <Cyl rt={3.8} h={0.05} c="#8a6a44" cast={false} seg={20} /><Cyl rt={2.5} h={0.08} p={[0, 0.02, 0]} c="#6f5333" cast={false} seg={20} /><Cyl rt={1.2 + 0.2 * Math.sin(t * 6 + s)} h={0.1} p={[0, 0.04, 0]} c="#4a3a24" cast={false} seg={16} />
         </G> : null}
       </G>)}
     </G>
   );
 };
-const WILT = Array.from({ length: 10 }, (_, k) => ({ x: lerp(-16, 9, rnd(k + 60)), z: lerp(-60, -44.5, rnd(k + 70)), s: lerp(1.5, 2.2, rnd(k + 80)), tilt: lerp(0.5, 1.0, rnd(k + 90)), a: rnd(k + 95) * 6 }));
+const WILT = Array.from({ length: 10 }, (_, k) => ({ x: lerp(-14, 12, rnd(k + 60)), z: lerp(-98, -60, rnd(k + 70)), s: lerp(1.5, 2.2, rnd(k + 80)), tilt: lerp(0.5, 1.0, rnd(k + 90)), a: rnd(k + 95) * 6 }));
 const Wilt: React.FC<{ t: number }> = ({ t }) => (t < T.p2 || t >= T.c2 + 0.05 ? null : (
   <G>{WILT.map((q, k) => (
     <G key={k} p={[q.x, 0, q.z]} r={[0, q.a, 0]} sc={q.s}>
@@ -801,7 +803,7 @@ export const World: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => (
     <YearSun t={t} /><MorayLife t={t} /><Trickle t={t} /><Wilt t={t} /><Gush t={t} /><Crumble t={t} /><Parade t={t} /><AltRuler t={t} /><DepthRuler t={t} /><Geo t={t} /><Slide t={t} cam={cam} /><Fill t={t} /><LevelBall t={t} />
     <FilterCut t={t} /><Lab t={t} cam={cam} /><Engineers t={t} /><Ceremony t={t} cam={cam} />
     <XMark t={t} a={T.olla + 0.42} b={T.b3 - 0.02} p={[0, 12, 0]} cam={cam} sc={7} />
-    <QMark t={t} a={T.b3 + 0.04} b={T.c3 - 0.02} p={[0, 15, 0]} cam={cam} sc={1.5} />
-    <Check t={t} a={T.inunda + 0.1} b={T.drenaje} p={[0, FLOOR + 8, 0]} cam={cam} sc={2.0} />
+    <QMark t={t} a={T.b3 + 0.04} b={T.c3 - 0.02} p={[0, 25, 0]} cam={cam} sc={1.3} />
+    <Check t={t} a={T.inunda + 0.1} b={T.drenaje} p={[0, FLOOR + 9.4, 0]} cam={cam} sc={0.85} />
   </>
 );

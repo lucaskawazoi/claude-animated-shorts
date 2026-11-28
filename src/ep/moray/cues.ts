@@ -44,11 +44,13 @@ export const T = {
 /** o filtro: 7 rochas grandes caem uma a uma de «pusieron» até o fim de «rocas grandes» (fração do trecho entre frases, nunca segundos soltos); caem em ROCK_FALL s */
 export const ROCKS_N = 7, ROCK_FALL = 0.45;
 export const ROCK_T = (k: number) => T.pusieron + (T.grandesEnd - ROCK_FALL - 0.1 - T.pusieron) * (k / (ROCKS_N - 1));
+/** «muros de piedra»: o plano de cima só entra quando a 1.ª pedra do círculo começa a cair (antes, a parede íngreme com o construtor grande) */
+export const TOP1 = Math.max(CUTS[2] + 0.5, T.c1 + 0.15);
 export { CUTS, WINS };
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 
 /** cortes duros extras (começo de cada plano fora da régua), um a cada ~2–3 s; o episode.tsx tem os mesmos planos */
-export const XCUTS = [T.pero0, T.sola0, T.incas, T.sinmaq, T.altura, T.suelo, T.disuelve, T.quedan, T.hondo, T.p1, T.b1, T.pordentro, T.doce, T.plano, T.terraza,
+export const XCUTS = [T.pero0, T.sola0, T.incas, T.sinmaq, T.altura, T.suelo, T.disuelve, T.quedan, T.hondo, T.p1, T.b1, TOP1, T.pordentro, T.doce, T.plano, T.terraza,
   T.solo2, T.b2, T.c2, T.bajan, T.riego, T.p3, T.hoyo, T.b3, T.c3, T.cuela, T.drenaje, T.giro, T.donde, T.equipo, T.noenc, T.paraellos, T.manda].filter((x) => !CUTS.some((c) => Math.abs(c - x) < 0.5));
 
 /** os 12 anéis aparecem de cima para baixo: o i-ésimo começa em RING_T(i, a, b) (fração do trecho entre duas frases, nunca segundos soltos) */
@@ -77,7 +79,7 @@ S.push(["rain", T.p1 + 0.2, -11], ["sandfall", T.lluvia + 0.1, -11], ["slide", T
 S.push(["drain", T.c1 + 0.15, -12], ["stone", T.muros, -11], ["stone", T.muros + 0.45, -12], ["stone", T.muros + 0.9, -13], ["ss-bricks", T.circulos, -11],
   ["dig", T.pordentro + 0.1, -11], ["gravel", T.relleno, -12], ["gravel", T.relleno + 0.4, -14], ["dig", T.relleno + 0.5, -12], ["ding", T.rellenoEnd, -10]);
 for (let i = 0; i < 12; i += 2) S.push(["pop", RING_T(i, T.doce, T.planoEnd) + 0.05, -14 - (i % 4)]);
-S.push(["ss-shimmer", T.doce + 0.1, -12], ["ding", T.plano + 0.3, -10], ["fs-steps", T.baja + 0.2, -11], ["stone", T.sobresalen, -12], ["fs-steps", T.sobresalen + 0.5, -11], ["chime", T.terraza + 0.35, -9]);
+S.push(["ss-shimmer", T.doce + 0.1, -12], ["ding", T.plano + 0.3, -10], ["fs-steps", T.baja + 0.2, -11], ["stone", T.baja + 0.75, -13], ["fs-steps", T.baja + 1.1, -12], ["stone", T.sobresalen, -12], ["fs-steps", T.sobresalen + 0.5, -11], ["stone", T.muro36 - 0.45, -13], ["chime", T.terraza + 0.35, -9]);
 // problema 2: sem rio, 2 nascentes
 S.push(["wind", T.p2, -15], ["drip", T.rio - 0.1, -11], ["strike", T.rio + 0.4, -11], ["buzzer", T.rio + 0.55, -14], ["bubble", T.dos, -12], ["bubble", T.dos + 0.25, -13], ["ding", T.solo2 + 0.55, -10]);
 // solução 2: canais, água correndo, quedas de anel em anel, título

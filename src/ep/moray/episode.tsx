@@ -11,9 +11,9 @@ import { HudData } from "../../toy/hud";
 import { V3, lerp, prog, sstep } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
 import type { Costume } from "../../toy/worker";
-import { C1, C2, C3, C4, C5, C6, C7, RING_T, SFX, T } from "./cues";
+import { C1, C2, C3, C4, C5, C6, C7, RING_T, SFX, T, TOP1 } from "./cues";
 import { EXPOSURE } from "./exposure";
-import { AW, DEPTH, DIO, FLOOR, FR, INCA, LAB, N, P, PB, PC, RB, RT, SHV, EXC, STONE_A, STONE_RING, World, engCam, hillY, rIn, rOut, yT } from "./world";
+import { AW, DEPTH, DIO, FLOOR, FR, INCA, LAB, N, P, PB, PC, PD, RB, RT, SHV, EXC, STONE_A, STONE_RING, World, chanFront, engCam, hillY, rIn, rOut, yT } from "./world";
 
 type Open = "a" | "b" | "c";
 export const OPEN_DEFAULT: Open = "a";
@@ -44,12 +44,13 @@ const steady = (c: CamState, t: number): CamState => {
 const shot = (name: string, t0: number, keys: Key[]): Shot => ({ name, t0, keys, fn: (t) => steady(keyed(keys, t), t) });
 const hold = (c: number, pos: V3, look: V3, fov = 54, roll = 0) => [K(c - 0.42, pos, look, fov, roll), K(c - 0.02, pos, look, fov, roll)];
 const DY = DIO[1];
+const WW_ = 1.2;   // meia largura de um anel (WW/2)
 const dd = (x: number, y: number, z: number): V3 => [DIO[0] + x, DY + y, DIO[2] + z];   // ponto no diorama (corte) do céu
 const pp = (a: number, r: number, y: number) => P(a, r, y);
 const ringPt = (i: number, a: number, dy = 0) => P(a, (rIn(i) + rOut(i)) / 2, yT(i) + dy);
-const ac = (i: number) => Math.PI + 0.9 * (i + 1);
+const ac = (i: number) => Math.PI + 0.9 * (Math.floor(i / 3) + 1) + 0.06 * (i % 3);
 /** a câmera olha a queda que leva a água do anel i ao i+1, de dentro da tigela */
-const casc = (i: number): { pos: V3; look: V3 } => ({ pos: P(ac(i) + 0.16, rIn(i) - 7.5, yT(i) + 4), look: P(ac(i), rIn(i), yT(i) - 0.8) });
+const casc = (i: number): { pos: V3; look: V3 } => ({ pos: P(ac(i) + 0.14, rIn(i) - 10.5, yT(i) + 5.2), look: P(ac(i), rIn(i) + 0.8, yT(i) + 0.3) });
 
 const OPEN_KEYS: Record<Open, Key[]> = {
   // a) (PADRÃO) alto, a tigela pronta vista de longe, desce girando
@@ -81,43 +82,52 @@ const SHOTS: Shot[] = [
     K(T.disuelve, [0, DY - 2, 50], [0, DY - 3, 0], 56, -1.5), K(T.terreno, [0, DY - 6, 42], [0, DY - 6, 0], 56, 0), ...hold(C2, [-3, DY - 7, 38], [0, DY - 7, 0], 56, 0)]),
   shot("«hacia el hueco»: de cima, o poço C acaba de afundar, poeira", C2, [
     K(C2, [44, 36, 78], [74, -3, 30], 56, 1.5), K(T.quedan - 0.05, [40, 30, 72], [74, -3, 30], 56, 0)]),
-  shot("«quedan hoyos enormes»: dolly de longe até um buraco, um obreiro minúsculo na borda dá a escala", T.quedan, [
-    K(T.quedan, [0, 90, 190], [-60, -4, 30], 60, -1.5), K(T.hoyos + 0.1, [-30, 30, 90], [-66, -3, 24], 58, 0), K(T.hondo - 0.05, [-37, 8, 53], [-64, -2, 21], 58, 0)]),
+  shot("«quedan hoyos enormes»: de baixo, 2–3 buracos GRANDES lado a lado, o obreiro na borda dá a escala, nenhum cortado", T.quedan, [
+    K(T.quedan, [-130, 34, 166], [-130, -4, 62], 76, -1.5), K(T.hoyos + 0.1, [-130, 33, 162], [-130, -4, 62], 76, 0), K(T.hondo - 0.05, [-130, 32, 158], [-130, -4, 62], 76, 0)]),
   shot("«el más hondo de unos treinta metros»: a régua de fundura no centro", T.hondo, [
     K(T.hondo, [14, 12, 56], [0, -9, 0], 58, 1.5), K(T.p1 - 0.05, [6, 7, 47], [0, -9, 2], 58, 0)]),
   shot("«pero en una pared así, la lluvia se lleva la tierra»: de baixo, a parede nua, a chuva, os torrões que descem ✖", T.p1, [
     K(T.p1, [-5, -17, 4], [24, -8, 0], 62, 2), K(T.lluvia, [-2, -16, 2], [26, -6, 0], 62, -1), K(T.b1 - 0.05, [0, -15, 1], [24, -10, 0], 60, 0)]),
   shot("«¿cómo siembras en la pared de un hoyo?»: a parede nua e íngreme de lado, o construtor minúsculo ao pé, a terra ainda desmorona", T.b1, [
     K(T.b1, [-9, FLOOR + 4.2, -14], [22, -11, 0], 62, 1.5), ...hold(C3, [-8, FLOOR + 4.8, -12], [23, -10, 0], 62, 0)]),
-  shot("«con ingenio: muros de piedra en círculos»: do alto, de cima para dentro do buraco nu; o muro de pedra cerca o buraco", C3, [
-    K(C3, [0, 80, 12], [0, -20, 0], 60, 2), K(T.c1, [-4, 68, 34], [0, -10, 0], 58, 0), K(T.muros, [-9, 64, 44], [0, -10, 0], 58, 0), K(T.pordentro - 0.05, [-5, 60, 54], [0, -10, 0], 58, 0)]),
+  shot("«con ingenio» (corte da régua): rente à parede íngreme, o construtor GRANDE aponta e vibra; a terra ainda desmorona", C3, [
+    K(C3, [3.2, FLOOR + 1.6, -5.8], [12, FLOOR + 1.6, 0.7], 62, 1.5), K(TOP1 - 0.05, [4.4, FLOOR + 1.9, -5.0], [12, FLOOR + 1.7, 0.7], 60, 0)]),
+  shot("«muros de piedra en círculos»: do alto, de cima para dentro do buraco; o muro de pedra cerca o buraco (só entra quando a 1.ª pedra cai)", TOP1, [
+    K(TOP1, [0, 80, 12], [0, -20, 0], 60, 2), K(T.muros, [-9, 64, 44], [0, -10, 0], 58, 0), K(T.pordentro - 0.05, [-5, 60, 54], [0, -10, 0], 58, 0)]),
   shot("«y por dentro, relleno de tierra»: o corte do muro, o aterro sobe até ficar plano", T.pordentro, [
     K(T.pordentro, [-5, DY - 3, 36], [-4.6, DY - 4.6, 0], 56, -1.5), K(T.relleno, [-5, DY - 4, 31], [-4.6, DY - 5, 0], 56, 0), K(T.doce - 0.05, [-4.6, DY - 4.6, 27], [-4.6, DY - 5, 0], 56, 0)]),
   shot("«doce anillos, uno dentro del otro»: os 12 anéis nascem de cima para baixo", T.doce, [
     K(T.doce, [70, 80, -62], [0, -8, 0], 56, -2), K(T.plano - 0.05, [48, 70, -40], [0, -8, 0], 56, 0)]),
   { name: "«cada uno plano» (bola e nível) → «se baja por piedras que sobresalen»: a câmera acompanha o construtor degrau a degrau", t0: T.plano, keys: [], fn: (t) => {
-    const base = keyed([
-      K(T.plano, pp(4.5, 15.5, yT(7) + 3.2), pp(4.68, 22.8, yT(6) + 0.4), 58, 1.5), K(T.baja - 0.1, pp(4.48, 15.2, yT(7) + 3.0), pp(4.62, 22.8, yT(6) + 0.4), 58, 0)], t);
+    // a câmera desce com ele, mas só 55% da queda: ele cai no quadro e a parede de pedras passa por trás
+    const cf = (tt: number) => {
+      const w0 = stairs(tt - 0.2), w1 = stairs(tt), w2 = stairs(tt + 0.2), w: V3 = [(w0[0] + w1[0] + w2[0]) / 3, (w0[1] + w1[1] + w2[1]) / 3, (w0[2] + w1[2] + w2[2]) / 3];
+      const s0 = stairs(WP_T0), a = Math.atan2(w[0], w[2]), a0 = Math.atan2(s0[0], s0[2]), r = Math.hypot(w[0], w[2]);
+      return { fp: P(lerp(a0, a, 0.65) - 0.1, r - 7.6, s0[1] + 2.6 + (w[1] - s0[1]) * 0.55), fl: [w[0], w[1] + 0.9, w[2]] as V3 };
+    };
+    const c0 = cf(T.baja - 0.1), rm = rIn(STONE_RING) + WW_;
+    const base = keyed([K(T.plano, P(STONE_A + 0.0, rm - 12.5, yT(STONE_RING) + 3.4), P(STONE_A - 0.04, rm, yT(STONE_RING) + 0.7), 60, 1.5), K(T.baja - 0.1, c0.fp, c0.fl, 60, 0)], t);
     if (t < T.baja - 0.1) return steady(base, t);
-    const w0 = stairs(t - 0.2), w1 = stairs(t), w2 = stairs(t + 0.2), w: V3 = [(w0[0] + w1[0] + w2[0]) / 3, (w0[1] + w1[1] + w2[1]) / 3, (w0[2] + w1[2] + w2[2]) / 3];
-    const s0 = stairs(WP_T0), a = Math.atan2(w[0], w[2]), a0 = Math.atan2(s0[0], s0[2]), r = Math.hypot(w[0], w[2]), fp = P(lerp(a0, a, 0.65) - 0.1, r - 8.4, s0[1] + 3.0 + (w[1] - s0[1]) * 0.3), fl: V3 = [w[0], w[1] + 1.0, w[2]], u = sstep(prog(t, T.baja - 0.1, T.baja + 0.3));
-    const m = (x: V3, y: V3): V3 => [lerp(x[0], y[0], u), lerp(x[1], y[1], u), lerp(x[2], y[2], u)];
-    return steady({ pos: m(base.pos, fp), look: m(base.look, fl), fov: lerp(base.fov, 60, u), roll: 0 }, t); } },
+    const c = cf(t);
+    return steady({ pos: c.fp, look: c.fl, fov: 60, roll: 0 }, t); } },
   shot("«esta es la terraza»: a tigela pronta, título", T.terraza, [
     K(T.terraza, [-72, 62, 72], [0, -8, 0], 56, -1.5), ...hold(C4, [-58, 56, 82], [0, -8, 0], 56, 0)]),
   shot("«pero allá arriba no hay un río»: a vala seca e a placa RÍO leva ✖, o morro ao fundo", C4, [
     K(C4, [-24, 7, -58], [-29, 6, -96], 58, 1.5), K(T.solo2 - 0.05, [-27, 5, -76], [-30, 6, -98], 56, 0)]),
-  shot("«solo dos manantiales»: as duas nascentes borbulham e o fio corre um trecho e some na terra seca", T.solo2, [
-    K(T.solo2, [2, 38, -78], [0, 8, -122], 58, 1.5), K(T.b2 - 0.05, [-2, 34, -81], [0, 8, -121], 56, 0)]),
-  shot("«¿cómo riegas cada anillo?»: terra seca, plantas murchas, os anéis secos lá embaixo, o construtor pensa", T.b2, [
-    K(T.b2, [9, 14, -62], [0, -5, -26], 60, -1.5), K(T.c2 - 0.05, [5, 12.5, -59], [0, -6, -26], 58, 0)]),
-  shot("«canales que llevan el agua hasta el borde»: a câmera segue o canal das nascentes à borda", T.c2, [
-    K(T.c2, [10, 26, -112], [0, 12, -131], 56, -1.5), K(T.borde, [12, 18, -62], [0, 2, -82], 56, 0), ...hold(C5, [10, 12, -32], [0, 1, -46], 56, 0)]),
+  shot("«solo dos manantiales»: por trás das nascentes, os fios descem e morrem na terra seca; ao fundo a tigela de anéis secos", T.solo2, [
+    K(T.solo2, [0, 60, -150], [0, 0, -70], 60, 1.5), K(T.b2 - 0.05, [0, 56, -142], [0, 0, -66], 58, 0)]),
+  shot("«¿cómo riegas cada anillo?»: o fio morre antes da borda, plantas murchas e os anéis secos lá embaixo; o construtor dá de ombros e olha a tigela", T.b2, [
+    K(T.b2, [1, 15, -104], [0, -7, -56], 66, -1.5), K(T.c2 - 0.05, [2, 14, -100], [0, -7, -56], 64, 0)]),
+  { name: "«canales que llevan el agua hasta el borde»: a câmera corre com a ponta da obra, a água sempre correndo no canal pronto", t0: T.c2, keys: [], fn: (t) => {
+    const a = keyed([K(T.c2, [10, 26, -112], [0, 12, -131], 56, -1.5), K(T.canales, [10, 16, -126], [0, 5, -124], 56, 0)], t);
+    if (t < T.canales) return steady(a, t);
+    const f = chanFront(t), u = sstep(prog(t, T.canales, T.canales + 0.35)), fp: V3 = [f[0] + 9, f[1] + 10, f[2] - 13], fl: V3 = [f[0], f[1] + 0.5, f[2] + 7];
+    const m = (x: V3, y: V3): V3 => [lerp(x[0], y[0], u), lerp(x[1], y[1], u), lerp(x[2], y[2], u)];
+    return steady({ pos: m(a.pos, fp), look: m(a.look, fl), fov: 56, roll: 0 }, t); } },
   { name: "«caídas talladas en la roca… de un círculo al siguiente»: a câmera acompanha a água de queda em queda", t0: C5, keys: [], fn: (t) => {
     const wt = (i: number) => RING_T(i, T.caidas, T.siguienteEnd, 0.3) + 0.3;   // a câmera chega a cada queda quando ela acaba de se formar e fica nela 0,3 s
-    const ks: Key[] = []; let last = C5 - 0.01;
-    for (const i of [1, 4, 7, 10]) { const q = casc(i), t0 = Math.max(wt(i), last + 0.05); ks.push(K(t0, q.pos, q.look, 56, i === 1 ? 1.5 : 0), K(i === 10 ? T.riego - 0.05 : t0 + 0.3, q.pos, q.look, 56, 0)); last = t0 + 0.3; }
-    ks[0] = K(C5, casc(1).pos, casc(1).look, 56, 1.5);
+    const ks: Key[] = [], st = [1, 4, 7, 10], arr = st.map((i, j) => (j === 0 ? C5 : wt(i) - 0.35));   // cada parada espera a próxima: sempre há 2–3 quedas no quadro
+    st.forEach((i, j) => { const q = casc(i), a0 = Math.max(arr[j], j ? arr[j - 1] + 0.3 : C5); ks.push(K(a0, q.pos, q.look, 56, j === 0 ? 1.5 : 0), K(j === st.length - 1 ? T.riego - 0.05 : Math.max(a0 + 0.1, (arr[j + 1] ?? 0) - 0.3), q.pos, q.look, 56, 0)); });
     const cs = steady(keyedPolar(ks, t), t), v: V3 = [cs.pos[0] - cs.look[0], cs.pos[1] - cs.look[1], cs.pos[2] - cs.look[2]], dl = Math.hypot(...v);
     if (dl >= 8) return cs;   // a câmera nunca atravessa o plano do anel ao ir de uma queda à outra: distância mínima ao alvo
     const q: V3 = dl < 0.01 ? [0, 0.4, 1] : v, ql = Math.hypot(...q);
@@ -131,9 +141,9 @@ const SHOTS: Shot[] = [
   shot("«¿a dónde va el agua?»: bem rente à água da tigela cheia, a água balança, um ¿? gigante salta", T.b3, [
     K(T.b3, [-30, 9, 56], [0, 3, 0], 58, -1.5), K(T.c3 - 0.05, [-24, 10, 50], [0, 4, 0], 56, 0)]),
   shot("«en el fondo pusieron un filtro de rocas grandes»: CORTE do fundo: o poço abre, 7 rochas grandes caem uma a uma e a água sobe sobre elas", T.c3, [
-    K(T.c3, dd(5, 4.5, 25), dd(-0.5, -2.5, -1), 58, 1.5), K(T.pusieron, dd(3, 3, 21), dd(0, -3, -1), 58, 0), K(T.cuela - 0.05, dd(-1, 1.5, 20), dd(0, -3.4, -1), 58, 0)]),
+    K(T.c3, dd(2.6, 4.5, 25), dd(-2.9, -2.5, -1), 58, 1.5), K(T.pusieron, dd(0.6, 3, 21), dd(-2.4, -3, -1), 58, 0), K(T.cuela - 0.05, dd(-3.4, 1.5, 20), dd(-2.4, -3.4, -1), 58, 0)]),
   shot("«el agua se cuela hacia la tierra»: no corte, o nível baixa, a água escorre entre as rochas e escurece o solo embaixo", T.cuela, [
-    K(T.cuela, dd(0, -3, 25), dd(0, -5, -1), 58, -1.5), ...hold(C6, dd(0, -5.5, 21), dd(0, -6.5, -1), 58, 0)]),
+    K(T.cuela, dd(-2.4, -3, 25), dd(-2.4, -5, -1), 58, -1.5), ...hold(C6, dd(-2.4, -5.5, 21), dd(-2.4, -6.5, -1), 58, 0)]),
   shot("«así el hoyo no se inunda»: de dentro da tigela, a calha despeja água que some no fundo verde, ✔ grande", C6, [
     K(C6, P(0.35, 15.5, FLOOR + 9.5), P(Math.PI, FR + 0.8, FLOOR + 3.2), 58, 1.5), K(T.drenaje - 0.05, P(0.1, 13.5, FLOOR + 10.5), P(Math.PI, FR + 1.2, FLOOR + 2.5), 56, 0)]),
   shot("«este es el drenaje»: a tigela inteira, título", T.drenaje, [
@@ -143,7 +153,7 @@ const SHOTS: Shot[] = [
   shot("«cada anillo imitaba un clima distinto»: os anéis mudam de cor", T.donde, [
     K(T.donde, [0, 70, 98], [0, -8, 0], 56, -1.5), ...hold(C7, [8, 62, 92], [0, -8, 0], 56, 0)]),
   shot("«es solo una hipótesis»: de dentro, anéis coloridos e a placa carimbada na borda", C7, [
-    K(C7, [6, -9, -3], [46, 5.5, -2], 62, 1.5), K(T.hip, [10, -8.5, -2], [47, 6, -1], 56, 0), K(T.equipo - 0.05, [16, -8, -1], [47, 6.5, 0], 54, 0)]),
+    K(C7, [4, 24, -3], [44, 3, -2], 62, 1.5), K(T.hip, [14, 28, -4], [47, 0, 0], 60, 0), K(T.equipo - 0.05, [18, 26, -4], [47, 0, 0], 58, 0)]),
   { name: "«un equipo de ingenieros estudió el sitio durante años»: de perto, 3 engenheiros andam na borda cravando estacas e lendo a trena; o sol cruza o céu 3 vezes", t0: T.equipo, keys: [],
     fn: (t) => { const c = engCam(t); return steady({ pos: c.pos, look: c.look, fov: c.fov, roll: lerp(1.5, 0, prog(t, T.equipo, T.equipo + 0.3)) }, t); } },
   shot("«y no encontró pruebas»: a placa leva ✖ e cai", T.noenc, [
@@ -162,16 +172,20 @@ export const BUILDER: Costume = INCA;
 const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState> = {}): WorkerState => ({ p, yaw, pose, scale: 1.3, ...o });
 const fix = (p: V3): Partial<WorkerState> => ({ follow: () => p });
 const hid = S([0, -50, 0], 0, "idle", { scale: 0 });
-const W_B1 = P(AW + 0.05, RB + 1.8, FLOOR + 0.02), Y_B1 = AW;   // ao pé da parede nua, de frente para ela
-const W_PBR: V3 = [PB.x + PB.R + 1, 0, PB.z - 6], Y_PBR = Math.atan2(-17, 6);   // na borda do buraco B, para a escala
-const W_DRY: V3 = [10, 0, -48];
+const W_B1 = P(AW + 0.05, RB - 1.0, FLOOR + 0.02), Y_B1 = AW;   // ao pé da parede nua, de frente para ela
+const W_PBR: V3 = [(PB.x + PB.R + PD.x - PD.R) / 2, 0, 62], Y_PBR = 0.4;   // na fresta entre os dois buracos grandes, para a escala
+const W_DRY: V3 = [-1, 0, -88];
 const W_BP = pp(0.0, 0, 0);
 const W_SPR: V3 = [0, hillY(0, -127), -127];   // em cima do morro (antes estava enterrado até o peito: só a cabeça aparecia)
 const W_PIT: V3 = dd(-6.3, 0, -1.5);   // ao lado do poço, no corte do filtro
 // o caminho pelos degraus: tread 6 → pedra 1 → 2 → 3 → tread 7 (as pedras ficam em STONE_A + k·0.05, 0,5 abaixo da borda cada uma)
-const stepPt = (k: number): V3 => pp(STONE_A + k * 0.05, rIn(STONE_RING) - (k === 0 ? -0.9 : k === 4 ? 1.0 : 0.15), k === 0 ? yT(6) : k === 4 ? yT(7) : yT(6) - 0.37 - 0.5 * (k - 1));
-const WP_T0 = T.baja + 0.05, WP_T1 = T.muro36 - 0.05;   // um degrau a cada ≈0,55 s, do «baja» ao fim de «del muro»
-const WP: [number, V3][] = [0, 1, 2, 3, 4].map((k): [number, V3] => [lerp(WP_T0, WP_T1, k / 4), stepPt(k)]);
+// desce 3 terraços: tread i (junto ao muro) → pedra do muro i (0,87 abaixo da borda) → tread i+1 → … → tread 9; uma pedra por muro, todas na mesma vertical (STA)
+const tdPt = (i: number): V3 => pp(STONE_A + 0.05, rIn(i) + 0.9, yT(i));
+const stPt = (i: number): V3 => pp(STONE_A + 0.05, rIn(i) - 0.25, yT(i) - 0.87);
+const STEPS: V3[] = [tdPt(6), stPt(6), tdPt(7), stPt(7), tdPt(8), stPt(8), tdPt(9)];
+const stepPt = (k: number): V3 => STEPS[k];
+const WP_T0 = T.baja + 0.05, WP_T1 = T.muro36 - 0.05;   // um passo a cada ≈0,38 s, do «baja» ao fim de «del muro»
+const WP: [number, V3][] = STEPS.map((_, k): [number, V3] => [lerp(WP_T0, WP_T1, k / (STEPS.length - 1)), stepPt(k)]);
 const stairs = (t: number): V3 => {
   let i = 0; for (let k = 0; k < WP.length; k++) if (t >= WP[k][0]) i = k;
   const a = WP[i], b = WP[Math.min(i + 1, WP.length - 1)], u = i === WP.length - 1 ? 1 : Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]) / 0.7));
@@ -181,16 +195,21 @@ const stairs = (t: number): V3 => {
 const YS = STONE_A + Math.PI, YW = STONE_A + 2.36;   // YW: andando de lado, de três quartos para a câmera
 const WORKER: [number, WorkerState][] = [
   [0, hid],
-  [T.quedan, S(W_PBR, Y_PBR, "point", { scale: 2.0, ...fix(W_PBR) })],
+  [T.quedan, S(W_PBR, Y_PBR, "point", { scale: 3.2, ...fix(W_PBR) })],
   [T.hondo, hid],
   [T.b1, S(W_B1, Y_B1, "think", { scale: 1.5, ...fix(W_B1) })],
   [T.b1 + 0.75, S(W_B1, Y_B1, "point", { scale: 1.5, ...fix(W_B1) })],
-  [C3, hid],
+  [C3 - 0.02, S(W_B1, Y_B1, "point", { scale: 1.5, ...fix(W_B1) })],
+  [C3, S(W_B1, Y_B1, "point", { scale: 1.5, ...fix(W_B1) })],
+  [Math.max(C3 + 0.3, T.c1 - 0.1), S(W_B1, Y_B1, "cheer", { scale: 1.5, ...fix(W_B1) })],
+  [TOP1, hid],
+  [T.plano, S(stepPt(0), YW, "point", { scale: 1.3, follow: stairs })],
   [T.baja, S(stepPt(0), YW, "walk", { scale: 1.3, follow: stairs })],
-  [T.muro36 + 0.3, S(stepPt(4), YW, "cheer", { scale: 1.3, follow: stairs })],
+  [T.muro36 + 0.3, S(stepPt(STEPS.length - 1), YW, "cheer", { scale: 1.3, follow: stairs })],
   [T.terraza, hid],
-  [T.solo2, S(W_SPR, Math.PI, "point", { scale: 2.6, ...fix(W_SPR) })],
-  [T.b2, S(W_DRY, Math.PI, "think", { scale: 1.6, ...fix(W_DRY) })],
+  [T.solo2, S(W_SPR, 0.3, "point", { scale: 2.6, ...fix(W_SPR) })],
+  [T.b2, S(W_DRY, 0.2, "alarm", { scale: 2.4, ...fix(W_DRY) })],
+  [T.b2 + 0.6, S(W_DRY, 0.4, "think", { scale: 2.4, ...fix(W_DRY) })],
   [T.c2, hid],
   [T.c3, S(W_PIT, Math.PI / 2, "chisel", { scale: 1.15, ...fix(W_PIT) })],
   [T.pusieron + 0.2, S(W_PIT, Math.PI / 2, "point", { scale: 1.15, ...fix(W_PIT) })],
@@ -218,13 +237,13 @@ const hud: HudData = {
     { a: T.treinta, b: T.p1 - 0.1, label: "EL MÁS HONDO", value: () => "≈30 m", tone: "gold" },
     { a: T.doce, b: T.piedras, label: "", value: () => "12 ANILLOS", tone: "green" },
     { a: T.dos, b: T.b2 - 0.1, label: "", value: () => "2 MANANTIALES", tone: "green" },
-    { a: T.fama + 0.2, b: T.paraellos - 0.1, label: "LA FAMA DICE", value: () => "HIPÓTESIS", tone: "gold" },
+    { a: T.fama + 0.2, b: T.paraellos - 0.1, label: "LA FAMA DICE", value: () => "HIPÓTESIS", tone: "gold", y: 250 },
   ],
   titles: [{ a: T.terraza, text: "TERRAZA" }, { a: T.riego, text: "RIEGO" }, { a: T.drenaje, text: "DRENAJE" }, { a: T.giro, text: "¡EL GIRO!", len: 1.1 }],
   alerts: [T.p1, T.p2, T.p3],
   rewinds: [T.moray, T.b1, T.b2, T.b3],
   crosses: [], // os ✖ são do mundo
-  stamps: [[T.b1, T.c1, "PARED EMPINADA"], [T.b2, T.c2, "SIN RÍO"], [T.b3, T.c3, "SIN SALIDA"]],
+  stamps: [[T.b1, T.c1, "PARED EMPINADA", true], [T.b2, T.c2, "SIN RÍO"], [T.b3, T.c3, "SIN SALIDA"]],
   reward: { a: T.manda, len: T.end - T.manda, top: "MORAY · SIGLO XV", big: () => "12 ANILLOS", sub: "LA TIERRA SE HUNDIÓ SOLA", stars: false },
   Extra: Sparks,
 };
