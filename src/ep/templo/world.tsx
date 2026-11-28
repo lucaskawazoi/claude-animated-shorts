@@ -568,9 +568,10 @@ const Neighbor: React.FC<{ t: number }> = ({ t }) => {
       {/* o estandarte dos vencedores sobe no mesmo lugar logo depois */}
       <G p={[47.0, 0, -9.6]} sc={[1, Math.max(0.001, vr), 1]}>
         <Cyl rt={0.11} h={6.6} p={[0, 3.3, 0]} c="#6a4a2a" seg={6} />
-        <Box s={[2.2, 1.5, 0.08]} p={[-1.1, 5.6, 0]} c="#d9232b" o={{ emissive: "#d9232b", ei: 0.25 }} cast={false} />
-        <Box s={[2.2, 0.4, 0.1]} p={[-1.1, 5.6, 0]} c="#ffd400" cast={false} />
-        <Sph rad={0.38} p={[0, 6.7, 0]} c="#ffd400" ws={8} hs={6} cast={false} />
+        {/* mexica: azul e branco com penacho verde (não confundir com o vermelho e amarelo espanhol de 1521) */}
+        <Box s={[2.2, 1.5, 0.08]} p={[1.1, 5.6, 0]} c="#1f4fd0" o={{ emissive: "#1f4fd0", ei: 0.25 }} cast={false} />
+        <Box s={[2.2, 0.4, 0.1]} p={[1.1, 5.6, 0]} c="#ffffff" cast={false} />
+        <Sph rad={0.42} p={[0, 6.7, 0]} c="#22b34a" ws={8} hs={6} cast={false} />
       </G>
     </G>
   );
