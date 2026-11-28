@@ -36,10 +36,17 @@ export const T = {
 };
 export { CUTS, WINS };
 const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
+/** o giro (nola → mayoria → pueblo → C6): o plano nunca começa depois do seguinte, mesmo que a voz real mexa as palavras ±2 s
+ *  (pueblo, templo2 e ritmo ficam a 0,1–0,9 s de C6; sem isso o plano «pueblo» era pulado quando a voz o empurrava para depois de C6) */
+export const TW = (() => {
+  const pueblo = Math.min(Math.max(T.pueblo, T.mayoria + 0.6), C6 - 0.5), may = Math.min(T.mayoria, pueblo - 0.6);
+  const nola = Math.min(T.nola, may - 0.4), giro = Math.min(T.giro, nola - 0.4);
+  return { giro, nola, may, pueblo };
+})();
 
 /** cortes duros extras: o início de cada plano que não é um dos 7 da régua */
 export const XCUTS = [T.ydentro, T.todas, T.tenoch, T.mexicas, T.quieren, T.sinmot, T.pero1, T.como1, T.clavan, T.piedra, T.casi, T.esta, T.pero2, T.como2, T.rellenan2,
-  T.construyen, T.cada, T.asi, T.pero3, T.como3, T.c3, T.canoa1, T.pueblos, T.estas, T.giro, T.nola, T.mayoria, T.pueblo, T.enmenos, T.arriba, T.m1521,
+  T.construyen, T.cada, T.asi, T.pero3, T.como3, T.c3, T.canoa1, T.pueblos, T.estas, TW.giro, TW.nola, TW.may, TW.pueblo, T.enmenos, T.arriba, T.m1521,
   T.m1978, T.cavaban, T.toparon, T.asi2, T.manda];
 
 const S: [string, number, number][] = [];
@@ -71,13 +78,15 @@ S.push(["sandfall", T.entierran + 0.1, -11], ["sandfall", T.entierran + 0.6, -12
   ["thud", T.suelo - 0.1, -11], ["concrete", T.suelo + 0.2, -13]);
 for (let k = 0; k < 3; k++) S.push(["ding", T.centro + 0.15 + k * 0.45, -11 - k * 2]);
 S.push(["ss-rise", T.asi + 0.05, -10], ["chime", T.asi + 0.3, -9]);
+// cada capa cai e aperta: baque nas 3 aterrissagens (cada, suelo, centro)
+S.push(["thud", T.cada + 0.5, -10], ["thud", T.suelo + 0.65, -11], ["thud", T.centro + 0.35, -12]);
 // problema 3 e solução 3: pilhas na margem, ilha, canoas
-S.push(["stone", T.pPiedra + 0.05, -11], ["sh-log", T.pMadera + 0.0, -11], ["sandfall", T.pCal + 0.0, -12], ["buzzer", T.isla3 + 0.4, -14], ["waves", T.como3 + 0.4, -14],
+S.push(["stone", T.pPiedra + 0.05, -11], ["sh-log", T.pMadera + 0.0, -11], ["sandfall", T.pCal + 0.0, -12], ["buzzer", T.isla3 + 0.3, -14], ["waves", T.como3 + 0.4, -14], ["splash", T.como3 + 0.6, -10], ["sink", T.isla3 - 0.1, -11], ["sh-log", T.como3 + 0.1, -12],
   ["splash", T.c3 + 0.1, -10], ["vn-tide", T.canoa0 + 0.1, -12], ["sail", T.canoa0 + 0.3, -15], ["fs-steps", T.cuestas + 0.1, -11], ["ding", T.kilos + 0.45, -10],
   ["stone", T.canoa1 + 0.1, -11], ["ding", T.mil + 0.5, -9], ["vn-rope", T.pueblos + 0.1, -13], ["waves", T.pueblos + 0.4, -12], ["splash", T.remando, -11],
   ["cheer", T.estas, -14], ["chime", T.estas + 0.35, -9]);
 // giro: o afundamento, o pueblo vizinho cai, capa nova, mapa, 7 capas, templos gêmeos
-S.push(["giro", T.giro - 0.05, -8], ["sink", T.nola + 0.1, -12], ["stamp", T.hundia + 0.3, -9], ["fs-steps", T.mayoria + 0.1, -12], ["ak-flag", T.someter + 0.1, -11],
+S.push(["giro", T.giro - 0.05, -8], ["sink", T.nola + 0.1, -12], ["stamp", T.hundia + 0.3, -9], ["fs-steps", T.mayoria + 0.1, -12], ["fs-steps", T.mayoria + 1.0, -12], ["crowd", T.estren - 0.2, -24], ["ak-flag", T.someter + 0.1, -11], ["thud", T.someter + 0.35, -12],
   ["thud", T.someter + 0.55, -10], ["ss-rise", T.pueblo + 0.1, -9], ["ss-bricks", T.pueblo + 0.3, -12], ["cheer", T.pueblo + 0.5, -15], ["ss-shimmer", T.templo2 + 0.1, -12],
   ["ss-rise", T.ritmo, -10], ["ding", T.imperio + 0.1, -10], ["slide", T.enmenos + 0.05, -12], ["ss-shimmer", T.enmenos + 0.5, -11], ["fanfare", T.siete + 0.15, -12],
   ["wind", T.arriba + 0.1, -15], ["gong", T.huitz + 0.1, -12], ["chime", T.tlaloc + 0.05, -10], ["rain", T.tlaloc + 0.3, -18]);

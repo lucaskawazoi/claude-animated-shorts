@@ -7,10 +7,10 @@ import { getInputProps } from "remotion";
 import { CamState, K, Key, Shot, keyed } from "../../toy/cam";
 import { WINS } from "../../toy/cues";
 import type { Episode } from "../../toy/episode";
-import { FONT, HudData, pop, win } from "../../toy/hud";
+import { FONT, HudData, pop, stroke, win } from "../../toy/hud";
 import { V3 } from "../../toy/kit";
 import type { WorkerState } from "../../toy/story";
-import { C1, C2, C3, C4, C5, C6, C7, SFX, T } from "./cues";
+import { C1, C2, C3, C4, C5, C6, C7, SFX, T, TW } from "./cues";
 import { BAL_P, MAP_P, MEX, MOD, MODEL, NB, PILE_X, PLAZA, SHORE, STONE_P0, World } from "./world";
 import { EXPOSURE } from "./exposure";
 
@@ -51,10 +51,10 @@ const SHOTS: Shot[] = [
     K(T.ydentro, [0, 5, 25], [0, 4, 0], 58, 1.5), K(T.todas - 0.05, [-3, 4.5, 22], [0, 4, 0], 58, 0)]),
   shot("«todas sobre el barro de un lago»: a câmera desce até o lodo e a água", T.todas, [
     K(T.todas, [2, 4, 15], [0, 3, 0], 60, -1.5), K(T.barro0, [-3, -5, 15], [0, -4, 0], 64, 0), K(T.lago0 + 0.1, [22, -3.5, 15], [34, -3, 0], 64, 0), K(T.tenoch - 0.05, [24, -3.5, 15], [34, -3, 0], 64, 0)]),
-  shot("⏪ Tenochtitlan, século XIV: a ilha vista de cima", T.tenoch, [
-    K(T.tenoch, [-40, 38, 86], [0, 0, 10], 56, -1.5), K(T.mexicas - 0.05, [-22, 28, 72], [0, 0, 6], 56, 0)]),
-  shot("«los mexicas viven en una isla del lago»: canoas na água", T.mexicas, [
-    K(T.mexicas, [-26, 1.4, 66], [-6, 2.5, 34], 60, 1.5), K(C1 - 0.02, [-10, 1.6, 62], [2, 2.5, 34], 60, 0)]),
+  shot("⏪ Tenochtitlan, século XIV: a ilha vista de longe e de cima, cercada de água, canoas em volta", T.tenoch, [
+    K(T.tenoch, [-78, 84, -150], [0, 0, 6], 58, -1.5), K(T.mexicas - 0.05, [-58, 66, -128], [0, 0, 8], 58, 0)]),
+  shot("«los mexicas viven en una isla del lago»: outro ângulo afastado, o anel de água e as canoas", T.mexicas, [
+    K(T.mexicas, [44, 54, -132], [0, 0, 3], 66, 1.5), K(C1 - 0.02, [36, 44, -112], [0, 0, 5], 66, 0)]),
   shot("«no hay roca firme, solo lodo»: o corte da ilha, a rocha ✖", C1, [
     K(C1, [2, -2, 13], [-4, -5.5, 2], 60, -1.5), K(T.quieren - 0.05, [-1, -4, 12], [-4, -6.5, 3], 58, 0)]),
   shot("«quieren levantar el Templo Mayor»: o contorno fantasma na ilha", T.quieren, [
@@ -64,7 +64,7 @@ const SHOTS: Shot[] = [
   shot("«pero el lodo no aguanta peso»: o bloco afunda ✖", T.pero1, [
     K(T.pero1, [7, 3, 10], [3, 1.5, 0], 56, 1.5), K(T.como1 - 0.05, [6, 0.4, 9], [3, -0.8, 0], 56, 0)]),
   shot("«¿cómo levantas una pirámide sobre barro?»: o mestre pensa na beira", T.como1, [
-    K(T.como1, [6, 2.5, 10], [-1, 0.5, 0], 56, 1.5), K(T.clavan - 0.05, [1, 2.8, 11], [-3, 1, 0], 56, 0)]),
+    K(T.como1, [6, 2.5, 10], [-1, 0.5, 0], 56, 1.5), K(T.c1 - 0.15, [2.4, 1.7, 8.2], [-1.4, -0.1, 0], 56, 0), K(T.clavan - 0.05, [-0.4, 1.2, 8.8], [-1.5, -1.1, 0], 54, 0)]),
   shot("«clavan estacas de madera»: as estacas descem a marretadas", T.clavan, [
     K(T.clavan, [-1, 1.4, 13], [0, -1.5, 0], 54, 1.5), ...hold(C2, [2, 0.8, 13], [1, -1.8, 0], 54, 0)]),
   shot("«rellenan con tezontle»: as pedras vermelhas enchem entre as estacas", C2, [
@@ -86,7 +86,7 @@ const SHOTS: Shot[] = [
   shot("«y construyen otra más grande alrededor»: a capa maior sobe em volta", T.construyen, [
     K(T.construyen, [14, 4, 19], [0, 2, 0], 58, 1.5), K(T.cada - 0.05, [10, 5, 17], [0, 2.5, 0], 58, 0)]),
   shot("«cada capa aprieta el suelo»: o lodo escurece e aperta", T.cada, [
-    K(T.cada, [-6, -2, 13], [0, -3, 0], 60, -1.5), K(C4 - 0.02, [4, -1, 13], [0, -3, 0], 60, 0)]),
+    K(T.cada, [-2.5, 0.5, 14.5], [0, 0.4, 0], 74, -1.5), K(C4 - 0.02, [2, 0.2, 13.5], [0, 0.4, 0], 72, 0)]),
   shot("«el centro se hunde cada vez menos»: as setas encolhem", C4, [
     K(C4, [0, 0.8, 15], [0, -2, 0], 64, 1.5), K(T.asi - 0.05, [0, 1.2, 15.4], [0, -1.5, 0], 64, 0)]),
   shot("«así crece la pirámide»: as capas empilhadas", T.asi, [
@@ -95,25 +95,25 @@ const SHOTS: Shot[] = [
     K(T.pero3, [PILE_X[0] - 3, 6, SH - 16], [PILE_X[0], 2.8, SH + 8], 58, 1.5), K(T.pPiedra, [PILE_X[0] + 1, 5.5, SH - 15], [PILE_X[0], 2.8, SH + 8], 56, 0.4),
     K(T.pMadera + 0.1, [PILE_X[1], 5.5, SH - 15], [PILE_X[1], 2.8, SH + 8], 56, 0), K(T.pCal + 0.15, [PILE_X[2] - 1, 5.5, SH - 15], [PILE_X[2], 2.8, SH + 8], 56, -0.3), K(T.como3 - 0.05, [PILE_X[2] - 1, 5.8, SH - 16], [PILE_X[2] - 1, 2.8, SH + 8], 58, 0)]),
   shot("«¿cómo las llevas a una isla?»: a margem, a água e a ilha", T.como3, [
-    K(T.como3, [20, 6, SH + 30], [0, 3, 10], 54, -1), K(T.c3 - 0.05, [19, 6.2, SH + 28], [0, 3, 10], 54, 0)]),
+    K(T.como3, [10, 22, SH + 24], [-1, 0, 56], 56, -1), K(T.c3 - 0.05, [8, 20, SH + 21], [-1, 0, 52], 56, 0)]),
   shot("«con ingenio: en canoa»: as canoas surgem na mesma água", T.c3, [
-    K(T.c3, [-16, 2.2, SH], [0, 1.5, 48], 58, 1.5), K(C5 - 0.02, [-6, 2.4, SH - 2], [4, 1.2, 48], 56, 0)]),
+    K(T.c3, [-17, 2.4, SH - 3], [-11, 1.4, 55], 58, 1.5), K(C5 - 0.02, [-9, 2.5, SH - 5], [-3, 1.3, 53], 56, 0)]),
   shot("«a cuestas, una persona carga veintitrés kilos»: o carregador", C5, [
-    K(C5, [-8, 2.2, SH - 5], [-8, 1.8, SH + 4], 54, -1.5), K(T.canoa1 - 0.05, [-2, 2.4, SH - 5], [2, 1.8, SH + 4], 54, 0)]),
+    K(C5, [-14, 2.5, SH - 8], [-9.5, 1.9, SH + 4], 54, -1.5), K(T.canoa1 - 0.05, [-6, 2.7, SH - 8], [0.8, 1.9, SH + 4], 54, 0)]),
   shot("«en canoa, mil doscientos»: a canoa cheia de pedra", T.canoa1, [
     K(T.canoa1, [-4, 1.8, 60], [8, 1.2, 46], 54, 1.5), K(T.pueblos - 0.05, [1, 2.4, 62], [7, 1.3, 46], 54, 0)]),
   shot("«los pueblos vecinos llegan remando»: canoas de todos os lados", T.pueblos, [
     K(T.pueblos, [0, 26, SH + 30], [0, 0, 40], 56, -1.5), K(T.estas - 0.05, [0, 16, SH + 8], [0, 0, 44], 56, 0)]),
   shot("«estas son las canoas»: as canoas atracadas", T.estas, [
-    K(T.estas, [24, 3.5, SH - 4], [0, 1.4, 46], 60, 1.5), K(T.giro - 0.05, [16, 4.5, SH - 6], [-4, 1.4, 46], 60, 0)]),
-  shot("«y aquí viene el giro»: chicote até o templo", T.giro, [
-    K(T.giro, [30, 12, 34], [0, 4, 0], 60, -8), K(T.giro + 0.5, [16, 8, 26], [0, 4, 0], 58, 5), K(T.nola - 0.05, [12, 7, 24], [0, 4.5, 0], 56, 0)]),
-  shot("«no la ampliaron solo porque se hundía»: a seta de afundar e «NO SOLO»", T.nola, [
-    K(T.nola, [0, 2.6, 22], [0, 1.6, 0], 58, 1.5), K(T.mayoria - 0.05, [-4, 3.0, 20], [0, 1.4, 0], 58, 0)]),
-  shot("«la mayoría de las ampliaciones… tras someter a un pueblo vecino»: guerreiros voltam, o estandarte cai", T.mayoria, [
-    K(T.mayoria, [53, 3.4, 4.5], [54, 3, -11], 56, -1.5), K(T.pueblo - 0.05, [51, 3.6, 4], [51, 3, -11], 56, 0)]),
-  shot("«a un pueblo vecino»: uma capa nova sobe e os guerreiros chegam", T.pueblo, [
-    K(T.pueblo, [34, 9, 22], [4, 4, -3], 58, 1.5), K(C6 - 0.02, [32, 9.5, 24], [5, 4.5, -3], 58, 0)]),
+    K(T.estas, [24, 3.5, SH - 4], [0, 1.4, 46], 60, 1.5), K(TW.giro - 0.05, [16, 4.5, SH - 6], [-4, 1.4, 46], 60, 0)]),
+  shot("«y aquí viene el giro»: chicote até o templo", TW.giro, [
+    K(TW.giro, [30, 12, 34], [0, 4, 0], 60, -8), K(TW.giro + 0.5, [16, 8, 26], [0, 4, 0], 58, 5), K(TW.nola - 0.05, [12, 7, 24], [0, 4.5, 0], 56, 0)]),
+  shot("«no la ampliaron solo porque se hundía»: a seta de afundar e «NO SOLO»", TW.nola, [
+    K(TW.nola, [0, 2.6, 22], [0, 1.6, 0], 58, 1.5), K(TW.may - 0.05, [-4, 3.0, 20], [0, 1.4, 0], 58, 0)]),
+  shot("«la mayoría… se estrenaban tras someter»: os guerreiros marcham sobre o pueblo vecino, o povo se ajoelha, o estandarte cai", TW.may, [
+    K(TW.may, [30, 6, 10], [36, 2.0, -11], 60, -1.5), K(Math.min(Math.max(T.someter - 0.15, TW.may + 0.4), TW.pueblo - 0.3), [40, 7.5, 15], [49, 1.8, -10], 62, 0), K(TW.pueblo - 0.05, [42, 7.2, 13], [50, 1.0, -10], 60, 0)]),
+  shot("«a un pueblo vecino»: uma capa nova sobe e os guerreiros voltam vitoriosos", TW.pueblo, [
+    K(TW.pueblo, [34, 9, 22], [4, 4, -3], 58, 1.5), K(C6 - 0.02, [32, 9.5, 24], [5, 4.5, -3], 58, 0)]),
   shot("«el templo crecía al mismo ritmo que el imperio»: o mapa cresce junto", C6, [
     K(C6, [8, 14, 40], [7, 4, 0], 60, -1.5), K(T.enmenos - 0.05, [6, 15, 38], [6, 4.2, 0], 60, 0)]),
   shot("«en menos de dos siglos, siete capas»: o corte com as 7 capas", T.enmenos, [
@@ -162,13 +162,13 @@ const WORKER: [number, WorkerState][] = [
   [T.pero3, S(W_SH, 0.2, "alarm", fix(W_SH))],
   [T.como3, S([5, 0, SH + 12], 3.0, "think", fix([5, 0, SH + 12]))],
   [T.c3, HID([0, 0, -3])],
-  [T.giro, S([-9.4, 0, -3], 0.3, "cheer", fix([-9.4, 0, -3]))],
-  [T.nola, S([-9.4, 0, -3], 0.3, "point")],
-  [T.mayoria, HID([0, 0, -3])],
+  [TW.giro, S([-9.4, 0, -3], 0.3, "cheer", fix([-9.4, 0, -3]))],
+  [TW.nola, S([-9.4, 0, -3], 0.3, "point")],
+  [TW.may, HID([0, 0, -3])],
 ];
 
 const Stamp2: React.FC<{ t: number }> = ({ t }) => {
-  const a = T.hundia + 0.12, b = T.mayoria - 0.12, k = win(t, a, b, 0.12); if (k <= 0) return null;
+  const a = T.hundia + 0.12, b = TW.may - 0.12, k = win(t, a, b, 0.12); if (k <= 0) return null;
   const s = 1.7 - 0.7 * pop(t, a, 0.2);
   return (
     <div style={{ position: "absolute", left: 0, width: 1080, top: 590, display: "flex", justifyContent: "center", opacity: k }}>
@@ -178,6 +178,26 @@ const Stamp2: React.FC<{ t: number }> = ({ t }) => {
     </div>
   );
 };
+
+/** cartão final do E22 (cópia do painel padrão, com as estrelas só na faixa livre entre o cartão e o templo: nunca sobre o texto) */
+const Card: React.FC<{ t: number }> = ({ t }) => {
+  const k = win(t, T.manda, T.end, 0.25); if (k <= 0) return null;
+  const s = pop(t, T.manda, 0.45), cols = ["#ffd400", "#5cff7a", "#4ab8ff", "#ff6bb5", "#ffffff"];
+  return (
+    <>
+      <div style={{ position: "absolute", left: 0, width: 1080, top: 300, display: "flex", flexDirection: "column", alignItems: "center", opacity: k, transform: `scale(${s})` }}>
+        <span style={{ fontFamily: FONT, fontSize: 56, color: "#fff", ...stroke(10) }}>TEMPLO MAYOR · SIGLO XIV</span>
+        <span style={{ fontFamily: FONT, fontSize: 150, color: "#5cff7a", lineHeight: 1, ...stroke(16, "#05381a") }}>7 CAPAS</span>
+        <span style={{ fontFamily: FONT, fontSize: 72, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(12, "#3a2300") }}>SOBRE EL BARRO DEL LAGO</span>
+      </div>
+      {Array.from({ length: 14 }, (_, i) => {
+        const u = Math.min(1, Math.max(0, (t - T.manda - 0.04 * i) / 1.6)), ang = (i / 14) * Math.PI * 2;
+        return <span key={i} style={{ position: "absolute", top: 860 + Math.sin(ang) * 170 * u - 27, left: 540 + Math.cos(ang) * 470 * u - 27, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: k * (1 - u * 0.85), ...stroke(5, "#1c1208") }}>★</span>;
+      })}
+    </>
+  );
+};
+const Extras: React.FC<{ t: number }> = ({ t }) => <><Stamp2 t={t} /><Card t={t} /></>;
 
 const hud: HudData = {
   pills: [
@@ -199,8 +219,8 @@ const hud: HudData = {
   rewinds: [T.tenoch, T.como1, T.como2, T.como3],
   crosses: [],
   stamps: [[T.como1, T.c1, "SOBRE BARRO"], [T.como2, T.c2, "SE INCLINA"], [T.como3, T.c3, "UNA ISLA"]],
-  reward: { a: T.manda, len: T.end - T.manda, top: "TEMPLO MAYOR · SIGLO XIV", big: () => "7 CAPAS", sub: "SOBRE EL BARRO DEL LAGO" },
-  Extra: Stamp2,
+  reward: { a: T.manda, len: 0, top: "", big: () => "", sub: "" }, // o cartão final é o Card abaixo (as faíscas do painel padrão cruzavam o texto)
+  Extra: Extras,
 };
 
 export const EP: Episode = {
