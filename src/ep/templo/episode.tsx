@@ -48,13 +48,13 @@ const SH = SHORE;
 const SHOTS: Shot[] = [
   { name: "abertura a|b|c: o templo se abre, outra pirâmide por dentro", t0: 0, keys: OPEN_KEYS.a, fn: openCam },
   shot("«y dentro de esa, otra»: a face do corte, as capas aninhadas", T.ydentro, [
-    K(T.ydentro, [0, 5, 25], [0, 4, 0], 58, 1.5), K(T.todas - 0.05, [-3, 4.5, 22], [0, 4, 0], 58, 0)]),
+    K(T.ydentro, [0, 5.5, 27], [0, 4.8, 0], 58, 1.5), K(T.todas - 0.05, [-3, 5.5, 27], [0, 4.6, 0], 58, 0)]),
   shot("«todas sobre el barro de un lago»: a câmera desce até o lodo e a água", T.todas, [
-    K(T.todas, [2, 4, 15], [0, 3, 0], 60, -1.5), K(T.barro0, [-3, -5, 15], [0, -4, 0], 64, 0), K(T.lago0 + 0.1, [22, -3.5, 15], [34, -3, 0], 64, 0), K(T.tenoch - 0.05, [24, -3.5, 15], [34, -3, 0], 64, 0)]),
+    K(T.todas, [3, 5, 27], [0, 4.6, 0], 58, -1.5), K(T.todas + 0.4, [2, 4.6, 26], [0, 4.4, 0], 58, -0.8), K(T.barro0, [-3, -5, 15], [0, -4, 0], 64, 0), K(T.lago0 + 0.1, [22, -3.5, 15], [34, -3, 0], 64, 0), K(T.tenoch - 0.05, [24, -3.5, 15], [34, -3, 0], 64, 0)]),
   shot("⏪ Tenochtitlan, século XIV: a ilha vista de longe e de cima, cercada de água, canoas em volta", T.tenoch, [
-    K(T.tenoch, [-78, 84, -150], [0, 0, 6], 58, -1.5), K(T.mexicas - 0.05, [-58, 66, -128], [0, 0, 8], 58, 0)]),
+    K(T.tenoch, [-66, 70, -112], [0, 0, -8], 58, -1.5), K(T.mexicas - 0.05, [-40, 36, -78], [0, 0, -14], 58, 0)]),
   shot("«los mexicas viven en una isla del lago»: outro ângulo afastado, o anel de água e as canoas", T.mexicas, [
-    K(T.mexicas, [44, 54, -132], [0, 0, 3], 66, 1.5), K(C1 - 0.02, [36, 44, -112], [0, 0, 5], 66, 0)]),
+    K(T.mexicas, [46, 30, -80], [0, 0, -12], 62, 1.5), K(C1 - 0.02, [20, 15, -56], [-2, 0, -20], 60, 0)]),
   shot("«no hay roca firme, solo lodo»: o corte da ilha, a rocha ✖", C1, [
     K(C1, [2, -2, 13], [-4, -5.5, 2], 60, -1.5), K(T.quieren - 0.05, [-1, -4, 12], [-4, -6.5, 3], 58, 0)]),
   shot("«quieren levantar el Templo Mayor»: o contorno fantasma na ilha", T.quieren, [
@@ -64,7 +64,7 @@ const SHOTS: Shot[] = [
   shot("«pero el lodo no aguanta peso»: o bloco afunda ✖", T.pero1, [
     K(T.pero1, [7, 3, 10], [3, 1.5, 0], 56, 1.5), K(T.como1 - 0.05, [6, 0.4, 9], [3, -0.8, 0], 56, 0)]),
   shot("«¿cómo levantas una pirámide sobre barro?»: o mestre pensa na beira", T.como1, [
-    K(T.como1, [6, 2.5, 10], [-1, 0.5, 0], 56, 1.5), K(T.c1 - 0.15, [2.4, 1.7, 8.2], [-1.4, -0.1, 0], 56, 0), K(T.clavan - 0.05, [-0.4, 1.2, 8.8], [-1.5, -1.1, 0], 54, 0)]),
+    K(T.como1, [3.2, 1.8, 11.5], [0.6, 1.0, 0], 56, 1.0), K(T.c1 - 0.15, [1.4, 0.2, 8.4], [0.5, -1.0, 0], 56, 0), K(T.clavan - 0.05, [0.4, -0.2, 9.2], [0.2, -1.5, 0], 54, 0)]),
   shot("«clavan estacas de madera»: as estacas descem a marretadas", T.clavan, [
     K(T.clavan, [-1, 1.4, 13], [0, -1.5, 0], 54, 1.5), ...hold(C2, [2, 0.8, 13], [1, -1.8, 0], 54, 0)]),
   shot("«rellenan con tezontle»: as pedras vermelhas enchem entre as estacas", C2, [
@@ -103,17 +103,17 @@ const SHOTS: Shot[] = [
   shot("«en canoa, mil doscientos»: a canoa cheia de pedra", T.canoa1, [
     K(T.canoa1, [-4, 1.8, 60], [8, 1.2, 46], 54, 1.5), K(T.pueblos - 0.05, [1, 2.4, 62], [7, 1.3, 46], 54, 0)]),
   shot("«los pueblos vecinos llegan remando»: canoas de todos os lados", T.pueblos, [
-    K(T.pueblos, [0, 26, SH + 30], [0, 0, 40], 56, -1.5), K(T.estas - 0.05, [0, 16, SH + 8], [0, 0, 44], 56, 0)]),
+    K(T.pueblos, [4, 22, SH + 22], [0, 0, 44], 56, -1.5), K(T.estas - 0.05, [8, 9, SH + 2], [-2, 0.5, 47], 56, 0)]),
   shot("«estas son las canoas»: as canoas atracadas", T.estas, [
-    K(T.estas, [24, 3.5, SH - 4], [0, 1.4, 46], 60, 1.5), K(TW.giro - 0.05, [16, 4.5, SH - 6], [-4, 1.4, 46], 60, 0)]),
+    K(T.estas, [12, 3.4, SH - 8], [-1, 1.2, 47], 58, 1.5), K(TW.giro - 0.05, [8, 4.0, SH - 10], [-3, 1.2, 47], 58, 0)]),
   shot("«y aquí viene el giro»: chicote até o templo", TW.giro, [
     K(TW.giro, [30, 12, 34], [0, 4, 0], 60, -8), K(TW.giro + 0.5, [16, 8, 26], [0, 4, 0], 58, 5), K(TW.nola - 0.05, [12, 7, 24], [0, 4.5, 0], 56, 0)]),
   shot("«no la ampliaron solo porque se hundía»: a seta de afundar e «NO SOLO»", TW.nola, [
     K(TW.nola, [0, 2.6, 22], [0, 1.6, 0], 58, 1.5), K(TW.may - 0.05, [-4, 3.0, 20], [0, 1.4, 0], 58, 0)]),
   shot("«la mayoría… se estrenaban tras someter»: os guerreiros marcham sobre o pueblo vecino, o povo se ajoelha, o estandarte cai", TW.may, [
-    K(TW.may, [30, 6, 10], [36, 2.0, -11], 60, -1.5), K(Math.min(Math.max(T.someter - 0.15, TW.may + 0.4), TW.pueblo - 0.3), [40, 7.5, 15], [49, 1.8, -10], 62, 0), K(TW.pueblo - 0.05, [42, 7.2, 13], [50, 1.0, -10], 60, 0)]),
+    K(TW.may, [40, 3.2, 2], [42, 1.6, -12], 58, -1.0), K(TW.fall - 0.05, [43.6, 4.0, 2], [48.2, 3.2, -10.5], 58, 0), K(TW.pueblo - 0.05, [44, 4.6, 2], [48.4, 3.4, -10], 58, 0)]),
   shot("«a un pueblo vecino»: uma capa nova sobe e os guerreiros voltam vitoriosos", TW.pueblo, [
-    K(TW.pueblo, [34, 9, 22], [4, 4, -3], 58, 1.5), K(C6 - 0.02, [32, 9.5, 24], [5, 4.5, -3], 58, 0)]),
+    K(TW.pueblo, [27, 10, 27], [8, 4.2, -2], 58, 1.5), K(C6 - 0.02, [24, 9.5, 25], [9, 4.6, -2], 58, 0)]),
   shot("«el templo crecía al mismo ritmo que el imperio»: o mapa cresce junto", C6, [
     K(C6, [8, 14, 40], [7, 4, 0], 60, -1.5), K(T.enmenos - 0.05, [6, 15, 38], [6, 4.2, 0], 60, 0)]),
   shot("«en menos de dos siglos, siete capas»: o corte com as 7 capas", T.enmenos, [
@@ -125,11 +125,11 @@ const SHOTS: Shot[] = [
   shot("«lo arrasaron y construyeron encima»: o templo cai, a igreja sobe", C7, [
     K(C7, [22, 10, 30], [0, 3, 0], 58, -1.5), K(T.m1978 - 0.05, [16, 9, 28], [0, 3.5, 0], 58, 0)]),
   shot("«y en 1978»: a rua moderna", T.m1978, [
-    K(T.m1978, [MOD[0] - 14, MOD[1] + 8, MOD[2] + 26], [MOD[0], MOD[1] + 0, MOD[2] + 2], 56, 1.5), K(T.cavaban - 0.05, [MOD[0] - 8, MOD[1] + 6, MOD[2] + 22], [MOD[0], MOD[1] + 0, MOD[2] + 2], 56, 0)]),
+    K(T.m1978, [MOD[0] - 9, MOD[1] + 17, MOD[2] + 14], [MOD[0], MOD[1] - 1, MOD[2]], 56, 1.5), K(T.cavaban - 0.05, [MOD[0] - 6, MOD[1] + 15, MOD[2] + 10], [MOD[0], MOD[1] - 2, MOD[2]], 54, 0)]),
   shot("«unos obreros de la luz cavaban un pozo»: o poço desce", T.cavaban, [
-    K(T.cavaban, [MOD[0] - 2, MOD[1] + 9, MOD[2] + 11], [MOD[0], MOD[1] + -1.5, MOD[2]], 56, -1.5), K(T.toparon - 0.05, [MOD[0] - 4, MOD[1] + 8, MOD[2] + 10], [MOD[0], MOD[1] + -3, MOD[2]], 56, 0)]),
+    K(T.cavaban, [MOD[0] - 4, MOD[1] + 15, MOD[2] + 8], [MOD[0], MOD[1] - 3, MOD[2]], 54, -1.5), K(T.toparon - 0.05, [MOD[0] + 0.5, MOD[1] + 11, MOD[2] + 4], [MOD[0], MOD[1] - 6, MOD[2]], 52, 0)]),
   shot("«toparon con una diosa de piedra a sus pies»: de cima do poço", T.toparon, [
-    K(T.toparon, [MOD[0] + 3, MOD[1] + 10, MOD[2] + 4], [MOD[0], MOD[1] + -5, MOD[2]], 54, 1.5), K(T.asi2 - 0.05, [MOD[0] + 0.5, MOD[1] + 12, MOD[2] + 1.2], [MOD[0], MOD[1] + -6, MOD[2]], 50, 0)]),
+    K(T.toparon, [MOD[0] + 0.6, MOD[1] + 6.5, MOD[2] + 2.6], [MOD[0], MOD[1] - 6.8, MOD[2]], 52, 1.5), K(T.diosa + 0.6, [MOD[0] + 0.2, MOD[1] + 5.4, MOD[2] + 1.4], [MOD[0], MOD[1] - 6.8, MOD[2]], 50, 0), K(T.asi2 - 0.05, [MOD[0] + 0.2, MOD[1] + 5.0, MOD[2] + 1.3], [MOD[0], MOD[1] - 6.8, MOD[2]], 50, 0)]),
   shot("«así empezó la excavación»: o poço se alarga e mostra as capas", T.asi2, [
     K(T.asi2, [MOD[0] + 10, MOD[1] + 10, MOD[2] + 12], [MOD[0], MOD[1] + -5, MOD[2]], 58, -1.5), K(T.manda - 0.05, [MOD[0] + 14, MOD[1] + 16, MOD[2] + 16], [MOD[0], MOD[1] + -4, MOD[2]], 58, 0)]),
   shot("final: a maquete das 7 capas com a recompensa por cima", T.manda, [
@@ -140,7 +140,7 @@ const S = (p: V3, yaw: number, pose: WorkerState["pose"], o: Partial<WorkerState
 const fix = (p: V3): Partial<WorkerState> => ({ follow: () => p });
 const yawTo = (a: V3, b: V3) => Math.atan2(b[0] - a[0], b[2] - a[2]);
 const HID = (p: V3 = [0, 0, -3]): WorkerState => S(p, 0, "idle", { scale: 0, ...fix(p) });
-const W_G: V3 = [-8.5, 0, 8], W_TOP: V3 = [-9.6, 0, -2.4], W_B: V3 = [-4, 0, -2.2], W_PZ: V3 = [PLAZA[0] + 2.6, 0, PLAZA[2] - 3.4], W_SH: V3 = [24, 0, SH + 4];
+const W_G: V3 = [-8.5, 0, 8], W_TOP: V3 = [-9.6, 0, -2.4], W_B: V3 = [-2.7, 0, -1.3], W_PZ: V3 = [PLAZA[0] + 2.6, 0, PLAZA[2] - 3.4], W_SH: V3 = [24, 0, SH + 4];
 const WORKER: [number, WorkerState][] = [
   [0, HID()],
   [T.quieren, S(W_G, yawTo(W_G, [0, 0, 0]), "point", fix(W_G))],

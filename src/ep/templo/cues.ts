@@ -41,7 +41,9 @@ const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 export const TW = (() => {
   const pueblo = Math.min(Math.max(T.pueblo, T.mayoria + 0.6), C6 - 0.5), may = Math.min(T.mayoria, pueblo - 0.6);
   const nola = Math.min(T.nola, may - 0.4), giro = Math.min(T.giro, nola - 0.4);
-  return { giro, nola, may, pueblo };
+  /** a conquista: o estandarte do pueblo cai (e o dos vencedores sobe) um pouco antes de «pueblo», nunca antes de os guerreiros terem andado */
+  const fall = Math.min(Math.max(Math.min(T.someter - 0.55, pueblo - 0.85), may + 0.8), pueblo - 0.35);
+  return { giro, nola, may, pueblo, fall };
 })();
 
 /** cortes duros extras: o início de cada plano que não é um dos 7 da régua */
@@ -86,14 +88,14 @@ S.push(["stone", T.pPiedra + 0.05, -11], ["sh-log", T.pMadera + 0.0, -11], ["san
   ["stone", T.canoa1 + 0.1, -11], ["ding", T.mil + 0.5, -9], ["vn-rope", T.pueblos + 0.1, -13], ["waves", T.pueblos + 0.4, -12], ["splash", T.remando, -11],
   ["cheer", T.estas, -14], ["chime", T.estas + 0.35, -9]);
 // giro: o afundamento, o pueblo vizinho cai, capa nova, mapa, 7 capas, templos gêmeos
-S.push(["giro", T.giro - 0.05, -8], ["sink", T.nola + 0.1, -12], ["stamp", T.hundia + 0.3, -9], ["fs-steps", T.mayoria + 0.1, -12], ["fs-steps", T.mayoria + 1.0, -12], ["crowd", T.estren - 0.2, -24], ["ak-flag", T.someter + 0.1, -11], ["thud", T.someter + 0.35, -12],
-  ["thud", T.someter + 0.55, -10], ["ss-rise", T.pueblo + 0.1, -9], ["ss-bricks", T.pueblo + 0.3, -12], ["cheer", T.pueblo + 0.5, -15], ["ss-shimmer", T.templo2 + 0.1, -12],
+S.push(["giro", T.giro - 0.05, -8], ["sink", T.nola + 0.1, -12], ["stamp", T.hundia + 0.3, -9], ["fs-steps", T.mayoria + 0.1, -12], ["fs-steps", T.mayoria + 1.0, -12], ["crowd", T.estren - 0.2, -24], ["ak-flag", TW.fall + 0.1, -11], ["thud", TW.fall + 0.35, -12],
+  ["thud", TW.fall + 0.6, -10], ["ak-flag", TW.fall + 0.5, -12], ["ss-rise", T.pueblo + 0.1, -9], ["ss-bricks", T.pueblo + 0.3, -12], ["cheer", T.pueblo + 0.5, -15], ["ss-shimmer", T.templo2 + 0.1, -12],
   ["ss-rise", T.ritmo, -10], ["ding", T.imperio + 0.1, -10], ["slide", T.enmenos + 0.05, -12], ["ss-shimmer", T.enmenos + 0.5, -11], ["fanfare", T.siete + 0.15, -12],
   ["wind", T.arriba + 0.1, -15], ["gong", T.huitz + 0.1, -12], ["chime", T.tlaloc + 0.05, -10], ["rain", T.tlaloc + 0.3, -18]);
 // 1521: os espanhóis arrasam, constroem; 1978: a obra da luz, o poço, a deusa; a escavação
-S.push(["pop", T.m1521 + 0.1, -12], ["cannon", T.arras - 0.1, -11], ["quake", T.arras + 0.05, -9], ["crumble", T.arras + 0.2, -10], ["ss-domecrash", T.arras + 0.4, -12],
-  ["ss-rise", T.constr + 0.1, -10], ["bells", T.constr + 0.45, -14], ["pop", T.m1978 + 0.1, -12], ["crowd", T.m1978 + 0.4, -22], ["dig", T.cavaban + 0.05, -10],
-  ["dig", T.cavaban + 0.5, -12], ["gravel", T.cavaban + 0.3, -13], ["thud", T.toparon + 0.05, -11], ["ss-shimmer", T.diosa, -10], ["gong", T.diosa + 0.3, -10],
+S.push(["pop", T.m1521 + 0.1, -12], ["cannon", T.arras - 0.15, -11], ["quake", T.arras - 0.1, -9], ["crumble", T.arras + 0.0, -10], ["ss-domecrash", T.arras + 0.4, -12],
+  ["ss-rise", T.constr + 0.1, -10], ["bells", T.constr + 0.45, -14], ["pop", T.m1978 + 0.1, -12], ["crowd", T.m1978 + 0.4, -22], ["dig", T.m1978 + 0.3, -11], ["dig", T.m1978 + 0.8, -12], ["gravel", T.m1978 + 0.6, -13], ["dig", T.m1978 + 1.3, -11], ["dig", T.cavaban + 0.05, -10],
+  ["dig", T.cavaban + 0.5, -12], ["gravel", T.cavaban + 0.3, -13], ["thud", T.toparon + 0.05, -11], ["gravel", T.toparon - 0.2, -11], ["ss-shimmer", T.diosa, -10], ["gong", T.diosa + 0.3, -10],
   ["ding", T.diosa + 0.7, -9], ["dig", T.asi2 + 0.1, -12], ["ss-rise", T.excav - 0.1, -11], ["ss-shimmer", T.excav + 0.2, -11],
   ["fanfare", T.manda - 0.1, -9], ["confetti", T.manda + 0.2, -12], ["coins", T.manda + 0.5, -15], ["ss-shimmer", T.manda + 0.7, -13]);
 export const SFX = S;

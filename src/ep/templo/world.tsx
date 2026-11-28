@@ -41,11 +41,13 @@ export const SLIDE = (t: number, k: number) => {
 /** as capas 2, 3 e 4 CAEM sobre a pirâmide, uma a cada batida da frase «cada capa aprieta el suelo para la siguiente, y el centro…» */
 export const LAND = [T.cada + 0.1, T.suelo + 0.3, T.centro - 0.1];
 export const LAND_D = 0.5;
+/** 1521: o templo desaba JÁ na palavra «arrasaron» (começa 0,15 s antes, curva rápida no início: a smootherstep deixava o templo intacto na palavra) */
+const CRASH = (t: number) => (1 - prog(t, T.arras - 0.15, T.arras + 0.9)) ** 2;
 export const LG = (t: number, k: number) => {
   if (t < T.tenoch) return 1;
-  const col = 1 - ease(t, T.arras, T.arras + 1.0);
+  const col = CRASH(t);
   const g = [ease(t, T.esta, T.pero2 - 0.15), ease(t, T.construyen, T.alrededor + 0.3), ease(t, LAND[0], LAND[0] + LAND_D), ease(t, LAND[1], LAND[1] + LAND_D), ease(t, LAND[2], LAND[2] + LAND_D),
-    ease(t, T.pueblo, T.pueblo + 0.8), ease(t, T.ritmo - 0.1, T.ritmo + 0.7)][k];
+    ease(t, T.pueblo, T.pueblo + 0.4), ease(t, T.ritmo - 0.1, T.ritmo + 0.7)][k];
   return g * col;
 };
 export const SINK0 = (t: number) => 0.38 * ease(t, T.hunde, T.noparejo + 0.2);
@@ -276,7 +278,7 @@ const SinkBlock: React.FC<{ t: number }> = ({ t }) => {
 /** «¿cómo levantas una pirámide sobre barro?»: um segundo bloco balança e vai afundando devagar no lodo enquanto o mestre pensa */
 const SinkBlock2: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.como1 - 0.05 || t >= T.clavan) return null;
-  const a = ease(t, T.como1 + 0.3, T.c1 + 0.3), wob = 0.12 * Math.sin((t - T.como1) * 15) * ease(t, T.como1 + 0.15, T.como1 + 0.45) * (1 - ease(t, T.c1 - 0.1, T.c1 + 0.3));
+  const a = ease(t, T.como1 + 0.15, T.clavan - 0.1), wob = 0.12 * Math.sin((t - T.como1) * 15) * ease(t, T.como1 + 0.15, T.como1 + 0.45) * (1 - ease(t, T.c1 - 0.1, T.c1 + 0.3));
   const y = 1.1 - 3.4 * a, sq = 0.25 * a;
   return (
     <G p={[0.4, y, -0.95]} r={[0, 0, wob]}>
@@ -432,7 +434,7 @@ export const CANOE_BODY: React.FC<{ load?: number; paddlers?: number; t: number 
 const Canoes: React.FC<{ t: number }> = ({ t }) => {
   const around = t < T.quieren;
   const bob = (i: number) => 0.05 * Math.sin(t * 1.9 + i * 1.7);
-  const arrive = ease(t, T.pueblos, T.remando + 0.2);
+  const arrive = ease(t, T.pueblos, TW.giro - 0.25);
   return (
     <G>
       {around ? Array.from({ length: 16 }, (_, i) => {
@@ -455,7 +457,7 @@ const Canoes: React.FC<{ t: number }> = ({ t }) => {
         {t >= T.pueblos - 0.05 ? Array.from({ length: 14 }, (_, i) => {
           const ang = lerp(-0.2, PI + 0.2, i / 13), R = 70 + (i % 3) * 14, sx = Math.cos(ang) * R * 1.4, sz = clamp(36 + Math.sin(ang) * R * 0.8, 44, 64), ex = lerp(-26, 26, ((i * 5) % 14) / 13), ez = 44 + (i % 2) * 5;
           const u = arrive, x = lerp(sx, ex, u), z = lerp(sz, ez, u), yaw = Math.atan2(ex - sx, ez - sz);
-          return <G key={i} p={[x, WY + 0.05 + bob(i), z]} r={[0, yaw, 0]}><CANOE_BODY t={t + i} load={1} /></G>;
+          return <G key={i} p={[x, WY + 0.05 + bob(i), z]} r={[0, yaw, 0]}><CANOE_BODY t={t + i} load={1} paddlers={2} /></G>;
         }) : null}
       </> : null}
     </G>
@@ -530,9 +532,27 @@ const FarWater: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- o giro: pueblo vizinho, guerreiros, mapa, espanhóis, 1978
+/** ⏪ Tenochtitlan (vista aérea): canoas CHEGANDO à margem norte e gente andando na praça: o plano não fica só com barquinhos à deriva */
+const IslandLife: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.tenoch - 0.1 || t >= C1) return null;
+  const tri = (u: number) => 1 - Math.abs(2 * (u - Math.floor(u)) - 1);
+  return (
+    <G>
+      {Array.from({ length: 8 }, (_, i) => {
+        const ex = -30 + i * 8.6, ez = -44 - (i % 2) * 2.5, sx = ex + (i - 3.5) * 6, sz = -74 - (i % 3) * 5;
+        const u = prog(t, T.tenoch - 0.2 + 0.1 * i, C1 - 0.2), uu = 1 - (1 - u) ** 1.6, x = lerp(sx, ex, uu), z = lerp(sz, ez, uu);
+        return <G key={i} p={[x, WY + 0.05 + 0.05 * Math.sin(t * 1.9 + i * 1.7), z]} r={[0, Math.atan2(ex - sx, ez - sz), 0]} sc={2.3}><CANOE_BODY t={t + i * 0.9} load={i % 2} paddlers={2} /></G>;
+      })}
+      {Array.from({ length: 9 }, (_, i) => {
+        const ph = t * 0.045 + i * 0.37, dir = ph - Math.floor(ph) < 0.5 ? 1 : -1, x = lerp(-17, 17, tri(ph)), z = -3 - (i % 3) * 5 - (i > 5 ? 20 : 0);
+        return <Worker key={i} p={[x, 0.04, z]} yaw={dir * PI / 2} pose={poseOf("walk", t + i * 0.6)} t={t * 1.6 + i * 0.6} c={i % 4 === 3 ? WARRIOR : MEX} scale={2.0} mustache={i % 2 === 0} />;
+      })}
+    </G>
+  );
+};
 const Neighbor: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.estas - 0.1) return null;
-  const fall = ease(t, T.someter, T.someter + 0.5), x = lerp(0, 1.5, fall);
+  const fall = ease(t, TW.fall, TW.fall + 0.55), x = -1.5 * fall, vr = ease(t, TW.fall + 0.3, TW.fall + 0.8);
   return (
     <G>
       <Box s={[14, 0.5, 3.4]} p={[40, -0.25, -12]} c="#cdb98a" />
@@ -542,8 +562,15 @@ const Neighbor: React.FC<{ t: number }> = ({ t }) => {
       {/* o estandarte do pueblo vizinho: cai quando o conquistam */}
       <G p={[49.5, 0, -8]} r={[0, 0, x]}>
         <Cyl rt={0.1} h={6} p={[0, 3, 0]} c="#6a4a2a" seg={6} />
-        <Box s={[0.08, 1.4, 2.0]} p={[0, 5.2, 1.0]} c="#27c4bc" o={{ emissive: "#27c4bc", ei: 0.25 }} cast={false} />
+        <Box s={[2.0, 1.4, 0.08]} p={[1.0, 5.2, 0]} c="#27c4bc" o={{ emissive: "#27c4bc", ei: 0.25 }} cast={false} />
         <Sph rad={0.35} p={[0, 6.1, 0]} c="#ffd400" ws={8} hs={6} cast={false} />
+      </G>
+      {/* o estandarte dos vencedores sobe no mesmo lugar logo depois */}
+      <G p={[47.0, 0, -9.6]} sc={[1, Math.max(0.001, vr), 1]}>
+        <Cyl rt={0.11} h={6.6} p={[0, 3.3, 0]} c="#6a4a2a" seg={6} />
+        <Box s={[2.2, 1.5, 0.08]} p={[-1.1, 5.6, 0]} c="#d9232b" o={{ emissive: "#d9232b", ei: 0.25 }} cast={false} />
+        <Box s={[2.2, 0.4, 0.1]} p={[-1.1, 5.6, 0]} c="#ffd400" cast={false} />
+        <Sph rad={0.38} p={[0, 6.7, 0]} c="#ffd400" ws={8} hs={6} cast={false} />
       </G>
     </G>
   );
@@ -551,29 +578,29 @@ const Neighbor: React.FC<{ t: number }> = ({ t }) => {
 const WARR = [0, 1, 2, 3];
 /** 1ª fase (plano «mayoría»): os guerreiros marcham +x até o pueblo vecino; 2ª (a partir de «pueblo»): voltam vitoriosos ao templo */
 export const WARRX = (t: number, i: number) => (t < TW.pueblo
-  ? lerp(29 + i * 1.4, 43 + i * 1.3, ease(t, TW.may, T.someter + 0.1))
+  ? lerp(34 + i * 1.2, 43.2 + i * 1.2, ease(t, TW.may, TW.fall))
   : lerp(47 + i * 1.6, 20 + i * 1.6, ease(t, TW.pueblo, T.templo2 + 0.3)));
 const Warriors: React.FC<{ t: number }> = ({ t }) => (t < TW.may - 0.3 || t >= T.enmenos ? null : (
   <G>{WARR.map((i) => {
-    const x = WARRX(t, i), z = -12.6 + (i % 2) * 1.8, out = t < TW.pueblo, moving = out ? t < T.someter - 0.1 : t < T.templo2 + 0.3;
+    const x = WARRX(t, i), z = -12.6 + (i % 2) * 1.8, out = t < TW.pueblo, moving = out ? t < TW.fall : t < T.templo2 + 0.3;
     return <G key={i} p={[x, 0, z]} r={[0, out ? PI / 2 : -PI / 2, 0]}>
-      <Worker p={[0, 0, 0]} pose={poseOf(moving ? "walk" : out ? (i % 2 ? "cheer" : "point") : "cheer", t + i * 0.7)} t={t + i * 0.7} c={WARRIOR} scale={1.15} mustache={i % 2 === 0} />
+      <Worker p={[0, 0, 0]} pose={poseOf(moving ? "walk" : out ? (i % 2 ? "cheer" : "point") : "cheer", t + i * 0.7)} t={t + i * 0.7} c={WARRIOR} scale={1.35} mustache={i % 2 === 0} />
       <Box s={[0.05, 2.6, 0.05]} p={[-0.45, 1.3, 0.1]} c="#7a4a2a" cast={false} /><Cone rad={0.1} h={0.4} seg={4} p={[-0.45, 2.7, 0.1]} c="#d8d8dc" cast={false} />
     </G>;
   })}
-  {t < T.someter + 0.2 ? <Puffs t={t} p={[WARRX(t, 1) - 1.5, 0.2, -11.6]} n={5} period={0.9} rise={1.2} size={0.5} c="#d9c8a0" on={t < T.someter - 0.1 && t >= TW.may ? 1 : 0} drift={[-1, 0, 0]} /> : null}</G>
+  {t < TW.fall + 0.3 ? <Puffs t={t} p={[WARRX(t, 1) - 1.5, 0.2, -11.6]} n={5} period={0.9} rise={1.2} size={0.5} c="#d9c8a0" on={t < TW.fall && t >= TW.may ? 1 : 0} drift={[-1, 0, 0]} /> : null}</G>
 ));
 /** o povo do pueblo vecino: de braços para o alto quando os guerreiros chegam, ajoelhado e de cabeça baixa em «someter», com o tributo à frente */
 const VILL: Costume = { skin: "#a8673f", top: "#27c4bc", bottom: "#a8673f", kilt: "#1f8f89", kiltLen: 0.5, hat: "none", hatC: "#000", boot: "#8a5a32", belt: "#ffd400", sleeves: false, scarf: "#27c4bc" };
 const Villagers: React.FC<{ t: number }> = ({ t }) => {
   if (t < TW.may - 0.3 || t >= T.templo2) return null;
-  const k = ease(t, T.someter, T.someter + 0.4);
+  const k = ease(t, TW.fall, TW.fall + 0.4);
   return (
     <G>
       {[[54.5, -6.5], [56.4, -9.4], [54.0, -12.3], [56.6, -14.6], [55.2, -3.6], [58.2, -11.8]].map(([x, z], i) => (
         <Worker key={i} p={[x as number, -0.5 * k, z as number]} yaw={-PI / 2 + (i % 3 - 1) * 0.25} pose={poseOf(k > 0.5 ? "read" : "alarm", t + i * 0.5)} t={t + i * 0.5} c={VILL} scale={1.2} mustache={i % 2 === 1} />
       ))}
-      {[[51.2, -9.0, 0], [51.5, -11.6, 1], [50.9, -13.6, 2], [51.6, -7.0, 0]].map(([x, z, q], i) => { const u = 1.5 * Math.max(0.001, popK(t, T.someter + 0.3 + i * 0.1, 0.3)); return (
+      {[[51.2, -9.0, 0], [51.5, -11.6, 1], [50.9, -13.6, 2], [51.6, -7.0, 0]].map(([x, z, q], i) => { const u = 1.5 * Math.max(0.001, popK(t, TW.fall + 0.3 + i * 0.1, 0.3)); return (
         <G key={i} p={[x as number, 0, z as number]} sc={u}>
           {q === 0 ? <><Box s={[1.1, 0.7, 0.9]} p={[0, 0.35, 0]} c="#d8a13c" /><Box s={[1.15, 0.12, 0.95]} p={[0, 0.74, 0]} c="#27c4bc" cast={false} /></> : null}
           {q === 1 ? <><Sph rad={0.55} p={[0, 0.5, 0]} sc={[1, 0.85, 1]} c="#e8d9b0" ws={8} hs={6} /><Sph rad={0.4} p={[0.7, 0.35, 0.2]} c="#d8c89a" ws={8} hs={6} /></> : null}
@@ -586,7 +613,7 @@ const Villagers: React.FC<{ t: number }> = ({ t }) => {
 export const MAP_P: V3 = [15, 0, -2.5];
 const MapBoard: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.pueblo || t >= T.enmenos) return null;
-  const k = popK(t, T.pueblo, 0.4), g1 = ease(t, T.pueblo + 0.1, T.pueblo + 0.9), g2 = ease(t, T.templo2, T.templo2 + 0.8), g3 = ease(t, T.ritmo, T.ritmo + 0.8), g4 = ease(t, T.imperio - 0.1, T.imperio + 0.6);
+  const k = popK(t, T.pueblo, 0.3), g1 = popK(t, T.pueblo + 0.05, 0.5), g2 = popK(t, T.templo2, 0.5), g3 = popK(t, T.ritmo, 0.5), g4 = popK(t, T.imperio - 0.1, 0.5);
   const R = [3.0, 2.2, 1.45, 0.75], C = ["#a8d36a", "#f0b34a", "#e8794a", "#c4262e"], G4 = [g1, g2, g3, g4];
   return (
     <G p={MAP_P} r={[0, -0.12, 0]} sc={k}>
@@ -648,10 +675,10 @@ const Dust: React.FC<{ t: number }> = ({ t }) => {
 const HARD = COSTUMES.worker;
 export const PIT_W = (t: number) => lerp(3.4, 8.6, ease(t, T.asi2, T.excav + 0.5));
 export const PIT_D = 7;
-const pitFloor = (t: number) => lerp(-0.4, -PIT_D, ease(t, T.cavaban, T.toparon - 0.05));
+const pitFloor = (t: number) => lerp(-0.4, -PIT_D, ease(t, T.m1978 + 0.1, T.toparon - 0.05));
 const Modern: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.m1978 - 0.3 || t >= T.manda) return null;
-  const W = PIT_W(t), fl = pitFloor(t), sweep = ease(t, T.toparon + 0.2, T.diosa + 0.4), rem = ease(t, T.asi2 + 0.1, T.asi2 + 0.9);
+  const W = PIT_W(t), fl = pitFloor(t), sweep = prog(t, T.toparon - 0.3, T.toparon + 0.5), rem = ease(t, T.asi2 + 0.1, T.asi2 + 0.9);
   const L = 120;
   return (
     <G p={MOD}>
@@ -660,32 +687,46 @@ const Modern: React.FC<{ t: number }> = ({ t }) => {
         <G key={i}><Box s={[w, 0.4, d]} p={[x, -0.2, z]} c="#4b4e57" /><Box s={[w - 0.02, PIT_D - 0.4, d - 0.02]} p={[x, -0.4 - (PIT_D - 0.4) / 2, z]} c="#8a6a44" /></G>))}
       <Box s={[0.5, 0.06, 2 * L]} p={[-0.0, 0.02, 0]} c="#ffd43a" cast={false} vis={false} />
       <Box s={[2 * W, 0.4, 2 * W]} p={[0, fl - 0.2, 0]} c="#6a5338" />
-      {/* a deusa de pedra: disco grande esculpido, coberto de terra até a descoberta */}
-      <G p={[0, fl + 0.05, 0]}>
-        <Cyl rt={2.5} h={0.4} p={[0, 0.2, 0]} c="#b9b2a0" seg={24} /><Cyl rt={2.3} h={0.1} p={[0, 0.45, 0]} c="#9c957f" seg={24} /><Cyl rt={2.0} h={0.1} p={[0, 0.55, 0]} c="#e2dac4" seg={24} />
-        <G p={[0, 0.6, 0]}>
-          {/* relevo esculpido (vista de cima; a cabeça aponta para o alto da tela): cabeça com cocar de plumas, tronco com cinto de serpente, braços e pernas dobrados,
-              em terracota e turquesa sobre a pedra clara: lê-se uma deusa, não uma tampa de bueiro */}
-          <Box s={[0.85, 0.16, 1.1]} p={[0, 0.08, 0.05]} c="#8a3a28" /><Box s={[0.95, 0.2, 0.2]} p={[0, 0.1, 0.42]} c="#2f9fb8" />
-          <Sph rad={0.42} p={[0, 0.1, -0.98]} sc={[1, 0.45, 1]} c="#8a3a28" ws={10} hs={6} /><Sph rad={0.07} p={[-0.14, 0.26, -1.0]} c="#1c1208" ws={6} hs={4} cast={false} /><Sph rad={0.07} p={[0.14, 0.26, -1.0]} c="#1c1208" ws={6} hs={4} cast={false} />
+      {/* a deusa de pedra (Coyolxauhqui): disco GRANDE de pedra clara com a figura entalhada em cores fortes (cabeça com cocar e brinco, tronco, braços e pernas dobrados em cata-vento),
+          coberto de terra até a descoberta; a terra sai voando quando os obreiros a varrem */}
+      <G p={[0, fl + 0.05, 0]} sc={1.2}>
+        <Cyl rt={2.5} h={0.4} p={[0, 0.2, 0]} c="#cfc4a6" seg={28} /><Cyl rt={2.3} h={0.1} p={[0, 0.45, 0]} c="#a89c7e" seg={28} /><Cyl rt={2.18} h={0.1} p={[0, 0.55, 0]} c="#e6dbbc" seg={28} />
+        <G p={[0, 0.6, 0]} sc={[1, 1.8, 1]}>
+          <Box s={[0.85, 0.16, 1.1]} p={[0, 0.08, 0.05]} c="#c9301c" /><Box s={[0.95, 0.2, 0.2]} p={[0, 0.1, 0.42]} c="#0ea5c0" />
+          <Sph rad={0.46} p={[0, 0.1, -0.98]} sc={[1, 0.5, 1]} c="#c9301c" ws={10} hs={6} />
+          {[-1, 1].map((d) => <Sph key={d} rad={0.2} p={[d * 0.62, 0.12, -0.98]} sc={[1, 0.5, 1]} c="#0ea5c0" ws={8} hs={5} />)}
+          <Sph rad={0.07} p={[-0.14, 0.26, -1.0]} c="#1c1208" ws={6} hs={4} cast={false} /><Sph rad={0.07} p={[0.14, 0.26, -1.0]} c="#1c1208" ws={6} hs={4} cast={false} />
           {[-0.85, -0.45, 0, 0.45, 0.85].map((an, i) => (
-            <G key={i} p={[0, 0.08, -1.3]} r={[0, an, 0]}><Box s={[0.17, 0.1, 0.8]} p={[0, 0, -0.42]} c={i % 2 ? "#e0b030" : "#2f9fb8"} /></G>))}
+            <G key={i} p={[0, 0.08, -1.3]} r={[0, an, 0]}><Box s={[0.19, 0.1, 0.8]} p={[0, 0, -0.42]} c={i % 2 ? "#f0b020" : "#0ea5c0"} /></G>))}
           {[-1, 1].map((d) => (
             <G key={d} sc={[d, 1, 1]}>
               <G p={[0.4, 0.08, -0.35]} r={[0, 0.5, 0]}>
-                <Box s={[0.85, 0.12, 0.24]} p={[0.42, 0, 0]} c="#8a3a28" />
-                <G p={[0.85, 0, 0]} r={[0, -1.1, 0]}><Box s={[0.7, 0.12, 0.22]} p={[0.34, 0, 0]} c="#8a3a28" /><Sph rad={0.17} p={[0.72, 0, 0]} sc={[1, 0.5, 1]} c="#2f9fb8" ws={8} hs={5} /></G>
+                <Box s={[0.85, 0.12, 0.26]} p={[0.42, 0, 0]} c="#c9301c" />
+                <G p={[0.85, 0, 0]} r={[0, -1.1, 0]}><Box s={[0.7, 0.12, 0.24]} p={[0.34, 0, 0]} c="#c9301c" /><Sph rad={0.19} p={[0.72, 0, 0]} sc={[1, 0.5, 1]} c="#0ea5c0" ws={8} hs={5} /></G>
               </G>
               <G p={[0.25, 0.08, 0.55]} r={[0, -0.7, 0]}>
-                <Box s={[0.9, 0.12, 0.26]} p={[0.44, 0, 0]} c="#8a3a28" />
-                <G p={[0.88, 0, 0]} r={[0, 0.9, 0]}><Box s={[0.75, 0.12, 0.24]} p={[0.37, 0, 0]} c="#8a3a28" /><Sph rad={0.2} p={[0.78, 0, 0]} sc={[1.2, 0.5, 1]} c="#2f9fb8" ws={8} hs={5} /></G>
+                <Box s={[0.9, 0.12, 0.28]} p={[0.44, 0, 0]} c="#c9301c" />
+                <G p={[0.88, 0, 0]} r={[0, 0.9, 0]}><Box s={[0.75, 0.12, 0.26]} p={[0.37, 0, 0]} c="#c9301c" /><Sph rad={0.22} p={[0.78, 0, 0]} sc={[1.2, 0.5, 1]} c="#0ea5c0" ws={8} hs={5} /></G>
               </G>
             </G>))}
-          {Array.from({ length: 16 }, (_, i) => <Sph key={i} rad={0.1} p={[Math.cos((i / 16) * PI * 2) * 2.15, 0.06, Math.sin((i / 16) * PI * 2) * 2.15]} c="#d4a64a" o={{ emissive: "#d4a64a", ei: 0.4 }} cast={false} ws={6} hs={4} />)}
         </G>
-        <Cyl rt={2.7} h={0.6} p={[0, 0.9, 0]} sc={[1, Math.max(0.001, 1 - sweep), 1]} c="#6a5338" seg={20} />
-        <Sph rad={0.4} p={[0, 1.2, 0]} c="#fff8c0" o={{ emissive: "#fff0a0", ei: 1.4, opacity: 0.0 + 0.8 * Math.sin(PI * prog(t, T.diosa - 0.2, T.diosa + 1.0)), depthWrite: false }} cast={false} ws={8} hs={6} />
+        {Array.from({ length: 16 }, (_, i) => <Sph key={i} rad={0.12} p={[Math.cos((i / 16) * PI * 2) * 2.15, 0.62, Math.sin((i / 16) * PI * 2) * 2.15]} c="#f0b020" o={{ emissive: "#f0b020", ei: 0.5 }} cast={false} ws={6} hs={4} />)}
+        {/* o halo dourado da descoberta */}
+        <Cyl rt={3.5} h={0.03} p={[0, 0.3, 0]} c="#fff0a0" o={{ emissive: "#ffe070", ei: 1.0, opacity: 0.8 * Math.sin(PI * prog(t, T.toparon + 0.1, T.diosa + 1.4)), depthWrite: false }} cast={false} seg={28} />
+        {/* a terra por cima: monte que some quando é varrido */}
+        <G sc={[1 + 0.12 * sweep, Math.max(0.001, 1 - sweep), 1 + 0.12 * sweep]}>
+          <Cyl rt={2.7} h={0.6} p={[0, 0.9, 0]} c="#7a5f3c" seg={20} />
+          <Sph rad={1.7} p={[0, 1.2, 0]} sc={[1, 0.45, 1]} c="#8a6c44" ws={9} hs={6} /><Sph rad={0.9} p={[1.1, 1.3, 0.7]} sc={[1, 0.6, 1]} c="#6a5338" ws={8} hs={5} />
+        </G>
       </G>
+      {/* terra voando: da cova (enquanto cavam) e do monte varrido (quando topam com a deusa) */}
+      {t >= T.m1978 - 0.2 && t < T.toparon + 0.7 ? Array.from({ length: 16 }, (_, i) => {
+        const per = 0.85, u = fract((t + i * (per / 16)) / per), a = rnd(i) * PI * 2, up = -fl + 2.2 + rnd(i + 3) * 2.5, r0 = 0.4 + rnd(i + 7) * 1.6, r1 = r0 + 0.8 + rnd(i + 9) * 1.4;
+        const on = t < T.toparon - 0.3 ? 1 : 0, sw = sweep > 0 && sweep < 1 ? 1 : 0;
+        if (!on && !sw) return null;
+        const ur = sw && !on ? sweep : u, rr = lerp(r0, r1 + 1.2 * sw, ur), yy = on ? fl + 0.3 + up * 4 * u * (1 - u) : fl + 1.0 + 3.4 * Math.sin(PI * ur) * (0.5 + rnd(i + 11));
+        return <Box key={i} s={[0.4, 0.3, 0.4]} p={[Math.cos(a) * rr, yy, Math.sin(a) * rr]} r={[ur * 6 + i, ur * 4, 0]} c={["#7a5f3c", "#8a6c44", "#6a5338"][i % 3]} cast={false} />;
+      }) : null}
       {/* os restos do templo em camadas, nos fundos do poço ampliado */}
       {[0, 1, 2].map((i) => { const h = 0.9 + i * 0.7, w = 4.4 + i * 1.7, k = Math.max(0.001, ease(t, T.asi2 + 0.12 * i, T.asi2 + 0.12 * i + 0.5)); return t < T.asi2 - 0.05 ? null : (
         <G key={i} p={[0, fl, 0]} sc={[1, k, 1]}>
@@ -711,10 +752,10 @@ const Modern: React.FC<{ t: number }> = ({ t }) => {
         <Box s={[0.3, 1.6, 2.6]} p={[-1.5, 0.8, 0]} c="#6a4a2a" /><Box s={[0.3, 1.6, 2.6]} p={[1.5, 0.8, 0]} c="#6a4a2a" />
         {[0, 1, 2, 3].map((i) => <Pipe3 key={i} i={i} />)}
       </G>
-      {[[-W - 1.8, 1.2, 1.2, "chisel"], [W + 1.8, -1.0, -1.3, "pull"], [2, W + 1.8, 3.2, "present"]].map(([x, z, yaw, pose], i) => (
-        <Worker key={i} p={[x as number, 0.3, z as number]} yaw={yaw as number} pose={poseOf(pose as PoseName, t + i * 0.6)} t={t + i * 0.6} c={HARD} scale={1.3} prop={i === 0 ? "hammer" : "none"} mustache={i !== 1} />
+      {[[-W - 1.7, 0.8], [W + 1.7, -0.8], [W + 1.7, 2.2], [1.0, -W - 1.7]].map(([x, z], i) => (
+        <Worker key={i} p={[x, 0.1, z]} yaw={Math.atan2(-x, -z)} pose={poseOf(t < T.toparon ? "chisel" : t < T.diosa + 0.3 ? "alarm" : "cheer", t * 1.5 + i * 0.37)} t={t * 1.5 + i * 0.37} c={HARD} scale={1.4} prop={t < T.toparon && i !== 1 ? "hammer" : "none"} mustache={i !== 1} />
       ))}
-      <Puffs t={t} p={[0, fl + 0.4, 0]} n={5} period={1.4} rise={3.5} size={0.8} c="#c9a97a" on={t > T.cavaban && t < T.toparon + 0.8 ? 1 : 0} />
+      <Puffs t={t} p={[0, fl + 0.4, 0]} n={5} period={1.4} rise={3.5} size={0.8} c="#c9a97a" on={t > T.m1978 && t < T.toparon - 0.35 ? 1 : 0} />
     </G>
   );
 };
@@ -757,19 +798,19 @@ export const World: React.FC<{ t: number }> = ({ t }) => {
   const landing = (k: number) => k >= 2 && k <= 4 && t < T.pero3 + 0.5;
   const gf = (k: number) => (landing(k) ? (LG(t, k) > 0.002 ? 1 : 0) : LG(t, k));
   const dropf = (k: number) => (landing(k) && LG(t, k) > 0.002 ? 17 * (1 - LG(t, k) ** 2) : 0);
-  const shr = t < T.tenoch ? 1 : ease(t, T.arriba, T.arriba + 0.45) * (1 - ease(t, T.arras, T.arras + 1.0));
+  const shr = t < T.tenoch ? 1 : ease(t, T.arriba, T.arriba + 0.45) * (1 - ease(t, T.arras - 0.15, T.arras + 0.35));
   return (
     <>
       <Sky top="#3f96f0" mid="#8fc8f5" low="#eaf6ff" />
       <Clouds t={t} n={8} />
       <Volcanoes />
       <Lake t={t} /><Foam t={t} /><Houses /><Ahuehuetes />
-      <Temple t={t} gf={gf} sf={sf} tilt={TILT0(t)} sink={SINK0(t)} shr={shr} o={[0, -DIP(t), 0]} drop={dropf} />
+      <Temple t={t} gf={gf} sf={sf} tilt={TILT0(t)} sink={SINK0(t)} shr={shr} o={[0.3 * Math.sin(t * 43) * Math.sin(Math.PI * prog(t, T.arras - 0.15, T.arras + 0.9)), -DIP(t), 0]} drop={dropf} />
       {open ? <><Foundation t={t} /><SinkBlock2 t={t} /><MudPack t={t} /><SinkArrow t={t} /><SinkBlock t={t} /><Fill t={t} /><TiltGauge t={t} /><Rock t={t} /><Crew t={t} /></> : null}
       <Tezontle t={t} /><Balance t={t} />
       <Ghost t={t} /><Crane t={t} />
       <XMark t={t} a={T.motor + 0.45} b={T.pero1} p={[CRANE[0], 7.4, CRANE[2] + 2]} sc={1.8} />
-      <Canoes t={t} /><Piles t={t} /><FarWater t={t} />
+      <Canoes t={t} /><IslandLife t={t} /><Piles t={t} /><FarWater t={t} />
       <Neighbor t={t} /><Warriors t={t} /><Villagers t={t} /><MapBoard t={t} />
       <Colonial t={t} /><Soldiers t={t} /><Dust t={t} />
       <Modern t={t} /><Model t={t} />
