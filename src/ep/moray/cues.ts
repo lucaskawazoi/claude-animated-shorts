@@ -49,7 +49,7 @@ const [C1, C2, C3, C4, C5, C6, C7] = CUTS;
 
 /** cortes duros extras (começo de cada plano fora da régua), um a cada ~2–3 s; o episode.tsx tem os mesmos planos */
 export const XCUTS = [T.pero0, T.sola0, T.incas, T.sinmaq, T.altura, T.suelo, T.disuelve, T.quedan, T.hondo, T.p1, T.b1, T.pordentro, T.doce, T.plano, T.terraza,
-  T.solo2, T.c2, T.bajan, T.riego, T.p3, T.hoyo, T.b3, T.c3, T.cuela, T.drenaje, T.giro, T.donde, T.equipo, T.noenc, T.paraellos, T.manda].filter((x) => !CUTS.some((c) => Math.abs(c - x) < 0.5));
+  T.solo2, T.b2, T.c2, T.bajan, T.riego, T.p3, T.hoyo, T.b3, T.c3, T.cuela, T.drenaje, T.giro, T.donde, T.equipo, T.noenc, T.paraellos, T.manda].filter((x) => !CUTS.some((c) => Math.abs(c - x) < 0.5));
 
 /** os 12 anéis aparecem de cima para baixo: o i-ésimo começa em RING_T(i, a, b) (fração do trecho entre duas frases, nunca segundos soltos) */
 export const RING_T = (i: number, a: number, b: number, dur = 0.35) => a + (b - a - dur) * (i / 11);
@@ -85,7 +85,7 @@ S.push(["drain", T.c2 + 0.15, -12], ["stone", T.canales, -12], ["stone", T.canal
 for (let i = 0; i < 12; i += 3) S.push(["splash", RING_T(i, T.caidas, T.siguienteEnd) + 0.1, -13 - (i % 2)]);
 S.push(["ding", T.siguienteEnd, -10], ["chime", T.riego + 0.35, -9]);
 // problema 3: a água junta no fundo, sobe como numa olla (✖)
-S.push(["stream", T.p3 + 0.15, -12], ["vn-glub", T.alfondo + 0.1, -11], ["vn-tide", T.hoyo + 0.1, -11], ["vn-bubbles", T.olla, -12], ["flood", T.olla + 0.25, -13], ["buzzer", T.ollaEnd - 0.1, -14]);
+S.push(["stream", T.p3 + 0.15, -12], ["vn-glub", T.alfondo + 0.1, -11], ["vn-tide", T.hoyo + 0.1, -11], ["vn-bubbles", T.olla, -12], ["flood", T.hoyo + 0.4, -13], ["buzzer", T.olla + 0.5, -14], ["pop", T.b3 + 0.05, -10]);
 // solução 3 (a previsão): cava, rochas caem, a água some pelas frestas, ✔, título
 S.push(["drain", T.c3 + 0.15, -12], ["dig", T.c3 + 0.35, -10], ["dig", T.c3 + 0.9, -12], ["gravel", T.c3 + 0.5, -13], ["stone", T.grandesEnd - 0.05, -12], ["stream", T.grandesEnd - 0.35, -12], ["drip", T.cuela, -10], ["vn-fallwater", T.cuela + 0.1, -11], ["drain", T.hacia, -11],
   ["ding", T.inunda - 0.4, -10], ["cheer", T.asi + 0.55, -14], ["chime", T.drenaje + 0.35, -9]);
@@ -93,8 +93,10 @@ for (let k = 0; k < ROCKS_N; k++) S.push(["thud", ROCK_T(k) + ROCK_FALL, -9 - (k
 // o giro: laboratório (hipótese), anéis que mudam de cor, engenheiros, ✖ e a placa cai, cerimônias
 S.push(["giro", T.giro - 0.05, -8], ["pop", T.lab - 0.35, -12], ["glass", T.lab - 0.25, -12], ["bubble", T.fama + 0.5, -14], ["vn-bubbles", T.lab, -12],
   ["ss-shimmer", T.donde, -11], ["ss-shimmer", T.clima, -13], ["stamp", T.hip + 0.05, -8], ["sad", T.hip + 0.3, -17],
-  ["sg-shutter", T.equipo + 0.3, -12], ["ding", T.equipo + 0.9, -12], ["sg-shutter", T.anos - 0.2, -14], ["strike", T.noenc + 0.35, -11], ["buzzer", T.noenc + 0.5, -14],
-  ["creak", T.noenc + 0.7, -11], ["thud", T.noenc + 1.05, -11], ["ss-shimmer", T.paraellos + 0.1, -13], ["gong", T.lugar + 0.15, -11], ["chime", T.cerem, -10]);
+  ["sg-shutter", T.equipo + 0.3, -12], ["ding", T.equipo + 0.9, -12], ["sg-shutter", T.anos - 0.2, -14], ["strike", T.noenc + 0.25, -11], ["buzzer", T.noenc + 0.4, -14],
+  ["creak", T.noenc + 0.75, -11], ["thud", T.noenc + 1.2, -11], ["ss-shimmer", T.paraellos + 0.1, -13], ["gong", T.lugar + 0.15, -11], ["chime", T.cerem, -10]);
+// 2.ª passada: voo sobre os picos, lhamas e chasqui, o fio que some na terra seca, a calha que despeja no fundo
+S.push(["llama", C1 + 0.25, -16], ["fs-steps", C1 + 0.5, -12], ["stream", T.dos + 0.1, -13], ["stream", C6 + 0.05, -11], ["splash", C6 + 0.3, -12], ["drain", C6 + 0.6, -12]);
 // final: recompensa
 S.push(["fanfare", T.manda - 0.1, -9], ["confetti", T.manda + 0.2, -12], ["llama", T.manda + 0.9, -17], ["ding", T.manda + 0.5, -10]);
 export const SFX = S;

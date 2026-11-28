@@ -6,9 +6,9 @@ import React, { useMemo } from "react";
 import * as THREE from "three";
 import { Box, Cone, Cyl, G, Pipe, Sph, V3, clamp, ease, fract, lerp, mat, outBack, prog, rnd, vlerp } from "../../toy/kit";
 import { Clouds, Puffs, Sky } from "../../toy/scenery";
-import { COSTUMES, Crowd } from "../../toy/worker";
+import { COSTUMES, Crowd, Worker, poseOf } from "../../toy/worker";
 import type { PoseName } from "../../toy/worker";
-import { C1, C2, C6, RING_T, ROCKS_N, ROCK_FALL, ROCK_T, T } from "./cues";
+import { C1, C2, C3, C6, RING_T, ROCKS_N, ROCK_FALL, ROCK_T, T } from "./cues";
 
 const PI = Math.PI;
 // ---------------------------------------------------------------- geografia
@@ -69,16 +69,12 @@ const plugD = (t: number) => ease(t, T.hundio, T.hundio + 0.9) * DEPTH;
 /** pit C: um disco plano que cai em C2 */
 const pitCD = (t: number) => ease(t, C2 + 0.04, C2 + 0.7) * PC.d;
 /** nível da água hipotética («como una olla») e depois a que escoa no filtro */
-const FLOOD_TOP = FLOOR + 6.5;
-const floodY = (t: number) => {
-  if (t < T.p3) return FLOOR - 1;
-  if (t < T.cuela) return FLOOR + 0.05 + (FLOOD_TOP - FLOOR) * ease(t, T.hoyo + 0.2, T.ollaEnd - 0.1);
-  return lerp(FLOOD_TOP, FLOOR - 1, ease(t, T.cuela, T.cuela + 1.5));
-};
+const FLOOD_TOP = -0.9;   // a água hipotética sobe até a borda
+const floodY = (t: number) => (t < T.p3 ? FLOOR - 1 : FLOOR + 0.05 + (FLOOD_TOP - FLOOR) * ease(t, T.hoyo + 0.15, T.olla + 0.4));
 const stepR = (y: number) => { const d = -y, i = Math.floor(d / HH) - 1; return i < 0 ? RT : i >= N ? FR + WW : rIn(clamp(i, 0, N - 1)); };
 /** o filtro: o poço de 8×6 que abre no fundo, as rochas, a tampa verde de volta */
 const PIT = { x0: -5, x1: 5, z0: -5, z1: 3, d: 3.2 };
-const pitOpen = (t: number) => t >= T.c3 + 0.12 && t < T.inunda - 0.1;
+const pitOpen = (t: number) => t >= T.c3 + 0.12 && t < C6 - 0.03;   // a tampa verde volta ANTES do plano «así el hoyo no se inunda» (o fundo fica verde)
 const pitK = (t: number) => ease(t, T.c3 + 0.12, T.c3 + 0.75);          // 0..1: o poço desce
 const ROCKS: [number, number, number, number][] = [[-3.4, -3.6, 1.45, 0], [0.2, -3.7, 1.7, 1], [3.5, -3.4, 1.4, 2], [-2.0, -0.9, 1.5, 3], [1.9, -0.8, 1.6, 4], [-3.6, 1.4, 1.25, 5], [0.0, 1.3, 1.35, 6], [3.3, 1.5, 1.3, 7]];
 const rockT = (k: number) => lerp(T.pusieron, T.grandesEnd - 0.5, k / 7);   // as 8 rochas caem espalhadas de «pusieron» até «grandes» (fração do trecho)
@@ -228,10 +224,10 @@ const BowlRing: React.FC<{ i: number; t: number }> = ({ i, t }) => {
 };
 /** o cone de terra nua (a «pared» do buraco) + faixas de estrato e pedras soltas, para o movimento da câmera ler */
 const CONE_ROCKS = Array.from({ length: 18 }, (_, k) => ({ a: rnd(k + 1) * PI * 2, d: lerp(1.5, 19, rnd(k + 20)), s: lerp(0.35, 0.8, rnd(k + 40)) }));
-const Cone3: React.FC = () => (
+const Cone3: React.FC<{ t: number }> = ({ t }) => (
   <G>
     <Cyl rt={RT} rb={RB} h={DEPTH} p={[0, -DEPTH / 2, 0]} seg={48} open c={EARTH} o={{ side: "double", flat: true }} cast={false} />
-    {[1.8, 5.4, 9.0, 12.6, 16.2].map((d, k) => <Cyl key={k} rt={rc(d) - 0.05} rb={rc(d + 1.3) - 0.05} h={1.3} p={[0, -d - 0.65, 0]} seg={48} open c={EARTH2} o={{ side: "double", flat: true }} cast={false} />)}
+    {(t >= C3 - 0.05 && t < T.doce ? [] : [1.8, 5.4, 9.0, 12.6, 16.2]).map((d, k) => <Cyl key={k} rt={rc(d) - 0.05} rb={rc(d + 1.3) - 0.05} h={1.3} p={[0, -d - 0.65, 0]} seg={48} open c={EARTH2} o={{ side: "double", flat: true }} cast={false} />)}
     <Cyl rt={RB} h={0.1} p={[0, FLOOR - 0.07, 0]} c={EARTH} seg={48} cast={false} />
     {CONE_ROCKS.map((q, k) => <Sph key={k} rad={q.s} p={P(q.a, rc(q.d) - 0.3, -q.d)} c={k % 2 ? "#8b7b6a" : "#a0907c"} ws={6} hs={4} cast={false} o={{ flat: true }} />)}
   </G>
@@ -263,7 +259,7 @@ const Floor: React.FC<{ t: number }> = ({ t }) => {
 };
 /** o poço do filtro: paredes de terra em seção, rochas caindo uma a uma, a água que some pelas frestas */
 const FilterPit: React.FC<{ t: number }> = ({ t }) => {
-  if (!pitOpen(t) && !(t >= T.inunda - 0.1 && t < T.inunda + 0.5)) return null;
+  if (!pitOpen(t)) return null;
   const k = pitK(t), d = PIT.d * k, bot = FLOOR - d, w = PIT.x1 - PIT.x0, dz = PIT.z1 - PIT.z0, cx = (PIT.x0 + PIT.x1) / 2, cz = (PIT.z0 + PIT.z1) / 2;
   const layer = (c: string, y0: number, y1: number, ex = 0) => ({ c, y: (y0 + y1) / 2, h: Math.max(0.001, y0 - y1 + ex) });
   const L1 = layer("#a3794a", FLOOR, FLOOR - d * 0.45), L2 = layer("#c9a06a", FLOOR - d * 0.45, bot);
@@ -289,14 +285,16 @@ const FilterPit: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 const Flood: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T.p3 + 0.1 || t > T.cuela + 1.8) return null;
-  const y = floodY(t), r = Math.min(stepR(y) - 0.05, lerp(0.6, FR + 1.5, ease(t, T.p3 + 0.1, T.hoyo + 0.5)));
+  if (t < T.p3 + 0.1 || t > T.c3 + 0.05) return null;
+  const full = t >= T.olla + 0.4, sl = full ? Math.sin(t * 5.5) * 0.18 : 0;
+  const y = floodY(t) + sl, r = Math.min(stepR(floodY(t)) - 0.05, lerp(0.6, 60, ease(t, T.p3 + 0.1, T.hoyo + 0.5)));
   if (r < 0.7) return null;
-  const hole = t >= T.cuela;
   return (
     <G>
-      <Cyl rt={r} h={0.06} p={[0, y, 0]} seg={48} c={WATER} o={{ opacity: hole ? 0.5 : 0.8, emissive: "#2f8fe0", ei: 0.6, depthWrite: false }} cast={false} recv={false} />
+      <Cyl rt={r} h={0.06} p={[0, y, 0]} seg={48} c={WATER} o={{ opacity: 0.86, emissive: "#2f8fe0", ei: 0.6, depthWrite: false }} cast={false} recv={false} />
       <mesh position={[0, y + 0.05, 0]} rotation={[-PI / 2, 0, 0]} material={mat("#bfe8ff", { emissive: "#bfe8ff", ei: 0.8, opacity: 0.7, depthWrite: false })}><ringGeometry args={[Math.max(0.1, r - 0.28), r, 48]} /></mesh>
+      {full ? [0, 1, 2].map((k) => { const u = fract(t * 0.8 + k / 3), rr = Math.max(0.6, u * r * 0.9); return <mesh key={k} position={[0, y + 0.1, 0]} rotation={[-PI / 2, 0, 0]} material={mat("#e8f6ff", { emissive: "#e8f6ff", ei: 0.9, opacity: 0.8 * (1 - u), depthWrite: false })}><ringGeometry args={[rr, rr + 0.7, 40]} /></mesh>; }) : null}
+      {full ? Array.from({ length: 9 }, (_, k) => { const a = rnd(k + 3) * PI * 2, d = (0.15 + 0.7 * rnd(k + 9)) * r, h = Math.abs(Math.sin(t * 4 + k * 1.7)) * 1.4; return <Sph key={k} rad={0.9} p={[Math.cos(a) * d, y + 0.2 + h, Math.sin(a) * d]} sc={[1, 0.7, 1]} c="#ffffff" o={{ emissive: "#cfeaff", ei: 0.6 }} cast={false} ws={8} hs={6} />; }) : null}
     </G>
   );
 };
@@ -305,7 +303,7 @@ const Bowl: React.FC<{ t: number }> = ({ t }) => {
   const crack = ease(t, T.sola0 + 0.25, T.hundio) * (t < T.hundio + 0.5 ? 1 : 0);
   return (
     <G>
-      <Cone3 />
+      <Cone3 t={t} />
       {Array.from({ length: N }, (_, i) => <BowlRing key={i} i={i} t={t} />)}
       <Rim t={t} /><Floor t={t} /><FilterPit t={t} /><Flood t={t} />
       {plugOn ? <G p={[0, -pd - 0.03, 0]}>
@@ -576,18 +574,19 @@ const FilterCut: React.FC<{ t: number }> = ({ t }) => {
 export const LAB = P(PI / 2, RT + 6, 0), ENG_A = [0.55, 0.78, 1.0] as const, CER = P(0, RT + 5, 0);
 const Lab: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => {
   if (t < T.fama - 0.02 || t >= T.paraellos - 0.02) return null;
-  const k = popK(t, T.fama, 0.35), tip = ease(t, T.noenc + 0.35, T.noenc + 0.9) * 1.45, hip = popK(t, T.hip, 0.3);
+  const k = popK(t, T.fama, 0.35), tip = ease(t, T.noenc + 0.65, T.noenc + 1.15) * 1.45, hip = popK(t, T.hip, 0.3);
+  const dxc = cam[0] - LAB[0], dzc = cam[2] - LAB[2], dl = Math.hypot(dxc, dzc) || 1;
   return (
     <G>
       <Bill p={LAB} cam={cam} yawOnly>
         <G sc={Math.max(0.001, k) * 0.6} r={[0, 0, -tip]}>
           <Cyl rt={0.3} h={15} p={[-5.4, 7.5, -0.2]} c="#7a4a2a" seg={6} /><Cyl rt={0.3} h={15} p={[5.4, 7.5, -0.2]} c="#7a4a2a" seg={6} />
           <G p={[0, 13, 0]}><SignBoard lines={[["SE DICE:", 62, "#6b3a10"], ["LABORATORIO", 60, "#2b1a08"]]} bg="#f6e7c0" border="#7a4a2a" s={[13, 6.5]} />
-            {hip > 0 ? <G p={[3.2, -2.2, 0.3]} r={[0, 0, -0.17]} sc={Math.max(0.001, hip) * (1 + 0.8 * (1 - hip))}><SignBoard lines={[["HIPÓTESIS", 58, "#c8352a"]]} bg="#fff4e0" border="#c8352a" s={[7.4, 2.6]} px={[400, 150]} /></G> : null}
+            {hip > 0 ? <G p={[0.4, -4.1, 0.3]} r={[0, 0, -0.05]} sc={Math.max(0.001, hip) * (1 + 0.8 * (1 - hip))}><SignBoard lines={[["HIPÓTESIS", 66, "#c8352a"]]} bg="#fff4e0" border="#c8352a" s={[10.6, 3.3]} px={[520, 160]} /></G> : null}
           </G>
         </G>
       </Bill>
-      <XMark t={t} a={T.noenc + 0.15} b={T.noenc + 1.5} p={[LAB[0], 17, LAB[2]]} cam={cam} sc={1.6} />
+      <XMark t={t} a={T.noenc + 0.2} b={T.noenc + 1.2} p={[LAB[0] + (dxc / dl) * 1.4, 7.9, LAB[2] + (dzc / dl) * 1.4]} cam={cam} sc={2.1} />
       {([[-2, -9.5, "#cfeedd", "#7aff9a", "#3fd060", 0], [-2, 9.5, "#cfe6ff", "#5ac8ff", "#1f8fe0", 0.55], [0, -16, "#ffe6cf", "#ffa84a", "#e07010", 1.1]] as [number, number, string, string, string, number][]).map(([dx, dz, gl, lq, em, d], f) => {
         const kf = popK(t, T.fama + d, 0.35), bob = Math.abs(Math.sin(t * 5 + f * 2)) * 0.25;
         return <G key={f} p={[LAB[0] + dx, bob, LAB[2] + dz]} sc={Math.max(0.001, kf) * 1.7}>
@@ -599,20 +598,46 @@ const Lab: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => {
     </G>
   );
 };
+export const engCam = (t: number): { pos: V3; look: V3; fov: number } => {
+  const A = lerp(0.62, 0.98, prog(t, T.equipo, T.noenc - 0.05));
+  return { pos: P(A + 0.02, RT + 14.5, 3.4), look: P(A + 0.12, RT + 1.8, 2.3), fov: 58 };
+};
+const ENG_STEP = 0.1, ENG_PER = 0.9, ENG_R = [RT + 1.2, RT + 2.7, RT + 1.9], ENG_POSE: PoseName[] = ["chisel", "read", "point"];
+const engA0 = (q: number) => 0.6 + 0.12 * q;
+const engA = (q: number, t: number) => { const ph = (t - T.equipo) / ENG_PER + q * 0.31, n = Math.floor(ph), f = ph - n; return engA0(q) + ENG_STEP * (n + ease(f, 0, 0.6)) - 0.03 * q; };
+const engStakeT = (q: number, m: number) => T.equipo + (m + 0.65 - q * 0.31) * ENG_PER;
 const Engineers: React.FC<{ t: number }> = ({ t }) => {
   if (t < T.equipo - 0.02 || t >= T.noenc + 0.5) return null;
-  const poses: PoseName[] = ["point", "read", "chisel"], k = popK(t, T.equipo, 0.3);
-  const list = ENG_A.map((a, q) => ({ p: P(a, RT + 1.6, 0.02), yaw: a + PI, pose: poses[q], ph: q * 0.8 }));
-  const A = P(ENG_A[0], RT + 1.6, 0.18), B = P(ENG_A[1], RT + 1.6, 0.18), len = Math.hypot(B[0] - A[0], B[2] - A[2]), ext = ease(t, T.equipo + 0.3, T.equipo + 1.3);
+  const k = popK(t, T.equipo, 0.3);
+  const st = [0, 1, 2].map((q) => { const ph = (t - T.equipo) / ENG_PER + q * 0.31, f = ph - Math.floor(ph), a = engA(q, t); return { a, p: P(a, ENG_R[q], 0.02), planting: f >= 0.6, f }; });
+  const A = P(st[0].a, ENG_R[0], 0.25), B = P(st[1].a, ENG_R[1], 0.25), len = Math.hypot(B[0] - A[0], B[2] - A[2]);
   return (
     <G sc={Math.max(0.001, k)}>
-      <Crowd list={list} t={t} c={COSTUMES.worker} scale={1.9} />
-      {ENG_A.map((a, q) => { const b = P(a, RT + 4, 0); return (
-        <G key={q} p={b} r={[0, a + PI, 0]}>
+      {st.map((e, q) => <Worker key={q} p={e.p} yaw={e.a + PI / 2} pose={poseOf(e.planting ? ENG_POSE[q] : "walk", t * (e.planting ? 1 : 1.2) + q)} t={t + q} c={COSTUMES.worker} scale={2.3} mustache={q === 1} />)}
+      {[0, 1, 2].map((q) => [0, 1, 2, 3, 4].map((m) => { const ts = engStakeT(q, m); if (t < ts) return null; const a = engA0(q) + ENG_STEP * (m + 1) - 0.03 * q, u = popK(t, ts, 0.25);
+        return <G key={q * 10 + m} p={P(a, ENG_R[q] + 0.5, 0)} sc={Math.max(0.001, u) * 2.0}>
+          <Cyl rt={0.07} h={2.0} p={[0, 1.0, 0]} c="#f2efe6" seg={6} cast={false} /><Cyl rt={0.075} h={0.5} p={[0, 0.4, 0]} c="#d23a2a" seg={6} cast={false} />
+          <Box s={[0.7, 0.4, 0.05]} p={[0.35, 1.8, 0]} c="#ff8a1a" o={{ emissive: "#ff6a00", ei: 0.5 }} cast={false} />
+        </G>; }))}
+      {[0.5, 1.12].map((a, q) => { const b = P(a, RT + 6, 0); return (
+        <G key={q} p={b} r={[0, a + PI, 0]} sc={1.5}>
           {[0, 1, 2].map((l) => <Cyl key={l} rt={0.07} h={2.8} p={[Math.sin(l * 2.1) * 0.6, 1.4, Math.cos(l * 2.1) * 0.6]} r={[Math.cos(l * 2.1) * 0.2, 0, -Math.sin(l * 2.1) * 0.2]} c="#5a4a3a" seg={5} cast={false} />)}
           <Box s={[0.6, 0.5, 0.6]} p={[0, 2.9, 0]} c="#f2c230" cast={false} /><Cyl rt={0.14} h={0.7} p={[0, 3.35, 0.15]} r={[PI / 2, 0, 0]} c="#2a2a2e" seg={8} cast={false} />
         </G>); })}
-      <Box s={[0.25, 0.1, Math.max(0.01, len * ext)]} p={[(A[0] + B[0]) / 2 * 1, 0.2, (A[2] + B[2]) / 2]} r={[0, Math.atan2(B[0] - A[0], B[2] - A[2]), 0]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.4 }} cast={false} />
+      <Box s={[0.12, 0.06, Math.max(0.01, len)]} p={[(A[0] + B[0]) / 2, 0.25, (A[2] + B[2]) / 2]} r={[0, Math.atan2(B[0] - A[0], B[2] - A[2]), 0]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.5 }} cast={false} />
+    </G>
+  );
+};
+/** o sol cruza o céu 3 vezes em «un equipo de ingenieros estudió el sitio durante años»: os anos passando, sem números */
+const YearSun: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.equipo || t >= T.noenc) return null;
+  const c = engCam(t), dx = c.look[0] - c.pos[0], dz = c.look[2] - c.pos[2], dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
+  const per = (T.noenc - T.equipo) / 3, ph = ((t - T.equipo) / per) % 1, sx = lerp(-62, 62, ph), sy = 22 + 52 * Math.sin(PI * ph);
+  const base: V3 = [c.pos[0] + ux * 230, 0, c.pos[2] + uz * 230];
+  return (
+    <G p={[base[0] - uz * sx, sy, base[2] + ux * sx]}>
+      <Sph rad={8} c="#fff0a0" o={{ emissive: "#ffd400", ei: 1.0 }} cast={false} ws={16} hs={12} />
+      {Array.from({ length: 12 }, (_, q) => { const a = (q / 12) * PI * 2 + t * 2.2; return <Box key={q} s={[1.2, 6, 0.6]} p={[Math.cos(a) * 13, Math.sin(a) * 13, 0]} r={[0, 0, a - PI / 2]} c="#ffd400" o={{ emissive: "#ffb000", ei: 0.9 }} cast={false} />; })}
     </G>
   );
 };
@@ -635,6 +660,135 @@ const Ceremony: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => {
   );
 };
 
+// ---------------------------------------------------------------- lhamas, chasqui, trilha seca, calha de água (E21 v2)
+const Llama: React.FC<{ p: V3; yaw: number; t: number; sc?: number; ph?: number }> = ({ p, yaw, t, sc = 2.4, ph = 0 }) => {
+  const s = Math.sin(t * 9 + ph), col = "#ece0c4", leg = "#d6c6a2";
+  return (
+    <G p={[p[0], p[1] + Math.abs(s) * 0.1 * sc, p[2]]} r={[0, yaw, 0]} sc={sc}>
+      <Box s={[0.9, 0.8, 1.7]} p={[0, 1.4, 0]} c={col} />
+      <Box s={[0.96, 0.08, 0.8]} p={[0, 1.82, -0.1]} c="#c8352a" cast={false} />
+      <Box s={[0.34, 1.0, 0.4]} p={[0, 2.05, 0.8]} r={[0.28, 0, 0]} c={col} />
+      <Box s={[0.4, 0.4, 0.66]} p={[0, 2.62, 1.1]} c={col} />
+      <Box s={[0.1, 0.28, 0.1]} p={[-0.13, 2.9, 1.0]} c={leg} cast={false} /><Box s={[0.1, 0.28, 0.1]} p={[0.13, 2.9, 1.0]} c={leg} cast={false} />
+      <Sph rad={0.2} p={[0, 1.6, -0.9]} c={col} ws={6} hs={4} cast={false} />
+      {([[-0.28, 0.62, 1], [0.28, 0.62, -1], [-0.28, -0.62, -1], [0.28, -0.62, 1]] as [number, number, number][]).map(([x, z, d], k) => <G key={k} p={[x, 1.0, z]} r={[d * s * 0.55, 0, 0]}><Cyl rt={0.1} h={1.0} p={[0, -0.5, 0]} c={leg} seg={6} cast={false} /></G>)}
+    </G>
+  );
+};
+/** o chasqui (mensageiro inca) corre de from a to entre a e b, com o quipu na mão */
+const Chasqui: React.FC<{ t: number; a: number; b: number; from: V3; to: V3; sc?: number }> = ({ t, a, b, from, to, sc = 2.4 }) => {
+  if (t < a || t > b) return null;
+  const u = prog(t, a, b), p = vlerp(from, to, u) as V3, yaw = Math.atan2(to[0] - from[0], to[2] - from[2]), tt = t * 2.6;
+  const pose = { ...poseOf("walk", tt), lean: 0.32, hop: 0.2 * Math.abs(Math.sin(tt * 8)) };
+  const cols = ["#d23a2a", "#f2c230", "#2f7fc0", "#f2efe6", "#d23a2a", "#f2c230", "#2f7fc0"];
+  return (
+    <G>
+      <Worker p={p} yaw={yaw} pose={pose} scale={sc} t={t} c={INCA} mustache />
+      <G p={[p[0], p[1] + 0.2 * Math.abs(Math.sin(tt * 8)) * sc, p[2]]} r={[0, yaw, 0]} sc={sc}>
+        <Box s={[0.9, 0.05, 0.05]} p={[0.5, 1.12, 0.42]} c="#6b4423" cast={false} />
+        {cols.map((c, k) => <G key={k} p={[0.5 - 0.4 + k * 0.133, 1.12, 0.42]} r={[Math.sin(t * 16 + k) * 0.5, 0, 0]}><Box s={[0.03, 0.5, 0.03]} p={[0, -0.25, 0]} c={c} cast={false} /><Sph rad={0.05} p={[0, -0.18 - (k % 3) * 0.1, 0]} c={c} ws={6} hs={4} cast={false} /></G>)}
+      </G>
+      <Dust t={t} t0={a} p={[p[0] - Math.sin(yaw) * 3, 0.3, p[2] - Math.cos(yaw) * 3]} n={5} spread={3} rise={2.2} size={1.3} />
+    </G>
+  );
+};
+const MOR = { a: T.moray + 0.0, b: T.tresmil };
+const MorayLife: React.FC<{ t: number }> = ({ t }) => {
+  if (t < C1 - 0.1 || t > T.suelo) return null;
+  const u = t - C1;
+  return (
+    <G>
+      {[0, 1, 2].map((k) => <Llama key={k} p={[-84 + k * 9 + u * 7, 0, 58 - k * 6 + u * -2]} yaw={PI / 2 - 0.2} t={t} ph={k * 1.3} sc={2.6} />)}
+      {[0, 1].map((k) => <Llama key={10 + k} p={[-20 - k * 8 - u * 6, 0, 8 + k * 4]} yaw={-PI / 2 + 0.2} t={t} ph={k * 2.1} sc={2.6} />)}
+      <Chasqui t={t} a={C1 + 0.7} b={C1 + 1.5} from={[-68, 0, 64.3]} to={[-44, 0, 77.4]} />
+    </G>
+  );
+};
+void MOR;
+/** os 2 fios das nascentes correm um trecho e somem na terra seca (nunca chegam à tigela) */
+const TRK_Z = -111, TRK = SPR.map((q, s): V3[] => Array.from({ length: 8 }, (_, k) => { const z = lerp(q[2], TRK_Z, k / 7), x = q[0] + (s ? 1 : -1) * 0.25 * k; return [x, Math.max(0.35, hillY(x, z) + 0.35), z] as V3; }));
+const Trickle: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.dos - 0.05 || t >= T.c2 + 0.05) return null;
+  const g = ease(t, T.dos, T.dos + 0.75);
+  return (
+    <G>
+      {TRK.map((pts, s) => <G key={s}>
+        {pts.slice(0, -1).map((a, j) => (j / (pts.length - 1) < g ? <Pipe key={j} a={a} b={pts[j + 1]} rad={0.5 - 0.04 * j} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 0.9 }} seg={8} cast={false} /> : null))}
+        <Beads t={t} pts={pts.map((q): V3 => [q[0], q[1] + 0.5, q[2]])} n={4} speed={0.5} r={0.28} ph={s * 0.3} on={g > 0.95} />
+        {g > 0.5 ? <G p={[pts[7][0], 0.07, pts[7][2]]} sc={ease(g, 0.5, 0.95)}>
+          <Cyl rt={3.4} h={0.05} c="#8a6a44" cast={false} seg={20} /><Cyl rt={2.2} h={0.08} p={[0, 0.02, 0]} c="#6f5333" cast={false} seg={20} /><Cyl rt={1.0 + 0.15 * Math.sin(t * 6 + s)} h={0.1} p={[0, 0.04, 0]} c="#4a3a24" cast={false} seg={16} />
+        </G> : null}
+      </G>)}
+    </G>
+  );
+};
+const WILT = Array.from({ length: 10 }, (_, k) => ({ x: lerp(-16, 9, rnd(k + 60)), z: lerp(-60, -44.5, rnd(k + 70)), s: lerp(1.5, 2.2, rnd(k + 80)), tilt: lerp(0.5, 1.0, rnd(k + 90)), a: rnd(k + 95) * 6 }));
+const Wilt: React.FC<{ t: number }> = ({ t }) => (t < T.p2 || t >= T.c2 + 0.05 ? null : (
+  <G>{WILT.map((q, k) => (
+    <G key={k} p={[q.x, 0, q.z]} r={[0, q.a, 0]} sc={q.s}>
+      <G r={[0, 0, q.tilt * 0.4]}><Cyl rt={0.07} h={1.0} p={[0, 0.5, 0]} c="#8f8a3a" seg={5} cast={false} />
+        <G p={[0, 1.0, 0]} r={[0, 0, 1.4 + 0.08 * Math.sin(t * 2 + k)]}><Box s={[0.7, 0.05, 0.3]} p={[0.35, 0, 0]} c="#b0a24a" cast={false} /></G>
+        <G p={[0, 0.75, 0]} r={[0, 0, -1.2]}><Box s={[0.5, 0.05, 0.25]} p={[0.25, 0, 0]} c="#9c8f3e" cast={false} /></G>
+      </G>
+    </G>))}</G>
+));
+/** a calha de pedra que despeja água na tigela e a água some no fundo (E21 «drenaje») */
+const GU_END = FR + 1.4, GU_RIM = RT + 0.6, GU_PUD: V3 = P(PI, GU_END - 0.1, FLOOR);
+const guY = (r: number) => lerp(FLOOR + 4.2, 1.9, (r - GU_END) / (GU_RIM - GU_END));
+const GU_PTS: V3[] = Array.from({ length: 13 }, (_, k) => { const r = lerp(GU_RIM, GU_END, k / 12); return P(PI, r, guY(r)); });
+const groundAt = (r: number) => (r > rOut(0) ? 0 : yT(clamp(10 - Math.floor((r - 12) / WW), 0, N - 1)));
+export const gushOn = (t: number) => (t >= C6 && t < T.giro) || (t >= T.manda && t < T.end);
+const Gush: React.FC<{ t: number }> = ({ t }) => {
+  if (!gushOn(t)) return null;
+  const a = t < T.manda ? C6 : T.manda, g = ease(t, a, a + 0.25), pud = 1.9 + 0.3 * Math.sin(t * 9);
+  return (
+    <G sc={[1, 1, 1]}>
+      {GU_PTS.slice(0, -1).map((q, j) => <G key={j}><Pipe a={q} b={GU_PTS[j + 1]} rad={0.95} c={STONE} seg={8} /><Pipe a={[q[0], q[1] + 0.35, q[2]]} b={[GU_PTS[j + 1][0], GU_PTS[j + 1][1] + 0.35, GU_PTS[j + 1][2]]} rad={0.68 * g} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 1.0 }} seg={8} cast={false} /></G>)}
+      {[2, 4, 6, 8, 10].map((k) => { const q = GU_PTS[k], r = Math.hypot(q[0], q[2]), gy = groundAt(r), h = Math.max(0.1, q[1] - 0.7 - gy); return <Cyl key={k} rt={0.38} h={h} p={[q[0], gy + h / 2, q[2]]} c={STONE2} seg={6} cast={false} />; })}
+      <Beads t={t * 1.6} pts={GU_PTS.map((q): V3 => [q[0], q[1] + 0.95, q[2]])} n={14} speed={1.0} r={0.42 * g} />
+      {/* queda do fim da calha ao fundo */}
+      <Box s={[1.3 * g, guY(GU_END) - 0.1, 0.7 * g]} p={[GU_PUD[0], FLOOR + (guY(GU_END) - 0.1) / 2 + 0.1, GU_PUD[2]]} c="#5ac8ff" o={{ emissive: "#1f8fe0", ei: 1.0, opacity: 0.92 }} cast={false} />
+      {Array.from({ length: 10 }, (_, k) => { const u = fract(t * 2.4 + k / 10), ang = rnd(k + 5) * PI * 2; return <Sph key={k} rad={0.3} p={[GU_PUD[0] + Math.cos(ang) * (0.6 + 1.9 * u), FLOOR + 0.3 + Math.sin(u * PI) * 2.0, GU_PUD[2] + Math.sin(ang) * (0.6 + 1.9 * u)]} c="#bfe8ff" o={{ emissive: "#5ac8ff", ei: 1.0 }} cast={false} ws={8} hs={6} />; })}
+      <G p={[GU_PUD[0], FLOOR + 0.1, GU_PUD[2]]} sc={g}>
+        <Cyl rt={pud} h={0.08} c={WATER} o={{ emissive: "#1f8fe0", ei: 0.9, opacity: 0.92 }} cast={false} seg={24} />
+        <mesh position={[0, 0.06, 0]} rotation={[-PI / 2, 0, 0]} material={mat("#e8f6ff", { emissive: "#e8f6ff", ei: 0.9, opacity: 0.85, depthWrite: false })}><ringGeometry args={[pud - 0.3, pud, 24]} /></mesh>
+        {Array.from({ length: 7 }, (_, k) => { const u = fract(t * 1.3 + k / 7), r = 2.6 * (1 - u), ang = u * 8 + k; return <Sph key={k} rad={0.3 * (1 - 0.8 * u)} p={[Math.cos(ang) * r, 0.25, Math.sin(ang) * r]} c="#7fd6ff" o={{ emissive: "#1f8fe0", ei: 1.0 }} cast={false} ws={8} hs={6} />; })}
+      </G>
+    </G>
+  );
+};
+/** ponto de interrogação gigante (texto em textura): «¿a dónde va el agua?» */
+const QMark: React.FC<{ t: number; a: number; b: number; p: V3; cam: V3; sc?: number }> = ({ t, a, b, p, cam, sc = 1 }) => {
+  const tx = useMemo(() => {
+    const cv = document.createElement("canvas"); cv.width = 384; cv.height = 512; const g = cv.getContext("2d")!;
+    g.textAlign = "center"; g.textBaseline = "middle"; g.font = "bold 470px Arial, Helvetica, sans-serif";
+    g.lineWidth = 46; g.strokeStyle = "#3a2300"; g.lineJoin = "round"; g.strokeText("?", 192, 270); g.fillStyle = "#ffd400"; g.fillText("?", 192, 270);
+    const x = new THREE.CanvasTexture(cv); x.colorSpace = THREE.SRGBColorSpace; return x;
+  }, []);
+  if (t < a || t > b) return null;
+  const k = popK(t, a, 0.3) * sc * (1 + 0.05 * Math.sin(t * 9)), bob = Math.sin(t * 5) * 0.8;
+  return <Bill p={[p[0], p[1] + bob, p[2]]} cam={cam}><G sc={Math.max(0.001, k)}><mesh><planeGeometry args={[9, 12]} /><meshBasicMaterial map={tx} transparent alphaTest={0.1} side={THREE.DoubleSide} depthWrite={false} /></mesh></G></Bill>;
+};
+/** o barro que a parede nua solta enquanto o construtor pensa (b1 → c1) */
+const Crumble: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.b1 || t >= T.c1 + 0.3) return null;
+  return (
+    <G>
+      {Array.from({ length: 9 }, (_, k) => {
+        const u = fract(t * 0.6 + k / 9), d = 3 + u * u * (DEPTH - 4.5), off = (rnd(k + 11) - 0.5) * 0.5, s = 0.3 + rnd(k + 3) * 0.35;
+        return <Box key={k} s={[s * 1.3, s * 0.8, s]} p={P(AW + off, rc(d) - 0.45, -d)} r={[u * 6 + k, AW + u * 2, u * 3]} c={k % 2 ? "#8a6a44" : "#a07c52"} sc={1 - ease(u, 0.88, 1) * 0.7} />;
+      })}
+      <Dust t={t} t0={T.b1} p={P(AW + 0.18, rc(13), -13)} n={5} spread={3} rise={2} size={1.0} />
+    </G>
+  );
+};
+/** desfile final: lhamas dão a volta na borda enquanto o cartão da recompensa está na tela */
+const Parade: React.FC<{ t: number }> = ({ t }) => {
+  if (t < T.manda - 0.02) return null;
+  const u = t - T.manda;
+  return <G>{[0, 1, 2, 3].map((k) => { const a = 1.0 + k * 1.55 + u * 0.34; return <Llama key={k} p={P(a, RT + 8.5, 0)} yaw={a + PI / 2} t={t} ph={k * 1.1} sc={3.2} />; })}</G>;
+};
+
 // ---------------------------------------------------------------- tudo
 export const World: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => (
   <>
@@ -644,9 +798,10 @@ export const World: React.FC<{ t: number; cam: V3 }> = ({ t, cam }) => (
     <Bowl t={t} /><Pits t={t} />
     <Hill t={t} cam={cam} /><Channels t={t} />
     <Shovel t={t} cam={cam} /><Excavator t={t} cam={cam} /><Figures t={t} />
-    <AltRuler t={t} /><DepthRuler t={t} /><Geo t={t} /><Slide t={t} cam={cam} /><Fill t={t} /><LevelBall t={t} />
+    <YearSun t={t} /><MorayLife t={t} /><Trickle t={t} /><Wilt t={t} /><Gush t={t} /><Crumble t={t} /><Parade t={t} /><AltRuler t={t} /><DepthRuler t={t} /><Geo t={t} /><Slide t={t} cam={cam} /><Fill t={t} /><LevelBall t={t} />
     <FilterCut t={t} /><Lab t={t} cam={cam} /><Engineers t={t} /><Ceremony t={t} cam={cam} />
-    <XMark t={t} a={T.olla + 0.55} b={T.b3 - 0.02} p={[0, FLOOR + 6, 0]} cam={cam} sc={1.6} />
-    <Check t={t} a={T.inunda + 0.1} b={T.drenaje} p={[0, FLOOR + 6.5, 0]} cam={cam} sc={1.3} />
+    <XMark t={t} a={T.olla + 0.42} b={T.b3 - 0.02} p={[0, 12, 0]} cam={cam} sc={7} />
+    <QMark t={t} a={T.b3 + 0.04} b={T.c3 - 0.02} p={[0, 15, 0]} cam={cam} sc={1.5} />
+    <Check t={t} a={T.inunda + 0.1} b={T.drenaje} p={[0, FLOOR + 8, 0]} cam={cam} sc={2.0} />
   </>
 );

@@ -14,7 +14,7 @@ export const win = (t: number, a: number, b: number, fade = 0.2) => clamp(Math.m
 
 export type Pill = { a: number; b: number; label: string; value?: (t: number) => string; y?: number; tone?: "dark" | "red" | "green" | "gold" };
 export type Title = { a: number; text: string; len?: number };
-export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string };
+export type Reward = { a: number; len: number; top: string; big: (t: number) => string; sub: string; stars?: boolean };
 export type HudData = { pills: Pill[]; titles: Title[]; alerts: number[]; rewinds: number[]; crosses: [number, number][]; stamps: [number, number, string?][]; reward: Reward; Extra?: React.FC<{ t: number }> };
 
 /** contador que sobe de a até b entre t0 e t1, com separador de milhar em espanhol */
@@ -102,7 +102,7 @@ const RewardEl: React.FC<{ t: number; r: Reward }> = ({ t, r }) => {
       <span style={{ fontFamily: FONT, fontSize: 56, color: "#fff", ...stroke(10) }}>{r.top}</span>
       <span style={{ fontFamily: FONT, fontSize: 150, color: "#5cff7a", lineHeight: 1, ...stroke(16, "#05381a") }}>{r.big(t)}</span>
       <span style={{ fontFamily: FONT, fontSize: 72, color: "#ffd400", lineHeight: 1.1, textAlign: "center", ...stroke(12, "#3a2300") }}>{r.sub}</span>
-      {Array.from({ length: 14 }, (_, i) => { const u = prog(t, r.a + 0.04 * i, r.a + 1.6), ang = (i / 14) * Math.PI * 2; return <span key={i} style={{ position: "absolute", top: 160 + Math.sin(ang) * 230 * u, left: 520 + Math.cos(ang) * 420 * u, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: 1 - u * 0.85, ...stroke(5, "#1c1208") }}>★</span>; })}
+      {r.stars === false ? null : Array.from({ length: 14 }, (_, i) => { const u = prog(t, r.a + 0.04 * i, r.a + 1.6), ang = (i / 14) * Math.PI * 2; return <span key={i} style={{ position: "absolute", top: 160 + Math.sin(ang) * 230 * u, left: 520 + Math.cos(ang) * 420 * u, fontFamily: FONT, fontSize: 54, color: cols[i % 5], opacity: 1 - u * 0.85, ...stroke(5, "#1c1208") }}>★</span>; })}
     </div>
   );
 };
